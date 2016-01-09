@@ -33,8 +33,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __btkOpaque_h
-#define __btkOpaque_h
+#ifndef __openma_base_opaque_h
+#define __openma_base_opaque_h
   
 /**
  * Creates pimpl() methods in the public interface to access to the private part (opaque pointer)
@@ -55,4 +55,4 @@
   inline classname* pint() {return reinterpret_cast<classname*>(this->mp_Pint);}; \
   inline const classname* pint() const {return reinterpret_cast<const classname*>(this->mp_Pint);};
     
-#endif // __btkOpaque_h
+#endif // __openma_base_opaque_h
