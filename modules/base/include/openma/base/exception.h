@@ -1,6 +1,6 @@
 /* 
  * Open Source Movement Analysis Library
- * Copyright (C) 2015, Moveck Solution Inc., all rights reserved.
+ * Copyright (C) 2016, Moveck Solution Inc., all rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
