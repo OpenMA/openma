@@ -1,0 +1,19 @@
+# - Config file for the OpenMA package
+# It defines the following variables
+#  OPENMA_INCLUDE_DIRS - include directories for OpenMA
+#  OPENMA_LIBRARIES    - libraries to link against
+
+@PACKAGE_INIT@
+
+SET_AND_CHECK(OPENMA_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+# # Compute paths
+# get_filename_component(OPENMA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+# set(OPENMA_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+#
+# # Our library dependencies (contains definitions for IMPORTED targets)
+# if(NOT TARGET foo AND NOT OPENMA_BINARY_DIR)
+#   include("${OPENMA_CMAKE_DIR}/OpenMATargets.cmake")
+# endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/OpenMATargets.cmake")

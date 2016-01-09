@@ -1,0 +1,99 @@
+/* 
+ * Open Source Movement Analysis Library
+ * Copyright (C) 2015, Moveck Solution Inc., all rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ *     * Neither the name(s) of the copyright holders nor the names
+ *       of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written
+ *       permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef __maconfig_h
+#define __maconfig_h
+
+#define OPENMA_VERSION_MAJOR @OPENMA_VERSION_MAJOR@
+#define OPENMA_VERSION_MINOR @OPENMA_VERSION_MINOR@
+#define OPENMA_VERSION_PATCH @OPENMA_VERSION_PATCH@
+#define OPENMA_VERSION_STRING "@OPENMA_VERSION_STRING@"
+
+// Compiled with a 64-bit compiler?
+#cmakedefine HAVE_64_BIT_COMPILER
+
+// Looking for mmap
+#cmakedefine HAVE_SYS_MMAP
+
+// Looking for the OS endianness
+#cmakedefine HAVE_BIGENDIAN
+
+// Check if the processor is supported
+#define OPENMA_VAX_LE 2  /* VAX LittleEndian */
+#define OPENMA_IEEE_LE 1 /* IEEE LittleEndian */
+#define OPENMA_IEEE_BE 3 /* IEEE BigEndian */
+
+#if defined _MSC_VER
+  #if defined _M_IX86 || defined _M_X64
+    #define OPENMA_ARCH OPENMA_IEEE_LE
+  #elif defined _M_ALPHA
+    #define OPENMA_ARCH OPENMA_VAX_LE
+  #elif defined _M_MRX000 || defined _M_PPC 
+    #define OPENMA_ARCH OPENMA_IEEE_BE 
+  #else
+    #error Processor not supported
+  #endif
+#elif defined __GNUC__
+  #if defined __i386__ || defined __x86_64__
+    #define OPENMA_ARCH OPENMA_IEEE_LE
+  #elif defined __vax__
+    #define OPENMA_ARCH OPENMA_VAX_LE
+  #elif defined __mips__ || defined __ppc__
+    #define OPENMA_ARCH OPENMA_IEEE_BE
+  #else
+    #error Processor not supported
+  #endif
+#else
+  #error Development platform not supported
+#endif
+
+// #if defined(_MSC_VER)
+//   // Disable warning for too long decorated name
+//   // See: https://msdn.microsoft.com/en-us/library/074af4b6.aspx
+//   // NOTE: This warning is raised when complex ma::maths expressions are used.
+//   #pragma warning(disable : 4503)
+// #endif
+
+// // Addons for Eigen
+// #ifdef EIGEN_CORE_H
+//   #error The header maconfig.h must be included before the inclusion of any Eigen headers to integrate the implemented Eigen plugins
+// #endif
+// // Need to be defined before the inclusion of the Eigen headers
+// #define EIGEN_DENSEBASE_PLUGIN <Eigen_openma/Plugin/DenseBaseAddons.h>
+// #define EIGEN_VECTOROP_PLUGIN <Eigen_openma/Plugin/VectorOpAddons.h>
+// #include <Eigen_openma/Plugin/ForwardDeclarations.h>
+// #include <Eigen/Core>
+// #include <Eigen_openma/Plugin/Functors.h>
+
+#endif // __maconfig_h
