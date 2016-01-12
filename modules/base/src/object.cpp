@@ -300,6 +300,8 @@ namespace ma
    */
   void Object::copy(const Object* src) _OPENMA_NOEXCEPT
   {
+    if (src == nullptr)
+      return;
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     optr->Timestamp = optr_src->Timestamp;
