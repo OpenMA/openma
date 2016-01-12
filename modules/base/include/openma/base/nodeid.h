@@ -32,13 +32,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_base_h
-#define __openma_base_h
+#ifndef __openma_base_nodeid_h
+#define __openma_base_nodeid_h
 
-#include "openma/base/any.h"
-#include "openma/base/exception.h"
-#include "openma/base/logger.h"
-#include "openma/base/object.h"
-#include "openma/base/object.h"
+#include "openma/base/typeid.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#endif // __openma_base_h
+/**
+ * Define the public method isCastable() used to determine if the object can be cast to the given type.
+ * @note This macro must be included by every inheriting Node classes to be correctly recognised as suche. For example, the function node_cast() needs the use of this macro to correctly work.
+ * @relates ma::Node
+ * @ingroup openma_base
+ */
+#define OPENMA_DECLARE_NODEID(derivedclass,baseclass) \
+  public: \
+  static_assert(!std::is_same<baseclass,derivedclass>::value,"The base class cannot be the same than the current class."); \
+  virtual bool isCastable(ma::typeid_t id) const _OPENMA_NOEXCEPT override \
+  { \
+    if (this->baseclass::isCastable(id)) \
+      return true; \
+    return (ma::static_typeid<derivedclass>() == id); \
+  }; \
+  private:
+
+#endif // __openma_base_nodeid_h
