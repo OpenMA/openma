@@ -285,7 +285,7 @@ namespace ma
   
   /**
    * Create a deep copy of the object and return it as another object.
-   * @note Each subclass modifying the private implementation must override the clone() method.
+   * @note Each subclass must override this method to correctly do the deep copy.
    */
   Object* Object::clone() const
   {
@@ -295,8 +295,8 @@ namespace ma
   };
   
   /**
-   * Do a deep copy of the the given @a src. The previous content is replaced. If no other object share the previous content, this one is deleted.
-   * @note Custom classed developed outside of OpenMA and having extra member (like another private implementation) must overload this method.
+   * Do a deep copy of the the given @a src. The previous content is replaced.
+   * @note Each subclass must override this method to correctly do the deep copy.
    */
   void Object::copy(const Object* src) _OPENMA_NOEXCEPT
   {
