@@ -252,7 +252,26 @@ namespace ma
    * @endcode
    *
    * For more details about properties you can read the documentation of the class Property.
+   *
+   * @ingroup openma_base
    */
+  
+#ifdef DOXYGEN_SHOULD_TAKE_THIS
+  /** * @brief Fake structure to create node's properties */
+  struct Node::__Doxygen_Properties
+  {
+  /**
+   * This property holds the description of a Node. By default, this property contains an empty string.
+   * @sa description() setDescription()
+   */
+   std::string description;
+  /**
+   * This property holds the name of a Node. By default, this property contains an empty string.
+   * @sa name() setName()
+   */
+  std::string name;
+  };
+#endif
   
   /**
    * Constructor. The @a parent node takes ownership of this object.

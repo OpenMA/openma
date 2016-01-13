@@ -2058,6 +2058,7 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = \
   DOXYGEN_SHOULD_SKIP_THIS \
+  DOXYGEN_SHOULD_TAKE_THIS \
   "OPENMA_NODE(exportname,classname)=class classname" \
   "_OPENMA_NOEXCEPT=noexcept" \
   "_OPENMA_CONSTEXPR=constexpr" \
