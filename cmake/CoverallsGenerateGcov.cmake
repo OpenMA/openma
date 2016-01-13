@@ -106,7 +106,7 @@ FOREACH(_EXT h hh hpp hxx c cc cpp cxx tpp txx)
 ENDFOREACH()
 LIST(SORT COVERAGE_SRCS)
 
-# Transform the optional string arguement COVERAGE_SRCS_EXCLUDED into a list
+# Transform the optional string argument COVERAGE_SRCS_EXCLUDED into a list
 string(REGEX REPLACE "\\::" ";" COVERAGE_SRCS_EXCLUDED "${COVERAGE_SRCS_EXCLUDED}")
 
 # Get the coverage data.

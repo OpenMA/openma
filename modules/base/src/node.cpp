@@ -586,7 +586,7 @@ namespace ma
    * events.findChild<ma::Event*>({},{{"time",0.0},{"context","Left"}}); // pointer to evtB object
    * @endcode
    *
-   * In any case you can set the third argument to false for a search in the direct children only. If no properties are added, the second arguement to give is an empty pair or curly brackets (i.e. {}).
+   * In any case you can set the third argument to false for a search in the direct children only. If no properties are added, the second argument to give is an empty pair or curly brackets (i.e. {}).
    * @code{.unparsed}
    * ma::Event* rhs2 = root.findChild<ma::Event*>("RHS2",{},false);
    * ma::ForcePlatform* fp = root.findChild<ma::ForcePlatform*>({},{},false); // {} and std::string() and "" are the same for the name.
