@@ -162,6 +162,13 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+/**
+ * @def OPENMA_NODE(exportname,classname)
+ * Convenient macro to export the static type ID associated with the new Node class.
+ * @relates ma::Node
+ * @ingroup openma_base
+ */
+
 namespace ma
 {
   /**
