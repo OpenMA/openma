@@ -88,16 +88,16 @@ namespace ma
    * @code{.unparsed}
    * // Several events are defined in the node "Events".
    * // A algorithm could have generated the following events
-   * btk::Node* events = new btk::Node("Events");
-   * new btk::Event("Foot Strike",1.3,"Right","JDoe",&events);
-   * new btk::Event("Foot Off",2.4,"Right","JDoe",&events);
-   * new btk::Event("Foot Strike",1.8,"Left","JDoe",&events);
-   * new btk::Event("Foot Off",3.0,"Left","JDoe",&events);
+   * ma::Node* events = new ma::Node("Events");
+   * new ma::Event("Foot Strike",1.3,"Right","JDoe",&events);
+   * new ma::Event("Foot Off",2.4,"Right","JDoe",&events);
+   * new ma::Event("Foot Strike",1.8,"Left","JDoe",&events);
+   * new ma::Event("Foot Off",3.0,"Left","JDoe",&events);
    * // Later in the code, you could retrive only:
    * // Events with the context "Right"
-   * std::list<btk::Event*> rightEvents = events.findChild<btk::Event*>({},{{"context","Right"}});
+   * std::list<ma::Event*> rightEvents = events.findChild<ma::Event*>({},{{"context","Right"}});
    * // Events with the name "Foot Strike"
-   * std::list<btk::Event*> footStrikeEvents = events.findChild<btk::Event*>("Foot Strike");
+   * std::list<ma::Event*> footStrikeEvents = events.findChild<ma::Event*>("Foot Strike");
    * @endcode
    *
    * The subject's identification is used to distinguish events between subject which are in the same trial (if any).
