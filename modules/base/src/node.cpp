@@ -784,7 +784,7 @@ namespace ma
    * ma::Node root("root");
    * ma::Node* event = new ma::Event("RHS1",&root);
    * ma::Event* evt = node_cast<ma::Event*>(event); // Ok
-   * ma::TimeSequence* tsq = node_cast<ma::TimeSequence*>(event); // nullptr
+   * ma::Timesequence* tsq = node_cast<ma::Timesequence*>(event); // nullptr
    * @endcode
    *
    * @note The type U must be a pointer type which inherit of the Node class. If this is not the case a compilation error will be thrown.
