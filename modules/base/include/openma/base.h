@@ -36,9 +36,10 @@
 #define __openma_base_h
 
 #include "openma/base/any.h"
+#include "openma/base/event.h"
 #include "openma/base/exception.h"
 #include "openma/base/logger.h"
-#include "openma/base/object.h"
+#include "openma/base/node.h"
 #include "openma/base/object.h"
 
 #endif // __openma_base_h
