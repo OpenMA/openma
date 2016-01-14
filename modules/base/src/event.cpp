@@ -202,9 +202,9 @@ namespace ma
     return optr->Subject;
   };
   
- /**
-  * Sets the subject's identification.
-  */
+  /**
+   * Sets the subject's identification.
+   */
   void Event::setSubject(const std::string& value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
