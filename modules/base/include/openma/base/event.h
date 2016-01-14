@@ -64,6 +64,9 @@ namespace ma
     
     const std::string& subject() const _OPENMA_NOEXCEPT;
     void setSubject(const std::string& value) _OPENMA_NOEXCEPT;
+    
+    Event* clone(Node* parent = nullptr) const;
+    void copy(const Event* src) _OPENMA_NOEXCEPT;
   };
 };
 

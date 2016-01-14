@@ -91,9 +91,48 @@ CXXTEST_SUITE(EventTest)
     TS_ASSERT_EQUALS(events.findChildren<ma::Event*>(std::regex("Foo|Bar|Toto"),{{"context","Right"}}).size(),2u);
 #endif
   };
+  
+  CXXTEST_TEST(clone)
+  {
+    ma::Node root("root");
+    ma::Node events("Events", &root);
+    ma::Event evtA("Foo",0.0,"Right","JDoe",&events);
+    ma::Event evtB("Bar",0.0,"Left","JDoe",&events);
+    ma::Event evtC("Toto",1.1,"Left","JDoe",&events);
+    ma::Event evtD("Toto",1.5,"Right","Babar",&events);
+    auto events_ = events.clone(&root);
+    TS_ASSERT_EQUALS(root.children().size(), 2ul);
+    TS_ASSERT_EQUALS(root.child(0), &events);
+    TS_ASSERT_EQUALS(root.child(1), events_);
+    auto children = events.findChildren<ma::Event*>();
+    auto children_ = events_->findChildren<ma::Event*>();
+    TS_ASSERT_EQUALS(children.size(), 4ul);
+    TS_ASSERT_EQUALS(children_.size(), 4ul);
+    for (auto it = children.begin(), it_ = children_.begin() ; it != children.end() || it_ != children_.end() ; ++it, ++it_)
+    {
+      TS_ASSERT_EQUALS((*it)->name(), (*it_)->name());
+      TS_ASSERT_EQUALS((*it)->description(), (*it_)->description());
+      TS_ASSERT_EQUALS((*it)->time(), (*it_)->time());
+      TS_ASSERT_EQUALS((*it)->context(), (*it_)->context());
+      TS_ASSERT_EQUALS((*it)->subject(), (*it_)->subject());
+    }
+  };
+  
+  CXXTEST_TEST(copy)
+  {
+    ma::Event evtA("Foo",0.0,"Right","JDoe"), evtB({});
+    evtB.copy(&evtA);
+    TS_ASSERT_EQUALS(evtA.name(), evtB.name());
+    TS_ASSERT_EQUALS(evtA.description(), evtB.description());
+    TS_ASSERT_EQUALS(evtA.time(), evtB.time());
+    TS_ASSERT_EQUALS(evtA.context(), evtB.context());
+    TS_ASSERT_EQUALS(evtA.subject(), evtB.subject());
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(EventTest)
 CXXTEST_TEST_REGISTRATION(EventTest, accessor)
 CXXTEST_TEST_REGISTRATION(EventTest, mutator)
 CXXTEST_TEST_REGISTRATION(EventTest, findChildren)
+CXXTEST_TEST_REGISTRATION(EventTest, clone)
+CXXTEST_TEST_REGISTRATION(EventTest, copy)  
