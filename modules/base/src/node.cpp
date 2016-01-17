@@ -413,7 +413,7 @@ namespace ma
    * auto root = ma::Node("root");
    * auto ev1 = ma::Event("LHE");
    * auto out_of_range = root.child(1); // nullptr returned as the index is out of range
-   * auto wrong_cast = root.child<ma::Timesequence*>(0); // nullptr as the node at index #0 is a ma::Event object
+   * auto wrong_cast = root.child<ma::TimeSequence*>(0); // nullptr as the node at index #0 is a ma::Event object
    * auto default_cast = root.child(0); // Return a pointer to a ma::Node object
    * auto event_cast = root.child(0); // Return a pointer to a ma::Event object
    * @endcode
@@ -784,7 +784,7 @@ namespace ma
    * ma::Node root("root");
    * ma::Node* event = new ma::Event("RHS1",&root);
    * ma::Event* evt = node_cast<ma::Event*>(event); // Ok
-   * ma::Timesequence* tsq = node_cast<ma::Timesequence*>(event); // nullptr
+   * ma::TimeSequence* tsq = node_cast<ma::TimeSequence*>(event); // nullptr
    * @endcode
    *
    * @note The type U must be a pointer type which inherit of the Node class. If this is not the case a compilation error will be thrown.
