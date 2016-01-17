@@ -1,0 +1,14 @@
+/**
+ * @defgroup openma_base ma::base
+ * @brief Base of the project with common classes and utilities
+ *
+ * This module corresponds to the library @c openma_base
+ *
+ * This module does not use a nested namespace. As a consequence all the types proposed in the this module use only the @c ma:: namespace. For example:
+ *
+ * @code{.unparsed}
+ * ma::Any a(6);
+ * auto b = ma::Any("b");
+ * auto root = ma::Node("root");
+ * @endcode
+ */
