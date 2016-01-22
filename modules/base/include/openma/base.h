@@ -41,5 +41,6 @@
 #include "openma/base/logger.h"
 #include "openma/base/node.h"
 #include "openma/base/object.h"
+#include "openma/base/timesquence.h"
 
 #endif // __openma_base_h
