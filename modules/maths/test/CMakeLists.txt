@@ -1,0 +1,5 @@
+CXXTEST_ADD_TDD(openma_maths_array arrayTest.cpp maths)
+CXXTEST_ADD_TDD(openma_maths_pose poseTest.cpp maths)
+CXXTEST_ADD_TDD(openma_maths_map mapTest.cpp maths)
+CXXTEST_ADD_TDD(openma_maths_blockop blockopTest.cpp maths)
+CXXTEST_ADD_TDD(openma_maths_mix mixTest.cpp maths)
