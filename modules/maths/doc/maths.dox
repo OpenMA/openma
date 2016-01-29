@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_maths ma::maths
+ * @brief Linear algebra for reconstructed data
+ *
+ * This module corresponds to the library @c openma_maths
+ *
+ * The usage of the library would be done only through the header @c openma/maths.h. You should not include other (sub-)header as they are dependent between them.
+ *
+ * @todo Details the goal and usage or ma::maths.
+ */
