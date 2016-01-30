@@ -32,13 +32,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __maconfig_h
-#define __maconfig_h
+#ifndef __openma_config_h
+#define __openma_config_h
 
-#define OPENMA_VERSION_MAJOR @OPENMA_VERSION_MAJOR@
-#define OPENMA_VERSION_MINOR @OPENMA_VERSION_MINOR@
-#define OPENMA_VERSION_PATCH @OPENMA_VERSION_PATCH@
-#define OPENMA_VERSION_STRING "@OPENMA_VERSION_STRING@"
+#define _OPENMA_VERSION_MAJOR @OPENMA_VERSION_MAJOR@
+#define _OPENMA_VERSION_MINOR @OPENMA_VERSION_MINOR@
+#define _OPENMA_VERSION_PATCH @OPENMA_VERSION_PATCH@
+#define _OPENMA_VERSION_STRING "@OPENMA_VERSION_STRING@"
 
 // Compiled with a 64-bit compiler?
 #cmakedefine HAVE_64_BIT_COMPILER
@@ -50,27 +50,27 @@
 #cmakedefine HAVE_BIGENDIAN
 
 // Check if the processor is supported
-#define OPENMA_VAX_LE 2  /* VAX LittleEndian */
-#define OPENMA_IEEE_LE 1 /* IEEE LittleEndian */
-#define OPENMA_IEEE_BE 3 /* IEEE BigEndian */
+#define _OPENMA_VAX_LE 2  /* VAX LittleEndian */
+#define _OPENMA_IEEE_LE 1 /* IEEE LittleEndian */
+#define _OPENMA_IEEE_BE 3 /* IEEE BigEndian */
 
 #if defined _MSC_VER
   #if defined _M_IX86 || defined _M_X64
-    #define OPENMA_ARCH OPENMA_IEEE_LE
+    #define _OPENMA_ARCH _OPENMA_IEEE_LE
   #elif defined _M_ALPHA
-    #define OPENMA_ARCH OPENMA_VAX_LE
+    #define _OPENMA_ARCH _OPENMA_VAX_LE
   #elif defined _M_MRX000 || defined _M_PPC 
-    #define OPENMA_ARCH OPENMA_IEEE_BE 
+    #define _OPENMA_ARCH _OPENMA_IEEE_BE 
   #else
     #error Processor not supported
   #endif
 #elif defined __GNUC__
   #if defined __i386__ || defined __x86_64__
-    #define OPENMA_ARCH OPENMA_IEEE_LE
+    #define _OPENMA_ARCH _OPENMA_IEEE_LE
   #elif defined __vax__
-    #define OPENMA_ARCH OPENMA_VAX_LE
+    #define _OPENMA_ARCH _OPENMA_VAX_LE
   #elif defined __mips__ || defined __ppc__
-    #define OPENMA_ARCH OPENMA_IEEE_BE
+    #define _OPENMA_ARCH _OPENMA_IEEE_BE
   #else
     #error Processor not supported
   #endif
@@ -78,4 +78,4 @@
   #error Development platform not supported
 #endif
 
-#endif // __maconfig_h
+#endif // __openma_config_h
