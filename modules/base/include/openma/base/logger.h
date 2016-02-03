@@ -46,7 +46,7 @@ namespace ma
   template<typename... Args> static inline void warning(const char* msg, Args&&... args) _OPENMA_NOEXCEPT;
   template<typename... Args> static inline void error(const char* msg, Args&&... args) _OPENMA_NOEXCEPT;
   
-  enum class Message {Info, Warning, Error};
+  enum class Message : char {Info = 0x01, Warning, Error};
   
   class OPENMA_BASE_EXPORT Logger
   {
