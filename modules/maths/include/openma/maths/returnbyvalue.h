@@ -69,7 +69,7 @@ namespace internal
     CrossOpValues(const V1& v1, const V2& v2) : m_V1(v1), m_V2(v2) {};
     template <typename R> inline void evalTo(R& result) const
     {
-      // TODO: IS THERE A BETTER WAY TO IMPLEMENT THE CROSS PRODUCT?
+      // TODO: Is there a better way to implement the cross product?
       const auto& v1x = this->m_V1.col(0);
       const auto& v1y = this->m_V1.col(1);
       const auto& v1z = this->m_V1.col(2);
