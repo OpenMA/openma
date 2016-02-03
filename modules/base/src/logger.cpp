@@ -77,6 +77,7 @@ namespace ma
   /**
    * @enum Message
    * Enums used to specify message's type.
+   * @ingroup openma_base
    */
   /**
    * @var Message Message::Info
