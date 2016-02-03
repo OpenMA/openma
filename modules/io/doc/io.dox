@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_io ma::io
+ * @brief Classes for input and output operations on devices.
+ *
+ * This module corresponds to the library @c openma_io. It uses the nested namespace @c io. As a consequence all the types proposed in this module use the @c ma::io namespace.
+ *
+ * The main goal of this module is to create handler to read/write data format used in movement analysis (like the <a href="http://www.c3d.org">C3D</a> format)
+ *
+ * @todo Details the goal and usage of ma::io.
+ */
