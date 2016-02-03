@@ -1,0 +1,5 @@
+#define OPENMA_TDD_PATH_IN(relpath) \
+  "${OPENMA_TESTING_DATA_PATH}/input/" relpath
+     
+#define OPENMA_TDD_PATH_OUT(relpath) \
+  "${OPENMA_BINARY_DIR}/test/data/output/" relpath
