@@ -1,6 +1,6 @@
 #include <cxxtest/TestDrive.h>
 
-#include <openma/io/Buffer.h>
+#include <openma/io/buffer.h>
 #include <array>
 
 template <size_t N>
