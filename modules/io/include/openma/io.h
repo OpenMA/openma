@@ -38,7 +38,7 @@
 #include "openma/io/binarystream.h"
 #include "openma/io/buffer.h"
 #include "openma/io/device.h"
-#include "openma/io/endianformat.h"
+#include "openma/io/enums.h"
 #include "openma/io/file.h"
 #include "openma/io/handler.h"
 #include "openma/io/handleroption.h"

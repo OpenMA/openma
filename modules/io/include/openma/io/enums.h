@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_io_endianformat
-#define __openma_io_endianformat
+#ifndef __openma_io_enums
+#define __openma_io_enums
 
 #include "openma/config.h"
 
@@ -87,4 +87,4 @@ namespace io
 };
 };
 
-#endif // __openma_io_endianformat
+#endif // __openma_io_enums

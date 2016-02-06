@@ -3,7 +3,7 @@
 #include "binarystreamTest_def.h"
 
 #include <openma/io/binarystream.h>
-#include <openma/io/endianformat.h>
+#include <openma/io/enums.h>
 
 #include "BinaryStreamTest_def.h"
 

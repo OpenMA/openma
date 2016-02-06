@@ -36,7 +36,7 @@
 #define __openma_io_handler_h
 
 #include "openma/io_export.h"
-#include "openma/io/endianformat.h"
+#include "openma/io/enums.h"
 #include "openma/io/handleroption.h"
 #include "openma/base/opaque.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT

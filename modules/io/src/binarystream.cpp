@@ -34,7 +34,7 @@
 
 #include "openma/io/binarystream.h"
 #include "openma/io/binarystream_p.h"
-#include "openma/io/endianformat.h"
+#include "openma/io/enums.h"
 #include "openma/io/device.h"
 #include "openma/base/logger.h"
 
