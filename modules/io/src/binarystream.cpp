@@ -49,7 +49,7 @@ namespace ma
 namespace io
 {
   
-  BinaryStreamPrivate::BinaryStreamPrivate(Device* source, EndianConverter* converter)
+  BinaryStreamPrivate::BinaryStreamPrivate(Device* source, ByteOrderConverter* converter)
   : Source(source), Converter(converter)
   {};
   
@@ -58,7 +58,7 @@ namespace io
   // ----------------------------------------------------------------------- //
   
   /** 
-   * @class EndianConverter openma/io/binarystream_p.h
+   * @class ByteOrderConverter openma/io/binarystream_p.h
    * @brief Base class to read and write data encoded into a specifc processor architecture.
    *
    * @sa VAXLittleEndianConverter, IEEELittleEndianConverter, IEEEBigEndianConverter
@@ -67,18 +67,18 @@ namespace io
   /**
    * Constructor
    */
-  EndianConverter::EndianConverter()
+  ByteOrderConverter::ByteOrderConverter()
   {}
     
   /**
-   * @fn EndianConverter::~EndianConverter()
+   * @fn ByteOrderConverter::~ByteOrderConverter()
    * Destructor (default)
    */
 
   /** 
    * Extracts one character.
    */
-  char EndianConverter::readChar(Device* src) const
+  char ByteOrderConverter::readChar(Device* src) const
   {
     char byteptr[1] = {0};
     src->read(byteptr, 1);
@@ -88,7 +88,7 @@ namespace io
   /** 
    * Extracts one signed 8-bit integer.
    */
-  int8_t EndianConverter::readI8(Device* src) const
+  int8_t ByteOrderConverter::readI8(Device* src) const
   {
     char byteptr[1] = {0};
     src->read(byteptr, 1);
@@ -98,7 +98,7 @@ namespace io
   /** 
    * Extracts one unsigned 8-bit integer.
    */
-  uint8_t EndianConverter::readU8(Device* src) const
+  uint8_t ByteOrderConverter::readU8(Device* src) const
   {
     char byteptr[1] = {0};
     src->read(byteptr, 1);
@@ -108,7 +108,7 @@ namespace io
   /** 
    * Extracts one string with @a len characters.
    */
-  std::string EndianConverter::readString(size_t len, Device* src) const
+  std::string ByteOrderConverter::readString(size_t len, Device* src) const
   {
     std::string str;
     if (len != 0)
@@ -125,7 +125,7 @@ namespace io
   /** 
    * Writes the character @a val in the device.
    */  
-  void EndianConverter::writeChar(char val, Device* dest) const
+  void ByteOrderConverter::writeChar(char val, Device* dest) const
   {
     dest->write(&val, 1);
   };
@@ -133,7 +133,7 @@ namespace io
   /** 
    * Writes the signed 8-bit integer @a val in the device.
    */  
-  void EndianConverter::writeI8(int8_t val, Device* dest) const
+  void ByteOrderConverter::writeI8(int8_t val, Device* dest) const
   {
     char c = static_cast<char>(val);
     dest->write(&c, 1);
@@ -142,7 +142,7 @@ namespace io
   /** 
    * Writes the unsigned 8-bit integer @a val in the device.
    */
-  void EndianConverter::writeU8(uint8_t val, Device* dest) const
+  void ByteOrderConverter::writeU8(uint8_t val, Device* dest) const
   {
     char c = static_cast<char>(val);
     dest->write(&c, 1);
@@ -151,7 +151,7 @@ namespace io
  /** 
   * Writes the string @a val in the device.
   */
-  void EndianConverter::writeString(const std::string& val, Device* dest) const
+  void ByteOrderConverter::writeString(const std::string& val, Device* dest) const
   {
     dest->write(val.c_str(), val.length());
   };
@@ -170,7 +170,7 @@ namespace io
    * Constructor
    */
   VAXLittleEndianConverter::VAXLittleEndianConverter()
-  : EndianConverter()
+  : ByteOrderConverter()
   {}
   
   /**
@@ -181,9 +181,9 @@ namespace io
   /**
    * Return the enumeration value EndianConverter::VAXLittleEndian
    */
-  Format VAXLittleEndianConverter::format() const _OPENMA_NOEXCEPT
+  ByteOrder VAXLittleEndianConverter::byteOrder() const _OPENMA_NOEXCEPT
   {
-    return Format::VAXLittleEndian;
+    return ByteOrder::VAXLittleEndian;
   };
 
   /** 
@@ -422,7 +422,7 @@ namespace io
    * Constructor
    */
   IEEEBigEndianConverter::IEEEBigEndianConverter()
-  : EndianConverter()
+  : ByteOrderConverter()
   {}
 
   /**
@@ -433,9 +433,9 @@ namespace io
   /**
    * Return the enumeration value EndianConverter::IEEEBigEndian
    */
-  Format IEEEBigEndianConverter::format() const _OPENMA_NOEXCEPT
+  ByteOrder IEEEBigEndianConverter::byteOrder() const _OPENMA_NOEXCEPT
   {
-    return Format::IEEEBigEndian;
+    return ByteOrder::IEEEBigEndian;
   };
   
   /** 
@@ -674,7 +674,7 @@ namespace io
    * Constructor
    */
   IEEELittleEndianConverter::IEEELittleEndianConverter()
-  : EndianConverter()
+  : ByteOrderConverter()
   {}
 
   /**
@@ -685,9 +685,9 @@ namespace io
   /**
    * Return the enumeration value EndianConverter::IEEELittleEndian
    */
-  Format IEEELittleEndianConverter::format() const _OPENMA_NOEXCEPT
+  ByteOrder IEEELittleEndianConverter::byteOrder() const _OPENMA_NOEXCEPT
   {
-    return Format::IEEELittleEndian;
+    return ByteOrder::IEEELittleEndian;
   };
   
   /** 
@@ -938,16 +938,16 @@ namespace io
   BinaryStream::BinaryStream(Device* device)
   : mp_Pimpl(new BinaryStreamPrivate(device,nullptr))
   {
-    this->setEndianFormat(Format::Native);
+    this->setByteOrder(ByteOrder::Native);
   };
   
   /**
    * Constructor which uses the given endian format and return extracted values adapted to the endiannes of the machine. 
    */
-  BinaryStream::BinaryStream(Device* device, Format format)
+  BinaryStream::BinaryStream(Device* device, ByteOrder order)
   : mp_Pimpl(new BinaryStreamPrivate(device,nullptr))
   {
-    this->setEndianFormat(format);
+    this->setByteOrder(order);
   };
    
   /**
@@ -985,38 +985,38 @@ namespace io
   /**
    * Return the endian format used by the stream.
    */
-  Format BinaryStream::endianFormat() const _OPENMA_NOEXCEPT
+  ByteOrder BinaryStream::byteOrder() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->Converter->format();
+    return optr->Converter->byteOrder();
   };
   
   /**
    * Sets the endian format used by the stream.
    *
-   * @note You can use the enum value Format::NotApplicable. This deletes the format and set it to null. However, it is not recommended to do that as the stream would crash when trying to read/write data from/to a device.
+   * @note You can use the enum value ByteOrder::NotApplicable. This deletes the format and set it to null. However, it is not recommended to do that as the stream would crash when trying to read/write data from/to a device.
    */
-  void BinaryStream::setEndianFormat(Format format)
+  void BinaryStream::setByteOrder(ByteOrder order)
   {
     auto optr = this->pimpl();
     if (optr->Converter != 0)
     {  
-      if (optr->Converter->format() == format)
+      if (optr->Converter->byteOrder() == order)
         return;
       delete optr->Converter;
     }
-    switch (format)
+    switch (order)
     {
-    case Format::NotApplicable:
+    case ByteOrder::NotApplicable:
       optr->Converter = nullptr;
       break;
-    case Format::VAXLittleEndian:
+    case ByteOrder::VAXLittleEndian:
       optr->Converter = new VAXLittleEndianConverter;
       break;
-    case Format::IEEELittleEndian:
+    case ByteOrder::IEEELittleEndian:
       optr->Converter = new IEEELittleEndianConverter;
       break;
-    case Format::IEEEBigEndian:
+    case ByteOrder::IEEEBigEndian:
       optr->Converter = new IEEEBigEndianConverter;
       break;
     default: // Should be impossible

@@ -50,13 +50,13 @@ namespace ma
 namespace io
 {
   class Device;
-  class EndianConverter;
-  enum class Format;
+  class ByteOrderConverter;
+  enum class ByteOrder;
   
   class BinaryStreamPrivate
   {
   public:
-    BinaryStreamPrivate(Device* source, EndianConverter* converter);
+    BinaryStreamPrivate(Device* source, ByteOrderConverter* converter);
     virtual ~BinaryStreamPrivate() _OPENMA_NOEXCEPT;
     
     BinaryStreamPrivate(const BinaryStreamPrivate& ) = delete;
@@ -65,22 +65,22 @@ namespace io
     BinaryStreamPrivate& operator=(const BinaryStreamPrivate&& ) _OPENMA_NOEXCEPT = delete;
     
     Device* Source;
-    EndianConverter* Converter;
+    ByteOrderConverter* Converter;
   };
   
   // ----------------------------------------------------------------------- //
   
-  class EndianConverter
+  class ByteOrderConverter
   {
   public:
-    virtual ~EndianConverter() _OPENMA_NOEXCEPT = default;
+    virtual ~ByteOrderConverter() _OPENMA_NOEXCEPT = default;
     
-    EndianConverter(const EndianConverter& ) = delete;
-    EndianConverter(EndianConverter&& ) _OPENMA_NOEXCEPT = delete;
-    EndianConverter& operator=(const EndianConverter& ) = delete;
-    EndianConverter& operator=(EndianConverter&& ) _OPENMA_NOEXCEPT = delete;
+    ByteOrderConverter(const ByteOrderConverter& ) = delete;
+    ByteOrderConverter(ByteOrderConverter&& ) _OPENMA_NOEXCEPT = delete;
+    ByteOrderConverter& operator=(const ByteOrderConverter& ) = delete;
+    ByteOrderConverter& operator=(ByteOrderConverter&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual Format format() const _OPENMA_NOEXCEPT = 0;
+    virtual ByteOrder byteOrder() const _OPENMA_NOEXCEPT = 0;
     
     char readChar(Device* src) const;
     int8_t readI8(Device* src) const;
@@ -111,10 +111,10 @@ namespace io
      */
     
   protected:
-    EndianConverter();
+    ByteOrderConverter();
   };
   
-  class VAXLittleEndianConverter : public EndianConverter
+  class VAXLittleEndianConverter : public ByteOrderConverter
   {
   public:
     VAXLittleEndianConverter();
@@ -125,7 +125,7 @@ namespace io
     VAXLittleEndianConverter& operator=(const VAXLittleEndianConverter& ) = delete;
     VAXLittleEndianConverter& operator=(VAXLittleEndianConverter&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual Format format() const _OPENMA_NOEXCEPT final;
+    virtual ByteOrder byteOrder() const _OPENMA_NOEXCEPT final;
     
     virtual int16_t readI16(Device* src) const final;
     virtual uint16_t readU16(Device* src) const final;
@@ -143,7 +143,7 @@ namespace io
     virtual void writeFloat(float val, Device* dest) const final;
   };
 
-  class IEEELittleEndianConverter : public EndianConverter
+  class IEEELittleEndianConverter : public ByteOrderConverter
   {
   public:
     IEEELittleEndianConverter();
@@ -154,7 +154,7 @@ namespace io
     IEEELittleEndianConverter& operator=(const IEEELittleEndianConverter& ) = delete;
     IEEELittleEndianConverter& operator=(IEEELittleEndianConverter&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual Format format() const _OPENMA_NOEXCEPT final;
+    virtual ByteOrder byteOrder() const _OPENMA_NOEXCEPT final;
     
     virtual int16_t readI16(Device* src) const final;
     virtual uint16_t readU16(Device* src) const final;
@@ -172,7 +172,7 @@ namespace io
     virtual void writeFloat(float val, Device* dest) const final;
   };
 
-  class IEEEBigEndianConverter : public EndianConverter
+  class IEEEBigEndianConverter : public ByteOrderConverter
   {
   public:
     IEEEBigEndianConverter();
@@ -183,7 +183,7 @@ namespace io
     IEEEBigEndianConverter& operator=(const IEEEBigEndianConverter& ) = delete;
     IEEEBigEndianConverter& operator=(IEEEBigEndianConverter&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual Format format() const _OPENMA_NOEXCEPT final;
+    virtual ByteOrder byteOrder() const _OPENMA_NOEXCEPT final;
     
     virtual int16_t readI16(Device* src) const final;
     virtual uint16_t readU16(Device* src) const final;

@@ -70,7 +70,7 @@ namespace io
     enum class Encoding : int {Text = 0x01, Binary, Mixed = Text|Binary};
     using EncodingFormat = HandlerOption<Encoding>;
     
-    using ByteOrder = Format;
+    using ByteOrder = ByteOrder;
     using ByteOrderFormat = HandlerOption<ByteOrder>;
     
     enum class DataStorage : int {NotApplicable, Integer, Float};

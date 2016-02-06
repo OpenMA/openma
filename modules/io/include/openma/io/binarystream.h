@@ -48,7 +48,7 @@ namespace ma
 namespace io
 {
   class Device;
-  enum class Format;
+  enum class ByteOrder;
   
   class BinaryStreamPrivate;
   
@@ -58,7 +58,7 @@ namespace io
     
   public:
     BinaryStream(Device* device = 0);
-    BinaryStream(Device* device, Format format);
+    BinaryStream(Device* device, ByteOrder format);
     ~BinaryStream() _OPENMA_NOEXCEPT;
     
     BinaryStream(const BinaryStream& ) = delete;
@@ -69,8 +69,8 @@ namespace io
     Device* device() const _OPENMA_NOEXCEPT;
     void setDevice(Device* device) _OPENMA_NOEXCEPT;
     
-    Format endianFormat() const _OPENMA_NOEXCEPT;
-    void setEndianFormat(Format format);
+    ByteOrder byteOrder() const _OPENMA_NOEXCEPT;
+    void setByteOrder(ByteOrder format);
     
     char readChar();
     void readChar(size_t n, char* values);

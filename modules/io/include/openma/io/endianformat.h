@@ -41,7 +41,7 @@ namespace ma
 {
 namespace io
 {
-  enum class Format : int
+  enum class ByteOrder : int
   {
     NotApplicable,
     VAXLittleEndian,
@@ -60,28 +60,28 @@ namespace io
   };
 
   /**
-   * @enum Format
+   * @enum ByteOrder
    * Enums used to specify the endian format for the converter integrated in a BinaryStream.
    * @ingroup openma_io
    */
   /**
-   * @var Format Format::NotApplicable
+   * @var ByteOrder ByteOrder::NotApplicable
    * Enum value used to mention that no endian format is applicable. This value would be used only to inform and not to set.
    */
   /**
-   * @var Format Format::VAXLittleEndian
+   * @var ByteOrder ByteOrder::VAXLittleEndian
    * Enum value representing the VAX architecture with little endian byte interpretation (DEC processor).
    */
   /**
-   * @var Format Format::IEEELittleEndian
+   * @var ByteOrder ByteOrder::IEEELittleEndian
    * Enum value representing the IEEE architecture with little endian byte interpretation (Intel processor).
    */
   /**
-   * @var Format Format::IEEEBigEndian
+   * @var ByteOrder ByteOrder::IEEEBigEndian
    * Enum value representing the IEEE architecture with big endian byte interpretation (MIPS processor).
    */
   /**
-   * @var Format Format::Native
+   * @var ByteOrder ByteOrder::Native
    * Convenient enum value which let the compiler chooses the default architecture (i.e. IEEELittleEndian, VAXLittleEndian, IEEEBigEndian)..
    */
 };
