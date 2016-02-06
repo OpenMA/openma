@@ -37,7 +37,6 @@
 
 #include "openma/io_export.h"
 #include "openma/io/enums.h"
-#include "openma/io/handleroption.h"
 #include "openma/base/opaque.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 #include "openma/base/exception.h"
@@ -93,18 +92,10 @@ namespace io
     Device* device() const _OPENMA_NOEXCEPT;
     void setDevice(Device* device) _OPENMA_NOEXCEPT;
     
-    std::vector<const char*> availableOptions() const _OPENMA_NOEXCEPT;
-    std::vector<const char*> availableOptionChoices(const char* option) const _OPENMA_NOEXCEPT;
-    
-    template <typename O> typename O::ValueType option() const _OPENMA_NOEXCEPT;
-    template <typename O, typename V> void setOption(const V& value) _OPENMA_NOEXCEPT;
-    
     Error errorCode() const _OPENMA_NOEXCEPT;
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;
   
   protected:
-    template <typename V, V v> struct stringify_option_value;
-    
     class FormatError : public Exception
     {
     public:
@@ -115,9 +106,6 @@ namespace io
     
     Handler(HandlerPrivate& pimpl) _OPENMA_NOEXCEPT;
     
-    void option(const char* name, void* value) const _OPENMA_NOEXCEPT;
-    void setOption(const char* name, const void* value) _OPENMA_NOEXCEPT;
-    
     void setError(Error code = Error::None, const std::string& msg = "") _OPENMA_NOEXCEPT;
     
     virtual Signature validateSignature() const _OPENMA_NOEXCEPT = 0;
@@ -126,53 +114,6 @@ namespace io
     
     std::unique_ptr<HandlerPrivate> mp_Pimpl;
   };
-  
-  // ----------------------------------------------------------------------- //
-  
-  template <typename O>
-  typename O::ValueType Handler::option() const _OPENMA_NOEXCEPT
-  {
-    typename O::ValueType value;
-    this->option(O::name(),static_cast<void*>(&value));
-    return value;
-  };
-  
-  template <typename O, typename V>
-  inline void Handler::setOption(const V& value) _OPENMA_NOEXCEPT
-  {
-    static_assert(std::is_same<typename O::ValueType,V>::value, "The type of the given value does not correspond to the type of the option's value.");
-    this->setOption(O::name(),static_cast<const void*>(&value));
-  };
-  
-  // ----------------------------------------------------------------------- //
-  
-  inline _OPENMA_CONSTEXPR Handler::Capability operator| (Handler::Capability lhs, Handler::Capability rhs)
-  {
-    return static_cast<Handler::Capability>(static_cast<int>(lhs) | static_cast<int>(rhs));
-  };
-
-  inline _OPENMA_CONSTEXPR Handler::Capability operator& (Handler::Capability lhs, Handler::Capability rhs)
-  {
-    return static_cast<Handler::Capability>(static_cast<int>(lhs) & static_cast<int>(rhs));
-  };
-  
-  // ----------------------------------------------------------------------- //
-  
-  OPENMA_STRINGIFY_OPTION_NAME(Handler::EncodingFormat, "Encoding");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::EncodingFormat, Handler::Encoding::Binary, "Binary");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::EncodingFormat, Handler::Encoding::Text, "Text");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::EncodingFormat, Handler::Encoding::Mixed, "Mixed");
-  
-  OPENMA_STRINGIFY_OPTION_NAME(Handler::ByteOrderFormat, "ByteOrder");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::ByteOrderFormat, Handler::ByteOrder::VAXLittleEndian, "VAXLittleEndian");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::ByteOrderFormat, Handler::ByteOrder::IEEELittleEndian, "IEEELittleEndian");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::ByteOrderFormat, Handler::ByteOrder::IEEEBigEndian, "IEEEBigEndian");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::ByteOrderFormat, Handler::ByteOrder::NotApplicable, "NotApplicable");
-  
-  OPENMA_STRINGIFY_OPTION_NAME(Handler::DataStorageFormat, "DataStorage");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::DataStorageFormat, Handler::DataStorage::NotApplicable, "NotApplicable");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::DataStorageFormat, Handler::DataStorage::Integer, "Integer");
-  OPENMA_STRINGIFY_OPTION_VALUE(Handler::DataStorageFormat, Handler::DataStorage::Float, "Float");
 };
 };
 

@@ -357,24 +357,6 @@ namespace io
   };
   
   /**
-   * Return the available options furnished with this handler.
-   */
-  std::vector<const char*> Handler::availableOptions() const _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    return optr->availableOptions();
-  };
-  
-  /**
-   * Return the available choice for the requested @a option.
-   */
-  std::vector<const char*> Handler::availableOptionChoices(const char* option) const _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    return optr->availableOptionChoices(option);
-  };
-  
-  /**
    * Returns the current error code.
    */
   Handler::Error Handler::errorCode() const _OPENMA_NOEXCEPT
@@ -434,34 +416,6 @@ namespace io
   Handler::Handler(HandlerPrivate& pimpl) _OPENMA_NOEXCEPT
   : mp_Pimpl(&pimpl)
   {};
-  
-  /**
-   * @fn template <typename O> typename O::ValueType Handler::option() const _OPENMA_NOEXCEPT;
-   * Returns the options based on the static template parameter @a O.
-   */
-  
-  /**
-   * @fn template <typename O, typename V> inline void Handler::setOption(const V& value) _OPENMA_NOEXCEPT;
-   * Sets the options based on the static template parameter @a O and the given @a value.
-   */
-  
-  /**
-   * Retrieves the given option's value base on its @a name. The result is set in @a value.
-   */
-  void Handler::option(const char* name, void* value) const _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    optr->option(name,value);
-  };
-
-  /**
-   * Sets @a value to the option @a name.
-   */
-  void Handler::setOption(const char* name, const void* value) _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    optr->setOption(name,value);
-  };
   
   /**
    * Set a code and a detailed message for an error which happened during the reading or writing of a device.
