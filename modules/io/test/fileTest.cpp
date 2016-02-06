@@ -7,7 +7,7 @@
 
 CXXTEST_SUITE(FileTest)
 {
-  CXXTEST_TEST(DefaultConstructor)
+  CXXTEST_TEST(defaultConstructor)
   {
     ma::io::File file;
     TS_ASSERT_EQUALS(file.isOpen(), false);
@@ -18,7 +18,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.exceptions(), ma::io::File::State::Good);
   };
   
-  CXXTEST_TEST(SetExceptions)
+  CXXTEST_TEST(setExceptions)
   {
     ma::io::File file;
     file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
@@ -30,7 +30,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.exceptions(), ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
   };
   
-  CXXTEST_TEST(CloseNoFile)
+  CXXTEST_TEST(closeNoFile)
   {
     ma::io::File file;
     file.close();
@@ -41,7 +41,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(CloseNoFileException)
+  CXXTEST_TEST(closeNoFileException)
   {
     ma::io::File file;
     file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
@@ -53,7 +53,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(SecondConstructorRead)
+  CXXTEST_TEST(secondConstructorRead)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -70,7 +70,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(SecondConstructorWrongFilenameRead)
+  CXXTEST_TEST(secondConstructorWrongFilenameRead)
   {
     ma::io::File file;
     file.open("Wrong.test", ma::io::File::Mode::In);
@@ -81,7 +81,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(SecondConstructorWriteNewFile)
+  CXXTEST_TEST(secondConstructorWriteNewFile)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
@@ -100,7 +100,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(SecondConstructorWriteExistedFile)
+  CXXTEST_TEST(secondConstructorWriteExistedFile)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::File::Mode::Out);
@@ -117,7 +117,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(OpenReadMode)
+  CXXTEST_TEST(openReadMode)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -134,7 +134,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(OpenWriteMode)
+  CXXTEST_TEST(openWriteMode)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
@@ -153,7 +153,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(OpenWriteModeFromExistingFile)
+  CXXTEST_TEST(openWriteModeFromExistingFile)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::File::Mode::Out);
@@ -170,7 +170,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(Read)
+  CXXTEST_TEST(read)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -191,7 +191,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(ReadNoFile)
+  CXXTEST_TEST(readNoFile)
   {
     ma::io::File file;
     char buf[3] = {0};
@@ -203,7 +203,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(SeekBegin)
+  CXXTEST_TEST(seekBegin)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -225,7 +225,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(SeekEnd)
+  CXXTEST_TEST(seekEnd)
   {
     ma::io::File file;
     char buf[1] = {0};
@@ -257,7 +257,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(SeekBeginInvalid)
+  CXXTEST_TEST(seekBeginInvalid)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -280,7 +280,7 @@ CXXTEST_SUITE(FileTest)
     file.close();
   };
   
-  CXXTEST_TEST(SeekEndInvalid)
+  CXXTEST_TEST(seekEndInvalid)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -306,7 +306,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(SeekEndInvalidBis)
+  CXXTEST_TEST(seekEndInvalidBis)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -329,7 +329,7 @@ CXXTEST_SUITE(FileTest)
     file.close();
   };
   
-  CXXTEST_TEST(SeekCurrentInvalidForward)
+  CXXTEST_TEST(seekCurrentInvalidForward)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -355,7 +355,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), true);
   };
   
-  CXXTEST_TEST(SeekCurrentInvalidBackward)
+  CXXTEST_TEST(seekCurrentInvalidBackward)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -378,7 +378,7 @@ CXXTEST_SUITE(FileTest)
     file.close();
   };
   
-  CXXTEST_TEST(SeekCurrentInvalidBackwardBis)
+  CXXTEST_TEST(seekCurrentInvalidBackwardBis)
   {
     ma::io::File file;
     file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
@@ -400,7 +400,7 @@ CXXTEST_SUITE(FileTest)
     file.close();
   };
   
-  CXXTEST_TEST(ReadEOFException)
+  CXXTEST_TEST(readEOFException)
   {
     ma::io::File file;
     file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
@@ -413,7 +413,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_THROWS(file.read(buf,1), ma::io::File::Failure);
   };
   
-  CXXTEST_TEST(Write)
+  CXXTEST_TEST(write)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
@@ -424,7 +424,7 @@ CXXTEST_SUITE(FileTest)
     file.close();
   };
   
-  CXXTEST_TEST(SeekWrite)
+  CXXTEST_TEST(seekWrite)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
@@ -455,7 +455,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
-  CXXTEST_TEST(SuperSeekWrite)
+  CXXTEST_TEST(superSeekWrite)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
@@ -484,28 +484,28 @@ CXXTEST_SUITE(FileTest)
 };
 
 CXXTEST_SUITE_REGISTRATION(FileTest)
-CXXTEST_TEST_REGISTRATION(FileTest, DefaultConstructor)
-CXXTEST_TEST_REGISTRATION(FileTest, SetExceptions)
-CXXTEST_TEST_REGISTRATION(FileTest, CloseNoFile)
-CXXTEST_TEST_REGISTRATION(FileTest, CloseNoFileException)
-CXXTEST_TEST_REGISTRATION(FileTest, SecondConstructorRead)
-CXXTEST_TEST_REGISTRATION(FileTest, SecondConstructorWrongFilenameRead)
-CXXTEST_TEST_REGISTRATION(FileTest, SecondConstructorWriteNewFile)
-CXXTEST_TEST_REGISTRATION(FileTest, SecondConstructorWriteExistedFile)
-CXXTEST_TEST_REGISTRATION(FileTest, OpenReadMode)
-CXXTEST_TEST_REGISTRATION(FileTest, OpenWriteMode)
-CXXTEST_TEST_REGISTRATION(FileTest, OpenWriteModeFromExistingFile)
-CXXTEST_TEST_REGISTRATION(FileTest, Read)
-CXXTEST_TEST_REGISTRATION(FileTest, ReadNoFile)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekBegin)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekEnd)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekBeginInvalid)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekEndInvalid)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekEndInvalidBis)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekCurrentInvalidForward)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekCurrentInvalidBackward)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekCurrentInvalidBackwardBis)
-CXXTEST_TEST_REGISTRATION(FileTest, ReadEOFException)
-CXXTEST_TEST_REGISTRATION(FileTest, Write)
-CXXTEST_TEST_REGISTRATION(FileTest, SeekWrite)
-CXXTEST_TEST_REGISTRATION(FileTest, SuperSeekWrite)
+CXXTEST_TEST_REGISTRATION(FileTest, defaultConstructor)
+CXXTEST_TEST_REGISTRATION(FileTest, setExceptions)
+CXXTEST_TEST_REGISTRATION(FileTest, closeNoFile)
+CXXTEST_TEST_REGISTRATION(FileTest, closeNoFileException)
+CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorRead)
+CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWrongFilenameRead)
+CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWriteNewFile)
+CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWriteExistedFile)
+CXXTEST_TEST_REGISTRATION(FileTest, openReadMode)
+CXXTEST_TEST_REGISTRATION(FileTest, openWriteMode)
+CXXTEST_TEST_REGISTRATION(FileTest, openWriteModeFromExistingFile)
+CXXTEST_TEST_REGISTRATION(FileTest, read)
+CXXTEST_TEST_REGISTRATION(FileTest, readNoFile)
+CXXTEST_TEST_REGISTRATION(FileTest, seekBegin)
+CXXTEST_TEST_REGISTRATION(FileTest, seekEnd)
+CXXTEST_TEST_REGISTRATION(FileTest, seekBeginInvalid)
+CXXTEST_TEST_REGISTRATION(FileTest, seekEndInvalid)
+CXXTEST_TEST_REGISTRATION(FileTest, seekEndInvalidBis)
+CXXTEST_TEST_REGISTRATION(FileTest, seekCurrentInvalidForward)
+CXXTEST_TEST_REGISTRATION(FileTest, seekCurrentInvalidBackward)
+CXXTEST_TEST_REGISTRATION(FileTest, seekCurrentInvalidBackwardBis)
+CXXTEST_TEST_REGISTRATION(FileTest, readEOFException)
+CXXTEST_TEST_REGISTRATION(FileTest, write)
+CXXTEST_TEST_REGISTRATION(FileTest, seekWrite)
+CXXTEST_TEST_REGISTRATION(FileTest, superSeekWrite)

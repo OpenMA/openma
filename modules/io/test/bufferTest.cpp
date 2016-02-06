@@ -14,7 +14,7 @@ std::array<char,N> int2char(std::array<int,N>&& data)
 
 CXXTEST_SUITE(BufferTest)
 {
-  CXXTEST_TEST(ContinousBuffer)
+  CXXTEST_TEST(continousBuffer)
   {
     const auto array = int2char<41>({{0xFB, 0x01, 0x53, 0x43, 0x41, 0x4C, 0x45, 0x22, 0x00, 0x04, 0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F, 0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73, 0x63, 0x61, 0x6C, 0x65, 0x20, 0x66, 0x61, 0x63, 0x74, 0x6F, 0x72}});
     ma::io::Buffer buffer;
@@ -34,7 +34,7 @@ CXXTEST_SUITE(BufferTest)
     TS_ASSERT(buffer.hasFailure());
   };
   
-  CXXTEST_TEST(ContinousBuffer_EndException)
+  CXXTEST_TEST(continousBufferEndException)
   {
     auto array = int2char<41>({{0xFB, 0x01, 0x53, 0x43, 0x41, 0x4C, 0x45, 0x22, 0x00, 0x04, 0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F, 0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73, 0x63, 0x61, 0x6C, 0x65, 0x20, 0x66, 0x61, 0x63, 0x74, 0x6F, 0x72}});
     ma::io::Buffer buffer;
@@ -46,7 +46,7 @@ CXXTEST_SUITE(BufferTest)
     TS_ASSERT_THROWS_EQUALS(buffer.read(test,20), const ma::io::Buffer::Failure &f, f.what(), std::string("ma::io::Device::clear"));
   };
   
-  CXXTEST_TEST(ChunkBuffer)
+  CXXTEST_TEST(chunkBuffer)
   {
     auto array = int2char<50>(
       {{0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73,    // #2
@@ -78,7 +78,7 @@ CXXTEST_SUITE(BufferTest)
     TS_ASSERT(buffer.atEnd());
   };
   
-  CXXTEST_TEST(ChunkBuffer_Seek)
+  CXXTEST_TEST(chunkBufferSeek)
   {
     auto array = int2char<50>(
       {{0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73,    // #2
@@ -112,7 +112,7 @@ CXXTEST_SUITE(BufferTest)
     TS_ASSERT(!buffer.atEnd());
   };
   
-  CXXTEST_TEST(ChunkBuffer_Write)
+  CXXTEST_TEST(chunkBufferWrite)
   {
     char data[50] = {0};
     std::vector<size_t> chunkIds({2,4,0,3,1});
@@ -141,8 +141,8 @@ CXXTEST_SUITE(BufferTest)
 };
 
 CXXTEST_SUITE_REGISTRATION(BufferTest)
-CXXTEST_TEST_REGISTRATION(BufferTest, ContinousBuffer)
-CXXTEST_TEST_REGISTRATION(BufferTest, ContinousBuffer_EndException)
-CXXTEST_TEST_REGISTRATION(BufferTest, ChunkBuffer)
-CXXTEST_TEST_REGISTRATION(BufferTest, ChunkBuffer_Seek)
-CXXTEST_TEST_REGISTRATION(BufferTest, ChunkBuffer_Write)
+CXXTEST_TEST_REGISTRATION(BufferTest, continousBuffer)
+CXXTEST_TEST_REGISTRATION(BufferTest, continousBufferEndException)
+CXXTEST_TEST_REGISTRATION(BufferTest, chunkBuffer)
+CXXTEST_TEST_REGISTRATION(BufferTest, chunkBufferSeek)
+CXXTEST_TEST_REGISTRATION(BufferTest, chunkBufferWrite)
