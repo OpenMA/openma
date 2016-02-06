@@ -98,8 +98,6 @@ namespace io
     
     template <typename O> typename O::ValueType option() const _OPENMA_NOEXCEPT;
     template <typename O, typename V> void setOption(const V& value) _OPENMA_NOEXCEPT;
-    // const char* option(const const char* name) const _OPENMA_NOEXCEPT;
-    // void setOption(const char* name, const char* value) _OPENMA_NOEXCEPT;
     
     Error errorCode() const _OPENMA_NOEXCEPT;
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;
