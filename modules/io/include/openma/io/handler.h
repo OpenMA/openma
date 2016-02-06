@@ -62,19 +62,6 @@ namespace io
     OPENMA_DECLARE_PIMPL_ACCESSOR(Handler)
     
   public:
-    enum class Signature : int {Valid, Invalid, NotAvailable};
-    enum class Error : int {None, Device, UnsupportedFormat, InvalidData, Unexpected, Unknown};
-    enum class Capability : int {CanRead = 0x01, CanWrite = 0x02};
-    
-    enum class Encoding : int {Text = 0x01, Binary, Mixed = Text|Binary};
-    using EncodingFormat = HandlerOption<Encoding>;
-    
-    using ByteOrder = ByteOrder;
-    using ByteOrderFormat = HandlerOption<ByteOrder>;
-    
-    enum class DataStorage : int {NotApplicable, Integer, Float};
-    using DataStorageFormat = HandlerOption<DataStorage>;
-    
     virtual ~Handler() _OPENMA_NOEXCEPT;
     
     Handler() = delete;

@@ -50,7 +50,7 @@ namespace ma
 namespace io
 {
   HandlerPrivate::HandlerPrivate()
-  : Device(nullptr), ErrorCode(Handler::Error::None), ErrorMessage()
+  : Device(nullptr), ErrorCode(Error::None), ErrorMessage()
   {};
   
   HandlerPrivate::~HandlerPrivate() _OPENMA_NOEXCEPT = default; // Cannot be inlined
@@ -92,122 +92,13 @@ namespace io
    */
   
   /**
-   * @enum Handler::Signature
-   * Constant values to notify if the content of the handle has a valid/invalid signature.
-   */
-  /**
-   * @var Handler::Signature Handler::Valid
-   * Detected signature is valid
-   */
-  /**
-   * @var Handler::Signature Handler::Invalid
-   * Detected signature is not valid
-   */
-  /**
-   * @var Handler::Signature Handler::NotAvailable
-   * Not signature exists for this handler.
-   */
-  
-  /**
-   * @enum Handler::Error
-   * Predefined error code used to explain possible errors during the reading/writing of the data.
-   */
-  /**
-   * @var Handler::Error Handler::None
-   * No error
-   */
-  /**
-   * @var Handler::Error Handler::Device
-   * Error related to the device.
-   */
-  /**
-   * @var Handler::Error Handler::UnsupportedFormat
-   * The current handler does not support the format requested
-   */
-  /**
-   * @var Handler::Error Handler::InvalidData
-   * The given data cannot be used with this handler
-   */
-  /**
-   * @var Handler::Error Handler::Unexpected
-   * Unexpected error but at least there is a message with it
-   */
-  /**
-   * @var Handler::Error Handler::Unknown
-   * Unexpected error but at least it was catched.
-   */
-  
-  /**
-   * @enum Handler::Capability
-   * Inform on the capability to read/write data from/to a device.
-   */
-  /**
-   * @var Handler::Capability Handler::CanRead
-   * Inform that the handker can read data from a device
-   */
-  /**
-   * @var Hander::Capability Handler::CanWrite
-   * Inform that the handker can write data to a device
-   */
-  
-  /**
-   * @enum Handler::Encoding
-   * Inform on the encoding format used by the handler.
-   */
-  /**
-   * @var Handler::Encoding Handler::Text
-   * The handler is for text data.
-   */
-  /**
-   * @var Hander::Encoding Handler::Binary
-   * The handler is for binary data.
-   */
-  /**
-   * @var Hander::Encoding Handler::Mixed
-   * The handler is for text and binary data.
-   */
-  
-  /**
-   * @typedef Handler::EncodingFormat
-   * Type related to the option used to get/set the encoding format of the handler
-   */
-  
-  /**
-   * @typedef Handler::ByteOrder
-   * Alias for the byte order used inside the file.
-   */
-   
-  /**
-   * @typedef Handler::ByteOrderFormat
-   * Type related to the option used to get/set the byte order format of the handler
-   */
-   
-  /**
-   * @enum Handler::DataStorage
-   * Inform on the data storage used by the handler. This is mostly for handler using a binary encoding format
-   */
-  /**
-   * @var Handler::DataStorage Handler::NotApplicable
-   * The data storage information is not applicable for this handler.
-   */
-  /**
-   * @var Hander::DataStorage Handler::Integer
-   * Data are stored as integer values
-   */
-  /**
-   * @var Hander::DataStorage Handler::Float
-   * Data are stored as real values
-   */
-   
-  /**
-   * @typedef Handler::DataStorageFormat
-   * Type related to the option used to get/set the data storage format of the handler
-   */
-  
-  /**
    * Destructor (default)
    */
   Handler::~Handler() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Returns the capability of the handler to read data from a device. By default this method returns false.
+   */
   bool Handler::canRead() const _OPENMA_NOEXCEPT
   {
     return false;
@@ -365,7 +256,7 @@ namespace io
   /**
    * Returns the current error code.
    */
-  Handler::Error Handler::errorCode() const _OPENMA_NOEXCEPT
+  Error Handler::errorCode() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->ErrorCode;
@@ -385,7 +276,7 @@ namespace io
    * A signature is generaly a keyword at the beginning of the data that help to determine the content. For example, if the device is a File, this way is safer than relying on the file extension.
    * Internaly this methods use validateSignature(). Each inheriting handler must overload the method validateSignature().
    */
-  Handler::Signature Handler::detectSignature() const _OPENMA_NOEXCEPT
+  Signature Handler::detectSignature() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     if (optr->Device == nullptr)

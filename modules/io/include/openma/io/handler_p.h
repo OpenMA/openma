@@ -50,6 +50,7 @@ namespace ma
 namespace io
 {
   class Device;
+  enum class Error;
   
   class HandlerPrivate
   {
@@ -69,7 +70,7 @@ namespace io
     virtual void setOption(const char* name, const void* value) _OPENMA_NOEXCEPT = 0;
     
     Device* Device;
-    Handler::Error ErrorCode;
+    Error ErrorCode;
     std::string ErrorMessage;
   };
 };

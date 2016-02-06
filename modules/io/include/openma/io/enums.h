@@ -36,6 +36,7 @@
 #define __openma_io_enums
 
 #include "openma/config.h"
+#include "openma/base/macros.h" // _OPENMA_CONSTEXPR
 
 namespace ma
 {
@@ -84,6 +85,89 @@ namespace io
    * @var ByteOrder ByteOrder::Native
    * Convenient enum value which let the compiler chooses the default architecture (i.e. IEEELittleEndian, VAXLittleEndian, IEEEBigEndian)..
    */
+  
+  enum class Signature : int {Valid, Invalid, NotAvailable};
+  
+  /**
+   * @enum Signature
+   * Constant values to notify if the content of the handle has a valid/invalid signature.
+   */
+  /**
+   * @var Signature Signature::Valid
+   * Detected signature is valid
+   */
+  /**
+   * @var Signature Signature::Invalid
+   * Detected signature is not valid
+   */
+  /**
+   * @var Signature Signature::NotAvailable
+   * Not signature exists for this handler.
+   */
+  
+  enum class Error : int {None, Device, UnsupportedFormat, InvalidData, Unexpected, Unknown};
+  
+  /**
+   * @enum Error
+   * Predefined error code used to explain possible errors during the reading/writing of the data.
+   */
+  /**
+   * @var Error Error::None
+   * No error
+   */
+  /**
+   * @var Error Error::Device
+   * Error related to the device.
+   */
+  /**
+   * @var Error Error::UnsupportedFormat
+   * The current handler does not support the format requested
+   */
+  /**
+   * @var Error Error::InvalidData
+   * The given data cannot be used with this handler
+   */
+  /**
+   * @var Error Error::Unexpected
+   * Unexpected error but at least there is a message with it
+   */
+  /**
+   * @var Error Error::Unknown
+   * Unexpected error but at least it was catched.
+   */
+  
+  enum class Capability : int {CanRead = 0x01, CanWrite = 0x02, CanReadAndWrite = CanRead | CanWrite};
+  
+  /**
+   * @enum Signature::Capability
+   * Inform on the capability to read/write data from/to a device.
+   */
+  /**
+   * @var Signature::Capability Signature::CanRead
+   * Inform that the handker can read data from a device
+   */
+  /**
+   * @var Hander::Capability Signature::CanWrite
+   * Inform that the handker can write data to a device
+   */
+  
+  /**
+   * Bitwise or operator for Capability
+   * @relates Handler
+   */
+  inline _OPENMA_CONSTEXPR Capability operator| (Capability lhs, Capability rhs)
+  {
+    return static_cast<Capability>(static_cast<int>(lhs) | static_cast<int>(rhs));
+  };
+
+  /**
+   * Bitwise and operator for Capability
+   * @relates Handler
+   */
+  inline _OPENMA_CONSTEXPR Capability operator& (Capability lhs, Capability rhs)
+  {
+    return static_cast<Capability>(static_cast<int>(lhs) & static_cast<int>(rhs));
+  };
 };
 };
 
