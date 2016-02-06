@@ -74,11 +74,13 @@ namespace io
    * This interface is the core to implement data reader/writer (e.g. trials, models).
    * Several methods and mecanisms are already implemented to facilitate the inclusion
    * of new formats. For example, it is not necessary to manage exception as this is done internaly.
-   * Some methods are available to set errors, retrieve them. The extraction of handler's options 
-   * (see Option class) is implemented. In fact, only three methods must be implemented for inherting handler:
+   * Some methods are available to set errors and retrieve them. The extraction of handler's class 
+   * is implemented. In fact, only four (or five) methods must be implemented for inherting handler:
    *  - readDevice() method: extract data from a device and set it into a node
    *  - writeDevice() method: write data to a given device
    *  - validateSignature() method: test if the read device has a signature valid for this handler.
+   *  - canRead() method: to inform on the capability of the handler to read data from a device
+   *  - canWrite() method: to inform on the capability of the handler to write data to a device
    *
    * @todo Give an example for the implementation of a handler.
    *
@@ -206,13 +208,17 @@ namespace io
    * Destructor (default)
    */
   Handler::~Handler() _OPENMA_NOEXCEPT = default;
+  bool Handler::canRead() const _OPENMA_NOEXCEPT
+  {
+    return false;
+  };
   
   /**
-   * By default, this is assumed that each handler can read only.
+   * Returns the capability of the handler to write data to a device. By default this method returns false.
    */
-  Handler::Capability Handler::capability() const _OPENMA_NOEXCEPT
+  bool Handler::canWrite() const _OPENMA_NOEXCEPT
   {
-    return Capability::CanRead;
+    return false;
   };
   
   /**

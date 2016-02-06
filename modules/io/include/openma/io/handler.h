@@ -83,7 +83,8 @@ namespace io
     Handler& operator=(const Handler& ) = delete;
     Handler& operator=(const Handler&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual Capability capability() const _OPENMA_NOEXCEPT;
+    virtual bool canRead() const _OPENMA_NOEXCEPT;
+    virtual bool canWrite() const _OPENMA_NOEXCEPT;
 
     Signature detectSignature() const _OPENMA_NOEXCEPT;
     bool read(Node* output);
