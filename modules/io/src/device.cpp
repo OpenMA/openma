@@ -48,7 +48,7 @@ namespace ma
 namespace io
 {
   DevicePrivate::DevicePrivate()
-  : Name(nullptr), State(Device::State::Good), Exception(Device::State::Good)
+  : Name(nullptr), Status(State::Good), Exception(State::Good)
   {};
   
   DevicePrivate::~DevicePrivate() _OPENMA_NOEXCEPT
@@ -87,69 +87,6 @@ namespace io
    */
   
   /**
-   * @enum Device::Mode
-   * Details on the way to use the device.
-   */
-  /**
-   * @var Device::Mode Device::In
-   * Use the device to read data from it.
-   */
-  /**
-   * @var Device::Mode Device::Out
-   * Use the device to write data from it.
-   */
-  /**
-   * @var Device::Mode Device::Append
-   * Set the internal pointer used by the device at the end.
-   */
-  /**
-   * @var Device::Mode Device::Truncate
-   * Erase the content of the device.
-   */
-  /**
-   * @var Device::Mode Device::End
-   * Set the internal pointer used by the device at the begining. 
-   */
-  
-  /**
-   * @enum Device::Origin
-   * Used as anchor for the seek() method.
-   */
-  /**
-   * @var Device::Origin Device::Begin
-   * Start at the beginning of the internal buffer.
-   */
-  /**
-   * @var Device::Origin Device::Current
-   * Start at the current position in the internal buffer.
-   */
-  /**
-   * @var Device::Origin Device::End
-   * Start at the end of the internal buffer.
-   */
-  
-  /**
-   * @enum Device::State
-   * Internal state of the device. This 
-   */
-  /**
-   * @var Device::State Device::End
-   * The device is at the end of its internal buffer.
-   */
-  /**
-   * @var Device::State Device::Fail
-   * A failure happened within the device.
-   */
-  /**
-   * @var Device::State Device::Error
-   * An unexpected error happened within the device.
-   */
-  /**
-   * @var Device::State Device::Good
-   * Everything is fine!
-   */
-  
-  /**
    * @typedef Device::Offset
    * Numerical type used to shift the position of the internal buffer pointer.
    */
@@ -176,7 +113,7 @@ namespace io
   bool Device::isGood() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->State == State::Good;
+    return optr->Status == State::Good;
   };
   
   /**
@@ -185,7 +122,7 @@ namespace io
   bool Device::atEnd() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return (optr->State & State::End) == State::End;
+    return (optr->Status & State::End) == State::End;
   };
  
   /**
@@ -194,7 +131,7 @@ namespace io
   bool Device::hasFailure() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return (optr->State & (State::Fail | State::Error)) != State::Good;
+    return (optr->Status & (State::Fail | State::Error)) != State::Good;
   };
  
   /**
@@ -203,16 +140,16 @@ namespace io
   bool Device::hasError() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return (optr->State & State::Error) == State::Error;
+    return (optr->Status & State::Error) == State::Error;
   };
  
   /**
    * Returns true current state of the device.
    */
-  Device::State Device::state() const _OPENMA_NOEXCEPT
+  State Device::state() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->State;
+    return optr->Status;
   };
  
   /**
@@ -220,7 +157,7 @@ namespace io
    * The given @a state is added to the current state.
    * Use the method Clear() if you want to reset the state of the device.
    */
-  void Device::setState(Device::State state)
+  void Device::setState(State state)
   {
     this->clear(this->state() | state);
   };
@@ -230,10 +167,10 @@ namespace io
    * If the given state @a flags meets some part of the exception's mask, then a Failure exception is thrown.
    * @note Setting the state to State::Good will reset the possible current failure/errors.
    */
-  void Device::clear(Device::State state)
+  void Device::clear(State state)
   {
     auto optr = this->pimpl();
-    optr->State = state;
+    optr->Status = state;
     if ((this->exceptions() & this->state()) != State::Good)
       throw Failure("ma::io::Device::clear");
   };
@@ -241,7 +178,7 @@ namespace io
   /**
    * Returns the mask used to possibly throws an exception.
    */
-  Device::State Device::exceptions() _OPENMA_NOEXCEPT
+  State Device::exceptions() _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Exception;
@@ -251,11 +188,11 @@ namespace io
    * Sets the mask which will be used to throw an exceptions.
    * Setting the mask to State::Good will cancel the use of exception with the device. 
    */
-  void Device::setExceptions(Device::State mask)
+  void Device::setExceptions(State mask)
   {
     auto optr = this->pimpl();
     optr->Exception = mask;
-    this->clear(optr->State);
+    this->clear(optr->Status);
   };
   
   /**

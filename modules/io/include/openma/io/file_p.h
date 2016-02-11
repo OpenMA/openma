@@ -84,9 +84,6 @@ namespace io
   class MemoryMappedBuffer
   {
   public:
-    using State = Device::State;
-    using Origin = Device::Origin;
-    using Mode = Device::Mode;
     using Size = Device::Size;
     using Offset = Device::Offset;
     using Position = Device::Position;

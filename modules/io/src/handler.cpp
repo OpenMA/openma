@@ -35,6 +35,7 @@
 #include "openma/io/handler.h"
 #include "openma/io/handler_p.h"
 #include "openma/io/device.h"
+#include "openma/io/enums.h"
 #include "openma/base/node.h"
 
 #include <iostream>
@@ -50,7 +51,7 @@ namespace ma
 namespace io
 {
   HandlerPrivate::HandlerPrivate()
-  : Device(nullptr), ErrorCode(Error::None), ErrorMessage()
+  : Source(nullptr), ErrorCode(Error::None), ErrorMessage()
   {};
   
   HandlerPrivate::~HandlerPrivate() _OPENMA_NOEXCEPT = default; // Cannot be inlined
@@ -126,12 +127,12 @@ namespace io
       this->setError(Error::Unexpected, "Impossible to load the content of a device into a null output");
       return false;
     }
-    else if (optr->Device == nullptr)
+    else if (optr->Source == nullptr)
     {
       this->setError(Error::Device, "No device assigned");
       return false;
     }
-    else if (!optr->Device->isOpen())
+    else if (!optr->Source->isOpen())
     {
       this->setError(Error::Device, "Device not open");
       return false;
@@ -144,7 +145,7 @@ namespace io
     
     try
     {
-      this->setError(); // reset
+      this->setError(Error::None); // reset
       Node temp("_TIOHR"); // _THIOR: Temporary I/O Handler Root
       this->readDevice(&temp);
       if (optr->ErrorCode == Error::None) // In case the handler does not use exception but only error code/message.
@@ -159,11 +160,11 @@ namespace io
     catch (Device::Failure& )
     {
       std::string excmsg; 
-      if (optr->Device->atEnd())
+      if (optr->Source->atEnd())
         excmsg = "Unexpected end of device";
-      else if(optr->Device->hasError())
+      else if(optr->Source->hasError())
         excmsg = "Loss of integrity in the device";
-      else if(optr->Device->hasFailure())
+      else if(optr->Source->hasFailure())
         excmsg = "Internal logic operation error associated with the device";
       else
         excmsg = "Unknown error associated with the device";
@@ -201,12 +202,12 @@ namespace io
       this->setError(Error::Unexpected, "Impossible to write a null input to a device");
       return false;
     }
-    else if (optr->Device == nullptr)
+    else if (optr->Source == nullptr)
     {
       this->setError(Error::Device, "No device assigned");
       return false;
     }
-    else if (!optr->Device->isOpen())
+    else if (!optr->Source->isOpen())
     {
       this->setError(Error::Device, "Device not open");
       return false;
@@ -214,7 +215,7 @@ namespace io
     
     try
     {
-      this->setError(); // reset
+      this->setError(Error::None); // reset
       this->writeDevice(input);
     }
     catch (Handler::FormatError& e)
@@ -241,7 +242,7 @@ namespace io
   Device* Handler::device() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->Device;
+    return optr->Source;
   };
   
   /**
@@ -250,7 +251,7 @@ namespace io
   void Handler::setDevice(Device* device) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    optr->Device = device;
+    optr->Source = device;
   };
   
   /**

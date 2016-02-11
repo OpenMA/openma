@@ -59,8 +59,8 @@ namespace io
     DevicePrivate& operator=(const DevicePrivate&& ) _OPENMA_NOEXCEPT = delete;
     
     char* Name;
-    Device::State State;
-    Device::State Exception;
+    State Status;
+    State Exception;
   };
 };
 };

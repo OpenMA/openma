@@ -38,8 +38,8 @@ CXXTEST_SUITE(BufferTest)
   {
     auto array = int2char<41>({{0xFB, 0x01, 0x53, 0x43, 0x41, 0x4C, 0x45, 0x22, 0x00, 0x04, 0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F, 0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73, 0x63, 0x61, 0x6C, 0x65, 0x20, 0x66, 0x61, 0x63, 0x74, 0x6F, 0x72}});
     ma::io::Buffer buffer;
-    buffer.setExceptions(ma::io::Buffer::State::End);
-    buffer.open(array.data(), array.size(), ma::io::Buffer::Mode::In);
+    buffer.setExceptions(ma::io::State::End);
+    buffer.open(array.data(), array.size(), ma::io::Mode::In);
     char test[20] = {0};
     buffer.read(test,20);
     buffer.read(test,20);
@@ -56,7 +56,7 @@ CXXTEST_SUITE(BufferTest)
         0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F}}); // #1
     std::vector<size_t> chunkIds({2,4,0,3,1});
     ma::io::Buffer buffer;
-    buffer.open(array.data(), array.size(), chunkIds, 10, ma::io::Buffer::Mode::In);
+    buffer.open(array.data(), array.size(), chunkIds, 10, ma::io::Mode::In);
     TS_ASSERT_EQUALS(buffer.isOpen(), true);
     TS_ASSERT_EQUALS(buffer.isGood(), true);
     TS_ASSERT_EQUALS(buffer.atEnd(), false);
@@ -88,22 +88,22 @@ CXXTEST_SUITE(BufferTest)
         0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F}}); // #1
     std::vector<size_t> chunkIds({2,4,0,3,1});
     ma::io::Buffer buffer;
-    buffer.open(array.data(), array.size(), chunkIds, 10, ma::io::Buffer::Mode::In);
+    buffer.open(array.data(), array.size(), chunkIds, 10, ma::io::Mode::In);
     auto ref = int2char<50>({{0xFB, 0x01, 0x53, 0x43, 0x41, 0x4C, 0x45, 0x22, 0x00, 0x04, 0x00, 0xAB, 0xAA, 0xAA, 0x3D, 0x19, 0x2A, 0x20, 0x50, 0x6F, 0x69, 0x6E, 0x74, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x73, 0x63, 0x61, 0x6C, 0x65, 0x20, 0x66, 0x61, 0x63, 0x74, 0x6F, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}});
     char test[10] = {0};
-    buffer.seek(5, ma::io::Buffer::Origin::Begin);
+    buffer.seek(5, ma::io::Origin::Begin);
     buffer.read(test,10);
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(test[i],ref[i+5]);
-    buffer.seek(0, ma::io::Buffer::Origin::Begin);
+    buffer.seek(0, ma::io::Origin::Begin);
     buffer.read(test,10);
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(test[i],ref[i]);
-    buffer.seek(22, ma::io::Buffer::Origin::Current);
+    buffer.seek(22, ma::io::Origin::Current);
     buffer.read(test,10);
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(test[i],ref[i+32]);
-    buffer.seek(-10, ma::io::Buffer::Origin::End);
+    buffer.seek(-10, ma::io::Origin::End);
     buffer.read(test,10);
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(test[i],ref[i+40]);
@@ -117,13 +117,13 @@ CXXTEST_SUITE(BufferTest)
     char data[50] = {0};
     std::vector<size_t> chunkIds({2,4,0,3,1});
     ma::io::Buffer buffer;
-    buffer.open(data, 50, chunkIds, 10, ma::io::Buffer::Mode::In); // Has to be Out (or In|Out) to write in the buffer.
-    buffer.setExceptions(ma::io::Buffer::State::Fail);
+    buffer.open(data, 50, chunkIds, 10, ma::io::Mode::In); // Has to be Out (or In|Out) to write in the buffer.
+    buffer.setExceptions(ma::io::State::Fail);
     char c = '0';
     TS_ASSERT_THROWS_EQUALS(buffer.write(&c,1), const ma::io::Buffer::Failure &f, f.what(), std::string("ma::io::Device::clear"));
     buffer.clear();
     buffer.close();
-    buffer.open(data, 50, chunkIds, 10, ma::io::Buffer::Mode::Out);
+    buffer.open(data, 50, chunkIds, 10, ma::io::Mode::Out);
     for (char i = 0 ; i < 50 ; ++i)
       buffer.write(&i,1);
     auto ref = int2char<50>(

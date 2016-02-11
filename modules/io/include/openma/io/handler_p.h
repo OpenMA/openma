@@ -69,7 +69,7 @@ namespace io
     virtual void option(const char* name, void* value) const _OPENMA_NOEXCEPT = 0;
     virtual void setOption(const char* name, const void* value) _OPENMA_NOEXCEPT = 0;
     
-    Device* Device;
+    Device* Source;
     Error ErrorCode;
     std::string ErrorMessage;
   };

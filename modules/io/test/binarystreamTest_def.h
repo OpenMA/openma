@@ -41,7 +41,7 @@ public:
     memcpy(optr->Data + optr->Pos, s, n);
     optr->Pos += n;
   };
-  virtual void seek(Offset , Origin ) override {}; // Not implemented
+  virtual void seek(Offset , ma::io::Origin ) override {}; // Not implemented
   virtual Position tell() const _OPENMA_NOEXCEPT  override {return Position(Offset(-1));}; // Not implemented
   virtual bool isSequential() const _OPENMA_NOEXCEPT  override {return true;};
   virtual const char* data() const _OPENMA_NOEXCEPT override {return nullptr;};

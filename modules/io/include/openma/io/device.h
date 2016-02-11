@@ -36,6 +36,7 @@
 #define __openma_io_device_h
 
 #include "openma/io_export.h"
+#include "openma/io/enums.h"
 #include "openma/base/opaque.h"
 #include "openma/base/exception.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
@@ -54,10 +55,6 @@ namespace io
     OPENMA_DECLARE_PIMPL_ACCESSOR(Device)
     
   public:
-    enum class Mode : int {In = 0x01, Out = 0x02, Append = 0x04, Truncate = 0x08, End = 0x10};
-    enum class Origin : int {Begin, Current, End};
-    enum class State : int {End = 0x01, Fail = 0x02, Error = 0x04, Good = 0x00};
-    
     using Offset = std::streamoff;
     using Position = std::streampos;
     using Size = std::streamsize;
@@ -112,35 +109,6 @@ namespace io
     Device(DevicePrivate& pimpl) _OPENMA_NOEXCEPT;
    
     std::unique_ptr<DevicePrivate> mp_Pimpl;
-  };
-  
-  // ----------------------------------------------------------------------- //
-  
-  inline _OPENMA_CONSTEXPR Device::State operator& (Device::State lhs, Device::State rhs)
-  {
-    return static_cast<Device::State>(static_cast<int>(lhs) & static_cast<int>(rhs));
-  };
-  
-  inline _OPENMA_CONSTEXPR Device::State operator| (Device::State lhs, Device::State rhs)
-  {
-    return static_cast<Device::State>(static_cast<int>(lhs) | static_cast<int>(rhs));
-  };
-  
-  // ----------------------------------------------------------------------- //
-  
-  inline _OPENMA_CONSTEXPR Device::Mode operator& (Device::Mode lhs, Device::Mode rhs)
-  {
-    return static_cast<Device::Mode>(static_cast<int>(lhs) & static_cast<int>(rhs));
-  };
-
-  inline _OPENMA_CONSTEXPR Device::Mode operator| (Device::Mode lhs, Device::Mode rhs)
-  {
-    return static_cast<Device::Mode>(static_cast<int>(lhs) | static_cast<int>(rhs));
-  };
-  
-  inline _OPENMA_CONSTEXPR Device::Mode operator~ (Device::Mode x)
-  {
-    return Device::Mode(~static_cast<int>(x));
   };
 };
 };

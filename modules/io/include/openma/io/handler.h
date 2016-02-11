@@ -36,7 +36,6 @@
 #define __openma_io_handler_h
 
 #include "openma/io_export.h"
-#include "openma/io/enums.h"
 #include "openma/base/opaque.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 #include "openma/base/exception.h"
@@ -54,6 +53,8 @@ namespace ma
 namespace io
 {
   class Device;
+  enum class Error;
+  enum class Signature;
   
   class HandlerPrivate;
   
@@ -94,7 +95,7 @@ namespace io
     
     Handler(HandlerPrivate& pimpl) _OPENMA_NOEXCEPT;
     
-    void setError(Error code = Error::None, const std::string& msg = "") _OPENMA_NOEXCEPT;
+    void setError(Error code, const std::string& msg = {}) _OPENMA_NOEXCEPT;
     
     virtual Signature validateSignature() const _OPENMA_NOEXCEPT = 0;
     virtual void readDevice(Node* output);

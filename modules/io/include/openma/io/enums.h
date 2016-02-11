@@ -42,6 +42,122 @@ namespace ma
 {
 namespace io
 {
+  enum class Mode : int {In = 0x01, Out = 0x02, Append = 0x04, Truncate = 0x08, End = 0x10};
+  
+  /**
+   * @enum Mode
+   * Details on the way to use the device.
+   */
+  /**
+   * @var Mode Mode::In
+   * Use the device to read data from it.
+   */
+  /**
+   * @var Mode Mode::Out
+   * Use the device to write data from it.
+   */
+  /**
+   * @var Mode Mode::Append
+   * Set the internal pointer used by the device at the end.
+   */
+  /**
+   * @var Mode Mode::Truncate
+   * Erase the content of the device.
+   */
+  /**
+   * @var Mode Mode::End
+   * Set the internal pointer used by the device at the begining. 
+   */
+  
+  /**
+   * Bitwise and operator for Mode enumeration
+   * @relates Device
+   */
+  inline _OPENMA_CONSTEXPR Mode operator& (Mode lhs, Mode rhs)
+  {
+    return static_cast<Mode>(static_cast<int>(lhs) & static_cast<int>(rhs));
+  };
+
+  /**
+   * Bitwise or operator for Mode enumeration
+   * @relates Device
+   */
+  inline _OPENMA_CONSTEXPR Mode operator| (Mode lhs, Mode rhs)
+  {
+    return static_cast<Mode>(static_cast<int>(lhs) | static_cast<int>(rhs));
+  };
+  
+  /**
+   * Bitwise not operator for Mode enumeration
+   * @relates Device
+   */
+  inline _OPENMA_CONSTEXPR Mode operator~ (Mode x)
+  {
+    return Mode(~static_cast<int>(x));
+  };
+ 
+  enum class Origin : int {Begin, Current, End};
+  
+  /**
+   * @enum Origin
+   * Used as anchor for the seek() method.
+   */
+  /**
+   * @var Origin Origin::Begin
+   * Start at the beginning of the internal buffer.
+   */
+  /**
+   * @var Origin Origin::Current
+   * Start at the current position in the internal buffer.
+   */
+  /**
+   * @var Origin Origin::End
+   * Start at the end of the internal buffer.
+   */
+  
+  enum class State : int {End = 0x01, Fail = 0x02, Error = 0x04, Good = 0x00};
+  
+  /**
+   * @enum State
+   * Internal state of the device. This 
+   */
+  /**
+   * @var State  State::End
+   * The device is at the end of its internal buffer.
+   */
+  /**
+   * @var State  State::Fail
+   * A failure happened within the device.
+   */
+  /**
+   * @var State State::Error
+   * An unexpected error happened within the device.
+   */
+  /**
+   * @var State State::Good
+   * Everything is fine!
+   */
+  
+  /**
+   * Bitwise and operator for State enumeration
+   * @relates Device
+   */
+  inline _OPENMA_CONSTEXPR State operator& (State lhs, State rhs)
+  {
+    return static_cast<State>(static_cast<int>(lhs) & static_cast<int>(rhs));
+  };
+  
+  /**
+   * Bitwise or operator for State enumeration
+   * @relates Device
+   */
+  inline _OPENMA_CONSTEXPR State operator| (State lhs, State rhs)
+  {
+    return static_cast<State>(static_cast<int>(lhs) | static_cast<int>(rhs));
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
   enum class ByteOrder : int
   {
     NotApplicable,
@@ -152,7 +268,7 @@ namespace io
    */
   
   /**
-   * Bitwise or operator for Capability
+   * Bitwise or operator for Capability enumeration
    * @relates Handler
    */
   inline _OPENMA_CONSTEXPR Capability operator| (Capability lhs, Capability rhs)
@@ -161,7 +277,7 @@ namespace io
   };
 
   /**
-   * Bitwise and operator for Capability
+   * Bitwise and operator for Capability enumeration
    * @relates Handler
    */
   inline _OPENMA_CONSTEXPR Capability operator& (Capability lhs, Capability rhs)

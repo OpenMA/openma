@@ -15,19 +15,19 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.atEnd(), false);
     TS_ASSERT_EQUALS(file.hasError(), false);
     TS_ASSERT_EQUALS(file.hasFailure(), false);
-    TS_ASSERT_EQUALS(file.exceptions(), ma::io::File::State::Good);
+    TS_ASSERT_EQUALS(file.exceptions(), ma::io::State::Good);
   };
   
   CXXTEST_TEST(setExceptions)
   {
     ma::io::File file;
-    file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
+    file.setExceptions(ma::io::State::End | ma::io::State::Fail | ma::io::State::Error);
     TS_ASSERT_EQUALS(file.isOpen(), false);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
     TS_ASSERT_EQUALS(file.hasError(), false);
     TS_ASSERT_EQUALS(file.hasFailure(), false);
-    TS_ASSERT_EQUALS(file.exceptions(), ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
+    TS_ASSERT_EQUALS(file.exceptions(), ma::io::State::End | ma::io::State::Fail | ma::io::State::Error);
   };
   
   CXXTEST_TEST(closeNoFile)
@@ -44,7 +44,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(closeNoFileException)
   {
     ma::io::File file;
-    file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
+    file.setExceptions(ma::io::State::End | ma::io::State::Fail | ma::io::State::Error);
     TS_ASSERT_THROWS(file.close(), ma::io::File::Failure);
     TS_ASSERT_EQUALS(file.isOpen(), false);
     TS_ASSERT_EQUALS(file.isGood(), false);
@@ -56,7 +56,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(secondConstructorRead)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -73,7 +73,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(secondConstructorWrongFilenameRead)
   {
     ma::io::File file;
-    file.open("Wrong.test", ma::io::File::Mode::In);
+    file.open("Wrong.test", ma::io::Mode::In);
     TS_ASSERT_EQUALS(file.isOpen(), false);
     TS_ASSERT_EQUALS(file.isGood(), false);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -86,7 +86,7 @@ CXXTEST_SUITE(FileTest)
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
     ma::io::File file;
-    file.open(filename, ma::io::File::Mode::Out);
+    file.open(filename, ma::io::Mode::Out);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -103,7 +103,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(secondConstructorWriteExistedFile)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::File::Mode::Out);
+    file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::Mode::Out);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -120,7 +120,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(openReadMode)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -139,7 +139,7 @@ CXXTEST_SUITE(FileTest)
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
     ma::io::File file;
-    file.open(filename, ma::io::File::Mode::Out);
+    file.open(filename, ma::io::Mode::Out);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -156,7 +156,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(openWriteModeFromExistingFile)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::File::Mode::Out);
+    file.open(OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d"), ma::io::Mode::Out);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -173,7 +173,7 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(read)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
     char buf[2] = {0};
     file.read(buf,2);
     TS_ASSERT_EQUALS(buf[0], 0x02);
@@ -206,8 +206,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekBegin)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(0, ma::io::File::Origin::Begin);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(0, ma::io:: Origin::Begin);
     char buf[2] = {0};
     file.read(buf,2);
     TS_ASSERT_EQUALS(buf[0], 0x02);
@@ -229,8 +229,8 @@ CXXTEST_SUITE(FileTest)
   {
     ma::io::File file;
     char buf[1] = {0};
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(0, ma::io::File::Origin::End);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(0, ma::io:: Origin::End);
     TS_ASSERT(file.tell() == ma::io::File::Position(406528));
     file.read(buf,1);
     TS_ASSERT_EQUALS(file.isOpen(), true);
@@ -244,7 +244,7 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.atEnd(), false);
     TS_ASSERT_EQUALS(file.hasError(), false);
     TS_ASSERT_EQUALS(file.hasFailure(), false);
-    file.seek(-2, ma::io::File::Origin::End);
+    file.seek(-2, ma::io:: Origin::End);
     file.read(buf,1);
     TS_ASSERT_EQUALS(buf[0], 0x15);
     file.read(buf,1);
@@ -260,8 +260,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekBeginInvalid)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(-1, ma::io::File::Origin::Begin);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(-1, ma::io:: Origin::Begin);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), false);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -283,8 +283,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekEndInvalid)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(1, ma::io::File::Origin::End);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(1, ma::io:: Origin::End);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -309,8 +309,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekEndInvalidBis)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(-(406528 + 1), ma::io::File::Origin::End);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(-(406528 + 1), ma::io:: Origin::End);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), false);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -332,8 +332,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekCurrentInvalidForward)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(406528 + 1, ma::io::File::Origin::Current);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(406528 + 1, ma::io::Origin::Current);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -358,8 +358,8 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekCurrentInvalidBackward)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(-1, ma::io::File::Origin::Current);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(-1, ma::io::Origin::Current);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), false);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -381,9 +381,9 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(seekCurrentInvalidBackwardBis)
   {
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(0, ma::io::File::Origin::End);
-    file.seek(-(406528 + 1), ma::io::File::Origin::Current);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(0, ma::io:: Origin::End);
+    file.seek(-(406528 + 1), ma::io::Origin::Current);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), false);
     TS_ASSERT_EQUALS(file.atEnd(), false);
@@ -403,9 +403,9 @@ CXXTEST_SUITE(FileTest)
   CXXTEST_TEST(readEOFException)
   {
     ma::io::File file;
-    file.setExceptions(ma::io::File::State::End | ma::io::File::State::Fail | ma::io::File::State::Error);
-    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::File::Mode::In);
-    file.seek(406526, ma::io::File::Origin::Begin);
+    file.setExceptions(ma::io::State::End | ma::io::State::Fail | ma::io::State::Error);
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d"), ma::io::Mode::In);
+    file.seek(406526, ma::io:: Origin::Begin);
     char buf[2] = {0};
     file.read(buf,2);
     TS_ASSERT_EQUALS(buf[0], 0x15);
@@ -418,7 +418,7 @@ CXXTEST_SUITE(FileTest)
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
     ma::io::File file;
-    file.open(filename, ma::io::File::Mode::Out);
+    file.open(filename, ma::io::Mode::Out);
     char buf[1] = {0x16};
     file.write(buf,1);
     file.close();
@@ -429,11 +429,11 @@ CXXTEST_SUITE(FileTest)
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
     ma::io::File file;
-    file.open(filename, ma::io::File::Mode::Out);
+    file.open(filename, ma::io::Mode::Out);
 #ifdef _MSC_VER // The granularity is not the same
-    file.seek(65536, ma::io::File::Origin::Begin);
+    file.seek(65536, ma::io:: Origin::Begin);
 #else
-    file.seek(4096, ma::io::File::Origin::Begin);
+    file.seek(4096, ma::io:: Origin::Begin);
 #endif
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
@@ -460,8 +460,8 @@ CXXTEST_SUITE(FileTest)
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
     std::remove(filename);
     ma::io::File file;
-    file.open(filename, ma::io::File::Mode::Out);
-    file.seek(400000, ma::io::File::Origin::Begin);
+    file.open(filename, ma::io::Mode::Out);
+    file.seek(400000, ma::io:: Origin::Begin);
     TS_ASSERT_EQUALS(file.isOpen(), true);
     TS_ASSERT_EQUALS(file.isGood(), true);
     TS_ASSERT_EQUALS(file.atEnd(), false);
