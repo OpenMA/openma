@@ -65,6 +65,8 @@ namespace Eigen
         this->yy = y;
         this->dj = std::min(Index(1), static_cast<Index>(std::pow(static_cast<Scalar>(n),0.25)));
       };
+      
+      virtual ~Interp1Base() = default;
 
       Scalar interp(Scalar x)
       {
