@@ -164,7 +164,7 @@ namespace ma
     static_assert(std::is_pointer<T>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<T>::type>::value, "The casted type must derive from ma::Node.");
     static_assert(std::is_base_of<Node,typename std::decay<N>::type>::value, "The type of the given object must derive from ma::Node.");
-    if (node->isCastable(static_typeid<typename std::remove_pointer<T>::type>()))
+    if (node->isCastable(static_typeid<typename std::remove_const<typename std::remove_pointer<T>::type>::type>()))
       return static_cast<T>(node);
     return nullptr;
   };
