@@ -4,7 +4,7 @@
 
 CXXTEST_SUITE(TimeSequenceTest)
 {
-  CXXTEST_TEST(Accessor)
+  CXXTEST_TEST(accessor)
   {
     ma::TimeSequence foo("1D4C_Signal(markers)",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm");
     ma::TimeSequence toto("1D4C_Signal(markers)",4,10,100.0,0.125,ma::TimeSequence::Marker,"mm");
@@ -47,7 +47,7 @@ CXXTEST_SUITE(TimeSequenceTest)
     //   TS_ASSERT_EQUALS(toto.data()[i],rv.data()[i]);
   };
   
-  CXXTEST_TEST(FindWithType)
+  CXXTEST_TEST(findWithType)
   {
     ma::Node root("root");
     ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
@@ -63,8 +63,92 @@ CXXTEST_SUITE(TimeSequenceTest)
     TS_ASSERT_EQUALS(root.findChildren<ma::TimeSequence*>({},{{"type",ma::TimeSequence::Marker}},false).size(),2ul);
     TS_ASSERT_EQUALS(root.findChildren<ma::TimeSequence*>({},{{"type",ma::TimeSequence::Angle}},false).size(),1ul);
   };
+  
+  CXXTEST_TEST(clone)
+  {
+    ma::Node root("root");
+    ma::TimeSequence bar("1D1C_Signal(analog)",1,100,1000.0,2.39,ma::TimeSequence::Analog,"V", -1.0,234,{{-10.0,10.0}}, &root);
+    for (unsigned i = 0 ; i < 100 ; ++i)
+      bar.data()[i] = double(i);
+    
+    auto rootcloned = root.clone();
+    TS_ASSERT_EQUALS(rootcloned->hasChildren(),true);
+    TS_ASSERT_EQUALS(rootcloned->hasParents(),false);
+    TS_ASSERT_EQUALS(rootcloned->name(),"root");
+    auto barcloned = rootcloned->findChild<ma::TimeSequence*>();
+    TS_ASSERT_DIFFERS(barcloned,nullptr);
+    TS_ASSERT_EQUALS(barcloned->hasParents(),true);
+    TS_ASSERT_EQUALS(barcloned->hasChildren(),false);
+    TS_ASSERT_EQUALS(barcloned->name(),"1D1C_Signal(analog)");
+    TS_ASSERT_EQUALS(barcloned->unit(),"V");
+    TS_ASSERT_EQUALS(barcloned->type(),ma::TimeSequence::Analog);
+    TS_ASSERT_EQUALS(barcloned->sampleRate(),1000.0);
+    TS_ASSERT_EQUALS(barcloned->startTime(),2.39);
+    TS_ASSERT_EQUALS(barcloned->dimensions().size(),1ul);
+    TS_ASSERT_EQUALS(barcloned->dimensions().front(),1u);
+    TS_ASSERT_EQUALS(barcloned->samples(),100u);
+    TS_ASSERT_EQUALS(barcloned->components(),1u);
+    TS_ASSERT_EQUALS(barcloned->elements(),100u);
+    TS_ASSERT_EQUALS(barcloned->duration(),0.1);
+    for (unsigned i = 0 ; i < barcloned->elements() ; ++i)
+      TS_ASSERT_EQUALS(barcloned->data()[i], bar.data()[i]);
+    delete rootcloned; // This will delete also barcloned
+    
+    barcloned = bar.clone(&root);
+    TS_ASSERT_EQUALS(root.hasChildren(),true);
+    TS_ASSERT_EQUALS(root.children().size(),2ul);
+    auto child = root.child<ma::TimeSequence*>(1);
+    TS_ASSERT_EQUALS(child, barcloned);
+    TS_ASSERT_EQUALS(barcloned->hasParents(),true);
+    TS_ASSERT_EQUALS(barcloned->parents().front(),&root);
+    TS_ASSERT_EQUALS(barcloned->hasParents(),true);
+    TS_ASSERT_EQUALS(barcloned->hasChildren(),false);
+    TS_ASSERT_EQUALS(barcloned->name(),"1D1C_Signal(analog)");
+    TS_ASSERT_EQUALS(barcloned->unit(),"V");
+    TS_ASSERT_EQUALS(barcloned->type(),ma::TimeSequence::Analog);
+    TS_ASSERT_EQUALS(barcloned->sampleRate(),1000.0);
+    TS_ASSERT_EQUALS(barcloned->startTime(),2.39);
+    TS_ASSERT_EQUALS(barcloned->dimensions().size(),1ul);
+    TS_ASSERT_EQUALS(barcloned->dimensions().front(),1u);
+    TS_ASSERT_EQUALS(barcloned->samples(),100u);
+    TS_ASSERT_EQUALS(barcloned->components(),1u);
+    TS_ASSERT_EQUALS(barcloned->elements(),100u);
+    TS_ASSERT_EQUALS(barcloned->duration(),0.1);
+    for (unsigned i = 0 ; i < barcloned->elements() ; ++i)
+      TS_ASSERT_EQUALS(barcloned->data()[i], bar.data()[i]);
+  };
+  
+  CXXTEST_TEST(copy)
+  {
+    ma::Node root("root");
+    ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
+    ma::TimeSequence bar("1D1C_Signal(analog)",1,100,1000.0,2.39,ma::TimeSequence::Analog,"V", -1.0,234,{{-10.0,10.0}});
+    for (unsigned i = 0 ; i < 100 ; ++i)
+      bar.data()[i] = double(i);
+    
+    foo.copy(&bar);
+    TS_ASSERT_EQUALS(foo.hasParents(),false);
+    TS_ASSERT_EQUALS(foo.hasChildren(),false);
+    TS_ASSERT_EQUALS(root.hasParents(),false);
+    TS_ASSERT_EQUALS(root.hasChildren(),false);
+    TS_ASSERT_EQUALS(foo.name(),"1D1C_Signal(analog)");
+    TS_ASSERT_EQUALS(foo.unit(),"V");
+    TS_ASSERT_EQUALS(foo.type(),ma::TimeSequence::Analog);
+    TS_ASSERT_EQUALS(foo.sampleRate(),1000.0);
+    TS_ASSERT_EQUALS(foo.startTime(),2.39);
+    TS_ASSERT_EQUALS(foo.dimensions().size(),1ul);
+    TS_ASSERT_EQUALS(foo.dimensions().front(),1u);
+    TS_ASSERT_EQUALS(foo.samples(),100u);
+    TS_ASSERT_EQUALS(foo.components(),1u);
+    TS_ASSERT_EQUALS(foo.elements(),100u);
+    TS_ASSERT_EQUALS(foo.duration(),0.1);
+    for (unsigned i = 0 ; i < foo.elements() ; ++i)
+      TS_ASSERT_EQUALS(foo.data()[i], bar.data()[i]);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(TimeSequenceTest)
-CXXTEST_TEST_REGISTRATION(TimeSequenceTest, Accessor)
-CXXTEST_TEST_REGISTRATION(TimeSequenceTest, FindWithType)
+CXXTEST_TEST_REGISTRATION(TimeSequenceTest, accessor)
+CXXTEST_TEST_REGISTRATION(TimeSequenceTest, findWithType)
+CXXTEST_TEST_REGISTRATION(TimeSequenceTest, clone)
+CXXTEST_TEST_REGISTRATION(TimeSequenceTest, copy)

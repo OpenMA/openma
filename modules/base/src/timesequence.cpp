@@ -46,6 +46,11 @@
 
 namespace ma
 {
+  TimeSequencePrivate::TimeSequencePrivate(TimeSequence* pint, const std::string& name)
+  : NodePrivate(pint,name),
+    Dimensions(), AccumulatedDimensions(), Samples(0), SampleRate(0.0), StartTime(0.0), Type(0), Unit(), Scale(1.0), Offset(0.0), Range(), Data(nullptr)
+  {};
+  
   TimeSequencePrivate::TimeSequencePrivate(TimeSequence* pint, const std::string& name, const std::vector<unsigned>& dimensions, unsigned samples, double rate, double start, int type, const std::string& unit, double scale, double offset, const std::array<double,2>& range)
   : NodePrivate(pint,name),
     Dimensions(dimensions), AccumulatedDimensions(), Samples(samples), SampleRate(rate), StartTime(start), Type(type), Unit(unit), Scale(scale), Offset(offset), Range(range), Data(nullptr)
@@ -260,6 +265,10 @@ namespace ma
    */
   TimeSequence::TimeSequence(const std::string& name, const std::vector<unsigned>& components, unsigned samples, double rate, double start, int type, const std::string& unit, Node* parent)
   : TimeSequence(name,components,samples,rate,start,type,unit,1.0,0.0,InfinityRange,parent)
+  {};
+  
+  TimeSequence::TimeSequence(const std::string& name, Node* parent)
+  : Node(*new TimeSequencePrivate(this,name), parent)
   {};
   
   /*
@@ -508,13 +517,55 @@ namespace ma
     if (optr->Samples == samples)
       return;
     double* oldData = optr->Data;
-    optr->Data = new double[samples];
-    std::copy_n(oldData, std::min(optr->Samples,samples), optr->Data);
+    unsigned num = this->components();
+    assert(num != 0);
+    optr->Data = new double[num * samples];
+    unsigned s = std::min(optr->Samples,samples);
+    for (unsigned i = 0 ; i < num ; ++i)
+      std::copy_n(oldData + i*optr->Samples, s, optr->Data + i*samples);
     optr->Samples = samples;
     delete oldData;
     this->modified();
   };
-
+  
+  /**
+   * Create a deep copy of the object and return it as another object.
+   */
+  TimeSequence* TimeSequence::clone(Node* parent) const
+  {
+    auto optr = this->pimpl();
+    auto dest = new TimeSequence(optr->Name);
+    dest->copy(this);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Do a deep copy of the the given @a src. The previous content is replaced.
+   */
+  void TimeSequence::copy(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const TimeSequence*>(source);
+    if (src == nullptr)
+      return;
+    auto optr = this->pimpl();
+    auto optr_src = src->pimpl();
+    this->Node::copy(src);
+    optr->Dimensions = optr_src->Dimensions;
+    optr->AccumulatedDimensions = optr_src->AccumulatedDimensions;
+    optr->Samples = optr_src->Samples;
+    optr->SampleRate = optr_src->SampleRate;
+    optr->StartTime = optr_src->StartTime;
+    optr->Type = optr_src->Type;
+    optr->Unit = optr_src->Unit;
+    optr->Scale = optr_src->Scale;
+    optr->Offset = optr_src->Offset;
+    optr->Range = optr_src->Range;
+    delete optr->Data;
+    size_t numelts = src->elements();
+    optr->Data = new double[numelts];
+    std::copy_n(optr_src->Data, numelts, optr->Data);
+  };
   
   /**
    * Internal method to extract an element based on the given @a sample index and dimensions @a indices

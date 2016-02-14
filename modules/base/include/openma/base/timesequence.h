@@ -118,8 +118,12 @@ namespace ma
     template <typename... Is> double& data(unsigned sample, Is... indices) _OPENMA_NOEXCEPT;
     
     void resize(unsigned samples);
+    
+    TimeSequence* clone(Node* parent = nullptr) const;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   
   private:
+    TimeSequence(const std::string& name, Node* parent = nullptr);
     double& data(unsigned sample, std::initializer_list<unsigned>&& indices) const _OPENMA_NOEXCEPT;
   };
   
