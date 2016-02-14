@@ -508,8 +508,10 @@ namespace ma
       if (!(*it)->hasParents())
         delete *it;
     }
+    optr->Children.clear();
     for (auto it = optr->Parents.begin() ; it != optr->Parents.end() ; ++it)
       (*it)->pimpl()->detachChild(this);
+    optr->Parents.clear();
     this->modified();
   };
   

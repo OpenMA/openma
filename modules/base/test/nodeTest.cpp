@@ -360,6 +360,21 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_DIFFERS(testLeaf,nullptr);
     TS_ASSERT_EQUALS(testLeaf->name(), "leaf");
     TS_ASSERT_EQUALS(testLeaf->property("version").cast<int>(), 30);
+  };
+  
+  CXXTEST_TEST(copyAndParent)
+  {
+    ma::Node root("root");
+    TestNode leaf("leaf",&root);
+    TestNode foo("foo");
+    foo.setVersion(99);
+    leaf.copy(&foo);
+    TS_ASSERT_EQUALS(root.hasChildren(),false);
+    TS_ASSERT_EQUALS(root.hasParents(),false);
+    TS_ASSERT_EQUALS(leaf.hasChildren(),false);
+    TS_ASSERT_EQUALS(leaf.hasParents(),false);
+    TS_ASSERT_EQUALS(leaf.name(),"foo");
+    TS_ASSERT_EQUALS(leaf.version(),99);
   }
   
   CXXTEST_TEST(retrievePath)
@@ -431,5 +446,6 @@ CXXTEST_TEST_REGISTRATION(NodeTest, clone)
 CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithChildren)
 CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithRoot)
 CXXTEST_TEST_REGISTRATION(NodeTest, copy)
+CXXTEST_TEST_REGISTRATION(NodeTest, copyAndParent)
 CXXTEST_TEST_REGISTRATION(NodeTest, retrievePath)
 CXXTEST_TEST_REGISTRATION(NodeTest, isCastable)
