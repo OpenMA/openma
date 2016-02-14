@@ -284,26 +284,11 @@ namespace ma
   {};
   
   /**
-   * Create a deep copy of the object and return it as another object.
-   * @note Each subclass must override this method to correctly do the deep copy.
+   * Assign @a ts as the new timestamp. This method shall be used by third pary object that do no have access to private implementation but has to copy object's content.
    */
-  Object* Object::clone() const
+  void Object::setTimestamp(unsigned long ts)
   {
-    auto dest = new Object(*new ObjectPrivate);
-    dest->copy(this);
-    return dest;
-  };
-  
-  /**
-   * Do a deep copy of the the given @a src. The previous content is replaced.
-   * @note Each subclass must override this method to correctly do the deep copy.
-   */
-  void Object::copy(const Object* src) _OPENMA_NOEXCEPT
-  {
-    if (src == nullptr)
-      return;
     auto optr = this->pimpl();
-    auto optr_src = src->pimpl();
-    optr->Timestamp = optr_src->Timestamp;
+    optr->Timestamp = ts;
   };
 };

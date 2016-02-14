@@ -62,11 +62,10 @@ namespace ma
     virtual void modified() _OPENMA_NOEXCEPT;
     
   protected:
-    virtual Object* clone() const;
-    virtual void copy(const Object* src) _OPENMA_NOEXCEPT;
-    
     Object();
     Object(ObjectPrivate& pimpl) _OPENMA_NOEXCEPT;
+    
+    void setTimestamp(unsigned long ts);
    
     std::unique_ptr<ObjectPrivate> mp_Pimpl;
   };

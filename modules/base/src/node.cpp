@@ -529,7 +529,7 @@ namespace ma
   
   /**
    * Do a deep copy of the the given @a src. The previous content is replaced.
-   * @note Each subclass must override this method to correctly do the deep copy.
+   * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards.
    * @code{.unparsed}
    * // Let's copy a node, and add a parent.
@@ -539,14 +539,14 @@ namespace ma
    * node.addParent(parent); // 'parent' is a pointer to a Node object
    * @endcode
    */
-  void Node::copy(const Node* src) _OPENMA_NOEXCEPT
+  void Node::copy(const Node* source) _OPENMA_NOEXCEPT
   {
-    if (src == nullptr)
+    if (source == nullptr)
       return;
     this->clear();
     auto optr = this->pimpl();
-    auto optr_src = src->pimpl();
-    this->Object::copy(src);
+    auto optr_src = source->pimpl();
+    optr->Timestamp = optr_src->Timestamp;
     optr->Name = optr_src->Name;
     optr->Description = optr_src->Description;
     optr->Properties = optr_src->Properties;

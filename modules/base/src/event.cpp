@@ -231,8 +231,9 @@ namespace ma
    * @note Each subclass must override this method to correctly do the deep copy.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards. See the example in the desctription of the Node::copy() method.
    */
-  void Event::copy(const Event* src) _OPENMA_NOEXCEPT
+  void Event::copy(const Node* source) _OPENMA_NOEXCEPT
   {
+    auto src = node_cast<const Event*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();

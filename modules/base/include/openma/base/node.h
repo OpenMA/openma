@@ -97,7 +97,7 @@ namespace ma
     void clear() _OPENMA_NOEXCEPT;
     
     virtual Node* clone(Node* parent = nullptr) const;
-    virtual void copy(const Node* src) _OPENMA_NOEXCEPT;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT;
     
     virtual bool isCastable(typeid_t id) const _OPENMA_NOEXCEPT;
     

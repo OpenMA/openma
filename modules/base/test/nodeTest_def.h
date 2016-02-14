@@ -21,7 +21,7 @@ public:
   int count() const;
   
   TestNode* clone(Node* parent = nullptr) const;
-  void copy(const TestNode* src) _OPENMA_NOEXCEPT;
+  void copy(const Node* source) _OPENMA_NOEXCEPT;
 };
 
 class TestNodePrivate : public ma::NodePrivate
@@ -77,8 +77,9 @@ TestNode* TestNode::clone(Node* parent) const
   return dest;
 };
 
-void TestNode::copy(const TestNode* src) _OPENMA_NOEXCEPT
+void TestNode::copy(const Node* source) _OPENMA_NOEXCEPT
 {
+  auto src = ma::node_cast<const TestNode*>(source);
   if (src == nullptr)
     return;
   this->Node::copy(src);

@@ -108,7 +108,7 @@ void ObjectCustomPimpl::copy(const ObjectCustomPimpl* src) _OPENMA_NOEXCEPT
 {
   if (src == nullptr)
     return;
-  this->Object::copy(src);
+  this->setTimestamp(src->timestamp());
   auto optr = this->pimpl();
   auto optr_src = src->pimpl();
   optr->Name = optr_src->Name;
