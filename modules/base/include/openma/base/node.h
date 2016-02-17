@@ -75,8 +75,8 @@ namespace ma
     const std::string& description() const _OPENMA_NOEXCEPT;
     void setDescription(const std::string& value) _OPENMA_NOEXCEPT;
     
-    virtual Any property(const std::string& key) const _OPENMA_NOEXCEPT;
-    virtual void setProperty(const std::string& key, const Any& value);
+    Any property(const std::string& key) const _OPENMA_NOEXCEPT;
+    void setProperty(const std::string& key, const Any& value);
     
     template <typename U = Node*> U child(unsigned index) const _OPENMA_NOEXCEPT;
     const std::list<Node*>& children() const _OPENMA_NOEXCEPT;
