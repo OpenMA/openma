@@ -308,7 +308,7 @@ namespace io
    */
   void Buffer::open(char* data, size_t dataSize, const std::vector<size_t>& chunkIds, size_t chunkSize, Mode mode, bool owned)
   {
-    if (this->verifyMode(mode))
+    if (this->verifyOpenMode(mode))
     {
       auto optr = this->pimpl();
       if (!optr->Buffer->open(data, dataSize, chunkIds, chunkSize, mode, owned))

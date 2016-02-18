@@ -104,8 +104,8 @@ namespace io
     
   protected:
     void setName(const char* name = nullptr);
-    bool verifyMode(Mode mode);
     void setOpenMode(Mode mode) _OPENMA_NOEXCEPT;
+    bool verifyOpenMode(Mode mode);
     
     Device() _OPENMA_NOEXCEPT;
     Device(DevicePrivate& pimpl) _OPENMA_NOEXCEPT;

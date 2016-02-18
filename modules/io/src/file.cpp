@@ -448,7 +448,7 @@ namespace io
    */
   void File::open(const char* filename, Mode mode)
   {
-    if (this->verifyMode(mode))
+    if (this->verifyOpenMode(mode))
     {
       auto optr = this->pimpl();
       this->setName(filename);

@@ -78,7 +78,7 @@ namespace io
    * This interface proposes also an exception mechanism in case the device fails to do some internal operation, or if there are error during I/O operations.
    * You can use the method setExceptions() to set the states which can trigger an exception. The exception thrown by this class corresponds to a Device::Failure exception.
    *
-   * To implement a new device, several methods must me implemented. To facilitate this implementation some protected methods are proposed like verifyMode().
+   * To implement a new device, several methods must me implemented. To facilitate this implementation some protected methods are proposed like verifyOpenMode() and setOpenMode().
    */
   
   /**
@@ -297,7 +297,7 @@ namespace io
    *  - The modes Append and Truncate cannot be set at the same time.
    *  - The mode Truncate is set but not the mode Out.
    */
-  bool Device::verifyMode(Mode mode)
+  bool Device::verifyOpenMode(Mode mode)
   {
     bool valid = true;
     if (this->isOpen()
