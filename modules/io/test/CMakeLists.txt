@@ -13,3 +13,4 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/tdd_file_path.h.in ${CMAKE_CURRENT_BI
 CXXTEST_ADD_TDD(openma_io_binarystream binarystreamTest.cpp io)
 CXXTEST_ADD_TDD(openma_io_buffer bufferTest.cpp io)
 CXXTEST_ADD_TDD(openma_io_file fileTest.cpp io)
+CXXTEST_ADD_TDD(openma_io_handlerplugin handlerpluginTest.cpp io)
