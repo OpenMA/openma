@@ -33,9 +33,8 @@ class DummyHandlerOne : public ma::io::Handler
 public:
   static ma::io::Signature verifySignature(const ma::io::Device* const device) _OPENMA_NOEXCEPT;
   
-  virtual ma::io::Signature verifySignature() const _OPENMA_NOEXCEPT final;
-  
 protected:
+  virtual ma::io::Signature verifySignature() const _OPENMA_NOEXCEPT final;
   virtual void readDevice(ma::Node* output) final;
   virtual void writeDevice(const ma::Node* const input) final;
 };

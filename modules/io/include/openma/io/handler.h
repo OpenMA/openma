@@ -79,8 +79,6 @@ namespace io
     
     Error errorCode() const _OPENMA_NOEXCEPT;
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;
-    
-    virtual Signature verifySignature() const _OPENMA_NOEXCEPT = 0;
   
   protected:
     class FormatError : public Exception
@@ -95,6 +93,7 @@ namespace io
     
     void setError(Error code, const std::string& msg = {}) _OPENMA_NOEXCEPT;
     
+    virtual Signature verifySignature() const _OPENMA_NOEXCEPT = 0;
     virtual void readDevice(Node* output);
     virtual void writeDevice(const Node* const input);
     
