@@ -4,6 +4,7 @@ SET(OPENMA_IO_SRCS
   src/device.cpp
   src/file.cpp
   src/handler.cpp
+  src/handlerplugin.cpp
 )
 
 # ADD_OPENMA_MODULE(io)
