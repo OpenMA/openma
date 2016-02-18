@@ -86,6 +86,7 @@ namespace io
     
     // General
     const char* name() const _OPENMA_NOEXCEPT;
+    Mode openMode() const _OPENMA_NOEXCEPT;
     virtual bool isOpen() const _OPENMA_NOEXCEPT = 0;
     virtual void close() = 0;
     virtual Size peek(char* s, Size n) const = 0;
@@ -104,6 +105,7 @@ namespace io
   protected:
     void setName(const char* name = nullptr);
     bool verifyMode(Mode mode);
+    void setOpenMode(Mode mode) _OPENMA_NOEXCEPT;
     
     Device() _OPENMA_NOEXCEPT;
     Device(DevicePrivate& pimpl) _OPENMA_NOEXCEPT;

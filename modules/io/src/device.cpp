@@ -48,7 +48,7 @@ namespace ma
 namespace io
 {
   DevicePrivate::DevicePrivate()
-  : Name(nullptr), Status(State::Good), Exception(State::Good)
+  : Name(nullptr), OpenMode(Mode::Unknown), Status(State::Good), Exception(State::Good)
   {};
   
   DevicePrivate::~DevicePrivate() _OPENMA_NOEXCEPT
@@ -212,6 +212,15 @@ namespace io
    */
   
   /**
+   * Returns the mode used to open this device.
+   */
+  Mode Device::openMode() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->OpenMode;
+  }
+  
+  /**
    * @fn virtual void Device::close() = 0
    * Close the device.
    * @note The inherited class should set the State::Fail state flag if any failure happens during the closing of the device.
@@ -299,6 +308,16 @@ namespace io
       this->setState(State::Fail);
     }
     return valid;
+  };
+  
+  /**
+   * Stores the open mode. This method shall be used when a device is opened.
+   * @note This method does not influence the way the device is opened. This is only to provide information for other methods like isOpen(Mode mode).
+   */
+  void Device::setOpenMode(Mode mode) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    optr->OpenMode = mode;
   };
   
   /**
