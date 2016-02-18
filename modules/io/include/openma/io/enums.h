@@ -42,11 +42,15 @@ namespace ma
 {
 namespace io
 {
-  enum class Mode : int {In = 0x01, Out = 0x02, Append = 0x04, Truncate = 0x08, End = 0x10};
+  enum class Mode : int {Unknown = 0x00, In = 0x01, Out = 0x02, Append = 0x04, Truncate = 0x08, End = 0x10};
   
   /**
    * @enum Mode
    * Details on the way to use the device.
+   */
+  /**
+   * @var Mode Mode::Unknown
+   * No known mode. This is usually a default mode to initialize a variable.
    */
   /**
    * @var Mode Mode::In
@@ -252,19 +256,27 @@ namespace io
    * Unexpected error but at least it was catched.
    */
   
-  enum class Capability : int {CanRead = 0x01, CanWrite = 0x02, CanReadAndWrite = CanRead | CanWrite};
+  enum class Capability : int {None = 0x00, CanRead = 0x01, CanWrite = 0x02, CanReadAndWrite = CanRead | CanWrite};
   
   /**
    * @enum Signature::Capability
    * Inform on the capability to read/write data from/to a device.
    */
   /**
+   * @var Signature::Capability Signature::None
+   * Inform that a handker cannot do anything.
+   */
+  /**
    * @var Signature::Capability Signature::CanRead
-   * Inform that the handker can read data from a device
+   * Inform that a handker can read data from a device.
    */
   /**
    * @var Hander::Capability Signature::CanWrite
-   * Inform that the handker can write data to a device
+   * Inform that a handker can write data to a device.
+   */
+  /**
+   * @var Signature::Capability Signature::CanReadAndWrite
+   * Inform that a handker can read/write data from/to a device.
    */
   
   /**
