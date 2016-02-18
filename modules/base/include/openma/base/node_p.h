@@ -80,7 +80,7 @@ namespace ma
     
     std::string Name;
     std::string Description;
-    std::unordered_map<std::string,Any> Properties;
+    std::unordered_map<std::string,Any> DynamicProperties;
     std::list<Node*> Parents;
     std::list<Node*> Children;
     

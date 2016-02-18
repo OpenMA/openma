@@ -46,7 +46,7 @@ namespace ma
 {
   NodePrivate::NodePrivate(Node* pint, const std::string& name)
   : ObjectPrivate(),
-    Name(name), Description(), Properties(), Parents(), Children(),
+    Name(name), Description(), DynamicProperties(), Parents(), Children(),
     mp_Pint(pint)
   {};
   
@@ -358,8 +358,8 @@ namespace ma
     bool caught = optr->staticProperty(key.c_str(),&value);
     if (!caught)
     {
-      std::unordered_map<std::string,Any>::const_iterator it = optr->Properties.find(key);
-      if (it != optr->Properties.end())
+      std::unordered_map<std::string,Any>::const_iterator it = optr->DynamicProperties.find(key);
+      if (it != optr->DynamicProperties.end())
         value = it->second;
     }
     return value;
@@ -376,9 +376,9 @@ namespace ma
     bool caught = optr->setStaticProperty(key.c_str(),&value);
     if (!caught)
     {
-      auto it = optr->Properties.find(key);
+      auto it = optr->DynamicProperties.find(key);
       // Existing property
-      if (it != optr->Properties.end())
+      if (it != optr->DynamicProperties.end())
       {
         // Modify its value
         if (value.isValid())
@@ -392,14 +392,14 @@ namespace ma
         // Or remove it
         else
         {
-          optr->Properties.erase(it);
+          optr->DynamicProperties.erase(it);
           this->modified();
         }
       }
       // In case it does not exist add it
       else if (value.isValid())
       {
-        optr->Properties[key] = value;
+        optr->DynamicProperties[key] = value;
         this->modified();
       }
     }
@@ -499,9 +499,9 @@ namespace ma
   void Node::clear() _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (optr->Parents.empty() && optr->Children.empty() && optr->Properties.empty())
+    if (optr->Parents.empty() && optr->Children.empty() && optr->DynamicProperties.empty())
       return;
-    optr->Properties.clear();
+    optr->DynamicProperties.clear();
     for (auto it = optr->Children.begin() ; it != optr->Children.end() ; ++it)
     {
       (*it)->pimpl()->detachParent(this);
@@ -549,7 +549,7 @@ namespace ma
     optr->Timestamp = optr_src->Timestamp;
     optr->Name = optr_src->Name;
     optr->Description = optr_src->Description;
-    optr->Properties = optr_src->Properties;
+    optr->DynamicProperties = optr_src->DynamicProperties;
     for (auto it = optr_src->Children.cbegin() ; it != optr_src->Children.cend() ; ++it)
       (*it)->clone(this);
   };
