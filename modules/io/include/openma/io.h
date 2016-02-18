@@ -41,6 +41,6 @@
 #include "openma/io/enums.h"
 #include "openma/io/file.h"
 #include "openma/io/handler.h"
-#include "openma/io/handleroption.h"
+#include "openma/io/handlerplugin.h"
 
 #endif // __openma_io_h
