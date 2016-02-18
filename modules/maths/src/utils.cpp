@@ -34,7 +34,7 @@
 
 #include "openma/maths.h"
 
-bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, int components, int offset)
+bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset)
 {
   if (ts == nullptr)
     return false;

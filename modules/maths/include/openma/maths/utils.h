@@ -37,7 +37,7 @@
 
 #include "openma/base/timesequence.h"
 
-bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, int components, int offset);
+bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
 
 namespace ma
 {
@@ -54,7 +54,7 @@ namespace maths
    * @ingroup openma_maths
    */
   template <typename Result, typename T>
-  inline Result to_arraybase_derived(T* ts, int components, int offset = 0, int type = -1)
+  inline Result to_arraybase_derived(T* ts, unsigned components, unsigned offset = 0, int type = -1)
   {
     static_assert(std::is_base_of<ArrayBase<Result>, Result>::value, "The template parameter is not a derived class of ArrayBase.");
     static_assert(std::is_same<TimeSequence, typename std::remove_const<T>::type>::value, "The type of the first arguement is not TimeSequence.");
@@ -75,7 +75,7 @@ namespace maths
    * @ingroup openma_maths
    */
   template <int N>
-  inline Map<Array<N>> to_array(TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<Array<N>> to_array(TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_arraybase_derived<Map<Array<N>>>(ts, N, offset, type);
   };
@@ -89,7 +89,7 @@ namespace maths
    * @ingroup openma_maths
    */
    template <int N>
-  inline Map<const Array<N>> to_array(const TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<const Array<N>> to_array(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_arraybase_derived<Map<const Array<N>>>(ts, N, offset, type);
   };
@@ -103,7 +103,7 @@ namespace maths
    * @relates Array
    * @ingroup openma_maths
    */
-  inline Map<Scalar> to_scalar(TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<Scalar> to_scalar(TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_array<1>(ts,offset,type);
   };
@@ -115,7 +115,7 @@ namespace maths
    * @relates Array
    * @ingroup openma_maths
    */
-  inline Map<const Scalar> to_scalar(const TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<const Scalar> to_scalar(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_array<1>(ts,offset,type);
   };
@@ -129,7 +129,7 @@ namespace maths
    * @relates Array
    * @ingroup openma_maths
    */
-  inline Map<Vector> to_vector(TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<Vector> to_vector(TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_array<3>(ts,offset,type);
   };
@@ -141,7 +141,7 @@ namespace maths
    * @relates Array
    * @ingroup openma_maths
    */
-  inline Map<const Vector> to_vector(const TimeSequence* ts, int offset = 0, int type = -1)
+  inline Map<const Vector> to_vector(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_array<3>(ts,offset,type);
   };
