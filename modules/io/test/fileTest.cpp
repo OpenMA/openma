@@ -421,6 +421,12 @@ CXXTEST_SUITE(FileTest)
     file.open(filename, ma::io::Mode::Out);
     char buf[1] = {0x16};
     file.write(buf,1);
+    TS_ASSERT_EQUALS(file.isOpen(), true);
+    TS_ASSERT_EQUALS(file.openMode(), ma::io::Mode::Out);
+    TS_ASSERT_EQUALS(file.isOpen(), true);
+    TS_ASSERT_EQUALS(file.isGood(), true);
+    TS_ASSERT_EQUALS(file.hasError(), false);
+    TS_ASSERT_EQUALS(file.hasFailure(), false);
     file.close();
   };
   
