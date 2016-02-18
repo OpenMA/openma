@@ -100,7 +100,7 @@ ma::io::Capability DummyHandlerPlugin::capabilities(const std::string& format) c
 
 ma::io::Signature DummyHandlerPlugin::detectSignature(const ma::io::Device* const device, std::string* format) const _OPENMA_NOEXCEPT
 {
-  ma::io::Signature detected;
+  ma::io::Signature detected = ma::io::Signature::Invalid;
   if ((detected = DummyHandlerOne::verifySignature(device)) == ma::io::Signature::Valid)
   {
     if (format != nullptr)
@@ -116,18 +116,18 @@ ma::io::Signature DummyHandlerPlugin::detectSignature(const ma::io::Device* cons
 
 ma::io::Handler* DummyHandlerPlugin::create(ma::io::Device* device, const std::string& format)
 {
-  ma::io::Handler* result = nullptr;
+  ma::io::Handler* handler = nullptr;
   if (format.compare(_OPENMA_IO_TEST_DUMMYONE_FORMAT) == 0)
   {
-    result = new DummyHandlerOne;
-    result->setDevice(device);
+    handler = new DummyHandlerOne;
+    handler->setDevice(device);
   }
   else if (format.compare(_OPENMA_IO_TEST_DUMMYTWO_FORMAT) == 0)
   {
-    result = new DummyHandlerTwo;
-    result->setDevice(device);
+    handler = new DummyHandlerTwo;
+    handler->setDevice(device);
   }
-  return result;
+  return handler;
 };
 
 // ------------------------------------------------------------------------- //
