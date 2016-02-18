@@ -406,6 +406,15 @@ namespace ma
   };
   
   /**
+   * Returns the dynamic properties
+   */
+  const std::unordered_map<std::string, Any>& Node::dynamicProperties() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->DynamicProperties;
+  };
+  
+  /**
    * @fn template <typename U = Node*> U Node::child(unsigned index) const _OPENMA_NOEXCEPT
    * Returns the node associated with the given @a index or null if out of range.
    * By default the returned type is Node but can be set to any inheriting class. If the set type does not correspond to the internal type for the given @a index, a null value is returned.

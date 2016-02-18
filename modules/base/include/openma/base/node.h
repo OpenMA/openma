@@ -42,6 +42,7 @@
 #include "openma/base/nodeid.h" // Macro OPENMA_DECLARE_NODEID used by inheriting classes.
 
 #include <list>
+#include <unordered_map>
 #include <string>
 #include <regex>
 
@@ -77,6 +78,8 @@ namespace ma
     
     Any property(const std::string& key) const _OPENMA_NOEXCEPT;
     void setProperty(const std::string& key, const Any& value);
+    
+    const std::unordered_map<std::string, Any>& dynamicProperties() const _OPENMA_NOEXCEPT;
     
     template <typename U = Node*> U child(unsigned index) const _OPENMA_NOEXCEPT;
     const std::list<Node*>& children() const _OPENMA_NOEXCEPT;
