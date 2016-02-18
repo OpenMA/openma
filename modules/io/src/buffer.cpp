@@ -315,6 +315,7 @@ namespace io
         this->setState(State::Fail);
       else
         this->clear();
+      this->setOpenMode(mode);
     }
   };
 
