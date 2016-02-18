@@ -5,6 +5,7 @@ SET(OPENMA_BASE_SRCS
   src/node.cpp
   src/object.cpp
   src/timesequence.cpp
+  src/trial.cpp
 )
 
 # ADD_OPENMA_MODULE(base )
