@@ -85,7 +85,95 @@ void TestNode::copy(const Node* source) _OPENMA_NOEXCEPT
   this->Node::copy(src);
   auto optr = this->pimpl();
   auto optr_src = src->pimpl();
-  optr->Name = optr_src->Name;
+  optr->Version = optr_src->Version;
+};
+
+// ------------------------------------------------------------------------- //
+
+class TestNode2Private;
+
+class TestNode2 : public ma::Node
+{
+  OPENMA_DECLARE_PIMPL_ACCESSOR(TestNode2)
+  OPENMA_DECLARE_NODEID(TestNode2, ma::Node)
+  
+public:
+  TestNode2(const std::string& name, Node* parent = nullptr);
+  
+  int version() const;
+  void setVersion(int value);
+  
+  int count() const;
+  
+  TestNode2* clone(Node* parent = nullptr) const;
+  void copy(const Node* source) _OPENMA_NOEXCEPT;
+  
+private:
+  std::unique_ptr<TestNode2Private> mp_Pimpl;
+};
+
+class TestNode2Private
+{
+  OPENMA_DECLARE_PINT_ACCESSOR(TestNode2)
+  
+  OPENMA_DECLARE_STATIC_PROPERTIES_BASE(TestNode2,
+    ma::Property<TestNode2,int,&TestNode2::version,&TestNode2::setVersion>{"version"}
+  )
+    
+  TestNode2* mp_Pint;
+  
+public:
+  TestNode2Private(TestNode2* pint) : mp_Pint(pint), Version(2) {};
+  virtual ~TestNode2Private() = default;
+  int Version;
+};
+
+TestNode2::TestNode2(const std::string& name, Node* parent)
+: ma::Node(name, parent), mp_Pimpl(new TestNode2Private(this))
+{};
+
+int TestNode2::version() const
+{
+  auto optr = this->pimpl();
+  return optr->Version;
+};
+
+void TestNode2::setVersion(int value)
+{
+  auto optr = this->pimpl();
+  if (value == optr->Version)
+    return;
+  optr->Version = value;
+};
+
+int TestNode2::count() const
+{
+  int num = 1;
+  for (auto it = this->children().cbegin() ; it != this->children().cend() ; ++it)
+  {
+    TestNode2* node = ma::node_cast<TestNode2*>(*it);
+    if (node != nullptr)
+      num += node->count();
+  }
+  return num;
+};
+
+TestNode2* TestNode2::clone(Node* parent) const
+{
+  auto dest = new TestNode2(this->name());
+  dest->copy(this);
+  dest->addParent(parent);
+  return dest;
+};
+
+void TestNode2::copy(const Node* source) _OPENMA_NOEXCEPT
+{
+  auto src = ma::node_cast<const TestNode2*>(source);
+  if (src == nullptr)
+    return;
+  this->Node::copy(src);
+  auto optr = this->pimpl();
+  auto optr_src = src->pimpl();
   optr->Version = optr_src->Version;
 };
 

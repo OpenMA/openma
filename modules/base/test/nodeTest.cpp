@@ -429,7 +429,35 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_EQUALS(temp3->isCastable(ma::static_typeid<ma::Node>()), true);
     TS_ASSERT_EQUALS(temp3->isCastable(ma::static_typeid<TestNode>()), true);
     delete temp3;
-  }
+  };
+  
+  CXXTEST_TEST(externInheriting)
+  {
+    ma::Node temp1("temp1");
+    TestNode2 temp2("temp2",&temp1);
+    TS_ASSERT_EQUALS(temp1.isCastable(ma::static_typeid<ma::Node>()), true);
+    TS_ASSERT_EQUALS(temp1.isCastable(ma::static_typeid<TestNode2>()), false);
+    TS_ASSERT_EQUALS(temp2.isCastable(ma::static_typeid<ma::Node>()), true);
+    TS_ASSERT_EQUALS(temp2.isCastable(ma::static_typeid<TestNode2>()), true);
+    
+    temp2.setProperty("name","foo");
+    TS_ASSERT_EQUALS(temp2.name(),"foo");
+    TS_ASSERT_EQUALS(temp2.property("name").cast<std::string>(),"foo");
+    temp2.setDescription("something");
+    TS_ASSERT_EQUALS(temp2.description(),"something");
+    TS_ASSERT_EQUALS(temp2.property("description").cast<std::string>(),"something");
+    
+    TestNode2 foo("bar");
+    foo.copy(&temp2);
+    foo.setVersion(99);
+    TS_ASSERT_EQUALS(temp2.hasChildren(),false);
+    TS_ASSERT_EQUALS(temp2.hasParents(),true);
+    TS_ASSERT_EQUALS(foo.hasChildren(),false);
+    TS_ASSERT_EQUALS(foo.hasParents(),false);
+    TS_ASSERT_EQUALS(foo.name(),"foo");
+    TS_ASSERT_EQUALS(temp2.version(),2);
+    TS_ASSERT_EQUALS(foo.version(),99);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(NodeTest)
@@ -449,3 +477,4 @@ CXXTEST_TEST_REGISTRATION(NodeTest, copy)
 CXXTEST_TEST_REGISTRATION(NodeTest, copyAndParent)
 CXXTEST_TEST_REGISTRATION(NodeTest, retrievePath)
 CXXTEST_TEST_REGISTRATION(NodeTest, isCastable)
+CXXTEST_TEST_REGISTRATION(NodeTest, externInheriting)
