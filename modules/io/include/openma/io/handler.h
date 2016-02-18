@@ -63,18 +63,14 @@ namespace io
     OPENMA_DECLARE_PIMPL_ACCESSOR(Handler)
     
   public:
+    Handler();
     virtual ~Handler() _OPENMA_NOEXCEPT;
     
-    Handler() = delete;
     Handler(const Handler& ) = delete;
     Handler(Handler&& ) _OPENMA_NOEXCEPT = delete;
     Handler& operator=(const Handler& ) = delete;
     Handler& operator=(const Handler&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual bool canRead() const _OPENMA_NOEXCEPT;
-    virtual bool canWrite() const _OPENMA_NOEXCEPT;
-
-    Signature detectSignature() const _OPENMA_NOEXCEPT;
     bool read(Node* output);
     bool write(const Node* input);
  
@@ -83,6 +79,8 @@ namespace io
     
     Error errorCode() const _OPENMA_NOEXCEPT;
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;
+    
+    virtual Signature verifySignature() const _OPENMA_NOEXCEPT = 0;
   
   protected:
     class FormatError : public Exception
@@ -97,9 +95,8 @@ namespace io
     
     void setError(Error code, const std::string& msg = {}) _OPENMA_NOEXCEPT;
     
-    virtual Signature validateSignature() const _OPENMA_NOEXCEPT = 0;
     virtual void readDevice(Node* output);
-    virtual void writeDevice(const Node* input);
+    virtual void writeDevice(const Node* const input);
     
     std::unique_ptr<HandlerPrivate> mp_Pimpl;
   };

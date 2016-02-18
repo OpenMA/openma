@@ -76,12 +76,10 @@ namespace io
    * Several methods and mecanisms are already implemented to facilitate the inclusion
    * of new formats. For example, it is not necessary to manage exception as this is done internaly.
    * Some methods are available to set errors and retrieve them. The extraction of handler's class 
-   * is implemented. In fact, only four (or five) methods must be implemented for inherting handler:
+   * is implemented. In fact, only three methods must be implemented for inherting handler:
    *  - readDevice() method: extract data from a device and set it into a node
    *  - writeDevice() method: write data to a given device
-   *  - validateSignature() method: test if the read device has a signature valid for this handler.
-   *  - canRead() method: to inform on the capability of the handler to read data from a device
-   *  - canWrite() method: to inform on the capability of the handler to write data to a device
+   *  - verifySignature() method: test if the read device has a signature valid for this handler.
    *
    * @todo Give an example for the implementation of a handler.
    *
@@ -93,31 +91,23 @@ namespace io
    */
   
   /**
+   * Default constructor
+   */
+  Handler::Handler()
+  : mp_Pimpl(new HandlerPrivate)
+  {};
+  
+  /**
    * Destructor (default)
    */
   Handler::~Handler() _OPENMA_NOEXCEPT = default;
-  
-  /**
-   * Returns the capability of the handler to read data from a device. By default this method returns false.
-   */
-  bool Handler::canRead() const _OPENMA_NOEXCEPT
-  {
-    return false;
-  };
-  
-  /**
-   * Returns the capability of the handler to write data to a device. By default this method returns false.
-   */
-  bool Handler::canWrite() const _OPENMA_NOEXCEPT
-  {
-    return false;
-  };
   
   /**
    * Read the content of the current set device and fill the given @a output.
    * If an exception is thrown during the reading of the device, no content is added to the output and false is returned.
    * In case this method returns false, you can use the methods errorCode() and errorMessage() to retrieve the error.
    * Internally this methods call readDevice() to extract data. Each inheriting handler must overload the method readDevice().
+   * @note This method does not verify if a device is set and is open in read mode. It is to the developer to check that before.
    */
   bool Handler::read(Node* output)
   {
@@ -127,29 +117,18 @@ namespace io
       this->setError(Error::Unexpected, "Impossible to load the content of a device into a null output");
       return false;
     }
-    else if (optr->Source == nullptr)
-    {
-      this->setError(Error::Device, "No device assigned");
-      return false;
-    }
-    else if (!optr->Source->isOpen())
-    {
-      this->setError(Error::Device, "Device not open");
-      return false;
-    }
-    else if (this->validateSignature() == Signature::Invalid)
-    {
-      this->setError(Error::UnsupportedFormat, "Format not supported by this I/O handler");
-      return false;
-    }
     
     try
     {
-      this->setError(Error::None); // reset
+      // Reset possible previous error.
+      this->setError(Error::None);
       Node temp("_TIOHR"); // _THIOR: Temporary I/O Handler Root
       this->readDevice(&temp);
-      if (optr->ErrorCode == Error::None) // In case the handler does not use exception but only error code/message.
+      // In case the handler does not use exception but only error code/message.
+      if (optr->ErrorCode == Error::None)
       {
+        for (const auto& p: temp.dynamicProperties())
+          output->setProperty(p.first, p.second);
         for (auto& child: temp.children())
         {
           if (child != nullptr)
@@ -193,6 +172,7 @@ namespace io
    * If an exception is thrown during the writing of the device, false is returned.
    * In case this method returns false, you can use the methods errorCode() and errorMessage() to retrieve the error.
    * Internally this methods call writeDevice() to extract data. Each inheriting handler must overload the method writeDevice().
+   * @note This method does not verify if a device is set and is open in write mode. It is to the developer to check that before.
    */
   bool Handler::write(const Node* input)
   {
@@ -200,16 +180,6 @@ namespace io
     if (input == nullptr)
     {
       this->setError(Error::Unexpected, "Impossible to write a null input to a device");
-      return false;
-    }
-    else if (optr->Source == nullptr)
-    {
-      this->setError(Error::Device, "No device assigned");
-      return false;
-    }
-    else if (!optr->Source->isOpen())
-    {
-      this->setError(Error::Device, "Device not open");
       return false;
     }
     
@@ -273,23 +243,11 @@ namespace io
   };
   
   /**
-   * Try to detect the signature of the handler in the given device.
-   * A signature is generaly a keyword at the beginning of the data that help to determine the content. For example, if the device is a File, this way is safer than relying on the file extension.
-   * Internaly this methods use validateSignature(). Each inheriting handler must overload the method validateSignature().
+   * @fn virtual std::vector<std::string> Handler::supportedFormats() const _OPENMA_NOEXCEPT = 0;
+   * Returns the supported formats by this handler. Each format must be constructed as following: "<company_name>.<ext>".
    */
-  Signature Handler::detectSignature() const _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    if (optr->Device == nullptr)
-      return Signature::Invalid;
-    return this->validateSignature();
-  };
-  
-  /**
-   * @fn virtual Signature Handler::validateSignature() const _OPENMA_NOEXCEPT = 0;
-   * Method to overload to determine if the associated device is compatible with the handler.
-   */
-  
+
+
   /**
    * Method to overload to read data from the current set device.
    */
@@ -302,7 +260,7 @@ namespace io
   /**
    * Method to overload to write data to the current set device.
    */
-  void Handler::writeDevice(const Node* input)
+  void Handler::writeDevice(const Node* const input)
   {
     OPENMA_UNUSED(input);
     this->setError(Error::Unexpected, "You called the default Handler::writeDevice method. The instanced I/O handler has certainly not the capability to write data.");

@@ -63,12 +63,6 @@ namespace io
     HandlerPrivate& operator=(const HandlerPrivate& ) = delete;
     HandlerPrivate& operator=(const HandlerPrivate&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual std::vector<const char*> availableOptions() const _OPENMA_NOEXCEPT = 0;
-    virtual std::vector<const char*> availableOptionChoices(const char* option) const _OPENMA_NOEXCEPT = 0;
-    
-    virtual void option(const char* name, void* value) const _OPENMA_NOEXCEPT = 0;
-    virtual void setOption(const char* name, const void* value) _OPENMA_NOEXCEPT = 0;
-    
     Device* Source;
     Error ErrorCode;
     std::string ErrorMessage;
