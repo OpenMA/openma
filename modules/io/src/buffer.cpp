@@ -269,7 +269,7 @@ namespace io
    *
    * @warning Currently the Mode Append has no effect on this device.
    *
-   * @ingroup OPENMAIO
+   * @ingroup openma_io
    */
   
   /**
