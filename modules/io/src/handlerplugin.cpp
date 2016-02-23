@@ -35,6 +35,11 @@
 #include "openma/io/handlerplugin.h"
 #include "openma/io/device.h"
 #include "openma/io/enums.h"
+#include "openma/base/pluginmanager.h"
+
+#ifdef OPENMA_IO_STATIC_DEFINE
+#include "../plugins/staticiopluginloader.h"
+#endif
 
 namespace ma
 {
@@ -46,10 +51,19 @@ namespace io
    */
   const std::vector<HandlerPlugin*>& load_handler_plugins()
   {
-    static std::vector<HanderPlugin*> plugins;
-    if (plugins.empty())
-    {}
-    return plugins;
+    static PluginManager<HandlerPlugin> manager;
+    if (manager.plugins().empty())
+    {
+#ifndef OPENMA_IO_STATIC_DEFINE
+      // Dynamic loading
+      // {"trialformats","bodyformats"})
+#error Not yet implemented
+#else
+      // Static include
+      load_handler_plugins(&manager);
+#endif
+    }
+    return manager.plugins();
   };
   
   /**
