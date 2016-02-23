@@ -32,6 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "openma/config.h" // _OPENMA_ARCH, _OPENMA_(IEEE|VAX)_(L|B)E
 #include "openma/io/binarystream.h"
 #include "openma/io/binarystream_p.h"
 #include "openma/io/enums.h"
