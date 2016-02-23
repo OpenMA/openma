@@ -42,5 +42,6 @@
 #include "openma/io/file.h"
 #include "openma/io/handler.h"
 #include "openma/io/handlerplugin.h"
+#include "openma/io/handlerreader.h"
 
 #endif // __openma_io_h
