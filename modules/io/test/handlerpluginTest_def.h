@@ -18,6 +18,8 @@ class DummyHandlerPlugin : public ma::io::HandlerPlugin
 public:
   DummyHandlerPlugin() : ma::io::HandlerPlugin() {};
   
+  virtual std::string name() const _OPENMA_NOEXCEPT final;
+  
   virtual std::vector<std::string> supportedFormats() const _OPENMA_NOEXCEPT final;
   
   virtual ma::io::Capability capabilities(const std::string& format) const _OPENMA_NOEXCEPT final;
@@ -78,6 +80,11 @@ public:
 };
 
 // ------------------------------------------------------------------------- //
+
+std::string DummyHandlerPlugin::name() const _OPENMA_NOEXCEPT
+{
+  return "DummyHandlerPlugin";
+}
 
 std::vector<std::string> DummyHandlerPlugin::supportedFormats() const _OPENMA_NOEXCEPT
 {

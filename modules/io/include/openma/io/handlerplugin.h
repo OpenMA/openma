@@ -59,6 +59,8 @@ namespace io
     HandlerPlugin();
     virtual ~HandlerPlugin();
     
+    virtual std::string name() const _OPENMA_NOEXCEPT = 0;
+    
     virtual std::vector<std::string> supportedFormats() const _OPENMA_NOEXCEPT = 0;
     
     virtual Capability capabilities(const std::string& format) const _OPENMA_NOEXCEPT = 0;
