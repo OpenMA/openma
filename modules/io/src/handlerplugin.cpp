@@ -42,9 +42,9 @@ namespace io
 {
   /**
    * Convenient method to load handler plugins.
-   * Internally this methods used a static vector. It will be populated the first time this function is used.
+   * Internally this method uses a static object. It will be populated the first time this function is used.
    */
-  const std::vector<HanderPlugin*>& load_handler_plugins()
+  const std::vector<HandlerPlugin*>& load_handler_plugins()
   {
     static std::vector<HanderPlugin*> plugins;
     if (plugins.empty())

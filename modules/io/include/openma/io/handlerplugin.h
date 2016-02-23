@@ -47,11 +47,11 @@ namespace io
 {
   class Device;
   class Handler;
-  class HanderPlugin;
+  class HandlerPlugin;
   enum class Capability;
   enum class Signature;
   
-  const std::vector<HanderPlugin*>& load_handler_plugins();
+  const std::vector<HandlerPlugin*>& load_handler_plugins();
   
   class HandlerPlugin
   {
