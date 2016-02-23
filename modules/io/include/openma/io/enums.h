@@ -35,7 +35,7 @@
 #ifndef __openma_io_enums
 #define __openma_io_enums
 
-#include "openma/config.h"
+#include "openma/config.h" // _OPENMA_ARCH, _OPENMA_(IEEE|VAX)_(L|B)E
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR
 
 namespace ma

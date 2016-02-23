@@ -41,7 +41,7 @@
  */
 
 #include "openma/io/device_p.h"
-#include "openma/config.h"
+#include "openma/config.h" // HAVE_SYS_MMAP
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 #if !defined(HAVE_SYS_MMAP) && !defined(_MSC_VER)
