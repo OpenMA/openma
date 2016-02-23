@@ -196,19 +196,19 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_EQUALS(root.findChild("col"),col);
     TS_ASSERT_EQUALS(root.findChild("col",{},false),nullptr);
     
-    std::list<ma::Node*> moonsA = root.findChildren("moon");
+    std::vector<ma::Node*> moonsA = root.findChildren("moon");
     TS_ASSERT_EQUALS(moonsA.size(), 3u);
     
-    std::list<TestNode*> moonsB = root.findChildren<TestNode*>("moon");
+    std::vector<TestNode*> moonsB = root.findChildren<TestNode*>("moon");
     TS_ASSERT_EQUALS(moonsB.size(), 3u);
     
-    std::list<ma::Node*> planetsA = root.findChildren(std::regex("planet.*"));
+    std::vector<ma::Node*> planetsA = root.findChildren(std::regex("planet.*"));
     TS_ASSERT_EQUALS(planetsA.size(), 3u);
     
-    std::list<TestNode*> planetsB = sun->findChildren<TestNode*>(std::regex("planet.*"),{},false);
+    std::vector<TestNode*> planetsB = sun->findChildren<TestNode*>(std::regex("planet.*"),{},false);
     TS_ASSERT_EQUALS(planetsB.size(), 3u);
     
-    std::list<ma::Node*> all = root.findChildren();
+    std::vector<ma::Node*> all = root.findChildren();
     TS_ASSERT_EQUALS(all.size(), 10u);
   };
   
@@ -386,7 +386,7 @@ CXXTEST_SUITE(NodeTest)
     ma::Node branch2_1("branch2_1",&branch2);
     TestNode leaf2_1_1("leaf2_1_1",&branch2_1);
     
-    std::list<const ma::Node*> ref;
+    std::vector<const ma::Node*> ref;
     
     auto path1 = root.retrievePath(&branch1);
     TS_ASSERT_EQUALS(path1.size(), 2u);

@@ -52,7 +52,7 @@ namespace ma
   
   NodePrivate::~NodePrivate() _OPENMA_NOEXCEPT = default;
   
-  bool NodePrivate::retrievePath(std::list<const Node*>& path, const Node* current, const Node* stop)
+  bool NodePrivate::retrievePath(std::vector<const Node*>& path, const Node* current, const Node* stop)
   {
     const auto& children = current->children();
     // Direct child search
@@ -68,11 +68,11 @@ namespace ma
     // Deep child search
     for (auto it = children.cbegin() ; it != children.cend() ; ++it)
     {
-      std::list<const Node*> temp;
+      std::vector<const Node*> temp;
       if (NodePrivate::retrievePath(temp,*it,stop))
       {
         path.push_back(current);
-        path.splice(path.end(),temp);
+        path.insert(path.end(),temp.begin(),temp.end());
         return true;
       }
     }
@@ -429,9 +429,9 @@ namespace ma
    */
   
   /**
-   * Returns the list of children attached with this node.
+   * Returns the vector of children attached with this node.
    */ 
-  const std::list<Node*>& Node::children() const _OPENMA_NOEXCEPT
+  const std::vector<Node*>& Node::children() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Children;
@@ -447,9 +447,9 @@ namespace ma
   };
   
   /**
-   * Returns the list of parents attached with this node.
+   * Returns the vector of parents attached with this node.
    */ 
-  const std::list<Node*>& Node::parents() const _OPENMA_NOEXCEPT
+  const std::vector<Node*>& Node::parents() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Parents;
@@ -478,7 +478,7 @@ namespace ma
   };
   
   /**
-   * Remove the given @a node from the list of the parent.
+   * Remove @a node from associated parents.
    * @note It is the responsability to the developer to delete this node if this one has no more parent.
    */
   void Node::removeParent(Node* node) _OPENMA_NOEXCEPT
@@ -591,7 +591,7 @@ namespace ma
   };
   
   /**
-   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
    * Returns the child with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * There are three ways to use this methods.
    *
@@ -612,7 +612,7 @@ namespace ma
    * @endcode
    *
    * In addition, you can add properties to refine the research. Sometimes this could be usefull to distinguish events with the same name but different properties.
-   * As presented in the following examples, it is adviced to give matching properties in an initializer list using curly brackets due to the use of the move semantics in the method. Inside, each matching property is given as a pair {key, value} given also by an initializer list. So, for a single matching property, two pairs of curly brackets are used but this is correct.
+   * As presented in the following examples, it is adviced to give matching properties in an initializer vector using curly brackets due to the use of the move semantics in the method. Inside, each matching property is given as a pair {key, value} given also by an initializer vector. So, for a single matching property, two pairs of curly brackets are used but this is correct.
    * @code{.unparsed}
    * ma::Node events("Events");
    * ma::Event evtA("Foo",0.0,"Right","JDoe",&events);
@@ -633,16 +633,16 @@ namespace ma
    */
   
   /**
-   * @fn template <typename T = Node*> std::list<T> Node::findChildren(const std::string& name = {}, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = {}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Returns the children with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * As with the method findChild(), you can explicitely or implicitely give the type and/or the name of the children. For example:
    * @code{.unparsed}
-   * std::list<ma::Event*> events = root.findChildren<ma::Event*>(); // Find all events
-   * std::list<ma::Event*> footstrikes = root.findChildren<ma::Event*>("Foot Strike"); // Find all foot strike events
-   * std::list<ma::Node*> nodes = root.findChildren("Foot Strike"); // Find all node with the name "Foot Strike"
+   * std::vector<ma::Event*> events = root.findChildren<ma::Event*>(); // Find all events
+   * std::vector<ma::Event*> footstrikes = root.findChildren<ma::Event*>("Foot Strike"); // Find all foot strike events
+   * std::vector<ma::Node*> nodes = root.findChildren("Foot Strike"); // Find all node with the name "Foot Strike"
    * @endcode
    *
-   * It is adviced to give matching properties by using an initializer list due to the use of the move semantics in the method.
+   * It is adviced to give matching properties by using an initializer vector due to the use of the move semantics in the method.
    * @code{.unparsed}
    * ma::Node events("Events");
    * ma::Event evtA("Foo",0.0,"Right","JDoe",&events);
@@ -657,19 +657,19 @@ namespace ma
    */
   
   /**
-   * @fn template <typename U = Node*, typename V, typename > std::list<U> Node::findChildren(const V& regexp, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Convenient method to find children using a regular expression.
    */
   
   /**
    * Retrieves the first path existing between the current node and the given @a node.
-   * If no path exists between both, then an empty list is returned, 
+   * If no path exists between both, then an empty vector is returned, 
    * The first node in the retrieved path is the current one, while the last is the node to search.
    */
-  std::list<const Node*> Node::retrievePath(const Node* node) const _OPENMA_NOEXCEPT
+  std::vector<const Node*> Node::retrievePath(const Node* node) const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    std::list<const Node*> path;
+    std::vector<const Node*> path;
     optr->retrievePath(path,this,node);
     return path;
   };
@@ -677,7 +677,7 @@ namespace ma
   /**
    * Implementation of the findChild method.
    */
-  Node* Node::findNode(typeid_t id, const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  Node* Node::findNode(typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
@@ -715,7 +715,7 @@ namespace ma
   /**
    * Implementation of the findChildren method.
    */
-  void Node::findNodes(std::list<void*>* list, typeid_t id, const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
@@ -733,8 +733,7 @@ namespace ma
             break;
           }
         }
-        if (found)
-          list->emplace_back(node);
+        if (found) vector->emplace_back(node);
       }
         
     }
@@ -742,14 +741,14 @@ namespace ma
     if (recursiveSearch)
     {
       for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(list,id,name,std::move(properties),recursiveSearch);
+        (*it)->findNodes(vector,id,name,std::move(properties),recursiveSearch);
     }
   };
   
   /**
    * Implementation of the findChildren method.
    */
-  void Node::findNodes(std::list<void*>* list, typeid_t id, const std::regex& regexp, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
@@ -767,15 +766,14 @@ namespace ma
             break;
           }
         }
-        if (found)
-          list->emplace_back(node);
+        if (found) vector->emplace_back(node);
       }
     }
     // In case the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
       for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(list,id,regexp,std::move(properties),recursiveSearch);
+        (*it)->findNodes(vector,id,regexp,std::move(properties),recursiveSearch);
     }
   };
   

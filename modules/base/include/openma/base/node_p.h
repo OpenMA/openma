@@ -47,7 +47,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <list>
+#include <vector>
 
 namespace ma
 {
@@ -62,7 +62,7 @@ namespace ma
     )
 
   public:
-    static bool retrievePath(std::list<const Node*>& path, const Node* current, const Node* stop);
+    static bool retrievePath(std::vector<const Node*>& path, const Node* current, const Node* stop);
     
     NodePrivate() = delete;
     NodePrivate(Node* pint, const std::string& name);
@@ -81,8 +81,8 @@ namespace ma
     std::string Name;
     std::string Description;
     std::unordered_map<std::string,Any> DynamicProperties;
-    std::list<Node*> Parents;
-    std::list<Node*> Children;
+    std::vector<Node*> Parents;
+    std::vector<Node*> Children;
     
   protected:
     Node* mp_Pint;

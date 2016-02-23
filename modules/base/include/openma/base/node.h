@@ -41,7 +41,7 @@
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 #include "openma/base/nodeid.h" // Macro OPENMA_DECLARE_NODEID used by inheriting classes.
 
-#include <list>
+#include <vector>
 #include <unordered_map>
 #include <string>
 #include <regex>
@@ -82,19 +82,19 @@ namespace ma
     const std::unordered_map<std::string, Any>& dynamicProperties() const _OPENMA_NOEXCEPT;
     
     template <typename U = Node*> U child(unsigned index) const _OPENMA_NOEXCEPT;
-    const std::list<Node*>& children() const _OPENMA_NOEXCEPT;
+    const std::vector<Node*>& children() const _OPENMA_NOEXCEPT;
     bool hasChildren() const _OPENMA_NOEXCEPT;
     
-    const std::list<Node*>& parents() const _OPENMA_NOEXCEPT;
+    const std::vector<Node*>& parents() const _OPENMA_NOEXCEPT;
     bool hasParents() const _OPENMA_NOEXCEPT;
     void addParent(Node* node) _OPENMA_NOEXCEPT;
     void removeParent(Node* node) _OPENMA_NOEXCEPT;
     
-    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*> std::list<U> findChildren(const std::string& name = std::string{}, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::list<U> findChildren(const V& regexp, std::list<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
     
-    std::list<const Node*> retrievePath(const Node* node) const _OPENMA_NOEXCEPT;
+    std::vector<const Node*> retrievePath(const Node* node) const _OPENMA_NOEXCEPT;
     
     virtual void modified() _OPENMA_NOEXCEPT;
     void clear() _OPENMA_NOEXCEPT;
@@ -110,9 +110,9 @@ namespace ma
     void replaceChild(Node* current, Node* substitute);
     
   private:
-    Node* findNode(typeid_t id, const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
-    void findNodes(std::list<void*>* list, typeid_t id, const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
-    void findNodes(std::list<void*>* list, typeid_t id, const std::regex& regexp, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    Node* findNode(typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
   };
   
   // ----------------------------------------------------------------------- //
@@ -132,7 +132,7 @@ namespace ma
   };
 
   template <typename U>
-  U Node::findChild(const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  U Node::findChild(const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
@@ -140,22 +140,22 @@ namespace ma
   };
 
   template <typename U>
-  std::list<U> Node::findChildren(const std::string& name, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  std::vector<U> Node::findChildren(const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
-    std::list<U> children;
-    this->findNodes(reinterpret_cast<std::list<void*>*>(&children),static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch);
+    std::vector<U> children;
+    this->findNodes(reinterpret_cast<std::vector<void*>*>(&children),static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch);
     return children;
   };
   
   template <typename U, typename V, typename>
-  std::list<U> Node::findChildren(const V& regexp, std::list<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  std::vector<U> Node::findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
-    std::list<U> children;
-    this->findNodes(reinterpret_cast<std::list<void*>*>(&children), static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),regexp,std::move(properties),recursiveSearch);
+    std::vector<U> children;
+    this->findNodes(reinterpret_cast<std::vector<void*>*>(&children), static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),regexp,std::move(properties),recursiveSearch);
     return children;
   };
   
