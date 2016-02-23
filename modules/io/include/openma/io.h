@@ -44,4 +44,51 @@
 #include "openma/io/handlerplugin.h"
 #include "openma/io/handlerreader.h"
 
+#include "openma/base/node.h"
+#include "openma/base/logger.h"
+
+#include <string>
+
+namespace ma
+{
+namespace io
+{
+  /**
+   * Convenient function to read the content of a file and set it in @a root.
+   * Internally, this function use the class HandlerReader.
+   * @relates HandlerReader
+   * @ingroup openma_io
+   */
+  inline bool read(Node* root, const std::string& filepath, const std::string& format = {})
+  {
+    File file;
+    file.open(filepath.c_str(), Mode::In);
+    HandlerReader reader(&file, format);
+    bool result = reader.read(root);
+    if (!result && (reader.errorCode() != Error::None))
+      error(reader.errorMessage().c_str());
+    return result;
+  };
+    
+  /**
+   * Convenient function to read the content of a file and return it in a Node object.
+   * In case the result is null (@c nullptr), this certainly means that an error was thrown. Error message are sent to the logger and might help to determine the problem.
+   * @note The returned Node was created by the new() operator. It is the responsability of the developer to delete it.
+   * @relates HandlerReader
+   * @ingroup openma_io
+   */
+  inline Node* read(const std::string& filepath, const std::string& format = {})
+  {
+    Node* root = new Node("root");
+    bool result = read(root, filepath, format);
+    if (!result)
+    {
+      delete root;
+      root = nullptr;
+    }
+    return root;
+  };
+}  
+}
+
 #endif // __openma_io_h

@@ -10,6 +10,7 @@ EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory "${OPENMA_BINARY_DIR}
 # Configure the file paths
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/tdd_file_path.h.in ${CMAKE_CURRENT_BINARY_DIR}/tdd_file_path.h)
 
+CXXTEST_ADD_TDD(openma_io ioTest.cpp io)
 CXXTEST_ADD_TDD(openma_io_binarystream binarystreamTest.cpp io)
 CXXTEST_ADD_TDD(openma_io_buffer bufferTest.cpp io)
 CXXTEST_ADD_TDD(openma_io_file fileTest.cpp io)

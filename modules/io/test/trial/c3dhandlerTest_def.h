@@ -6,19 +6,11 @@
 #include "openma/base/timesequence.h"
 #include "openma/base/event.h"
 
-inline void c3dhandlertest_sample01(const char* msgid, const char* filename, const char* filepath)
+inline void c3dhandlertest_sample01(const char* msgid, const char* filename, ma::Node* root)
 {
-  ma::io::File file;
-  file.open(filepath, ma::io::Mode::In);
-  ma::io::HandlerReader reader(&file, "org.c3d");
-  ma::Node root("root");
+  TSM_ASSERT_EQUALS(msgid, root->children().size(),1ul);
   
-  TSM_ASSERT_EQUALS(msgid, reader.read(&root),true);
-  TSM_ASSERT_EQUALS(msgid, reader.errorCode(), ma::io::Error::None);
-  TSM_ASSERT_EQUALS(msgid, reader.errorMessage(), "");
-  TSM_ASSERT_EQUALS(msgid, root.children().size(),1ul);
-  
-  ma::Trial* trial = root.findChild<ma::Trial*>();
+  ma::Trial* trial = root->findChild<ma::Trial*>();
   TS_ASSERT_DIFFERS(trial, nullptr);
   if (trial == nullptr)
     return;
@@ -52,6 +44,22 @@ inline void c3dhandlertest_sample01(const char* msgid, const char* filename, con
   TSM_ASSERT_EQUALS(msgid, evts[2]->name(), "RTO");
   TSM_ASSERT_DELTA(msgid, evts[2]->time(), 7.32, 1e-4);
 };
+
+
+inline void c3dhandlertest_sample01(const char* msgid, const char* filename, const char* filepath)
+{
+  ma::io::File file;
+  file.open(filepath, ma::io::Mode::In);
+  ma::io::HandlerReader reader(&file, "org.c3d");
+  ma::Node root("root");
+  
+  TSM_ASSERT_EQUALS(msgid, reader.read(&root),true);
+  TSM_ASSERT_EQUALS(msgid, reader.errorCode(), ma::io::Error::None);
+  TSM_ASSERT_EQUALS(msgid, reader.errorMessage(), "");
+  
+  c3dhandlertest_sample01(msgid, filename, &root);
+}
+
 
 #endif // c3dhandlerTest_def_h
 
