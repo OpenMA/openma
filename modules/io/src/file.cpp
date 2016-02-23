@@ -183,7 +183,7 @@ namespace io
     this->m_Offset = 0;
     
     // Map the file
-    if (!this->map())
+    if ((this->m_DataSize != 0) && !this->map())
       return this->close();
     
     // If necessary go to the end of the file (End option)
@@ -209,11 +209,11 @@ namespace io
   {
     if (!this->isOpen() || (this->m_DataSize < 0))
       return 0;
-
+    
 #if defined(HAVE_SYS_MMAP)
-    bool err = !(::munmap(this->mp_Data, this->m_DataSize) == 0);
+    bool err = (this->m_DataSize != 0) && !(::munmap(this->mp_Data, this->m_DataSize) == 0);
 #else
-    BOOL err = (::UnmapViewOfFile(this->mp_Data) == 0) || (::CloseHandle(this->m_Map) == 0);
+    BOOL err = (this->m_DataSize != 0) && ((::UnmapViewOfFile(this->mp_Data) == 0) || (::CloseHandle(this->m_Map) == 0));
     this->m_Map = NULL;
 #endif
     

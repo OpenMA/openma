@@ -134,6 +134,23 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
   
+  CXXTEST_TEST(openReadModeEmptyContent)
+  {
+    ma::io::File file;
+    file.open(OPENMA_TDD_PATH_IN("c3d/other/Empty.c3d"), ma::io::Mode::In);
+    TS_ASSERT_EQUALS(file.isOpen(), true);
+    TS_ASSERT_EQUALS(file.isGood(), true);
+    TS_ASSERT_EQUALS(file.atEnd(), false);
+    TS_ASSERT_EQUALS(file.hasError(), false);
+    TS_ASSERT_EQUALS(file.hasFailure(), false);
+    file.close();
+    TS_ASSERT_EQUALS(file.isOpen(), false);
+    TS_ASSERT_EQUALS(file.isGood(), true);
+    TS_ASSERT_EQUALS(file.atEnd(), false);
+    TS_ASSERT_EQUALS(file.hasError(), false);
+    TS_ASSERT_EQUALS(file.hasFailure(), false);
+  };
+  
   CXXTEST_TEST(openWriteMode)
   {
     const char* filename = OPENMA_TDD_PATH_OUT("c3d/mmfstream.c3d");
@@ -499,6 +516,7 @@ CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWrongFilenameRead)
 CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWriteNewFile)
 CXXTEST_TEST_REGISTRATION(FileTest, secondConstructorWriteExistedFile)
 CXXTEST_TEST_REGISTRATION(FileTest, openReadMode)
+CXXTEST_TEST_REGISTRATION(FileTest, openReadModeEmptyContent)
 CXXTEST_TEST_REGISTRATION(FileTest, openWriteMode)
 CXXTEST_TEST_REGISTRATION(FileTest, openWriteModeFromExistingFile)
 CXXTEST_TEST_REGISTRATION(FileTest, read)
