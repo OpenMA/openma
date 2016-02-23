@@ -94,7 +94,7 @@ namespace io
    */
   
   /**
-   * Open the file with the given filename @a s and the options @a mode.
+   * Open the file with the given filepath @a s and the options @a mode.
    */
   MemoryMappedBuffer* MemoryMappedBuffer::open(const char* s, Mode mode) _OPENMA_NOEXCEPT
   {
@@ -443,16 +443,16 @@ namespace io
   File::~File() _OPENMA_NOEXCEPT = default;
   
   /**
-   * Open the given @a filename with the specified @a mode.
+   * Open the given @a filepath with the specified @a mode.
    * @note To open a file, the device has to be first closed if a previous file was already opened.
    */
-  void File::open(const char* filename, Mode mode)
+  void File::open(const char* filepath, Mode mode)
   {
     if (this->verifyOpenMode(mode))
     {
       auto optr = this->pimpl();
-      this->setName(filename);
-      if (!optr->Buffer->open(filename, mode))
+      this->setName(filepath);
+      if (!optr->Buffer->open(filepath, mode))
         this->setState(State::Fail);
       else
         this->clear();

@@ -57,7 +57,7 @@ namespace io
     File& operator=(const File& ) = delete;
     File& operator=(File&& ) _OPENMA_NOEXCEPT = delete;
     
-    void open(const char* filename, Mode mode);
+    void open(const char* filepath, Mode mode);
     virtual bool isOpen() const _OPENMA_NOEXCEPT override;
     virtual void close() override;
     virtual Size peek(char* s, Size n) const override;
