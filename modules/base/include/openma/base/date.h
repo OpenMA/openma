@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,16 +32,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_base_h
-#define __openma_base_h
+#ifndef __openma_base_date_h
+#define __openma_base_date_h
 
-#include "openma/base/any.h"
-#include "openma/base/date.h"
-#include "openma/base/event.h"
-#include "openma/base/exception.h"
-#include "openma/base/logger.h"
-#include "openma/base/node.h"
-#include "openma/base/object.h"
-#include "openma/base/timesquence.h"
+#include "openma/base_export.h" // OPENMA_BASE_EXPORT
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
+#include "openma/base/typeid.h" // OPENMA_EXPORT_STATIC_TYPEID
 
-#endif // __openma_base_h
+namespace ma
+{
+  class OPENMA_BASE_EXPORT Date
+  {
+  public:
+    Date(unsigned year = 1900, unsigned month = 01, unsigned day = 01);
+    ~Date() _OPENMA_NOEXCEPT = default;
+    Date(const Date& ) = default;
+    Date(Date&& ) _OPENMA_NOEXCEPT = default;
+    Date& operator=(const Date& ) = default;
+    Date& operator=(Date&& ) _OPENMA_NOEXCEPT = default;
+    
+    void setYear(unsigned value) _OPENMA_NOEXCEPT;
+    unsigned year() const _OPENMA_NOEXCEPT;
+    
+    void setMonth(unsigned value) _OPENMA_NOEXCEPT;
+    unsigned month() const _OPENMA_NOEXCEPT;
+    
+    void setDay(unsigned value) _OPENMA_NOEXCEPT;
+    unsigned day() const _OPENMA_NOEXCEPT;
+    
+    friend bool operator==(const Date& lhs, const Date& rhs);
+    friend bool operator!=(const Date& lhs, const Date& rhs);
+    
+  private:
+    unsigned m_Value;
+  };
+  
+  OPENMA_EXPORT_STATIC_TYPEID(Date, OPENMA_BASE_EXPORT)
+};
+
+#endif // __openma_base_date_h
