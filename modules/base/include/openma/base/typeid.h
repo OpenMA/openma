@@ -39,6 +39,7 @@
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 
 #include <cstddef> // size_t
+#include <utility> // std::move
 
 namespace ma
 {
