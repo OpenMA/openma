@@ -89,7 +89,7 @@ namespace io
    * You could also decide to force the type of format using the method setFormat().
    *
    * A simple usage to read a file is for example
-   * @code
+   * @code{.unparsed}
    * // Create a file device
    * ma::io::File file;
    * // Open a file in read mode

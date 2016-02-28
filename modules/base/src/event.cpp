@@ -227,7 +227,7 @@ namespace ma
   };
  
   /**
-   * Do a deep copy of the the given @a src. The previous content is replaced.
+   * Do a deep copy of the the given @a source. The previous content is replaced.
    * @note Each subclass must override this method to correctly do the deep copy.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards. See the example in the desctription of the Node::copy() method.
    */

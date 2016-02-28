@@ -554,7 +554,7 @@ namespace maths
      *  - The rotation along the axis X will be given with the value 0.
      *  - The rotation along the axis Y will be given with the value 1.
      *  - The rotation along the axis Z will be given with the value 2.
-     * @code
+     * @code{.unparsed}
      * auto eao1 = EulerAnglesOp(pose,0,1,2); // Extract eurler angles using axes X, Y', and Z".
      * auto eao2 = EulerAnglesOp(pose,2,0,1); // Extract eurler angles using axes Z, X', and Y".
      * @endcode

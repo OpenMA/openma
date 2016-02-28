@@ -537,7 +537,7 @@ namespace ma
   };
   
   /**
-   * Do a deep copy of the the given @a src. The previous content is replaced.
+   * Do a deep copy of the the given @a source. The previous content is replaced.
    * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards.
    * @code{.unparsed}

@@ -541,7 +541,7 @@ namespace ma
   };
   
   /**
-   * Do a deep copy of the the given @a src. The previous content is replaced.
+   * Do a deep copy of the the given @a source. The previous content is replaced.
    */
   void TimeSequence::copy(const Node* source) _OPENMA_NOEXCEPT
   {

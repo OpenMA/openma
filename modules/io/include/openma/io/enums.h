@@ -47,6 +47,7 @@ namespace io
   /**
    * @enum Mode
    * Details on the way to use the device.
+   * @ingroup openma_io
    */
   /**
    * @var Mode Mode::Unknown
@@ -76,6 +77,7 @@ namespace io
   /**
    * Bitwise and operator for Mode enumeration
    * @relates Device
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR Mode operator& (Mode lhs, Mode rhs)
   {
@@ -85,6 +87,7 @@ namespace io
   /**
    * Bitwise or operator for Mode enumeration
    * @relates Device
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR Mode operator| (Mode lhs, Mode rhs)
   {
@@ -94,6 +97,7 @@ namespace io
   /**
    * Bitwise not operator for Mode enumeration
    * @relates Device
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR Mode operator~ (Mode x)
   {
@@ -105,6 +109,7 @@ namespace io
   /**
    * @enum Origin
    * Used as anchor for the seek() method.
+   * @ingroup openma_io
    */
   /**
    * @var Origin Origin::Begin
@@ -123,7 +128,8 @@ namespace io
   
   /**
    * @enum State
-   * Internal state of the device. This 
+   * Internal state of the device.
+   * @ingroup openma_io
    */
   /**
    * @var State  State::End
@@ -145,6 +151,7 @@ namespace io
   /**
    * Bitwise and operator for State enumeration
    * @relates Device
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR State operator& (State lhs, State rhs)
   {
@@ -154,6 +161,7 @@ namespace io
   /**
    * Bitwise or operator for State enumeration
    * @relates Device
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR State operator| (State lhs, State rhs)
   {
@@ -211,6 +219,7 @@ namespace io
   /**
    * @enum Signature
    * Constant values to notify if the content of the handle has a valid/invalid signature.
+   * @ingroup openma_io
    */
   /**
    * @var Signature Signature::Valid
@@ -230,6 +239,7 @@ namespace io
   /**
    * @enum Error
    * Predefined error code used to explain possible errors during the reading/writing of the data.
+   * @ingroup openma_io
    */
   /**
    * @var Error Error::None
@@ -261,6 +271,7 @@ namespace io
   /**
    * @enum Signature::Capability
    * Inform on the capability to read/write data from/to a device.
+   * @ingroup openma_io
    */
   /**
    * @var Signature::Capability Signature::None
@@ -282,6 +293,7 @@ namespace io
   /**
    * Bitwise or operator for Capability enumeration
    * @relates Handler
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR Capability operator| (Capability lhs, Capability rhs)
   {
@@ -291,6 +303,7 @@ namespace io
   /**
    * Bitwise and operator for Capability enumeration
    * @relates Handler
+   * @ingroup openma_io
    */
   inline _OPENMA_CONSTEXPR Capability operator& (Capability lhs, Capability rhs)
   {

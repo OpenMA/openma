@@ -92,6 +92,8 @@ namespace ma
    * // This is the same for the next line. The differences is in the research time which might be shorter below.
    * * std::cout <<  std::boolalpha << trial->timeSequences()->findChild<ma::TimeSequence*>("RHEL") != nullptr << std::endl;
    * @endcode
+   *
+   * @ingroup openma_base
    */
   
   /**
@@ -158,25 +160,25 @@ namespace ma
     return node_cast<Event*>(*it);
   };
   
- /**
-  * Create a deep copy of the object and return it as another object.
-  */
- Trial* Trial::clone(Node* parent) const
- {
-   auto dest = new Trial(this->name());
-   dest->copy(this);
-   dest->addParent(parent);
-   return dest;
- };
-
- /**
-  * Do a deep copy of the the given @a src. The previous content is replaced.
-  */
- void Trial::copy(const Node* source) _OPENMA_NOEXCEPT
- {
-   auto src = node_cast<const Trial*>(source);
-   if (src == nullptr)
-     return;
-   this->Node::copy(src);
- };
+  /**
+   * Create a deep copy of the object and return it as another object.
+   */
+  Trial* Trial::clone(Node* parent) const
+  {
+    auto dest = new Trial(this->name());
+    dest->copy(this);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Do a deep copy of the the given @a source. The previous content is replaced.
+   */
+  void Trial::copy(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const Trial*>(source);
+    if (src == nullptr)
+      return;
+    this->Node::copy(src);
+  };
 };
