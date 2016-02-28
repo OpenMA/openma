@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,17 +32,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_base_h
-#define __openma_base_h
+#ifndef __openma_base_enums_h
+#define __openma_base_enums_h
 
-#include "openma/base/any.h"
-#include "openma/base/date.h"
-#include "openma/base/enums.h"
-#include "openma/base/event.h"
-#include "openma/base/exception.h"
-#include "openma/base/logger.h"
-#include "openma/base/node.h"
-#include "openma/base/object.h"
-#include "openma/base/timesquence.h"
+namespace ma
+{
+  enum class Sex : char {Unknown = 0x00, Male = 0x01, Female = 0x02};
+  
+  /**
+   * @enum Sex
+   * Enumerator for the sex a subject
+   * @ingroup openma_base
+   */
+  /**
+   * @var Sex Sex::Unknown
+   * No known sex. This can be used to initialize a variable.
+   */
+  /**
+   * @var Sex Sex::Male
+   * Male subject.
+   */
+  /**
+   * @var Sex Sex::Out
+   * Female subject.
+   */
+};
 
-#endif // __openma_base_h
+#endif // __openma_body_enums_h
