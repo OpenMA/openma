@@ -272,7 +272,7 @@ namespace ma
       template <typename U>
       static inline type* single(U&& value)
       {
-        return new type(value);
+        return new type(static_cast<type>(value));
       };
       template <typename U>
       static inline type* array(size_t newarraylen, U* values, size_t num)
