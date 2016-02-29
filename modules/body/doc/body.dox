@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_body ma::body
+ * @brief Classes for the development of (bio)mechanical model.
+ *
+ * This module corresponds to the library @c openma_body. It uses the nested namespace @c body. As a consequence all the types proposed in this module use the @c ma::body namespace.
+ *
+ * The main goal of this module is to compute joint kinematics and joint kinetics.
+ *
+ * @todo Details the goal and usage of ma::body.
+ */
