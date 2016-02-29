@@ -35,4 +35,6 @@
 #ifndef __openma_body_h
 #define __openma_body_h
 
+#include "openma/body/enums.h"
+
 #endif // __openma_body_h
