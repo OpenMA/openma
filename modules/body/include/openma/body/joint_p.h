@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,11 +32,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_joint_p_h
+#define __openma_body_joint_p_h
 
-#include "openma/body/enums.h"
-#include "openma/body/joint.h"
-#include "openma/body/segment.h"
+/*
+ * WARNING: This file and its content are not included in the public API and 
+ * can change drastically from one release to another.
+ */
 
-#endif // __openma_body_h
+#include "openma/base/node_p.h"
+
+namespace ma
+{
+namespace body
+{
+  class Segment;
+  class Joint;
+  
+  class JointPrivate : public NodePrivate
+  {
+    OPENMA_DECLARE_PINT_ACCESSOR(Joint)
+      
+  public:
+    JointPrivate(Joint* pint, const std::string& name, Segment* proximal, Segment* distal);
+    ~JointPrivate();
+    
+    Segment* Proximal;
+    Segment* Distal;
+  };
+};
+};
+
+#endif // __openma_body_joint_p_h

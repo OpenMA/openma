@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,11 +32,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_joint_h
+#define __openma_body_joint_h
 
-#include "openma/body/enums.h"
-#include "openma/body/joint.h"
-#include "openma/body/segment.h"
+#include "openma/body_export.h"
+#include "openma/base/node.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#endif // __openma_body_h
+namespace ma
+{
+namespace body
+{
+  class Segment;
+  
+  class JointPrivate;
+  
+  class OPENMA_NODE(OPENMA_BODY_EXPORT, Joint) : public Node
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(Joint)
+    OPENMA_DECLARE_NODEID(Joint, Node)
+        
+  public:
+    Joint(const std::string& name, Segment* proximal = nullptr, Segment* distal = nullptr, Node* parent = nullptr);
+    ~Joint() _OPENMA_NOEXCEPT;
+    
+    Joint(const Joint& ) = delete;
+    Joint(Joint&& ) _OPENMA_NOEXCEPT = delete;
+    Joint& operator=(const Joint& ) = delete;
+    Joint& operator=(Joint&& ) _OPENMA_NOEXCEPT = delete;
+    
+    Segment* proximalSegment() const _OPENMA_NOEXCEPT;
+    void setProximalSegment(Segment* value) _OPENMA_NOEXCEPT;
+    
+    Segment* distalSegment() const _OPENMA_NOEXCEPT;
+    void setDistalSegment(Segment* value) _OPENMA_NOEXCEPT;
+    
+    Joint* clone(Node* parent = nullptr) const;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    
+  private:
+    Joint(JointPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+  };
+};
+};
+
+#endif // __openma_body_joint_h
