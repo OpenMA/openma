@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,10 +32,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_segment_h
+#define __openma_body_segment_h
 
-#include "openma/body/enums.h"
-#include "openma/body/segment.h"
+#include "openma/body_export.h"
+#include "openma/base/node.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#endif // __openma_body_h
+namespace ma
+{
+namespace body
+{  
+  class SegmentPrivate;
+  
+  class OPENMA_NODE(OPENMA_BODY_EXPORT, Segment) : public Node
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(Segment)
+    OPENMA_DECLARE_NODEID(Segment, Node)
+    
+  public:
+    Segment(const std::string& name, int part = 0, int side = 0, Node* parent = nullptr);
+    ~Segment() _OPENMA_NOEXCEPT;
+    
+    Segment(const Segment& ) = delete;
+    Segment(Segment&& ) _OPENMA_NOEXCEPT = delete;
+    Segment& operator=(const Segment& ) = delete;
+    Segment& operator=(Segment&& ) _OPENMA_NOEXCEPT = delete;
+    
+    int part() const _OPENMA_NOEXCEPT;
+    void setPart(int value) _OPENMA_NOEXCEPT;
+    
+    int side() const _OPENMA_NOEXCEPT;
+    void setSide(int value) _OPENMA_NOEXCEPT;
+    
+    Segment* clone(Node* parent = nullptr) const;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+  };
+};
+};
+
+#endif // __openma_body_segment_h

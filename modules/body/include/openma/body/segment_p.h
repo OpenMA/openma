@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,10 +32,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_segment_p_h
+#define __openma_body_segment_p_h
 
-#include "openma/body/enums.h"
-#include "openma/body/segment.h"
+/*
+ * WARNING: This file and its content are not included in the public API and 
+ * can change drastically from one release to another.
+ */
 
-#endif // __openma_body_h
+#include "openma/base/node_p.h"
+#include "openma/base/property.h"
+
+namespace ma
+{
+namespace body
+{
+  class Segment;
+  
+  class SegmentPrivate : public NodePrivate
+  {
+    OPENMA_DECLARE_PINT_ACCESSOR(Segment)
+    
+    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(Segment, Node,
+      Property<Segment,int,&Segment::part,&Segment::setPart>{"part"},
+      Property<Segment,int,&Segment::side,&Segment::setSide>{"side"}
+    )
+    
+  public:
+    SegmentPrivate(Segment* pint, const std::string& name, int part, int side);
+    ~SegmentPrivate();
+    
+    int Part;
+    int Side;
+  };
+};
+};
+
+#endif // __openma_body_segment_p_h
