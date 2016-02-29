@@ -32,18 +32,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_base_h
-#define __openma_base_h
-
-#include "openma/base/any.h"
-#include "openma/base/date.h"
-#include "openma/base/enums.h"
-#include "openma/base/event.h"
-#include "openma/base/exception.h"
-#include "openma/base/logger.h"
-#include "openma/base/node.h"
-#include "openma/base/object.h"
 #include "openma/base/subject.h"
-#include "openma/base/timesquence.h"
 
-#endif // __openma_base_h
+// -------------------------------------------------------------------------- //
+//                                 PUBLIC API                                 //
+// -------------------------------------------------------------------------- //
+
+namespace ma
+{
+  /**
+   * @class Subject openma/base/subject.h
+   * @brief Information related to a subject that can set up algorithms.
+   * Because algorithms can request subject's information (e.g. sex, height, etc.), the Subject class was designed for that.
+   * You can store any kind of information and pass the object to algorithm that request it.
+   * @ingroup openma_base
+   */
+  
+  /**
+   * Constructor
+   */
+  Subject::Subject(const std::string& name, std::unordered_map<std::string, Any> properties, Node* parent)
+  : Node(name ,parent)
+  {
+    for (const auto& property: properties)
+      this->setProperty(property.first, property.second);
+  };
+  
+  /**
+   * Destructor (default)
+   */
+  Subject::~Subject() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Create a deep copy of the object and return it as another object.
+   */
+  Subject* Subject::clone(Node* parent) const
+  {
+    auto dest = new Subject(this->name());
+    dest->copy(this);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Do a deep copy of the the given @a source. The previous content is replaced.
+   */
+  void Subject::copy(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const Subject*>(source);
+    if (src == nullptr)
+      return;
+    this->Node::copy(src);
+  };
+};

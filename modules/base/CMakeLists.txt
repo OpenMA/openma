@@ -5,6 +5,7 @@ SET(OPENMA_BASE_SRCS
   src/logger.cpp
   src/node.cpp
   src/object.cpp
+  src/subject.cpp
   src/timesequence.cpp
   src/trial.cpp
 )

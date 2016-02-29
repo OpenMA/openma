@@ -32,18 +32,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_base_h
-#define __openma_base_h
+#ifndef __openma_base_subject_h
+#define __openma_base_subject_h
 
-#include "openma/base/any.h"
-#include "openma/base/date.h"
-#include "openma/base/enums.h"
-#include "openma/base/event.h"
-#include "openma/base/exception.h"
-#include "openma/base/logger.h"
 #include "openma/base/node.h"
-#include "openma/base/object.h"
-#include "openma/base/subject.h"
-#include "openma/base/timesquence.h"
+#include "openma/base/any.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#endif // __openma_base_h
+namespace ma
+{
+  class TimeSequence;
+  class Event;
+  
+  class OPENMA_NODE(OPENMA_BASE_EXPORT, Subject) : public Node
+  {
+    OPENMA_DECLARE_NODEID(Subject, Node)
+    
+  public:
+    Subject(const std::string& name, std::unordered_map<std::string, Any> properties = {}, Node* parent = nullptr);
+    ~Subject() _OPENMA_NOEXCEPT;
+    
+    Subject(const Node& ) = delete;
+    Subject(Node&& ) _OPENMA_NOEXCEPT = delete;
+    Subject& operator=(const Subject& ) = delete;
+    Subject& operator=(Subject&& ) _OPENMA_NOEXCEPT = delete;
+
+    Subject* clone(Node* parent = nullptr) const;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+  };
+};
+
+#endif // __openma_base_subject_h
