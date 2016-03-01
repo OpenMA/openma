@@ -124,14 +124,9 @@ namespace ma
    * Returns the @a idx child of the subnode "TimeSequences" and cast it as a TimeSequence object.
    * If @a idx is out of range or if the extracted node is not a TimeSequence object, the method returns nullptr.
    */
-  TimeSequence* Trial::timeSequence(unsigned idx)
+  TimeSequence* Trial::timeSequence(unsigned idx) _OPENMA_NOEXCEPT
   {
-    auto node = this->timeSequences();
-    if (node->children().size() <= idx)
-      return nullptr;
-    auto it = node->children().begin();
-    std::advance(it,idx);
-    return node_cast<TimeSequence*>(*it);
+    return this->timeSequences()->child<TimeSequence*>(idx);
   };
   
   /**
@@ -150,14 +145,9 @@ namespace ma
    * Returns the @a idx child of the subnode "Events" and cast it as an Event object.
    * If @a idx is out of range or if the extracted node is not an Event object, the method returns nullptr.
    */
-  Event* Trial::event(unsigned idx)
+  Event* Trial::event(unsigned idx) _OPENMA_NOEXCEPT
   {
-    auto node = this->events();
-    if (node->children().size() <= idx)
-      return nullptr;
-    auto it = node->children().begin();
-    std::advance(it,idx);
-    return node_cast<Event*>(*it);
+    return this->events()->child<Event*>(idx);
   };
   
   /**

@@ -60,10 +60,10 @@ namespace ma
     Trial& operator=(Trial&& ) _OPENMA_NOEXCEPT = delete;
     
     Node* timeSequences();
-    TimeSequence* timeSequence(unsigned idx);
+    TimeSequence* timeSequence(unsigned idx) _OPENMA_NOEXCEPT;
       
     Node* events();
-    Event* event(unsigned idx);
+    Event* event(unsigned idx) _OPENMA_NOEXCEPT;
     
     Trial* clone(Node* parent = nullptr) const;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;

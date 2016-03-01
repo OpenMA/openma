@@ -1,6 +1,8 @@
 #include <cxxtest/TestDrive.h>
 
 #include <openma/base/trial.h>
+#include <openma/base/event.h>
+#include <openma/base/timesequence.h>
 
 CXXTEST_SUITE(TrialTest)
 {
@@ -14,6 +16,16 @@ CXXTEST_SUITE(TrialTest)
     TS_ASSERT_EQUALS(trial.events(), trial.findChild("Events"));
   };
   
+  CXXTEST_TEST(event)
+  {
+    ma::Trial trial("trial");
+    auto evt1 = new ma::Event("evt1"); evt1->addParent(trial.events());
+    auto evt2 = new ma::Event("evt2"); evt2->addParent(trial.events());
+    TS_ASSERT_EQUALS(trial.event(0), evt1);
+    TS_ASSERT_EQUALS(trial.event(1), evt2);
+    TS_ASSERT_EQUALS(trial.event(2), nullptr);
+  };
+  
   CXXTEST_TEST(timesequences)
   {
     ma::Trial trial("trial");
@@ -22,6 +34,16 @@ CXXTEST_SUITE(TrialTest)
     TS_ASSERT_EQUALS(trial.children().size(), 1ul);
     TS_ASSERT_DIFFERS(trial.findChild("TimeSequences"), nullptr);
     TS_ASSERT_EQUALS(trial.timeSequences(), trial.findChild("TimeSequences"));
+  };
+  
+  CXXTEST_TEST(timesequence)
+  {
+    ma::Trial trial("trial");
+    auto ts1 = new ma::TimeSequence("ts1", 1, 0, 100.0, 0.0, 0, "mm"); ts1->addParent(trial.timeSequences());
+    auto ts2 = new ma::TimeSequence("ts2", 1, 0, 100.0, 0.0, 0, "mm"); ts2->addParent(trial.timeSequences());
+    TS_ASSERT_EQUALS(trial.timeSequence(0), ts1);
+    TS_ASSERT_EQUALS(trial.timeSequence(1), ts2);
+    TS_ASSERT_EQUALS(trial.timeSequence(2), nullptr);
   };
   
   CXXTEST_TEST(clone)
@@ -58,6 +80,8 @@ CXXTEST_SUITE(TrialTest)
 
 CXXTEST_SUITE_REGISTRATION(TrialTest)
 CXXTEST_TEST_REGISTRATION(TrialTest, events)
+CXXTEST_TEST_REGISTRATION(TrialTest, event)
 CXXTEST_TEST_REGISTRATION(TrialTest, timesequences)
+CXXTEST_TEST_REGISTRATION(TrialTest, timesequence)
 CXXTEST_TEST_REGISTRATION(TrialTest, clone)
 CXXTEST_TEST_REGISTRATION(TrialTest, copy) 
