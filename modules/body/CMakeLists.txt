@@ -1,7 +1,7 @@
 SET(OPENMA_BODY_SRCS
   src/joint.cpp
   src/model.cpp
-  src/position.cpp
+  src/point.cpp
   src/referenceframe.cpp
   src/segment.cpp
 )

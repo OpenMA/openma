@@ -32,33 +32,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_position_p_h
-#define __openma_body_position_p_h
+#ifndef __openma_body_position_h
+#define __openma_body_position_h
 
-/*
- * WARNING: This file and its content are not included in the public API and 
- * can change drastically from one release to another.
- */
-
-#include "openma/base/node_p.h"
+#include "openma/body_export.h"
+#include "openma/base/node.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 namespace ma
 {
 namespace body
 {
-  class Position;
+  class PointPrivate;
   
-  class PositionPrivate : public NodePrivate
+  class OPENMA_NODE(OPENMA_BODY_EXPORT, Point) : public Node
   {
-    OPENMA_DECLARE_PINT_ACCESSOR(Position)
-      
+    OPENMA_DECLARE_PIMPL_ACCESSOR(Point)
+    OPENMA_DECLARE_NODEID(Point, Node)
+    
   public:
-    PositionPrivate(Position* pint, const std::string& name, const double* data);
-    ~PositionPrivate();
-
-    double Data[3];
+    Point(const std::string& name, const double coordinates[3] = nullptr, Node* parent = nullptr);
+    ~Point() _OPENMA_NOEXCEPT;
+    
+    Point(const Point& ) = delete;
+    Point(Point&& ) _OPENMA_NOEXCEPT = delete;
+    Point& operator=(const Point& ) = delete;
+    Point& operator=(Point&& ) _OPENMA_NOEXCEPT = delete;
+    
+    const double* data() const _OPENMA_NOEXCEPT;
+    double* data() _OPENMA_NOEXCEPT;
+    
+    void setData(const double* values) _OPENMA_NOEXCEPT;
+    
+    Point* clone(Node* parent = nullptr) const;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    
+  private:
+    Point(PointPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
 };
 
-#endif // __openma_body_position_p_h
+#endif // __openma_body_position_h

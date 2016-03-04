@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "openma/body/position.h"
-#include "openma/body/position_p.h"
+#include "openma/body/point.h"
+#include "openma/body/point_p.h"
 
 #include <cassert>
 #include <algorithm> // std::copy_n
@@ -49,7 +49,7 @@ namespace ma
 {
 namespace body
 {
-  PositionPrivate::PositionPrivate(Position* pint, const std::string& name, const double* data)
+  PointPrivate::PointPrivate(Point* pint, const std::string& name, const double* data)
   : NodePrivate(pint,name)
   {
     if (data != nullptr)
@@ -62,7 +62,7 @@ namespace body
     }
   };
   
-  PositionPrivate::~PositionPrivate() = default;
+  PointPrivate::~PointPrivate() = default;
 };
 };
 
@@ -79,27 +79,27 @@ namespace body
   /**
    * @class Coordinates openma/body/position.h
    * @brief Create a fix/relative position in a 3D euclidian space. 
-   * The goal of this class is to store 3D coordinates. Alone, it might not be interesting. But, set as a child of a reference frame, it creates a relative position. The association of a Position with a TimeSequence (representing a pose) can generate a trajectory. 
-   * The way to parent a Position determine its meaning.
+   * The goal of this class is to store 3D coordinates. Alone, it might not be interesting. But, set as a child of a reference frame, it creates a relative position. The association of a Point with a TimeSequence (representing a pose) can generate a trajectory. 
+   * The way to parent a Point determine its meaning.
    * @ingroup openma_body
    */
   
   /**
-   * Construct a new Position object with @a name and @a coordinates.
+   * Construct a new Point object with @a name and @a coordinates.
    */
-  Position::Position(const std::string& name, const double coordinates[3], Node* parent)
-  : Node(*new PositionPrivate(this,name,coordinates), parent)
+  Point::Point(const std::string& name, const double coordinates[3], Node* parent)
+  : Node(*new PointPrivate(this,name,coordinates), parent)
   {};
   
   /**
    * Destructor
    */
-  Position::~Position() _OPENMA_NOEXCEPT = default;
+  Point::~Point() _OPENMA_NOEXCEPT = default;
   
   /**
    * Returns a const pointer to the data.
    */
-  const double* Position::data() const _OPENMA_NOEXCEPT
+  const double* Point::data() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Data;
@@ -109,7 +109,7 @@ namespace body
    * Returns a pointer to the data.
    * @note You must call the modified() method after the use of this method if you set new values.
    */
-  double* Position::data() _OPENMA_NOEXCEPT
+  double* Point::data() _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Data;
@@ -118,7 +118,7 @@ namespace body
   /**
    * Sets the coordinates stored in @a values.
    */
-  void Position::setData(const double* values) _OPENMA_NOEXCEPT
+  void Point::setData(const double* values) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     _OPENMA_CONSTEXPR double eps = std::numeric_limits<double>::epsilon();
@@ -134,9 +134,9 @@ namespace body
   /**
    * Create a deep copy of the object and return it as another object.
    */
-  Position* Position::clone(Node* parent) const
+  Point* Point::clone(Node* parent) const
   {
-    auto dest = new Position(this->name());
+    auto dest = new Point(this->name());
     dest->copy(this);
     dest->addParent(parent);
     return dest;
@@ -145,9 +145,9 @@ namespace body
   /**
    * Do a deep copy of the the given @a source. The previous content is replaced.
    */
-  void Position::copy(const Node* source) _OPENMA_NOEXCEPT
+  void Point::copy(const Node* source) _OPENMA_NOEXCEPT
   {
-    auto src = node_cast<const Position*>(source);
+    auto src = node_cast<const Point*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();
