@@ -1,7 +1,6 @@
 /* 
- * The Biomechanical ToolKit
- * Copyright (c) 2009-2015, Arnaud Bdataé
- * All rights reserved.
+ * Open Source Movement Analysis Library
+ * Copyright (C) 2016, Moveck Solution Inc., all rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
