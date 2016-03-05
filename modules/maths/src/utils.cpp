@@ -48,3 +48,36 @@ bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigne
     return false;
   return true;
 }
+
+namespace ma
+{
+namespace maths
+{
+  TimeSequence* to_timesequence(unsigned components, unsigned samples, const double* values, const double* residuals, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
+  {
+    assert(components > 0);
+    assert(samples > 0);
+    auto ts = parent->findChild<TimeSequence*>(name,{{"type",type}},false);
+    if (ts != nullptr)
+    {
+      assert(ts->components() == components);
+      ts->resize(samples); // Grow / shrink the data (if necessary)
+      ts->setSampleRate(rate); // Assign possibly a new rate
+      ts->setStartTime(start); // Same for the start time
+      ts->setUnit(unit); // Same for the unit
+    }
+    else
+    {
+      ts = new TimeSequence(name, components, samples, rate, start, type, unit, parent);
+    }
+    if ((values != nullptr) && (residuals != nullptr))
+    {  
+      const unsigned valuesComponents = components - 1;
+      const unsigned offset = valuesComponents * samples;
+      std::copy_n(values, samples * valuesComponents, ts->data());
+      std::copy_n(residuals, samples, ts->data() + offset);
+    }
+    return ts;
+  };
+};
+};

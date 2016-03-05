@@ -35,6 +35,7 @@
 #ifndef __openma_maths_utils_h
 #define __openma_maths_utils_h
 
+#include "openma/maths_export.h"
 #include "openma/base/timesequence.h"
 
 bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
@@ -43,6 +44,10 @@ namespace ma
 {
 namespace maths
 {
+  // ======================================================================= //
+  //                    EXPORT TO MATHS::ARRAY AND DERIVED
+  // ======================================================================= //
+  
   /**
    * Extract a Result Map<ArrayBase> object from the given TimeSequence @a ts.
    * The Result object will have @a componments columns. If necessary the position of the data to extract can be shifted.
@@ -88,7 +93,7 @@ namespace maths
    * @relates Array
    * @ingroup openma_maths
    */
-   template <int N>
+  template <int N>
   inline Map<const Array<N>> to_array(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
     return to_arraybase_derived<Map<const Array<N>>>(ts, N, offset, type);
@@ -189,6 +194,54 @@ namespace maths
   {
     return to_arraybase_derived<Map<const Pose>>(ts,12,0,TimeSequence::Pose);
   };
+  
+  // ======================================================================= //
+  //                        EXPORT TO TIMESEQUENCE
+  // ======================================================================= //
+  
+  /**
+    * Export raw arrays to a time sequence.
+    * The behaviour of this function is the following:
+    *  - First, look for an existing time sequence with the given name and type.
+    *  - If a time sequence is found, its content is replaced by the given one
+    *  - Otherwise, a new time sequence is created
+    * @warning The @a components must contains the number of columns of the @a values plus one (column of the @a residuals).
+    */
+  OPENMA_MATHS_EXPORT TimeSequence* to_timesequence(unsigned components, unsigned samples, const double* values, const double* residuals, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent);
+  
+  /**
+   * Convenient method to transform maths array object (and derived) to a time sequence.
+   */
+  template <typename T>
+  inline TimeSequence* to_timesequence(const ArrayBase<T>* source, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
+  {
+    return to_timesequence(source->cols()+1, source->rows(), source->values().data(), source->residuals().data(), name, rate, start, type, unit, parent);
+  };
+  
+  /**
+   * Convenient method to export the vectors U, V, W and orign O (aka the content of maths::Pose) to a TimeSequence object
+   */
+  template <typename U, typename V, typename W, typename O>
+  inline TimeSequence* to_timesequence(const ArrayBase<U>* u,const ArrayBase<V>* v, const ArrayBase<W>* w, const ArrayBase<O>* o, const std::string& name, double rate, double start, Node* parent)
+  {
+    static_assert(U::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(V::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(W::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(O::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    assert(u->rows() == v->rows());
+    assert(v->rows() == w->rows());
+    assert(w->rows() == o->rows());
+    auto ts = to_timesequence(13, u->rows(), nullptr, nullptr, name, rate, start, TimeSequence::Pose, "", parent);
+    const Pose::Residuals residuals = generate_residuals((u->residuals() >= 0) && (v->residuals() >= 0) && (w->residuals() >= 0) && (o->residuals() >= 0));
+    const unsigned samples = 3 * residuals.rows();
+    std::copy_n(u->values().data(), samples, ts->data());
+    std::copy_n(v->values().data(), samples, ts->data() + samples);
+    std::copy_n(w->values().data(), samples, ts->data() + 2 * samples);
+    std::copy_n(o->values().data(), samples, ts->data() + 3 * samples);
+    std::copy_n(residuals.data(), residuals.rows(), ts->data() + 4 * samples);
+    return ts;
+  };
+  
 };
 };
 
