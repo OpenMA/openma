@@ -5,12 +5,13 @@ SET(OPENMA_BODY_SRCS
   src/point.cpp
   src/referenceframe.cpp
   src/segment.cpp
+  src/utils.cpp
 )
 
 # ADD_OPENMA_MODULE(body )
 
 ADD_LIBRARY(body ${OPENMA_LIBS_BUILD_TYPE} ${OPENMA_BODY_SRCS})
-TARGET_LINK_LIBRARIES(body base)
+TARGET_LINK_LIBRARIES(body base maths)
 TARGET_INCLUDE_DIRECTORIES(body PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>

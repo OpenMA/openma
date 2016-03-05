@@ -3,3 +3,4 @@ CXXTEST_ADD_TDD(openma_body_landmarkstranslator landmarkstranslatorTest.cpp body
 CXXTEST_ADD_TDD(openma_body_model modelTest.cpp body)
 CXXTEST_ADD_TDD(openma_body_position pointTest.cpp body)
 CXXTEST_ADD_TDD(openma_body_segment segmentTest.cpp body)
+CXXTEST_ADD_TDD(openma_body_utils utilsTest.cpp body)
