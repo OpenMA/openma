@@ -80,7 +80,7 @@ namespace body
    * @class Coordinates openma/body/position.h
    * @brief Create a fix/relative position in a 3D euclidian space. 
    * The goal of this class is to store 3D coordinates. Alone, it might not be interesting. But, set as a child of a reference frame, it creates a relative position. The association of a Point with a TimeSequence (representing a pose) can generate a trajectory. 
-   * The way to parent a Point determine its meaning.
+   * The way to parent a Point determines its meaning.
    * @ingroup openma_body
    */
   

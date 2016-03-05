@@ -105,13 +105,15 @@ namespace body
 {
   /**
    * @class ReferenceFrame openma/body/referenceframe.h
-   * @brief 
-   * 
+   * @brief Create a fix/relative reference frame in a 3D euclidian space. 
+   * The goal of this class is to store the 12 components used to represent the transformation of one reference frame to another. Alone, it might not be interesting. But, set as a child of a reference frame, it creates a relative reference frame. The association of a ReferenceFrame with a TimeSequence (representing a pose) can generate a motion. 
+   * The way to parent a ReferenceFrame determines its meaning.
    * @ingroup openma_body
    */
   
   /**
    * Constructor. Create a new reference frame where @a data contains the u, v, w, and o vectors.
+   * Internally, the content of @a data is copied.
    */
   ReferenceFrame::ReferenceFrame(const std::string& name, const double data[12], Node* parent)
   : Node(*new ReferenceFramePrivate(this, name, data), parent)
@@ -119,6 +121,7 @@ namespace body
   
   /**
    * Constructor. Create a new reference frame where @a orientation contains the u, v, and w vectors. The @a position contains the @a o vector.
+   * Internally, the content of @a orientation and @a position is copied.
    */
   ReferenceFrame::ReferenceFrame(const std::string& name, const double orientation[9], const double position[3], Node* parent)
   : Node(*new ReferenceFramePrivate(this, name, orientation, position), parent)

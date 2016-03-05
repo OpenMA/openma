@@ -264,7 +264,7 @@ namespace ma
    * This property holds the description of a Node. By default, this property contains an empty string.
    * @sa description() setDescription()
    */
-   std::string description;
+  std::string description;
   /**
    * This property holds the name of a Node. By default, this property contains an empty string.
    * @sa name() setName()
@@ -278,7 +278,7 @@ namespace ma
    * @note It is adviced to have a unique @a name. This would simplify the research of specific nodes with the methods findChild() and findChildren().
    */
   Node::Node(const std::string& name, Node* parent)
-  : Node::Node(*new NodePrivate(this,name),parent)
+  : Node(*new NodePrivate(this,name),parent)
   {};
   
   /**

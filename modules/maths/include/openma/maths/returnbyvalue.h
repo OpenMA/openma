@@ -307,30 +307,6 @@ namespace internal
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
   };
-  
-  // ----------------------------------------------------------------------- //
-  //                         ChordOpValues return value
-  // ----------------------------------------------------------------------- //
-  
-  struct ChordOpValues;
-
-  template <>
-  struct traits<ChordOpValues>
-  {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<3>>::Values;
-  };
-  
-  struct ChordOpValues : public Eigen::ReturnByValue<ChordOpValues>
-  {
-    using StorageType = traits<ChordOpValues>::ReturnType;
-    using Index = StorageType::Index;
-    StorageType m_V;
-  public:
-    template <typename V> ChordOpValues(const V& v) : m_V(v) {};
-    template <typename R> inline void evalTo(R& result) const {result.lazyAssign(this->m_V);};
-    Index rows() const {return this->m_V.rows();};
-    Index cols() const {return 3;};
-  };
 };
 };
 
