@@ -37,9 +37,12 @@
 
 #include "openma/body/enums.h"
 #include "openma/body/joint.h"
+#include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
-#include "openma/body/position.h"
-#include "openma/body/referenceframen.h"
+#include "openma/body/point.h"
+#include "openma/body/referenceframe.h"
 #include "openma/body/segment.h"
+#include "openma/body/skeletonhelper.h"
+#include "openma/body/utils.h"
 
 #endif // __openma_body_h
