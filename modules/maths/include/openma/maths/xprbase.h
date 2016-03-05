@@ -76,7 +76,7 @@ namespace maths
      * Convenient method to extract the first value if valid (i.e the associated residial is null or positive), otherwise returns 0.0.
      * @warning No assertion is realized to know if the expression is empty or not.
      */
-    operator double () const _OPENMA_NOEXCEPT {return (static_cast<const Derived&>(*this).derived().residuals().value() >= 0.0) ? static_cast<const Derived&>(*this).derived().values().value() : 0.0;};
+    operator double () const _OPENMA_NOEXCEPT {return (static_cast<const Derived&>(*this).derived().residuals().eval().coeff(0) >= 0.0) ? static_cast<const Derived&>(*this).derived().values().eval().coeff(0) : 0.0;};
     
     // Next methods are defined after the declaration of the class BlockOp
     
