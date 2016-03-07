@@ -43,10 +43,16 @@
 
 namespace ma
 {
+  class Trial;
+};
+
+namespace ma
+{
 namespace body
 {
   class LandmarksTranslator;
   class Subject;
+  class Model;
   
   class SkeletonHelperPrivate;
   
@@ -64,7 +70,7 @@ namespace body
     SkeletonHelper& operator=(SkeletonHelper&& ) _OPENMA_NOEXCEPT = delete;
     
     virtual bool calibrate(Node* trials, Subject* subject) _OPENMA_NOEXCEPT = 0;
-    virtual bool reconstruct(Node* output, Node* trials) const = 0;
+    bool reconstruct(Node* output, Node* trials) const;
     virtual LandmarksTranslator* defaultLandmarksTranslator() = 0;
         
     SkeletonHelper* clone(Node* parent = nullptr) const;
@@ -73,6 +79,9 @@ namespace body
   protected:
     SkeletonHelper(const std::string& name, int region = 0, int side = 0, Node* parent = nullptr);
     SkeletonHelper(SkeletonHelperPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+    
+    virtual bool setupModel(Model* model) const = 0;
+    virtual bool reconstructModel(Model* model, Trial* trial) const = 0;
   };
 };
 };
