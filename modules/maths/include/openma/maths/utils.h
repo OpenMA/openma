@@ -213,31 +213,31 @@ namespace maths
    * Convenient method to transform maths array object (and derived) to a time sequence.
    */
   template <typename T>
-  inline TimeSequence* to_timesequence(const ArrayBase<T>* source, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
+  inline TimeSequence* to_timesequence(const ArrayBase<T>& source, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
   {
-    return to_timesequence(source->cols()+1, source->rows(), source->values().data(), source->residuals().data(), name, rate, start, type, unit, parent);
+    return to_timesequence(source.cols()+1, source.rows(), source.values().data(), source.residuals().data(), name, rate, start, type, unit, parent);
   };
   
   /**
    * Convenient method to export the vectors U, V, W and orign O (aka the content of maths::Pose) to a TimeSequence object
    */
   template <typename U, typename V, typename W, typename O>
-  inline TimeSequence* to_timesequence(const ArrayBase<U>* u,const ArrayBase<V>* v, const ArrayBase<W>* w, const ArrayBase<O>* o, const std::string& name, double rate, double start, Node* parent)
+  inline TimeSequence* to_timesequence(const ArrayBase<U>& u,const ArrayBase<V>& v, const ArrayBase<W>& w, const ArrayBase<O>& o, const std::string& name, double rate, double start, Node* parent)
   {
     static_assert(U::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
     static_assert(V::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
     static_assert(W::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
     static_assert(O::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
-    assert(u->rows() == v->rows());
-    assert(v->rows() == w->rows());
-    assert(w->rows() == o->rows());
-    auto ts = to_timesequence(13, u->rows(), nullptr, nullptr, name, rate, start, TimeSequence::Pose, "", parent);
-    const Pose::Residuals residuals = generate_residuals((u->residuals() >= 0) && (v->residuals() >= 0) && (w->residuals() >= 0) && (o->residuals() >= 0));
+    assert(u.rows() == v.rows());
+    assert(v.rows() == w.rows());
+    assert(w.rows() == o.rows());
+    auto ts = to_timesequence(13, u.rows(), nullptr, nullptr, name, rate, start, TimeSequence::Pose, "", parent);
+    const Pose::Residuals residuals = generate_residuals((u.residuals() >= 0) && (v.residuals() >= 0) && (w.residuals() >= 0) && (o.residuals() >= 0));
     const unsigned samples = 3 * residuals.rows();
-    std::copy_n(u->values().data(), samples, ts->data());
-    std::copy_n(v->values().data(), samples, ts->data() + samples);
-    std::copy_n(w->values().data(), samples, ts->data() + 2 * samples);
-    std::copy_n(o->values().data(), samples, ts->data() + 3 * samples);
+    std::copy_n(u.values().data(), samples, ts->data());
+    std::copy_n(v.values().data(), samples, ts->data() + samples);
+    std::copy_n(w.values().data(), samples, ts->data() + 2 * samples);
+    std::copy_n(o.values().data(), samples, ts->data() + 3 * samples);
     std::copy_n(residuals.data(), residuals.rows(), ts->data() + 4 * samples);
     return ts;
   };
