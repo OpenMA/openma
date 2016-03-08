@@ -34,6 +34,8 @@
 
 #include "openma/body/skeletonhelper.h"
 #include "openma/body/skeletonhelper_p.h"
+#include "openma/body/model.h"
+#include "openma/base/trial.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -99,7 +101,7 @@ namespace body
   /**
    * For each direct children corresponding to a Trial object in @a trials, create a model and reconstruct the associated movement. Each Model is added to the @a output.
    */
-  bool SkeletonHelper::reconstruct(Node* output, Node* trials) const
+  bool SkeletonHelper::reconstruct(Node* output, Node* trials)
   {
     if (output == nullptr)
     {
@@ -154,18 +156,9 @@ namespace body
   /**
    * @fn virtual LandmarksTranslator* SkeletonHelper::defaultLandmarksTranslator() = 0;
    * Create a LandmarksTranslator adapted to the markers set used by the helper.
+   * Because a landmarks translator is used in the calibrate() and reconstruct() methods, this method could parent the created translator to the helper.
+   * Thus, it will be created only one time in calibrate () and found as a child in reconstruct().
    */
-  
-  /**
-   * Create a deep copy of the object and return it as another object.
-   */
-  SkeletonHelper* SkeletonHelper::clone(Node* parent = nullptr) const
-  {
-    auto dest = new SkeletonHelper(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
   
   /**
    * Do a deep copy of the the given @a source. The previous content is replaced.
