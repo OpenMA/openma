@@ -951,37 +951,36 @@ namespace body
           return false;
       }
     }
+    
     // --------------------------------------------------
     // Other Segment
     // --------------------------------------------------
-    auto segments = model->segments()->findChildren<Segment*>();
-    for (auto it = segments.cbegin() ; it != segments.cend() ; ++it)
+    
+    // -----------------------------------------
+    // Head
+    // -----------------------------------------
+    seg = model->segments()->findChild<Segment*>({},{{"part", Part::Head}},false);
+    if (seg != nullptr)
     {
-      if ((*it)->part() == Part::Head)
+      // Required landmarks: L.HF, L.HB, R.HF and R.HB
+      const auto& L_HF = landmarks["L.HF"];
+      const auto& L_HB = landmarks["L.HB"];
+      const auto& R_HF = landmarks["R.HF"];
+      const auto& R_HB = landmarks["R.HB"];
+      if (!L_HF.isValid() || !L_HB.isValid() || !R_HF.isValid() || !R_HB.isValid())
       {
-        // -----------------------------------------
-        // Head
-        // -----------------------------------------
-        // Required landmarks: L.HF, L.HB, R.HF and R.HB
-        const auto& L_HF = landmarks["L.HF"];
-        const auto& L_HB = landmarks["L.HB"];
-        const auto& R_HF = landmarks["R.HF"];
-        const auto& R_HB = landmarks["R.HB"];
-        if (!L_HF.isValid() || !L_HB.isValid() || !R_HF.isValid() || !R_HB.isValid())
-        {
-          error("PluginGait - Missing landmarks to define the head. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
-          return false;
-        }
-        const maths::Vector u = ((L_HF + R_HF) / 2.0 - (L_HB + R_HB) / 2.0).normalized();
-        const maths::Vector w = u.cross((L_HF + L_HB) / 2.0 - (R_HF + R_HB) / 2.0).normalized();
-        const maths::Vector v = w.cross(u);
-        const maths::Vector o = (L_HF + R_HF + L_HB + R_HB) / 4.0;
-        // Rotate the head frame along its axis Y using the offset "HeadOffset"
-        const double cy = cos(optr->HeadOffset), sy = sin(optr->HeadOffset);
-        const maths::Vector ur = u * cy - w * sy;
-        const maths::Vector wr = u * sy + w * cy;
-        maths::to_timesequence(ur, v, wr, o, "Head.SCS", sampleRate, startTime, trial->timeSequences());
+        error("PluginGait - Missing landmarks to define the head. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+        return false;
       }
+      const maths::Vector u = ((L_HF + R_HF) / 2.0 - (L_HB + R_HB) / 2.0).normalized();
+      const maths::Vector w = u.cross((L_HF + L_HB) / 2.0 - (R_HF + R_HB) / 2.0).normalized();
+      const maths::Vector v = w.cross(u);
+      const maths::Vector o = (L_HF + R_HF + L_HB + R_HB) / 4.0;
+      // Rotate the head frame along its axis Y using the offset "HeadOffset"
+      const double cy = cos(optr->HeadOffset), sy = sin(optr->HeadOffset);
+      const maths::Vector ur = u * cy - w * sy;
+      const maths::Vector wr = u * sy + w * cy;
+      maths::to_timesequence(ur, v, wr, o, seg->name()+".SCS", sampleRate, startTime, seg);
     }
     return true;
   };
