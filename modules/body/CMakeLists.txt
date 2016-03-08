@@ -5,6 +5,7 @@ SET(OPENMA_BODY_SRCS
   src/point.cpp
   src/referenceframe.cpp
   src/segment.cpp
+  src/skeletonhelper.cpp
   src/utils.cpp
 )
 
