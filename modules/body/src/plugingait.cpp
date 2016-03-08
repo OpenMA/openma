@@ -218,6 +218,7 @@ namespace body
       return false;
     }
     // Temporary variable use to construct segments' motion
+    Segment* seg;
     maths::Vector u, v, w, o;
     // -----------------------------------------
     // Arm & clavicle (optional)
@@ -237,14 +238,11 @@ namespace body
     // Compute the shoulder joint centre (SJC)
     const maths::Position SJC = compute_chord(s * (shoulderOffset + this->MarkerDiameter / 2.0), AC, *o_torso, VWM);
     // Clavicle
-    Segment* clavicle = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Clavicle}},false);
-    if (clavicle != nullptr)
-    {
-      w = (*o_torso - SJC).normalized();
-      u = w.cross(VWM - SJC).normalized();
-      v = w.cross(u);
-      maths::to_timesequence(u, v, w, SJC, prefix+"Clavicle.SCS", sampleRate, startTime, trial->timeSequences());
-    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Clavicle}},false);
+    w = (*o_torso - SJC).normalized();
+    u = w.cross(VWM - SJC).normalized();
+    v = w.cross(u);
+    maths::to_timesequence(u, v, w, SJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // Construction of the vector marker (CVM) for the elbow
     const maths::Position MWP = (US + RS) / 2.0; // Middle Wrist Point
     const maths::Position CVM = s * (MWP - LHE).cross(SJC - LHE).normalized() + LHE;
