@@ -2,6 +2,7 @@ SET(OPENMA_BODY_SRCS
   src/joint.cpp
   src/landmarkstranslator.cpp
   src/model.cpp
+  src/plugingait.cpp
   src/point.cpp
   src/referenceframe.cpp
   src/segment.cpp
