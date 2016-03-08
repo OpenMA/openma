@@ -2,7 +2,7 @@ SET(EIGEN_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/3rdparty/eigen3")
 
 CXXTEST_ADD_TDD(eigen_comb combTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
 CXXTEST_ADD_TDD(eigen_cumtrapz cumtrapzTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
-CXXTEST_ADD_TDD(eigen_filter filterTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR} ${OPENMA_BASE_INCLUDE_DIR})
+CXXTEST_ADD_TDD(eigen_filter filterTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
 CXXTEST_ADD_TDD(eigen_filtfilt filtfiltTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
 CXXTEST_ADD_TDD(eigen_gammalb gammalnTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
 CXXTEST_ADD_TDD(eigen_iirfilterdesign iirFilterDesignTest.cpp INCLUDES ${EIGEN_INCLUDE_DIR})
