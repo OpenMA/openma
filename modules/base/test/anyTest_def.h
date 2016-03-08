@@ -1,5 +1,5 @@
-#ifndef anyTest_classdef_h
-#define anyTest_classdef_h
+#ifndef anyTest_def_h
+#define anyTest_def_h
 
 #include <openma/base/any.h>
 

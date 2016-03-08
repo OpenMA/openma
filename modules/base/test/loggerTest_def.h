@@ -1,5 +1,5 @@
-#ifndef anyTest_classdef_h
-#define anyTest_classdef_h
+#ifndef loggerTest_def_h
+#define loggerTest_def_h
 
 #include <openma/base/logger.h>
 
@@ -16,4 +16,4 @@ struct Verifier : ma::Logger::Device
   const char* ref;
 };
 
-#endif // anyTest_classdef_h
+#endif // loggerTest_def_h
