@@ -68,7 +68,7 @@ namespace body
   /**
    * @class SkeletonHelper openma/body/skeletonhelper.h
    * @brief Helper class to create a multi-segment model and recontruct its motion.
-   * This class is usefull for the implementation of a model in known protocols (e.g. with a specific markers set like PluginGait, HelenHayes, or ISB).
+   * This class is usefull for the implementation of a model in known protocols (e.g. with a specific marker set like PluginGait, HelenHayes, or ISB).
    * @todo Write a very detailed description for this class.
    * @ingroup openma_body
    */
@@ -149,13 +149,13 @@ namespace body
   
   /**
    * @fn virtual bool SkeletonHelper::reconstructModel(Model* model, Trial* trial) const = 0;
-   * Reconstruct @a model movement for the given @a trial. This part is complety dependant of the helper and the associated markers set.
+   * Reconstruct @a model movement for the given @a trial. This part is complety dependant of the helper and the associated marker set.
    * This method should rename the model to try to have a unique name (or identifier).
    */
   
   /**
    * @fn virtual LandmarksTranslator* SkeletonHelper::defaultLandmarksTranslator() = 0;
-   * Create a LandmarksTranslator adapted to the markers set used by the helper.
+   * Create a LandmarksTranslator adapted to the marker set used by the helper.
    * Because a landmarks translator is used in the calibrate() and reconstruct() methods, this method could parent the created translator to the helper.
    * Thus, it will be created only one time in calibrate () and found as a child in reconstruct().
    */
