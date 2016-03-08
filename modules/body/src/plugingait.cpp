@@ -251,16 +251,18 @@ namespace body
     // NOTE: The scale factor was found experimentaly when comparing with the Vicon data.
     const maths::Position WJC = s * (US - RS).cross(EJC - MWP).normalized() * wristWidth * 0.7 + MWP;
     // Arm frame
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
     w = (SJC - EJC).normalized();
     v = (WJC - EJC).cross(w).normalized();
     u = v.cross(w);
-    maths::to_timesequence(u, v, w, EJC, prefix+"Arm.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(u, v, w, EJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Forearm}},false);
     w = (EJC - WJC).normalized();
     u = v.cross(w); // The 'v' axis is the same than the one defined for the arm
-    maths::to_timesequence(u, v, w, WJC, prefix+"Forearm.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(u, v, w, WJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -271,17 +273,18 @@ namespace body
       error("PluginGait - Missing landmark 'MH2' to define the hand. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Hand}},false);
     // HO: Hand Origin
     const maths::Position HO = compute_chord((handThickness + this->MarkerDiameter) / 2.0, MH2, WJC, MWP);
     o =  2.0 * (HO - WJC) + WJC;
     w = (WJC - HO).normalized();
     u = s * w.cross(US - RS).normalized();
     v = w.cross(u);
-    maths::to_timesequence(u, v, w, o, prefix+"Hand.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
     return true;
   };
   
-  bool PluginGaitPrivate::reconstructLowerLimb(Trial* trial, int side, const maths::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const maths::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
@@ -310,6 +313,7 @@ namespace body
       return false;
     }
     // Temporary variable use to construct segments' motion
+    Segment* seg = nullptr;
     maths::Vector u,v,w,o;
     // -----------------------------------------
     // Thigh
@@ -322,11 +326,12 @@ namespace body
       error("PluginGait - Missing landmarks to define the thigh. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
     const maths::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
     w = (*HJC - KJC).normalized();
     v = w.cross(u);
-    maths::to_timesequence(u, v, w, KJC, prefix+"Thigh.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
     
     // -----------------------------------------
     // Shank
@@ -339,12 +344,13 @@ namespace body
       error("PluginGait - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
     // Compute the ankle joint centre (AJC)
     const maths::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     w = (KJC - AJC).normalized();
     u = s * w.cross(LS - AJC).normalized();
     maths::Vector v_shank = w.cross(u);
-    maths::to_timesequence(u, v_shank, w, AJC, prefix+"Shank.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -355,18 +361,17 @@ namespace body
       error("PluginGait - Missing landmark to define the foot. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
-    
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
     w = -1.0 * (MTH2 - AJC).normalized();
     u = v_shank.cross(w).normalized();
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
                  cy = cos(staticPlantarFlexionOffset), sy = sin(staticPlantarFlexionOffset);
-    
     const maths::Vector ur = u * cy - w * sy;
     const maths::Vector vr = u * sx*sy + v * cx + w * cy*sx;
     const maths::Vector wr = u * cx*sy - v * sx + w * cx*cy;
     // FIXME: This is not the good origin. None anatomical meaning was discovered to explain this position...
-    maths::to_timesequence(ur, vr, wr, AJC, prefix+"Foot.SCS", sampleRate, startTime, trial->timeSequences());
+    maths::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     return true;
   };
 };
@@ -852,6 +857,7 @@ namespace body
       // -----------------------------------------
       // Torso
       // -----------------------------------------
+      seg = model->segments()->findChild<Segment*>({},{{"part",Part::Torso}},false);
       // Required landmarks: C7, T10, SS and XP
       const auto& C7 = landmarks["C7"];
       const auto& T10 = landmarks["T10"];
@@ -866,7 +872,7 @@ namespace body
       const maths::Vector v = w.cross((XP + SS) / 2.0 - (T10 + C7) / 2.0).normalized();
       const maths::Vector u = v.cross(w);
       const maths::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
-      maths::to_timesequence(u, v, w, o, "Torso.SCS", sampleRate, startTime, trial->timeSequences());
+      maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -883,13 +889,7 @@ namespace body
       // -----------------------------------------
       // Pelvis
       // -----------------------------------------
-      seg = model->segments()->findChild<Segment*>("Pelvis",{},false);
-      if (seg == nullptr)
-      {
-        error("PluginGait - Missing pelvis segment in the model. Movement reconstruction aborted.");
-        return false;
-      }
-      
+      seg = model->segments()->findChild<Segment*>({},{{"part",Part::Pelvis}},false);
       // - Hip joint centre
       Point *leftHJCH = nullptr, *rightHJCH = nullptr;
       //   - Left
@@ -934,20 +934,20 @@ namespace body
       const maths::Vector v = (L_ASIS - R_ASIS).normalized();
       const maths::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
       const maths::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
-      maths::to_timesequence(transform_relative_frame(relframe, seg, pelvis), "Pelvis.SCS", sampleRate, startTime, TimeSequence::Pose, "", trial->timeSequences());
+      maths::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------
       if ((optr->Side & Side::Left) == Side::Left)
       {
         const maths::Position HJC = transform_relative_point(leftHipJointCenter, seg, pelvis);
-        if (!optr->reconstructLowerLimb(trial, Side::Left, &HJC, &landmarks, sampleRate, startTime))
+        if (!optr->reconstructLowerLimb(model, trial, Side::Left, &HJC, &landmarks, sampleRate, startTime))
           return false;
       }
       if ((optr->Side & Side::Right) == Side::Right)
       {
         const maths::Position HJC = transform_relative_point(rightHipJointCenter, seg, pelvis);
-        if (!optr->reconstructLowerLimb(trial, Side::Right, &HJC, &landmarks, sampleRate, startTime))
+        if (!optr->reconstructLowerLimb(model, trial, Side::Right, &HJC, &landmarks, sampleRate, startTime))
           return false;
       }
     }

@@ -322,13 +322,14 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
   
   CXXTEST_TEST(reconstructBothUpperBodyOneFrame)
@@ -351,16 +352,17 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {5e-4});
-    compare_segment_motion(trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {5e-4});
-    compare_segment_motion(trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {5e-4});
-    compare_segment_motion(trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {5e-4});
-    compare_segment_motion(trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {5e-4});
-    compare_segment_motion(trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {5e-4});
-    compare_segment_motion(trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {5e-4});
-    compare_segment_motion(trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {5e-4});
-    compare_segment_motion(trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {5e-4});
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {5e-4});
   };
   
   CXXTEST_TEST(reconstructBothLowerBodyHoleFrames)
@@ -383,13 +385,14 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {1e-3});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {75e-5});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1e-3});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {1e-3});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {75e-5});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
   
   CXXTEST_TEST(reconstructBothUpperBodyHoleFrames)
@@ -412,17 +415,18 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
+    auto model = rootModel.findChild<ma::body::Model*>();
     // NOTE: The accuracy is not the same than for the other unit tests. The reason is not known
-    compare_segment_motion(trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {1e-3});
-    compare_segment_motion(trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {1e-3});
-    compare_segment_motion(trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {1e-3});
-    compare_segment_motion(trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {1e-3});
-    compare_segment_motion(trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {1e-3});
-    compare_segment_motion(trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {1e-3});
-    compare_segment_motion(trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {1e-3});
-    compare_segment_motion(trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {1e-3});
-    compare_segment_motion(trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {15e-4});
+    compare_segment_motion(model, trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {1e-3});
+    compare_segment_motion(model, trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {1e-3});
+    compare_segment_motion(model, trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {1e-3});
+    compare_segment_motion(model, trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {1e-3});
+    compare_segment_motion(model, trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {1e-3});
+    compare_segment_motion(model, trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {15e-4});
   };
   
   CXXTEST_TEST(reconstructBothFullBodyFullFrames)
@@ -453,24 +457,25 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
+    auto model = rootModel.findChild<ma::body::Model*>();
     // NOTE: The accuracy is not the same than for the other unit tests. The reason is not known
-    compare_segment_motion(trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {5e-4});
-    compare_segment_motion(trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {5e-4});
-    compare_segment_motion(trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {5e-4});
-    compare_segment_motion(trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {5e-4});
-    compare_segment_motion(trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {6e-4});
-    compare_segment_motion(trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {5e-4});
-    compare_segment_motion(trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {5e-4});
-    compare_segment_motion(trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {6e-4});
-    compare_segment_motion(trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {5e-4});
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {6e-4});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    compare_segment_motion(model, trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {6e-4});
+    compare_segment_motion(model, trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {6e-4});
+    compare_segment_motion(model, trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {5e-4});
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {6e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
   
   CXXTEST_TEST(reconstruct3BothLowerBodyFF)
@@ -493,13 +498,14 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
   
   CXXTEST_TEST(reconstruct3BothLowerBodyFF_N18)
@@ -522,13 +528,14 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
   
   CXXTEST_TEST(reconstruct3BothLowerBodyNoFF)
@@ -549,13 +556,14 @@ CXXTEST_SUITE(PluginGaitTest)
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
-    compare_segment_motion(trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
-    compare_segment_motion(trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
-    compare_segment_motion(trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
-    compare_segment_motion(trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
-    compare_segment_motion(trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same ohelperin
-    compare_segment_motion(trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same ohelperin
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
 };
 

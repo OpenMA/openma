@@ -3,6 +3,7 @@
 
 #include <openma/body/plugingait.h>
 #include <openma/body/enums.h>
+#include <openma/body/model.h>
 #include <openma/base/timesequence.h>
 #include <openma/base/trial.h>
 #include <openma/io/handlerreader.h>
@@ -84,24 +85,24 @@ void generate_trial_from_file(ma::Node* root, const char* filename)
   assert(root->children().size() == 1u);
 }
 
-void compare_segment_motion(ma::Trial* trial, const std::string& segment, const std::vector<std::string>& markers, std::vector<double> precision = std::vector<double>(4,1e-5))
+void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std::string& frame, const std::vector<std::string>& markers, std::vector<double> precision = std::vector<double>(4,1e-5))
 {
   assert(markers.size() == 4);
   precision.resize(4,1e-5);
-  const auto mot = ma::maths::to_pose(trial->timeSequences()->findChild<const ma::TimeSequence*>(segment));
+  const auto mot = ma::maths::to_pose(model->segments()->findChild<const ma::TimeSequence*>(frame));
   const auto o = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[0]));
   const auto a = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[1]));
   const auto l = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[2]));  
   const auto p = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[3]));
-  TSM_ASSERT_EQUALS(segment+": mapped pose", mot.isValid(), true);
-  TSM_ASSERT_EQUALS(segment+": mapped origin", o.isValid(), true);
-  TSM_ASSERT_EQUALS(segment+": mapped AP", a.isValid(), true);
-  TSM_ASSERT_EQUALS(segment+": mapped LM", l.isValid(), true);
-  TSM_ASSERT_EQUALS(segment+": mapped PD", p.isValid(), true);  
-  TSM_ASSERT_EIGEN_DELTA(segment+": origin", mot.o().values(), o.values(), precision[0]);
-  TSM_ASSERT_EIGEN_DELTA(segment+": u axis", mot.u().values(), (a-o).normalized().values(), precision[1]);
-  TSM_ASSERT_EIGEN_DELTA(segment+": v axis", mot.v().values(), (l-o).normalized().values(), precision[2]);
-  TSM_ASSERT_EIGEN_DELTA(segment+": w axis", mot.w().values(), (p-o).normalized().values(), precision[3]);
+  TSM_ASSERT_EQUALS(frame+": mapped pose", mot.isValid(), true);
+  TSM_ASSERT_EQUALS(frame+": mapped origin", o.isValid(), true);
+  TSM_ASSERT_EQUALS(frame+": mapped AP", a.isValid(), true);
+  TSM_ASSERT_EQUALS(frame+": mapped LM", l.isValid(), true);
+  TSM_ASSERT_EQUALS(frame+": mapped PD", p.isValid(), true);  
+  TSM_ASSERT_EIGEN_DELTA(frame+": origin", mot.o().values(), o.values(), precision[0]);
+  TSM_ASSERT_EIGEN_DELTA(frame+": u axis", mot.u().values(), (a-o).normalized().values(), precision[1]);
+  TSM_ASSERT_EIGEN_DELTA(frame+": v axis", mot.v().values(), (l-o).normalized().values(), precision[2]);
+  TSM_ASSERT_EIGEN_DELTA(frame+": w axis", mot.w().values(), (p-o).normalized().values(), precision[3]);
 }
 
 #endif // plugingaitTest_def_h

@@ -103,7 +103,7 @@ namespace body
     void computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
     bool calibrateLowerLimb(int side, const maths::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT;
     bool reconstructUpperLimb(Model* model, Trial* trial, int side, const maths::Vector* u_torso, const maths::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
-    bool reconstructLowerLimb(Trial* trial, int side, const maths::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    bool reconstructLowerLimb(Model* model, Trial* trial, int side, const maths::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     
     double MarkerDiameter;
     
