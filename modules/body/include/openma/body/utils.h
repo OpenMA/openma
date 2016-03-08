@@ -55,7 +55,7 @@ namespace body
   class Segment;
   class SkeletonHelper;
   
-  std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmarks_position(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
+  std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
   
   maths::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const maths::Pose& pose) _OPENMA_NOEXCEPT;
   maths::Position transform_relative_point(const Point* relpoint, const Segment* seg, const maths::Pose& pose) _OPENMA_NOEXCEPT;

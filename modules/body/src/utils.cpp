@@ -56,7 +56,7 @@ namespace body
    * If all the landmarks have the same start time, and if the output @a start is given, its value will be assigned to the found common start time (-1.0 otherwise).
    * If all the landmarks have the same sample rate and start time, and if the output @a ok is given, its value will be assigned to true (false otherwise).
    */
-  std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmarks_position(SkeletonHelper* helper, Trial* trial, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
+  std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
   {
     std::unordered_map<std::string,maths::Map<maths::Vector>> positions;
     
