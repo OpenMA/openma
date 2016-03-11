@@ -80,8 +80,7 @@ namespace io
   inline Node* read(const std::string& filepath, const std::string& format = {})
   {
     Node* root = new Node("root");
-    bool result = read(root, filepath, format);
-    if (!result)
+    if (!read(root, filepath, format))
     {
       delete root;
       root = nullptr;
