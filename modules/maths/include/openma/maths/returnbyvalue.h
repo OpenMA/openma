@@ -268,6 +268,61 @@ namespace internal
   // ----------------------------------------------------------------------- //
   //                         EulerAnglesOp return value
   // ----------------------------------------------------------------------- //
+
+  // Extract the coefficients index to use
+  template <typename T>
+  inline void rotation_matrix_to_euler_order(typename MatrixBase<T>::Index& i, typename MatrixBase<T>::Index& j, typename MatrixBase<T>::Index& k, typename MatrixBase<T>::Scalar& f, typename MatrixBase<T>::Index a0, typename MatrixBase<T>::Index a1)
+  {
+    const typename MatrixBase<T>::Index odd = ((a0 + 1) % 3 == a1) ? 0 : 1;
+    i = a0;
+    j = (a0 + 1 + odd) % 3;
+    k = (a0 + 2 - odd) % 3;
+    f = (!odd ? -1.0 : 1.0);
+  }
+  
+  // ABA
+  template <typename T>
+  inline Matrix<typename MatrixBase<T>::Scalar,3,1> rotation_matrix_to_euler_sym(const T& rot, typename MatrixBase<T>::Index i, typename MatrixBase<T>::Index j, typename MatrixBase<T>::Index k, typename MatrixBase<T>::Scalar f)
+  {
+    using std::atan2;
+    using Scalar = typename MatrixBase<T>::Scalar;
+    Matrix<Scalar,3,1> res;
+    Scalar s = Eigen::Matrix<Scalar,2,1>(rot.coeff(j,i), rot.coeff(k,i)).norm();
+    res[1] = atan2(s, rot.coeff(i,i));
+    if (s > NumTraits<Scalar>::dummy_precision())
+    {
+      res[0] = f * atan2(rot.coeff(j,i), rot.coeff(k,i));
+      res[2] = f * atan2(rot.coeff(i,j),-rot.coeff(i,k));
+    }
+    else
+    {
+      res[0] = 0.0;
+      res[2] = f * (rot.coeff(i,i) > 0 ? 1 : -1) * atan2(-rot.coeff(k,j), rot.coeff(j,j));
+    }
+    return res;
+  }
+  
+  // ABC
+  template <typename T>
+  inline Matrix<typename MatrixBase<T>::Scalar,3,1> rotation_matrix_to_euler_unsym(const T& rot, typename MatrixBase<T>::Index i, typename MatrixBase<T>::Index j, typename MatrixBase<T>::Index k, typename MatrixBase<T>::Scalar f)
+  {
+    using std::atan2;
+    using Scalar = typename MatrixBase<T>::Scalar;
+    Matrix<Scalar,3,1> res;
+    double c = Eigen::Matrix<Scalar,2,1>(rot.coeff(i,i), rot.coeff(i,j)).norm();
+    res[1] = f * atan2(-rot.coeff(i,k), c);
+    if (c > NumTraits<Scalar>::dummy_precision())
+    {
+      res[0] = f * atan2(rot.coeff(j,k), rot.coeff(k,k));
+      res[2] = f * atan2(rot.coeff(i,j), rot.coeff(i,i));
+    }
+    else
+    {
+      res[0] = 0.0;
+      res[2] = f * (rot.coeff(i,k) > 0 ? 1 : -1) * atan2(-rot.coeff(k,j), rot.coeff(j,j));
+    }
+    return res;
+  }
   
   template<typename V> struct EulerAnglesOpValues;
 
@@ -282,10 +337,11 @@ namespace internal
   {
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
+    using Scalar = typename InputType::Scalar;
     typename InputType::Nested m_V;
-    const unsigned m_A0;
-    const unsigned m_A1;
-    const unsigned m_A2;
+    const Index m_A0;
+    const Index m_A1;
+    const Index m_A2;
   public:
     EulerAnglesOpValues(const V& v, const unsigned& a0, const unsigned& a1, const unsigned& a2) : m_V(v), m_A0(a0), m_A1(a1), m_A2(a2) {};
     template <typename R> inline void evalTo(R& result) const
@@ -297,12 +353,30 @@ namespace internal
       // result.resize(rows, Eigen::NoChange);
       const MapStride stride(3*rows,rows);
       MapMatrix33 rot(nullptr,stride);
-      for (Index i = 0 ; i < rows ; ++i)
+      Index i = 0, j = 0, k = 0;
+      Scalar f = Scalar(0);
+      rotation_matrix_to_euler_order<R>(i,j,k,f,this->m_A0,this->m_A1);
+      // ABA
+      if (this->m_A0 == this->m_A2)
       {
-        // See http://eigen.tuxfamily.org/dox/group__TutorialMapClass.html (section Changing the mapped array) for the syntax
-        new (&rot) MapMatrix33(values.data()+i,stride);
-        result.row(i) = rot.eulerAngles(this->m_A0, this->m_A1, this->m_A2);
+        for (Index idx = 0 ; idx < rows ; ++idx)
+        {
+          // See http://eigen.tuxfamily.org/dox/group__TutorialMapClass.html (section Changing the mapped array) for the syntax
+          new (&rot) MapMatrix33(values.data()+idx,stride);
+          result.row(idx) = rotation_matrix_to_euler_sym(rot, i, j, k, f);
+        }
       }
+      // ABC
+      else
+      {
+        for (Index idx = 0 ; idx < rows ; ++idx)
+        {
+          // See http://eigen.tuxfamily.org/dox/group__TutorialMapClass.html (section Changing the mapped array) for the syntax
+          new (&rot) MapMatrix33(values.data()+idx,stride);
+          result.row(idx) = rotation_matrix_to_euler_unsym(rot, i, j, k, f);
+        }
+      }
+
     };
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
