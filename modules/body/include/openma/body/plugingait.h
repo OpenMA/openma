@@ -55,8 +55,6 @@ namespace body
     
     double markerDiameter() const _OPENMA_NOEXCEPT;
     void setMarkerDiameter(double value) _OPENMA_NOEXCEPT;
-    double headOffset() const _OPENMA_NOEXCEPT;
-    void setHeadOffset(double value) _OPENMA_NOEXCEPT;
     double rightShoulderOffset() const _OPENMA_NOEXCEPT;
     void setRightShoulderOffset(double value) _OPENMA_NOEXCEPT;
     double leftShoulderOffset() const _OPENMA_NOEXCEPT;
@@ -95,6 +93,7 @@ namespace body
     void setRightFootFlat(bool value) _OPENMA_NOEXCEPT;
     bool leftFootFlat() const _OPENMA_NOEXCEPT;
     void setLeftFootFlat(bool value) _OPENMA_NOEXCEPT;
+    double headOffset() const _OPENMA_NOEXCEPT;
     double rightStaticPlantarFlexionOffset() const _OPENMA_NOEXCEPT;
     double rightStaticRotationOffset() const _OPENMA_NOEXCEPT;
     double leftStaticPlantarFlexionOffset() const _OPENMA_NOEXCEPT;

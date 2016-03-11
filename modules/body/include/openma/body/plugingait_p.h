@@ -69,7 +69,6 @@ namespace body
     OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(PluginGait, SkeletonHelper,
       // Get / Set
       Property<PluginGait, double, &PluginGait::markerDiameter,                  &PluginGait::setMarkerDiameter>                {"markerDiameter"},
-      Property<PluginGait, double, &PluginGait::headOffset,                      &PluginGait::setHeadOffset>                    {"headOffset"},
       Property<PluginGait, double, &PluginGait::rightShoulderOffset,             &PluginGait::setRightShoulderOffset>           {"rightShoulderOffset"},
       Property<PluginGait, double, &PluginGait::leftShoulderOffset,              &PluginGait::setLeftShoulderOffset>            {"leftShoulderOffset"},
       Property<PluginGait, double, &PluginGait::rightElbowWidth,                 &PluginGait::setRightElbowWidth>               {"rightElbowWidth"},
@@ -90,6 +89,7 @@ namespace body
       Property<PluginGait, bool,   &PluginGait::rightFootFlat,                   &PluginGait::setRightFootFlat>                 {"rightFootFlat"},
       Property<PluginGait, bool,   &PluginGait::leftFootFlat,                    &PluginGait::setRightFootFlat>                 {"leftFootFlat"},
       // Get only
+      Property<PluginGait, double, &PluginGait::headOffset>                                                                     {"headOffset"},
       Property<PluginGait, double, &PluginGait::rightStaticPlantarFlexionOffset>                                                {"rightStaticPlantarFlexionOffset"},
       Property<PluginGait, double, &PluginGait::rightStaticRotationOffset>                                                      {"rightStaticRotationOffset"},
       Property<PluginGait, double, &PluginGait::leftStaticPlantarFlexionOffset>                                                 {"leftStaticPlantarFlexionOffset"},

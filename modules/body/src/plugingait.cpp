@@ -62,7 +62,6 @@ namespace body
   : SkeletonHelperPrivate(pint,name,region,side),
     // All the options are null by default
     MarkerDiameter(0.0),
-    HeadOffset(0.0),
     RightShoulderOffset(0.0),
     LeftShoulderOffset(0.0),
     RightElbowWidth(0.0),
@@ -82,6 +81,7 @@ namespace body
     LeftAnkleWidth(0.0),
     RightFootFlat(false), 
     LeftFootFlat(false),
+    HeadOffset(0.0),
     RightStaticPlantarFlexionOffset(0.0),
     RightStaticRotationOffset(0.0),
     LeftStaticPlantarFlexionOffset(0.0),
@@ -408,11 +408,6 @@ namespace body
    */
   double MarkerDiameter;
   /**
-   * [Calculated] This property holds the head offset angle. By default, this property contains the value 0.0.
-   * @sa headOffset() setHeadOffset()
-   */
-  double HeadOffset;
-  /**
    * [Required] This property holds the vertical distance from the centre of the glenohumeral joint to the marker on the acromion calivicular joint. By default, this property contains the value 0.0.
    * @sa rightShoulderOffset() setRightShoulderOffset()
    */
@@ -508,23 +503,28 @@ namespace body
    */
   bool LeftFootFlat;
   /**
+   * [Calculated] This property holds the head offset angle. By default, this property contains the value 0.0.
+   * @sa headOffset()
+   */
+  double HeadOffset;
+  /**
    * [Calculated] This property holds the rotation about the foot rotation axis, which is perpendicular to the foot vector (after applying the foot plantar flexion offset) and the ankle flexion axis. By default, this property contains the value 0.0.
-   * @sa rightStaticPlantarFlexionOffset() setRightStaticPlantarFlexionOffset()
+   * @sa rightStaticPlantarFlexionOffset()
    */
   double RightStaticPlantarFlexionOffset;
   /**
    * [Calculated] This property holds the rotation angle about the ankle flexion axis. By default, this property contains the value 0.0.
-   * @sa rightStaticRotationOffset() setRightStaticRotationOffset()
+   * @sa rightStaticRotationOffset()
    */
   double RightStaticRotationOffset;
   /**
    * [Calculated] This property holds the  rotation about the foot rotation axis, which is perpendicular to the foot vector (after applying the foot plantar flexion offset) and the ankle flexion axis. By default, this property contains the value 0.0.
-   * @sa leftStaticPlantarFlexionOffset() setLeftStaticPlantarFlexionOffset()
+   * @sa leftStaticPlantarFlexionOffset()
    */
   double LeftStaticPlantarFlexionOffset;
   /**
    * [Calculated] This property holds the rotation angle about the ankle flexion axis. By default, this property contains the value 0.0.
-   * @sa leftStaticRotationOffset() setLeftStaticRotationOffset()
+   * @sa leftStaticRotationOffset()
    */
   double LeftStaticRotationOffset;
   };
@@ -654,7 +654,6 @@ namespace body
     if (subject != nullptr)
     {
       optr->MarkerDiameter = subject->property("markerDiameter");
-      optr->HeadOffset = subject->property("headOffset");
       optr->RightShoulderOffset = subject->property("rightShoulderOffset");
       optr->LeftShoulderOffset = subject->property("leftShoulderOffset");
       optr->RightElbowWidth = subject->property("rightElbowWidth");
@@ -1015,18 +1014,6 @@ namespace body
   {
     auto optr = this->pimpl();
     return optr->HeadOffset;
-  };
-  
-  /**
-   * Set the internal parameter HeadOffset.
-   */
-  void PluginGait::setHeadOffset(double value) _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    if (fabs(value - optr->HeadOffset) < std::numeric_limits<double>::epsilon())
-      return;
-    optr->HeadOffset = value;
-    this->modified();
   };
   
   /**
@@ -1573,7 +1560,6 @@ namespace body
     auto optr_src = src->pimpl();
     this->SkeletonHelper::copy(src);
     optr->MarkerDiameter = optr_src->MarkerDiameter;
-    optr->HeadOffset = optr_src->HeadOffset;
     optr->RightShoulderOffset = optr_src->RightShoulderOffset;
     optr->LeftShoulderOffset = optr_src->LeftShoulderOffset;
     optr->RightElbowWidth = optr_src->RightElbowWidth;
@@ -1593,6 +1579,7 @@ namespace body
     optr->LeftAnkleWidth = optr_src->LeftAnkleWidth;
     optr->RightFootFlat = optr_src->RightFootFlat;
     optr->LeftFootFlat = optr_src->LeftFootFlat;
+    optr->HeadOffset = optr_src->HeadOffset;
     optr->RightStaticPlantarFlexionOffset = optr_src->RightStaticPlantarFlexionOffset;
     optr->RightStaticRotationOffset = optr_src->RightStaticRotationOffset;
     optr->LeftStaticPlantarFlexionOffset = optr_src->LeftStaticPlantarFlexionOffset;
