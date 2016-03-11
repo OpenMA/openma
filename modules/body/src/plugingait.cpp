@@ -812,7 +812,7 @@ namespace body
         error("PluginGait - Impossible to find a least one valid frame for the head motion. Calibration aborted.");
         return false;
       }
-      optr->HeadOffset = M_PI - head.eulerAngles(2,0,1).mean().values().z();
+      optr->HeadOffset = -1.0 * head.eulerAngles(2,0,1).mean().values().z();
       
     }
     return true;
