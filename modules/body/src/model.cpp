@@ -41,6 +41,8 @@
 //                                 PRIVATE API                                //
 // -------------------------------------------------------------------------- //
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 namespace ma
 {
 namespace body
@@ -52,6 +54,8 @@ namespace body
   ModelPrivate::~ModelPrivate() = default;
 };
 };
+
+#endif
 
 // -------------------------------------------------------------------------- //
 //                                 PUBLIC API                                 //

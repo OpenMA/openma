@@ -81,7 +81,7 @@ namespace body
   {};
   
   /**
-   * * Constructor to be used by inherited object which want to add informations (static properties, members, etc) to the private implementation.
+   * Constructor to be used by inherited object which want to add informations (static properties, members, etc) to the private implementation.
    */
   SkeletonHelper::SkeletonHelper(SkeletonHelperPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Node(pimpl, parent)

@@ -40,6 +40,8 @@
 //                                 PRIVATE API                                //
 // -------------------------------------------------------------------------- //
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 namespace ma
 {
 namespace body
@@ -53,6 +55,8 @@ namespace body
   JointPrivate::~JointPrivate() = default;
 };
 };
+
+#endif
 
 // -------------------------------------------------------------------------- //
 //                                 PUBLIC API                                 //
@@ -158,32 +162,32 @@ namespace body
     }
   };
   
- /**
-  * Create a deep copy of the object and return it as another object.
-  */
- Joint* Joint::clone(Node* parent) const
- {
-   auto dest = new Joint(this->name());
-   dest->copy(this);
-   dest->addParent(parent);
-   return dest;
- };
- 
- /**
-  * Do a deep copy of the the given @a source. The previous content is replaced.
-  */
- void Joint::copy(const Node* source) _OPENMA_NOEXCEPT
- {
-   auto src = node_cast<const Joint*>(source);
-   if (src == nullptr)
-     return;
-   auto optr = this->pimpl();
-   auto optr_src = src->pimpl();
-   this->Node::copy(src);
-   if (optr_src->Proximal != nullptr)
-     optr->Proximal = this->findChild<Segment*>(optr_src->Proximal->name());
-   if (optr_src->Distal != nullptr)
-     optr->Distal = this->findChild<Segment*>(optr_src->Distal->name());
- };
+  /**
+   * Create a deep copy of the object and return it as another object.
+   */
+  Joint* Joint::clone(Node* parent) const
+  {
+    auto dest = new Joint(this->name());
+    dest->copy(this);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Do a deep copy of the the given @a source. The previous content is replaced.
+   */
+  void Joint::copy(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const Joint*>(source);
+    if (src == nullptr)
+      return;
+    auto optr = this->pimpl();
+    auto optr_src = src->pimpl();
+    this->Node::copy(src);
+    if (optr_src->Proximal != nullptr)
+      optr->Proximal = this->findChild<Segment*>(optr_src->Proximal->name());
+    if (optr_src->Distal != nullptr)
+      optr->Distal = this->findChild<Segment*>(optr_src->Distal->name());
+  };
 };
 };
