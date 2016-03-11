@@ -78,6 +78,16 @@ namespace maths
      */
     operator double () const _OPENMA_NOEXCEPT {return (static_cast<const Derived&>(*this).derived().residuals().eval().coeff(0) >= 0.0) ? static_cast<const Derived&>(*this).derived().values().eval().coeff(0) : 0.0;};
     
+    /**
+     * Multiply this object by the scalar @a other
+     */
+    Derived& operator*=(double other) {static_cast<Derived&>(*this).values() *= other; return *this;};
+    
+    /*
+     * Divide this object by the scalar @a other
+     */
+    Derived& operator/=(double other) {static_cast<Derived&>(*this).values() /= other; return *this;};
+    
     // Next methods are defined after the declaration of the class BlockOp
     
     /**
