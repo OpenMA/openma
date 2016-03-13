@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,19 +32,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_eulerdescriptor_p_h
+#define __openma_body_eulerdescriptor_p_h
 
-#include "openma/body/descriptor.h"
-#include "openma/body/enums.h"
-#include "openma/body/eulerdescriptor.h"
-#include "openma/body/joint.h"
-#include "openma/body/landmarkstranslator.h"
-#include "openma/body/model.h"
-#include "openma/body/point.h"
-#include "openma/body/referenceframe.h"
-#include "openma/body/segment.h"
-#include "openma/body/skeletonhelper.h"
-#include "openma/body/utils.h"
+/*
+ * WARNING: This file and its content are not included in the public API and 
+ * can change drastically from one release to another.
+ */
 
-#endif // __openma_body_h
+#include "openma/body/descriptor_p.h"
+#include "openma/maths.h"
+
+#include <array>
+#include <string>
+#include <memory>
+
+namespace ma
+{
+namespace body
+{
+  class EulerDescriptor;
+  
+  class EulerDescriptorPrivate : public DescriptorPrivate
+  {
+    OPENMA_DECLARE_PINT_ACCESSOR(EulerDescriptor)
+      
+  public:
+    EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale);
+    ~EulerDescriptorPrivate();
+    
+    std::array<int,3> Sequence;
+    std::array<double,3> Scale;
+    maths::Pose BufferData;
+    maths::Vector OutputData;
+    double OutputSampleRate;
+    double OutputStartTime;
+    std::string OutputUnit;
+  };
+};
+};
+
+#endif // __openma_body_descriptor_p_h

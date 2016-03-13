@@ -1,4 +1,5 @@
 SET(OPENMA_BODY_SRCS
+  src/eulerdescriptor.cpp
   src/descriptor.cpp
   src/joint.cpp
   src/landmarkstranslator.cpp
