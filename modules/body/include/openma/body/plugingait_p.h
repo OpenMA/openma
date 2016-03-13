@@ -107,7 +107,6 @@ namespace body
     
     double MarkerDiameter;
     
-    double HeadOffset;
     double RightShoulderOffset;
     double LeftShoulderOffset;
     double RightElbowWidth;
@@ -129,6 +128,7 @@ namespace body
     
     bool RightFootFlat;
     bool LeftFootFlat;
+    double HeadOffset;
     double RightStaticPlantarFlexionOffset;
     double RightStaticRotationOffset;
     double LeftStaticPlantarFlexionOffset;
