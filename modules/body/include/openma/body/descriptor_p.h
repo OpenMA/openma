@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,18 +32,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_descriptor_p_h
+#define __openma_body_descriptor_p_h
 
-#include "openma/body/descriptor.h"
-#include "openma/body/enums.h"
-#include "openma/body/joint.h"
-#include "openma/body/landmarkstranslator.h"
-#include "openma/body/model.h"
-#include "openma/body/point.h"
-#include "openma/body/referenceframe.h"
-#include "openma/body/segment.h"
-#include "openma/body/skeletonhelper.h"
-#include "openma/body/utils.h"
+/*
+ * WARNING: This file and its content are not included in the public API and 
+ * can change drastically from one release to another.
+ */
 
-#endif // __openma_body_h
+#include "openma/base/node_p.h"
+
+namespace ma
+{
+namespace body
+{
+  class Descriptor;
+  
+  class DescriptorPrivate : public NodePrivate
+  {
+    OPENMA_DECLARE_PINT_ACCESSOR(Descriptor)
+      
+  public:
+    DescriptorPrivate(Descriptor* pint, const std::string& name);
+    ~DescriptorPrivate();
+  };
+};
+};
+
+#endif // __openma_body_descriptor_p_h

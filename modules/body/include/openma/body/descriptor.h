@@ -32,18 +32,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_descriptor_h
+#define __openma_body_descriptor_h
 
-#include "openma/body/descriptor.h"
-#include "openma/body/enums.h"
-#include "openma/body/joint.h"
-#include "openma/body/landmarkstranslator.h"
-#include "openma/body/model.h"
-#include "openma/body/point.h"
-#include "openma/body/referenceframe.h"
-#include "openma/body/segment.h"
-#include "openma/body/skeletonhelper.h"
-#include "openma/body/utils.h"
+#include "openma/body_export.h"
+#include "openma/base/node.h"
+#include "openma/base/any.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#endif // __openma_body_h
+namespace ma
+{
+namespace body
+{
+  class DescriptorPrivate;
+  
+  class OPENMA_NODE(OPENMA_BODY_EXPORT, Descriptor) : public Node
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(Descriptor)
+    OPENMA_DECLARE_NODEID(Descriptor, Node)
+        
+  public:
+    Descriptor(const std::string& name, Node* parent = nullptr);
+    ~Descriptor() _OPENMA_NOEXCEPT;
+    
+    Descriptor(const Descriptor& ) = delete;
+    Descriptor(Descriptor&& ) _OPENMA_NOEXCEPT = delete;
+    Descriptor& operator=(const Descriptor& ) = delete;
+    Descriptor& operator=(Descriptor&& ) _OPENMA_NOEXCEPT = delete;
+    
+    bool evaluate(Node* output, const Node* input, const std::unordered_map<std::string, Any>& options = {});
+    
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    
+  protected:
+    virtual bool prepare(const Node* input, const std::unordered_map<std::string, Any>& options) = 0;
+    virtual bool process(const std::unordered_map<std::string, Any>& options) = 0;
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) = 0;
+
+    Descriptor(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+  };
+};
+};
+#endif // __openma_body_descriptor_h
