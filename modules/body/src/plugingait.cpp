@@ -34,6 +34,7 @@
 
 #include "openma/body/plugingait.h"
 #include "openma/body/plugingait_p.h"
+#include "openma/body/eulerdescriptor_p.h"
 
 #include "openma/body/enums.h"
 #include "openma/body/joint.h"
@@ -374,6 +375,148 @@ namespace body
     maths::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     return true;
   };
+  
+  // ----------------------------------------------------------------------- //
+  
+  PluginGaitLeftShoulderDescriptor::PluginGaitLeftShoulderDescriptor(Node* parent)
+  : EulerDescriptor("L.Shoulder.Angle", EulerDescriptor::XYZ, parent)
+  {};
+
+  bool PluginGaitLeftShoulderDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    maths::Scalar mult = optr->OutputData.block<1>(0);
+    optr->OutputData.values().col(1) = optr->OutputData.values().col(0) - mult.normalized().values() * range;
+    optr->OutputData.values().col(2) -= range;
+    optr->OutputData.values().col(2) *= -1.0;
+    optr->OutputData.values().col(0) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+
+  // ----------------------------------------------------------------------- //
+
+
+  PluginGaitRightShoulderDescriptor::PluginGaitRightShoulderDescriptor(Node* parent)
+  : EulerDescriptor("R.Shoulder.Angle", EulerDescriptor::XYZ, parent)
+  {};
+
+  bool PluginGaitRightShoulderDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    optr->OutputData.values().col(1) = range - optr->OutputData.values().col(0);
+    maths::Scalar mult = optr->OutputData.block<1>(2);
+    optr->OutputData.values().col(2) -= mult.normalized().values() * range;
+    optr->OutputData.values().col(0) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitNeckDescriptor::PluginGaitNeckDescriptor(Node* parent)
+  : EulerDescriptor("Neck.Angle", EulerDescriptor::YXZ, {{-1.0,-1.0,1.0}}, parent)
+  {};
+
+  bool PluginGaitNeckDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    maths::Scalar mult = optr->OutputData.block<1>(0);
+    optr->OutputData.values().col(0) -= mult.normalized().values() * range;
+    mult = optr->OutputData.block<1>(2);
+    optr->OutputData.values().col(2) -= mult.normalized().values() * range;
+    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    optr->OutputData.values().col(1) *= -1.0;
+    optr->OutputData.values().col(2) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitLeftAnkleDescriptor::PluginGaitLeftAnkleDescriptor(Node* parent)
+  : EulerDescriptor("L.Ankle.Angle", EulerDescriptor::YXZ, -1.0, parent)
+  {};
+
+  bool PluginGaitLeftAnkleDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double offset = M_PI / 2.0;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      offset = 90.0;
+    auto optr = this->pimpl();
+    optr->OutputData.values().col(0) -= offset;
+    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
+    optr->OutputData.values().col(2) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitRightAnkleDescriptor::PluginGaitRightAnkleDescriptor(Node* parent)
+  : EulerDescriptor("R.Ankle.Angle", EulerDescriptor::YXZ, {{-1.0,1.0,1.0}}, parent)
+  {};
+
+  bool PluginGaitRightAnkleDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double offset = M_PI / 2.0;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      offset = 90.0;
+    auto optr = this->pimpl();
+    optr->OutputData.values().col(0) -= offset;
+    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
+    optr->OutputData.values().col(2) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitSpineDescriptor::PluginGaitSpineDescriptor(Node* parent)
+  : EulerDescriptor("Spine.Angle", EulerDescriptor::YXZ, parent)
+  {};
+
+  bool PluginGaitSpineDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    maths::Scalar mult = optr->OutputData.block<1>(0);
+    optr->OutputData.values().col(0) -= mult.normalized().values() * range;
+    mult = optr->OutputData.block<1>(2);
+    optr->OutputData.values().col(2) -= mult.normalized().values() * range;
+    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    optr->OutputData.values().col(1) *= -1.0;
+    optr->OutputData.values().col(2) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
 };
 };
 
@@ -556,6 +699,7 @@ namespace body
     Node* segments = model->segments();
     Node* joints = model->joints();
     Segment *torso = nullptr, *pelvis = nullptr;
+    Joint* jnt;
     if (optr->Region & Region::Upper)
     {
       model->setName(this->name() + "Upper Limb");
@@ -567,9 +711,12 @@ namespace body
         Segment* leftArm = new Segment("L.Arm", Part::Arm, Side::Left, segments);
         Segment* leftForearm = new Segment("L.Forearm", Part::Forearm, Side::Left, segments);
         Segment* leftHand = new Segment("L.Hand", Part::Hand, Side::Left, segments);
-        new Joint("L.Shoulder", torso, leftArm, joints);
-        new Joint("L.Elbow", leftArm, leftForearm, joints);
-        new Joint("L.Wrist", leftForearm, leftHand, joints);
+        jnt = new Joint("L.Shoulder", torso, leftArm, joints);
+        new PluginGaitLeftShoulderDescriptor(jnt);
+        jnt = new Joint("L.Elbow", leftArm, leftForearm, joints);
+        new EulerDescriptor("L.Elbow.Angle", EulerDescriptor::YXZ, jnt);
+        jnt = new Joint("L.Wrist", leftForearm, leftHand, joints);
+        new EulerDescriptor("L.Wrist.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
       }
       if (optr->Side & Side::Right)
       {
@@ -577,15 +724,21 @@ namespace body
         Segment* rightArm = new Segment("R.Arm", Part::Arm, Side::Right, segments);
         Segment* rightForearm = new Segment("R.Forearm", Part::Forearm, Side::Right, segments);
         Segment* rightHand = new Segment("R.Hand", Part::Hand, Side::Right, segments);
-        new Joint("R.Shoulder", torso, rightArm, joints);
-        new Joint("R.Elbow", rightArm, rightForearm, joints);
-        new Joint("R.Wrist", rightForearm, rightHand, joints);
+        jnt = new Joint("R.Shoulder", torso, rightArm, joints);
+        new PluginGaitRightShoulderDescriptor(jnt);
+        jnt = new Joint("R.Elbow", rightArm, rightForearm, joints);
+        new EulerDescriptor("R.Elbow.Angle", EulerDescriptor::YXZ, jnt);
+        jnt = new Joint("R.Wrist", rightForearm, rightHand, joints);
+        new EulerDescriptor("R.Wrist.Angle", EulerDescriptor::YXZ, jnt);
       }
-      new Joint("Neck", head, torso, joints);
-      Joint* globalThorax = new Joint("Thorax", nullptr, torso, joints);
-      globalThorax->setDescription("Torso relative to global frame");
-      Joint* globalHead = new Joint("Head", nullptr, head, joints);
-      globalHead->setDescription("Head relative to global frame");
+      jnt = new Joint("Neck", head, torso, joints);
+      new PluginGaitNeckDescriptor(jnt);
+      jnt = new Joint("Thorax", nullptr, torso, joints);
+      jnt->setDescription("Torso relative to global frame");
+      // new PluginGaitThoraxDescriptor(jnt);
+      jnt = new Joint("Head", nullptr, head, joints);
+      jnt->setDescription("Head relative to global frame");
+      // new PluginGaitHeadDescriptor(jnt);
     }
     if (optr->Region & Region::Lower)
     {
@@ -596,30 +749,40 @@ namespace body
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
         Segment* leftShank = new Segment("L.Shank", Part::Shank, Side::Left, segments);
         Segment* leftFoot = new Segment("L.Foot", Part::Foot, Side::Left, segments);
-        new Joint("L.Hip", pelvis, leftThigh, joints);
-        new Joint("L.Knee", leftThigh, leftShank, joints);
-        new Joint("L.Ankle", leftShank, leftFoot, joints);
-        Joint* lfp = new Joint("L.FootProgress", nullptr, leftFoot, joints);
-        lfp->setDescription("Left foot relative to global frame");
+        jnt = new Joint("L.Hip", pelvis, leftThigh, joints);
+        new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, -1.0, jnt);
+        jnt = new Joint("L.Knee", leftThigh, leftShank, joints);
+        new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
+        jnt = new Joint("L.Ankle", leftShank, leftFoot, joints);
+        new PluginGaitLeftAnkleDescriptor(jnt);
+        jnt = new Joint("L.FootProgress", nullptr, leftFoot, joints);
+        jnt->setDescription("Left foot relative to global frame");
+        // new PluginGaitLeftFootProgressDescriptor(jnt);
       }
       if (optr->Side & Side::Right)
       {
         Segment* rightThigh = new Segment("R.Thigh", Part::Thigh, Side::Right, segments);
         Segment* rightShank = new Segment("R.Shank", Part::Shank, Side::Right, segments);
         Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
-        new Joint("R.Hip", pelvis, rightThigh, joints);
-        new Joint("R.Knee", rightThigh, rightShank, joints);
-        new Joint("R.Ankle", rightShank, rightFoot, joints);
-        Joint* rfp = new Joint("R.FootProgress", nullptr, rightFoot, joints);
-        rfp->setDescription("Right foot relative to global frame");
+        jnt = new Joint("R.Hip", pelvis, rightThigh, joints);
+        new EulerDescriptor("R.Hip.Angle", EulerDescriptor::YXZ, {{-1.0, 1.0, 1.0}}, jnt);
+        jnt = new Joint("R.Knee", rightThigh, rightShank, joints);
+        new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
+        jnt = new Joint("R.Ankle", rightShank, rightFoot, joints);
+        new PluginGaitRightAnkleDescriptor(jnt);
+        jnt = new Joint("R.FootProgress", nullptr, rightFoot, joints);
+        jnt->setDescription("Right foot relative to global frame");
+        // new PluginGaitRightFootProgressDescriptor(jnt);
       }
-      new Joint("Pelvis", nullptr, pelvis, joints);
+      jnt = new Joint("Pelvis", nullptr, pelvis, joints);
+      // new PluginGaitPelvisDescriptor(jnt);
     }
     if ((optr->Region & Region::Full) == Region::Full)
     {
       model->setName(this->name() + "Full Body");
-      Joint* spine = new Joint("Spine", torso, pelvis, joints);
-      spine->setDescription("Torso relative to pelvis");
+      jnt = new Joint("Spine", torso, pelvis, joints);
+      jnt->setDescription("Torso relative to pelvis");
+      new PluginGaitSpineDescriptor(jnt);
     }
     return true;
   };

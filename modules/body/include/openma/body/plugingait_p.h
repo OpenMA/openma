@@ -41,6 +41,7 @@
  */
 
 #include "openma/body/skeletonhelper_p.h"
+#include "openma/body/eulerdescriptor.h"
 #include "openma/body/point.h"
 #include "openma/base/property.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR
@@ -145,6 +146,74 @@ namespace body
     HJC[0] = C * cos(theta) * sin(beta) - (xdis + r) * cos(beta),
     HJC[1] = S * (C * sin(theta) - this->InterAsisDistance / 2.0),
     HJC[2] = -1.0 * (C * cos(theta) * cos(beta) + (xdis + r) * sin(beta));
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  class PluginGaitLeftShoulderDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitLeftShoulderDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitLeftShoulderDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitRightShoulderDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitRightShoulderDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitRightShoulderDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitNeckDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitNeckDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitNeckDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitLeftAnkleDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitLeftAnkleDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitLeftAnkleDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitRightAnkleDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitRightAnkleDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitRightAnkleDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitSpineDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitSpineDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitSpineDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
   };
 };
 };
