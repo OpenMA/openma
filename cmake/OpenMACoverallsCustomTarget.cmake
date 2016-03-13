@@ -1,5 +1,5 @@
 IF(WITH_COVERALLS_ENABLED)
-  IF (NOT BUILD_TESTING OR NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+  IF (NOT BUILD_UNIT_TESTS OR NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     MESSAGE(FATAL_ERROR "Coveralls can be only be activated if the code is compiled in debug mode with unit tests enabled.")
   ENDIF()
   # Adapt the CXX flags

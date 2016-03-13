@@ -105,18 +105,18 @@ SET(OPENMA_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 IF(WIN32)
    IF(BUILD_SHARED_LIBS)
      SET(OPENMA_LIBS_BUILD_TYPE "SHARED")
-   ELSE(BUILD_SHARED_LIBS)
+   ELSE()
      SET(OPENMA_LIBS_BUILD_TYPE "STATIC")
-   ENDIF(BUILD_SHARED_LIBS)
+   ENDIF()
 ENDIF()
 
 # Build unit/regression tests - TDD (Test-driven development) code
-OPTION(BUILD_TESTING "Build OpenMA unit and regression tests." OFF)
-IF(BUILD_TESTING)
+OPTION(BUILD_UNIT_TESTS "Build OpenMA unit and regression tests." OFF)
+IF(BUILD_UNIT_TESTS)
   # The CxxTest library included with OpenMA is modified.
   INCLUDE(${OPENMA_SOURCE_DIR}/3rdparty/cxxtest/CxxTest.cmake)
   ENABLE_TESTING()
-ENDIF(BUILD_TESTING)
+ENDIF()
 
 # Configure files with settings for use by the build.
 CONFIGURE_FILE(${OPENMA_CMAKE_MODULE_PATH}/templates/config.h.in
