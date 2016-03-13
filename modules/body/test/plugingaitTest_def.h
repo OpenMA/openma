@@ -83,7 +83,7 @@ void generate_trial_from_file(ma::Node* root, const char* filename)
   TS_ASSERT_EQUALS(reader.errorCode(), ma::io::Error::None);
   TS_ASSERT_EQUALS(reader.errorMessage(), "");
   assert(root->children().size() == 1u);
-}
+};
 
 void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std::string& frame, const std::vector<std::string>& markers, std::vector<double> precision = std::vector<double>(4,1e-5))
 {
@@ -103,6 +103,18 @@ void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std:
   TSM_ASSERT_EIGEN_DELTA(frame+": u axis", mot.u().values(), (a-o).normalized().values(), precision[1]);
   TSM_ASSERT_EIGEN_DELTA(frame+": v axis", mot.v().values(), (l-o).normalized().values(), precision[2]);
   TSM_ASSERT_EIGEN_DELTA(frame+": w axis", mot.w().values(), (p-o).normalized().values(), precision[3]);
+};
+
+void compare_joint_kinematics(ma::Node* kinematics, ma::Trial* trial, const std::string& descriptor, const std::string angle, std::vector<double> precision = std::vector<double>(3,1e-4))
+{
+  precision.resize(3,1e-4);
+  const auto d = ma::maths::to_vector(kinematics->findChild<const ma::TimeSequence*>(descriptor));
+  const auto a = ma::maths::to_vector(trial->timeSequences()->findChild<const ma::TimeSequence*>(angle));
+  TSM_ASSERT_EQUALS(descriptor+": mapped descriptor", d.isValid(), true);
+  TSM_ASSERT_EQUALS(angle+": mapped angle", a.isValid(), true);
+  TSM_ASSERT_EIGEN_DELTA(descriptor+": 1st axis", d.block<1>(0).values(), a.block<1>(0).values(), precision[0]);
+  TSM_ASSERT_EIGEN_DELTA(descriptor+": 2nd axis", d.block<1>(1).values(), a.block<1>(1).values(), precision[1]);
+  TSM_ASSERT_EIGEN_DELTA(descriptor+": 3rd axis", d.block<1>(2).values(), a.block<1>(2).values(), precision[2]);
 }
 
 #endif // plugingaitTest_def_h
