@@ -37,8 +37,6 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <Eigen/Geometry> // eulerAngles
-
 #include <type_traits>
 
 namespace Eigen
@@ -376,7 +374,6 @@ namespace internal
           result.row(idx) = rotation_matrix_to_euler_unsym(rot, i, j, k, f);
         }
       }
-
     };
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
