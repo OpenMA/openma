@@ -44,6 +44,6 @@
 #include "openma/base/node.h"
 #include "openma/base/object.h"
 #include "openma/base/subject.h"
-#include "openma/base/timesquence.h"
+#include "openma/base/timesequence.h"
 
 #endif // __openma_base_h
