@@ -13,10 +13,10 @@ SET(CXXTEST_INCLUDES
   "${CXXTEST_ROOT}/additional/generator/macro"
   "${CXXTEST_ROOT}/additional/tdd"
 )
-                      
+
 SET(CXXTEST_TDD_MAIN_SRC "${CXXTEST_ROOT}/additional/tdd/main.cpp")
 
-FUNCTION(CXXTEST_ADD_TDD)
+FUNCTION(ADD_CXXTEST_TESTDRIVER)
   # Parse the arguments
   SET(options )
   SET(oneValueArgs NAME)
