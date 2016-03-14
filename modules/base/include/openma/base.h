@@ -45,5 +45,6 @@
 #include "openma/base/object.h"
 #include "openma/base/subject.h"
 #include "openma/base/timesequence.h"
+#include "openma/base/trial.h"
 
 #endif // __openma_base_h
