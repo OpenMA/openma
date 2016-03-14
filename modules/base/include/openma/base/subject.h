@@ -41,9 +41,6 @@
 
 namespace ma
 {
-  class TimeSequence;
-  class Event;
-  
   class OPENMA_NODE(OPENMA_BASE_EXPORT, Subject) : public Node
   {
     OPENMA_DECLARE_NODEID(Subject, Node)
