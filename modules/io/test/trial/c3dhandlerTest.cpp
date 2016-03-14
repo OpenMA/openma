@@ -4,7 +4,7 @@
 #include <openma/io/file.h>
 
 #include "c3dhandlerTest_def.h"
-#include "tdd_file_path.h"
+#include "test_file_path.h"
 
 CXXTEST_SUITE(C3DFileIOTest)
 {

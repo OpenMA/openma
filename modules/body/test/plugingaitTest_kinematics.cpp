@@ -1,7 +1,7 @@
 #include <cxxtest/TestDrive.h>
 
 #include "plugingaitTest_def.h"
-#include "tdd_file_path.h"
+#include "test_file_path.h"
 
 #include <openma/body.h>
 #include <openma/io.h>

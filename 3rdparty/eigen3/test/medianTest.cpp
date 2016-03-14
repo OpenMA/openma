@@ -1,6 +1,6 @@
 #include <cxxtest/TestDrive.h>
 
-#include "tdd_eigen_config.h"
+#include "test_eigen_config.h"
 
 CXXTEST_SUITE(MedianTest)
 {

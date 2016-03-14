@@ -3,7 +3,7 @@
 #include <openma/io/file.h>
 #include <cstdio>
 
-#include "tdd_file_path.h"
+#include "test_file_path.h"
 
 CXXTEST_SUITE(FileTest)
 {

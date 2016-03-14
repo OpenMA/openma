@@ -1,5 +1,5 @@
-#ifndef __cxxtest_tdd_h
-#define __cxxtest_tdd_h
+#ifndef __cxxtest_testdrive_h
+#define __cxxtest_testdrive_h
 
 #ifndef CXXTEST_RUNNING
     #define CXXTEST_RUNNING
@@ -22,4 +22,4 @@
 #define TSM_ASSERT_EIGEN_DELTA(msg,lhs,rhs,prec) \
   TSM_ASSERT(msg + " (" + std::to_string((lhs - rhs).cwiseAbs().maxCoeff()) + " > " + std::to_string(prec) + ")", (lhs - rhs).cwiseAbs().maxCoeff() <= prec)
 
-#endif // __cxxtest_tdd_h
+#endif // __cxxtest_testdrive_h
