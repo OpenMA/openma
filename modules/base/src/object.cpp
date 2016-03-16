@@ -264,7 +264,7 @@ namespace ma
   void Object::modified() _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    static std::atomic<unsigned long> _openma_atomic_time{0};
+    static std::atomic<unsigned long> _openma_atomic_time{0ul};
     optr->Timestamp = ++_openma_atomic_time;
   };
   
