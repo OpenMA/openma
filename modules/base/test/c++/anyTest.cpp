@@ -9,7 +9,7 @@
 
 CXXTEST_SUITE(AnyTest)
 {
-  CXXTEST_TEST(Single_Int)
+  CXXTEST_TEST(singleInt)
   {
     ma::Any a = 12;
     TS_ASSERT_EQUALS(a.cast<int>(),12);
@@ -17,7 +17,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(static_cast<float>(a),12.0f);
   };
   
-  CXXTEST_TEST(Single_Float)
+  CXXTEST_TEST(singleFloat)
   {
     ma::Any b = 12.5f;
     TS_ASSERT_EQUALS(b.cast<int>(),12);
@@ -26,7 +26,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(b.cast<double>(),12.5);
   };
   
-  CXXTEST_TEST(Single_Char)
+  CXXTEST_TEST(singleChar)
   {
     ma::Any c = 'a';
     TS_ASSERT_EQUALS(c.cast<int>(),97);
@@ -35,11 +35,11 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(c.cast<std::string>(),"97"); // Because internally a (signed) char is casted into a (signed) short int before to be converted into a string. This was chosen to priorize int8_t to string conversion.
   };
   
-  CXXTEST_TEST(Single_Comparison)
+  CXXTEST_TEST(singleComparison)
   {
     ma::Any a = 12;
     ma::Any b = 12.5f;
-    ma::Any c = "Single_Comparison";
+    ma::Any c = "singleComparison";
     ma::Any d; // invalid
     
     TS_ASSERT(a == a);
@@ -55,8 +55,8 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT(0.0f != b);
     
     TS_ASSERT(c == c);
-    TS_ASSERT(c == "Single_Comparison");
-    TS_ASSERT("Single_Comparison" == c);
+    TS_ASSERT(c == "singleComparison");
+    TS_ASSERT("singleComparison" == c);
     TS_ASSERT(c != "");
     TS_ASSERT("" != c);
     
@@ -81,7 +81,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT(d != c);
   };
   
-  CXXTEST_TEST(Single_Comparison2)
+  CXXTEST_TEST(singleComparison2)
   {
     ma::Any a = 12;
     ma::Any b = 12.5f;
@@ -97,13 +97,13 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT(a == n);
   };
   
-  CXXTEST_TEST(Single_Int8ToString)
+  CXXTEST_TEST(singleInt8ToString)
   {
     ma::Any c = (int8_t)45;
     TS_ASSERT_EQUALS(c.cast<std::string>(),"45");
   };
   
-  CXXTEST_TEST(Single_BoolAndString)
+  CXXTEST_TEST(singleBoolAndString)
   {
     ma::Any d = true;
     TS_ASSERT_EQUALS(d.cast<std::string>(),"true");
@@ -120,7 +120,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(d.cast<bool>(),false);
   };
   
-  CXXTEST_TEST(Single_String)
+  CXXTEST_TEST(singleString)
   {
     ma::Any e = std::string("1.45");
     TS_ASSERT_EQUALS(e.cast<float>(),1.45f);
@@ -130,7 +130,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(static_cast<int>(e),1);
   };  
   
-  CXXTEST_TEST(Single_IntImplicitConversion)
+  CXXTEST_TEST(singleIntImplicitConversion)
   {
     ma::Any f = 45;
     TS_ASSERT_EQUALS(45,f);
@@ -139,7 +139,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_DIFFERS(12.4,f);
   };
   
-  CXXTEST_TEST(Single_CustomTypeRegistered)
+  CXXTEST_TEST(singleCustomTypeRegistered)
   {
     ma::Any g = Date{1999,12,19};
     TS_ASSERT_EQUALS(g,Date({1999,12,19}));
@@ -156,20 +156,20 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(g,Date({1999,12,19}));
   };
   
-  CXXTEST_TEST(Single_CustomTypeNotRegistered)
+  CXXTEST_TEST(singleCustomTypeNotRegistered)
   {
     ma::Any g = Foo{1,1};
     TS_ASSERT_EQUALS(g,Foo({1,1}));
     TS_ASSERT_DIFFERS(g,Foo({2,2}));
   };
 
-  CXXTEST_TEST(Single_IntHexadecimal)
+  CXXTEST_TEST(singleIntHexadecimal)
   {
     ma::Any h = int(0xFFFF);
     TS_ASSERT_EQUALS(h.cast<int8_t>(),int8_t(-1));
   };
   
-  CXXTEST_TEST(Single_Int8)
+  CXXTEST_TEST(singleInt8)
   {
     ma::Any i = int8_t(-1);
     TS_ASSERT_EQUALS(i.cast<int>(),-1);
@@ -177,7 +177,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(i.cast<std::string>(),"-1");
   };
   
-  CXXTEST_TEST(Single_FromString)
+  CXXTEST_TEST(singleFromString)
   {
     ma::Any m("foo");
     TS_ASSERT_EQUALS(m.cast<std::string>(),"foo");
@@ -188,7 +188,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(static_cast<bool>(m),true);
   };
   
-  CXXTEST_TEST(Single_Enum)
+  CXXTEST_TEST(singleEnum)
   {
     enum {Foo= 1, Bar = 2, Toto = 4};
     ma::Any m(Toto);
@@ -196,28 +196,28 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(m.cast<int>(),4);
   };
   
-  CXXTEST_TEST(Single_IntToArray)
+  CXXTEST_TEST(singleIntToArray)
   {
     ma::Any a = 12;
     std::vector<int> ref{12};
     TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),ref);
   };
   
-  CXXTEST_TEST(Single_CustomToArray)
+  CXXTEST_TEST(singleCustomToArray)
   {
     ma::Any g = Foo{1,1};
     std::vector<Foo> ref{{1,1}};
     TS_ASSERT_EQUALS(g.cast<std::vector<Foo>>(),ref);
   };
   
-  CXXTEST_TEST(Single_Typeid)
+  CXXTEST_TEST(singleTypeid)
   {
     ma::Any b = ma::static_typeid<int>();
     TS_ASSERT_EQUALS(b.cast<ma::typeid_t>(),ma::static_typeid<int>());
     TS_ASSERT_DIFFERS(b.cast<ma::typeid_t>(),ma::static_typeid<float>());
   };
   
-  CXXTEST_TEST(Single_Bool)
+  CXXTEST_TEST(singleBool)
   {
     ma::Any a = true;
     TS_ASSERT_EQUALS(a.cast<int>(),1);
@@ -226,7 +226,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(v.size(),size_t(1));
     bool b = v.at(0); // Compiilation error when trying to do TS_ASSERT_EQUALS(,true);
     TS_ASSERT_EQUALS(b, true);
-  }
+  };
   
   CXXTEST_TEST(assignSingle)
   {
@@ -241,9 +241,9 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<int>(),0);
     TS_ASSERT_EQUALS(a.cast<bool>(),true);
     TS_ASSERT_EQUALS(strcmp(a.cast<const char*>(),"dawn of the"),0);
-  }
+  };
   
-  CXXTEST_TEST(Array_Int_Vector)
+  CXXTEST_TEST(arrayIntVector)
   {
     std::vector<int> bar, foo{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
     // Vector constructor
@@ -258,7 +258,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Vector2)
+  CXXTEST_TEST(arrayIntVector2)
   {
     std::vector<int> foo = {1,2,3,4};
     // Use a vector of dimensions already set
@@ -278,7 +278,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Vector3)
+  CXXTEST_TEST(arrayIntVector3)
   {
     std::vector<int> foo = {1,2,3,4};
     // - Dimensions and values not matching (more values than dimensions)
@@ -297,7 +297,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Initializer)
+  CXXTEST_TEST(arrayIntInitializer)
   {
     // Initializer constructor
     // - Dimensions and values matching
@@ -316,7 +316,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Initializer2)
+  CXXTEST_TEST(arrayIntInitializer2)
   {
     // - Dimensions and values not matching (less values than dimensions)
     ma::Any a = ma::Any({1,2,3,4},{3,3});
@@ -334,7 +334,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Initializer3)
+  CXXTEST_TEST(arrayIntInitializer3)
   {
     // Implicit initializer constructor
     std::vector<int> foo = {1,2,3,4};
@@ -351,7 +351,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Int_Comparison)
+  CXXTEST_TEST(arrayIntComparison)
   {
     ma::Any a = {1,2,3,4};
     std::vector<int> bar = {1,2,3,4};
@@ -364,7 +364,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_DIFFERS(a,b);
   };
   
-  CXXTEST_TEST(Array_String)
+  CXXTEST_TEST(arrayString)
   {
     // Another test with strings
     ma::Any a = std::vector<std::string>({"Coco","Vroum","Another"});
@@ -391,7 +391,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::string>(3),std::string(""));
   };
   
-  CXXTEST_TEST(Array_String_Empty)
+  CXXTEST_TEST(arrayString_Empty)
   {
     std::vector<std::string> p;
     std::vector<size_t> dims{0};
@@ -405,9 +405,9 @@ CXXTEST_SUITE(AnyTest)
     a = std::vector<std::string>{};
     TS_ASSERT_EQUALS(a.isValid(),true);
     TS_ASSERT_EQUALS(a.isEmpty(),true);
-  }
+  };
   
-  CXXTEST_TEST(Array_CustomType)
+  CXXTEST_TEST(arrayCustomType)
   {
     ma::Any a = {Date{2009,05,01},Date{2005,12,12},Date{1945,07,23}};
     TS_ASSERT_EQUALS(a.cast<Date>(),Date({2009,05,01}));
@@ -422,13 +422,13 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"","",""}));
   };
     
-  CXXTEST_TEST(Array_FromSingle)
+  CXXTEST_TEST(arrayFromSingle)
   {
     ma::Any a = 1.2f;
     TS_ASSERT_EQUALS(a.cast<std::vector<float>>(),std::vector<float>({1.2f}));
   };
   
-  CXXTEST_TEST(Array_FromSingle_CustomType)
+  CXXTEST_TEST(arrayFromsingleCustomType)
   {
     ma::Any a = "2009-05-02";
     ma::Any::Register<Date, ma::Any::Conversion<std::string>, ma::Any::Conversion<std::string>>();
@@ -438,7 +438,7 @@ CXXTEST_SUITE(AnyTest)
     ma::Any::Unregister<Date>();
   };
   
-  CXXTEST_TEST(Array_Int_Array)
+  CXXTEST_TEST(arrayIntArray)
   {
     std::array<int,4> bar, foo{{1, 2, 3, 4}};
     // Vector constructor
@@ -453,7 +453,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(foo,bar);
   };
   
-  CXXTEST_TEST(Array_Enum)
+  CXXTEST_TEST(arrayEnum)
   {
     enum class myEnum {Foo= 1, Bar = 2, Toto = 4};
     ma::Any m(std::vector<myEnum>{myEnum::Foo,myEnum::Toto});
@@ -468,7 +468,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(m.cast<std::vector<myEnum>>(),std::vector<myEnum>({myEnum::Foo,myEnum::Toto}));
   };
   
-  CXXTEST_TEST(Array_Char)
+  CXXTEST_TEST(arrayChar)
   {
     std::array<char,4> foo{{'a','b','c','d'}};
     ma::Any a = foo;
@@ -481,7 +481,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"97","98","99","100"}));
   };
   
-  CXXTEST_TEST(Array_Bool_One)
+  CXXTEST_TEST(arrayBool_One)
   {
     std::array<bool,4> foo{{true,false,false,true}};
     ma::Any a = foo;
@@ -503,7 +503,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"true","false","false","true"}));
   };
   
-  CXXTEST_TEST(Array_Bool_Two)
+  CXXTEST_TEST(arrayBool_Two)
   {
     std::vector<bool> foo{{true,false,false,true}};
     ma::Any a = foo;
@@ -523,7 +523,7 @@ CXXTEST_SUITE(AnyTest)
     }
     TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({1,0,0,1}));
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"1","0","0","1"}));
-  }
+  };
   
   CXXTEST_TEST(assignArray)
   {
@@ -543,46 +543,46 @@ CXXTEST_SUITE(AnyTest)
     a.assign({1,2,3,4,5,6},{2,3});
     TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({2,3}));
     TS_ASSERT_EQUALS(a.cast<std::vector<float>>(), std::vector<float>({1.0f,2.0f,3.0f,4.0f,5.0f,6.0f}));
-  }
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(AnyTest)
 // Single element
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Int)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Float)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Char)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Comparison)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Comparison2)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Int8ToString)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_BoolAndString)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_String)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_IntImplicitConversion)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_CustomTypeRegistered)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_CustomTypeNotRegistered)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_IntHexadecimal)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Int8)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_FromString)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Enum)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_IntToArray)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_CustomToArray)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Typeid)
-CXXTEST_TEST_REGISTRATION(AnyTest, Single_Bool)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleInt)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleFloat)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleChar)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleComparison)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleComparison2)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleInt8ToString)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleBoolAndString)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleString)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleIntImplicitConversion)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleCustomTypeRegistered)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleCustomTypeNotRegistered)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleIntHexadecimal)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleInt8)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleFromString)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleEnum)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleIntToArray)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleCustomToArray)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleTypeid)
+CXXTEST_TEST_REGISTRATION(AnyTest, singleBool)
 CXXTEST_TEST_REGISTRATION(AnyTest, assignSingle)
 // Array container
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Vector)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Vector2)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Vector3)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Initializer)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Initializer2)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Initializer3)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Comparison)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_String)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_String_Empty)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_FromSingle)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_FromSingle_CustomType)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Array)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Enum)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Char)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Bool_One)
-CXXTEST_TEST_REGISTRATION(AnyTest, Array_Bool_Two)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntVector)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntVector2)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntVector3)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntInitializer)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntInitializer2)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntInitializer3)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntComparison)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayString)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayString_Empty)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayFromSingle)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayFromsingleCustomType)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayIntArray)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayEnum)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayChar)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayBool_One)
+CXXTEST_TEST_REGISTRATION(AnyTest, arrayBool_Two)
 CXXTEST_TEST_REGISTRATION(AnyTest, assignArray)
