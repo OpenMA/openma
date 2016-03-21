@@ -121,9 +121,13 @@ namespace ma
         doConversion(storage->Data,value);
     };
     
-    // (std) Vector conversion
+    // (std) Vector conversion (except bool)
     template <typename U>
-    inline typename std::enable_if<is_stl_vector<typename std::decay<U>::type>::value>::type _any_convert(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
+    inline typename std::enable_if<
+       is_stl_vector<typename std::decay<U>::type>::value
+    && !std::is_same<typename std::decay<U>::type, std::vector<bool>>::value
+    >::type 
+    _any_convert(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
     {
       _Any_convert_t doConversion = _any_extract_converter(storage->id(),static_typeid<typename std::decay<U>::type::value_type>());
       if (doConversion != nullptr)
@@ -131,6 +135,27 @@ namespace ma
         value->resize(storage->size());
         for (size_t i = 0 ; i < value->size() ; ++i)
           doConversion(storage->element(i),&value->operator[](i));
+      }
+    };
+    
+    // (std) Vector boll conversion (only)
+    template <typename U>
+    inline typename std::enable_if<
+       is_stl_vector<typename std::decay<U>::type>::value
+    && std::is_same<typename std::decay<U>::type, std::vector<bool>>::value
+    >::type 
+    _any_convert(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
+    {
+      _Any_convert_t doConversion = _any_extract_converter(storage->id(),static_typeid<typename std::decay<U>::type::value_type>());
+      if (doConversion != nullptr)
+      {
+        value->resize(storage->size());
+        for (size_t i = 0 ; i < value->size() ; ++i)
+        {
+          char c = 0x00;
+          doConversion(storage->element(i),&c);
+          value->operator[](i) = (c != 0x00);
+        }
       }
     };
     
@@ -307,6 +332,7 @@ namespace ma
     };
     
     // From pointers
+    
     template <typename U, typename D>
     inline Any::Storage*
     _any_store(U* values, size_t numValues, D* dimensions, size_t numDims)
@@ -353,10 +379,11 @@ namespace ma
       return new _Any_storage_single<typename _Any_adapter::type>(_Any_adapter::single(std::forward<U>(value)));
     };
     
-    // From vectors
+    // From vectors & arrays
     template <typename U, typename D>
     inline typename std::enable_if<
          (is_stl_vector<typename std::decay<U>::type>::value || is_stl_array<typename std::decay<U>::type>::value)
+      && (!std::is_same<typename std::decay<U>::type, std::vector<bool>>::value)
       && (is_stl_vector<typename std::decay<D>::type>::value || is_stl_array<typename std::decay<D>::type>::value)
       , Any::Storage*>::type
     _any_store(U&& values, D&& dimensions)
@@ -365,15 +392,50 @@ namespace ma
       return _any_store(values.data(),values.size(),dimensions.data(),dimensions.size());
     };
     
+    // - Specialization for std::vector<bool>
     template <typename U, typename D>
     inline typename std::enable_if<
          (is_stl_vector<typename std::decay<U>::type>::value || is_stl_array<typename std::decay<U>::type>::value)
+      && (std::is_same<typename std::decay<U>::type, std::vector<bool>>::value)
+      && (is_stl_vector<typename std::decay<D>::type>::value || is_stl_array<typename std::decay<D>::type>::value)
+      , Any::Storage*>::type
+    _any_store(U&& values, D&& dimensions)
+    {
+      static_assert(std::is_integral<typename std::decay<D>::type::value_type>::value, "The given dimensions must be a vector with a value_type set to an integral type (e.g. int or size_t).");
+      // Need to convert bool as char
+      auto temp = std::vector<char>(values.size());
+      for (size_t i = 0, len = values.size() ; i < len ; ++i)
+        temp[i] = values[i] ? 0x01 : 0x00;
+      return _any_store(temp.data(),temp.size(),dimensions.data(),dimensions.size());
+    };
+    
+    template <typename U, typename D>
+    inline typename std::enable_if<
+         (is_stl_vector<typename std::decay<U>::type>::value || is_stl_array<typename std::decay<U>::type>::value)
+      && (!std::is_same<typename std::decay<U>::type, std::vector<bool>>::value)
       && std::is_same<D,void*>::value
       , Any::Storage*>::type
     _any_store(U&& values, D&& )
     {
       size_t dims[1] = {values.size()};
       return _any_store(values.data(),values.size(),dims,1ul);
+    };
+    
+    // - Specialization for std::vector<bool>
+    template <typename U, typename D>
+    inline typename std::enable_if<
+         (is_stl_vector<typename std::decay<U>::type>::value || is_stl_array<typename std::decay<U>::type>::value)
+      && (std::is_same<typename std::decay<U>::type, std::vector<bool>>::value)
+      && std::is_same<D,void*>::value
+      , Any::Storage*>::type
+    _any_store(U&& values, D&& )
+    {
+      size_t dims[1] = {values.size()};
+      // Need to convert bool as char
+      auto temp = std::vector<char>(dims[0]);
+      for (size_t i = 0 ; i < dims[0] ; ++i)
+        temp[i] = values[i] ? 0x01 : 0x00;
+      return _any_store(temp.data(),temp.size(),dims,1ul);
     };
     
     // From initializer lists
@@ -761,14 +823,37 @@ namespace ma
       return false;
     }
     
-    // (std) Vector conversion
+    // (std) Vector conversion (except bool)
     template <typename U>
-    typename std::enable_if<is_stl_vector<typename std::decay<U>::type>::value, bool>::type _any_cast(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
+    typename std::enable_if<
+       is_stl_vector<typename std::decay<U>::type>::value
+    && !std::is_same<typename std::decay<U>::type, std::vector<bool>>::value
+    , bool>::type 
+    _any_cast(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
     {
       bool res = true;
       value->resize(storage->size());
       for (size_t i = 0 ; i < value->size() ; ++i)
         res &= _any_cast(&value->operator[](i),storage,i);
+      return res;
+    };
+    
+    // (std) Vector of bool conversion (only)
+    template <typename U>
+    typename std::enable_if<
+       is_stl_vector<typename std::decay<U>::type>::value
+    && std::is_same<typename std::decay<U>::type, std::vector<bool>>::value
+    , bool>::type 
+    _any_cast(U* value, const Any::Storage* storage) _OPENMA_NOEXCEPT
+    {
+      bool res = true;
+      value->resize(storage->size());
+      for (size_t i = 0 ; i < value->size() ; ++i)
+      {
+        char c = 0x00;
+        res &= _any_cast(&c,storage,i);
+        value->operator[](i) = (c != 0x00);
+      }
       return res;
     };
     
@@ -874,11 +959,18 @@ namespace ma
     return __details::_any_is_equal(this,std::forward<U>(value));
   };
   
-  template <typename U, typename>
-  inline void Any::assign(U&& value) _OPENMA_NOEXCEPT
+  template <typename U, typename D, typename>
+  inline void Any::assign(U&& value, D&& dimensions) _OPENMA_NOEXCEPT
   {
     delete this->mp_Storage;
-    this->mp_Storage = __details::_any_store<U,void*>(std::forward<U>(value), {});
+    this->mp_Storage = __details::_any_store<U,D>(std::forward<U>(value), std::forward<D>(dimensions));
+  };
+  
+  template <typename U, typename>
+  inline void Any::assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions) _OPENMA_NOEXCEPT
+  {
+    delete this->mp_Storage;
+    this->mp_Storage = __details::_any_store<std::initializer_list<U>,std::initializer_list<size_t>>(std::move(values), std::move(dimensions));
   };
 
   template <typename U, typename >

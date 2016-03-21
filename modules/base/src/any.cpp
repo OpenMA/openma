@@ -264,8 +264,13 @@ namespace ma
    */
   
   /**
-   * @fn template <typename U, typename> inline bool Any::assign(U&& value) const _OPENMA_NOEXCEPT
-   * Convenient method to assign a value to an Any object.
+   * @fn template <typename U, typename D, typename> inline void Any::assign(U&& value, D&& dimensions) _OPENMA_NOEXCEPT
+   * Convenient method to assign a @a value with optional @a dimensions to an Any object.
+   */
+  
+  /**
+   * @fn template <typename U, typename> inline void Any::assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {}) _OPENMA_NOEXCEPT
+   * Convenient method to assign a @a value with optional @a dimensions to an Any object.
    */
   
   /** 

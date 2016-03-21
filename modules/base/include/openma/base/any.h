@@ -72,7 +72,8 @@ namespace ma
     void swap(Any& other) _OPENMA_NOEXCEPT;
     
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> bool isEqual(U&& value) const _OPENMA_NOEXCEPT;
-    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(U&& value) _OPENMA_NOEXCEPT;
+    template <typename U, typename D = void*, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(U&& value, D&& dimensions = D{}) _OPENMA_NOEXCEPT;
+    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {}) _OPENMA_NOEXCEPT;
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast() const _OPENMA_NOEXCEPT;
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast(size_t idx) const _OPENMA_NOEXCEPT;
     

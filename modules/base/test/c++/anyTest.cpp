@@ -217,6 +217,32 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_DIFFERS(b.cast<ma::typeid_t>(),ma::static_typeid<float>());
   };
   
+  CXXTEST_TEST(Single_Bool)
+  {
+    ma::Any a = true;
+    TS_ASSERT_EQUALS(a.cast<int>(),1);
+    TS_ASSERT_EQUALS(a.cast<double>(),1.0);
+    auto v = a.cast<std::vector<bool>>();
+    TS_ASSERT_EQUALS(v.size(),size_t(1));
+    bool b = v.at(0); // Compiilation error when trying to do TS_ASSERT_EQUALS(,true);
+    TS_ASSERT_EQUALS(b, true);
+  }
+  
+  CXXTEST_TEST(assignSingle)
+  {
+    ma::Any a;
+    a.assign(true);
+    TS_ASSERT_EQUALS(a.cast<int>(),1);
+    a.assign(10);
+    TS_ASSERT_EQUALS(a.cast<int>(),10);
+    TS_ASSERT_EQUALS(a.cast<float>(),10.0f);
+    TS_ASSERT_EQUALS(a.cast<bool>(),true);
+    a.assign("dawn of the");
+    TS_ASSERT_EQUALS(a.cast<int>(),0);
+    TS_ASSERT_EQUALS(a.cast<bool>(),true);
+    TS_ASSERT_EQUALS(strcmp(a.cast<const char*>(),"dawn of the"),0);
+  }
+  
   CXXTEST_TEST(Array_Int_Vector)
   {
     std::vector<int> bar, foo{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
@@ -394,13 +420,13 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({0,0,0}));  
     ma::Any::Unregister<Date>();
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"","",""}));
-  }
+  };
     
   CXXTEST_TEST(Array_FromSingle)
   {
     ma::Any a = 1.2f;
     TS_ASSERT_EQUALS(a.cast<std::vector<float>>(),std::vector<float>({1.2f}));
-  }
+  };
   
   CXXTEST_TEST(Array_FromSingle_CustomType)
   {
@@ -410,7 +436,7 @@ CXXTEST_SUITE(AnyTest)
     a = Date{2014,03,01}; // The conversion to a string is correctly "2014-3-1".
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"2014-3-1"}));
     ma::Any::Unregister<Date>();
-  }
+  };
   
   CXXTEST_TEST(Array_Int_Array)
   {
@@ -453,7 +479,70 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<std::vector<char>>(),std::vector<char>({'a','b','c','d'}));
     TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({97,98,99,100}));
     TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"97","98","99","100"}));
-    
+  };
+  
+  CXXTEST_TEST(Array_Bool_One)
+  {
+    std::array<bool,4> foo{{true,false,false,true}};
+    ma::Any a = foo;
+    TS_ASSERT_EQUALS(a.cast<bool>(0),true);
+    TS_ASSERT_EQUALS(a.cast<bool>(1),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(2),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(3),true);
+    TS_ASSERT_EQUALS(a.cast<char>(0),0x01);
+    TS_ASSERT_EQUALS(a.cast<char>(1),0x00);
+    TS_ASSERT_EQUALS(a.cast<char>(2),0x00);
+    TS_ASSERT_EQUALS(a.cast<char>(3),0x01);
+    auto bar = a.cast<std::vector<bool>>();
+    for (size_t i = 0 ; i < 4 ; ++i)
+    {
+      bool f = foo[i], b = bar[i];
+      TS_ASSERT_EQUALS(f,b);
+    }
+    TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({1,0,0,1}));
+    TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"true","false","false","true"}));
+  };
+  
+  CXXTEST_TEST(Array_Bool_Two)
+  {
+    std::vector<bool> foo{{true,false,false,true}};
+    ma::Any a = foo;
+    TS_ASSERT_EQUALS(a.cast<bool>(0),true);
+    TS_ASSERT_EQUALS(a.cast<bool>(1),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(2),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(3),true);
+    TS_ASSERT_EQUALS(a.cast<char>(0),0x01);
+    TS_ASSERT_EQUALS(a.cast<char>(1),0x00);
+    TS_ASSERT_EQUALS(a.cast<char>(2),0x00);
+    TS_ASSERT_EQUALS(a.cast<char>(3),0x01);
+    auto bar = a.cast<std::vector<bool>>();
+    for (size_t i = 0 ; i < 4 ; ++i)
+    {
+      bool f = foo[i], b = bar[i];
+      TS_ASSERT_EQUALS(f,b);
+    }
+    TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({1,0,0,1}));
+    TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"1","0","0","1"}));
+  }
+  
+  CXXTEST_TEST(assignArray)
+  {
+    ma::Any a;
+    a.assign(std::vector<bool>({true,false,false,true}), std::vector<size_t>({2,2}));
+    TS_ASSERT_EQUALS(a.cast<bool>(0),true);
+    TS_ASSERT_EQUALS(a.cast<bool>(1),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(2),false);
+    TS_ASSERT_EQUALS(a.cast<bool>(3),true);
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({2,2}));
+    a.assign(std::array<char,4>{{'a','b','c','d'}});
+    TS_ASSERT_EQUALS(a.cast<char>(0),'a');
+    TS_ASSERT_EQUALS(a.cast<char>(1),'b');
+    TS_ASSERT_EQUALS(a.cast<char>(2),'c');
+    TS_ASSERT_EQUALS(a.cast<char>(3),'d');
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({4}));
+    a.assign({1,2,3,4,5,6},{2,3});
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({2,3}));
+    TS_ASSERT_EQUALS(a.cast<std::vector<float>>(), std::vector<float>({1.0f,2.0f,3.0f,4.0f,5.0f,6.0f}));
   }
 };
 
@@ -477,6 +566,8 @@ CXXTEST_TEST_REGISTRATION(AnyTest, Single_Enum)
 CXXTEST_TEST_REGISTRATION(AnyTest, Single_IntToArray)
 CXXTEST_TEST_REGISTRATION(AnyTest, Single_CustomToArray)
 CXXTEST_TEST_REGISTRATION(AnyTest, Single_Typeid)
+CXXTEST_TEST_REGISTRATION(AnyTest, Single_Bool)
+CXXTEST_TEST_REGISTRATION(AnyTest, assignSingle)
 // Array container
 CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Vector)
 CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Vector2)
@@ -492,3 +583,6 @@ CXXTEST_TEST_REGISTRATION(AnyTest, Array_FromSingle_CustomType)
 CXXTEST_TEST_REGISTRATION(AnyTest, Array_Int_Array)
 CXXTEST_TEST_REGISTRATION(AnyTest, Array_Enum)
 CXXTEST_TEST_REGISTRATION(AnyTest, Array_Char)
+CXXTEST_TEST_REGISTRATION(AnyTest, Array_Bool_One)
+CXXTEST_TEST_REGISTRATION(AnyTest, Array_Bool_Two)
+CXXTEST_TEST_REGISTRATION(AnyTest, assignArray)
