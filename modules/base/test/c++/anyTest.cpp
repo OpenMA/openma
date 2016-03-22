@@ -9,6 +9,18 @@
 
 CXXTEST_SUITE(AnyTest)
 {
+  CXXTEST_TEST(defaultConstructor)
+  {
+    ma::Any a;
+    TS_ASSERT_EQUALS(a.isEmpty(),true);
+    TS_ASSERT_EQUALS(a.isValid(),false);
+    TS_ASSERT_EQUALS(a.dimensions(),std::vector<size_t>());
+    TS_ASSERT_EQUALS(a.size(),size_t(0));
+    TS_ASSERT_EQUALS(a.cast<int>(),0);
+    TS_ASSERT_EQUALS(a.cast<double>(),0.0);
+    TS_ASSERT_EQUALS(a.cast<std::string>(),std::string());
+  }
+  
   CXXTEST_TEST(singleInt)
   {
     ma::Any a = 12;
@@ -547,6 +559,7 @@ CXXTEST_SUITE(AnyTest)
 };
 
 CXXTEST_SUITE_REGISTRATION(AnyTest)
+CXXTEST_TEST_REGISTRATION(AnyTest, defaultConstructor)
 // Single element
 CXXTEST_TEST_REGISTRATION(AnyTest, singleInt)
 CXXTEST_TEST_REGISTRATION(AnyTest, singleFloat)

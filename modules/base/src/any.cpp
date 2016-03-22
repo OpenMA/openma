@@ -221,7 +221,7 @@ namespace ma
    */
   std::vector<size_t> Any::dimensions() const _OPENMA_NOEXCEPT
   {
-    return this->mp_Storage->dimensions();
+    return (this->mp_Storage != nullptr) ? this->mp_Storage->dimensions() : std::vector<size_t>{};
   };
 
   /**
@@ -229,7 +229,7 @@ namespace ma
    */
   size_t Any::size() const _OPENMA_NOEXCEPT
   {
-    return this->mp_Storage->size();
+    return (this->mp_Storage != nullptr) ? this->mp_Storage->size() : size_t(0);
   };
   
   /**
