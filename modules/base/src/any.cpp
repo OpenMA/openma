@@ -69,7 +69,7 @@ namespace ma
    *  - A static table (std::unordered_map) containing all the custom conversions between registered types.
    *
    * By default, all the arithmetic types (bool, integers, floating points) and 
-   * the std::string type are convertible between them
+   * the std::string type are convertible between them. The casting to const char* is only available if the stored content is originally a std::string
    *
    * @code{.unparsed}
    * ma::Any a(5); // store an integer with the value 5
