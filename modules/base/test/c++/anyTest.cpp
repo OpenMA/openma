@@ -106,10 +106,10 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(singleBoolAndString)
   {
     ma::Any d = true;
-    TS_ASSERT_EQUALS(d.cast<std::string>(),"true");
+    TS_ASSERT_EQUALS(d.cast<std::string>(),"1");
     TS_ASSERT_EQUALS(d.cast<int>(),1);
     d = false;
-    TS_ASSERT_EQUALS(d.cast<std::string>(),"false");
+    TS_ASSERT_EQUALS(d.cast<std::string>(),"0");
     TS_ASSERT_EQUALS(d.cast<int>(),0);
     TS_ASSERT_EQUALS(d.cast<bool>(),false);
     d = "true";
@@ -500,7 +500,7 @@ CXXTEST_SUITE(AnyTest)
       TS_ASSERT_EQUALS(f,b);
     }
     TS_ASSERT_EQUALS(a.cast<std::vector<int>>(),std::vector<int>({1,0,0,1}));
-    TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"true","false","false","true"}));
+    TS_ASSERT_EQUALS(a.cast<std::vector<std::string>>(),std::vector<std::string>({"1","0","0","1"}));
   };
   
   CXXTEST_TEST(arrayBool_Two)

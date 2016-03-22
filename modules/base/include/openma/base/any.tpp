@@ -745,7 +745,7 @@ namespace ma
       {
         // bool
         if (id == static_typeid<bool>())
-          *value = std::string(static_cast<bool*>(storage->Data)[idx] ? "true" : "false");
+          *value = std::string(static_cast<bool*>(storage->Data)[idx] ? "1" : "0");
         // char (convert as it is an int8_t)
         else if (id == static_typeid<char>())
           *value = std::to_string((short int)static_cast<char*>(storage->Data)[idx]);
