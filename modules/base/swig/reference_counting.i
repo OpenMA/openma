@@ -1,50 +1,55 @@
 %{
 
-#define _SWIG_ref_count "_SWIG_ref_count"
+#define _MA_REF_COUNTER "_MA_REF_COUNTER"
 
-inline void _SWIG_ma_Node_reset(ma::Node* node, const ma::Any& value, bool recursive = true)
+inline ma::Any _ma_refcount_set(ma::Node* node)
 {
-  if (node == nullptr) return;
-  node->setProperty(_SWIG_ref_count, value);
+  return node->property(_MA_REF_COUNTER);
+};
+
+inline void _ma_refcount_set(ma::Node* node, const ma::Any& value)
+{
+  node->setProperty(_MA_REF_COUNTER, value);
+};
+
+inline void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true)
+{
+  _ma_refcount_set(node, value);
   if (recursive)
   {
     auto& children = node->children();
     for (auto child : children)
-      _SWIG_ma_Node_reset(child, value, recursive);
+      _ma_refcount_reset(child, value, recursive);
   }
 };
 
-inline void _SWIG_ma_Node_ref(ma::Node* node)
+inline void _ma_refcount_incr(ma::Node* node)
 {
-  if (node == nullptr) return;
-  const auto& prop = node->property(_SWIG_ref_count);
+  const auto& prop = _ma_refcount_set(node);
   if (prop.isValid())
-    node->setProperty(_SWIG_ref_count, prop.cast<int>() + 1);
+    _ma_refcount_set(node, static_cast<int>(prop) + 1);
   else
-    node->setProperty(_SWIG_ref_count, static_cast<int>(node->parents().size()));
-/*  mexPrintf("_SWIG_ma_Node_ref - %s - new count: %i\n",node->name().c_str(), rc.cast<int>());*/
+    _ma_refcount_set(node, static_cast<int>(node->parents().size()));
 };
 
-inline int _SWIG_ma_Node_unref(ma::Node* node)
+inline int _ma_refcount_decr(ma::Node* node)
 {
-  if (node == nullptr) return 0;
-  int rc = node->property(_SWIG_ref_count).cast<int>();
-  rc -= 1;
-/*  mexPrintf("_SWIG_ma_Node_unref - %s - remaining: %i\n", node->name().c_str(), rc);*/
-  if (rc < 0)
+  int count = _ma_refcount_set(node);
+  count -= 1;
+  if (count < 0)
   {
     auto children = node->children();
     for (auto child : children)
     {
       child->removeParent(node);
-      _SWIG_ma_Node_unref(child);
+      _ma_refcount_decr(child);
     }
-/*    mexPrintf("_SWIG_ma_Node_unref - %s - ~ma::Node (children number: %i)\n", node->name().c_str(), node->children().size());*/
+/*    mexPrintf("_ma_refcount_decr - %s - ~ma::Node (children number: %i)\n", node->name().c_str(), node->children().size());*/
     delete node;
   }
   else
-    node->setProperty(_SWIG_ref_count, rc);
-  return rc;
+    _ma_refcount_set(node, count);
+  return count;
 };
 
 %};

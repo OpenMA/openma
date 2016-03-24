@@ -47,7 +47,7 @@
     {
       mxArray* elt = SWIG_NewPointerObj(SWIG_as_voidptr($1->operator[](i)), $descriptor(ma::Node*), 1 |  0 );
       if (elt == nullptr) break;
-      _SWIG_ma_Node_ref($1->operator[](i));
+      _ma_refcount_incr($1->operator[](i));
       mxSetCell($result, i, elt);
     }
   };

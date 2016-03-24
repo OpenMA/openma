@@ -59,7 +59,7 @@
 %typemap(out, noblock=1) ma:: ## typename* ma:: ## typename::clone
 {
   _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(ma:: ## typename*), 1 | 0);
-  if (result->hasParents()) _SWIG_ma_Node_ref(result);
+  if (result->hasParents()) _ma_refcount_incr(result);
 };*/
 %enddef
 
@@ -79,27 +79,54 @@ typename(swigtype* other)
 };
 %enddef 
 
+%{
+void _ma_clear_node(ma::Node* self)
+{
+  int count = 0;
+  // Unref parents
+  auto p1 = self->parents();
+  for (auto parent : p1)
+  {
+    count = _ma_refcount_decr(self);
+    self->removeParent(parent);
+  }
+  assert(count >= 0);
+  // Unref children
+  auto c1 = self->children();
+  for (auto child : c1)
+    _ma_refcount_decr(child);
+  // Detach remaining children (still in the workspace)
+  auto c2 = self->children();
+  for (auto child : c2)
+    child->removeParent(self);
+  // Node clear
+  self->clear();
+  // Reset the reference counter
+  _ma_refcount_reset(self, count);
+};
+%};
+
 %define SWIG_EXTEND_DEEPCOPY(typename)
 %extend {
 void copy(ma::Node* source)
 {
-  ma_Node_clear($self);
-  auto rc = $self->property(_SWIG_ref_count);
+  _ma_clear_node($self);
+  int count = _ma_refcount_set(source);
   $self->copy(source);
-  _SWIG_ma_Node_reset($self, rc, false);
+  _ma_refcount_reset($self, count, false);
   auto& children = $self->children();
   for (auto child : children)
-    _SWIG_ma_Node_reset(child, 0);
+    _ma_refcount_reset(child, 0);
 };
 %newobject clone;
 typename* clone(Node* parent = nullptr) const
 {
   ma::typename* ptr = $self->clone(parent);
-  _SWIG_ma_Node_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
-  if (parent != nullptr) _SWIG_ma_Node_ref(ptr);
+  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
+  if (parent != nullptr) _ma_refcount_incr(ptr);
   auto& children = ptr->children();
   for (auto child : children)
-    _SWIG_ma_Node_reset(child, 0);
+    _ma_refcount_reset(child, 0);
   return ptr;
 };
 };
@@ -109,10 +136,9 @@ typename* clone(Node* parent = nullptr) const
 //                                INTERFACE
 // ========================================================================= //
 
-
 // Use a single threaded reference counting mechanism to release the data
-%feature("ref", noblock=1) ma::Node {_SWIG_ma_Node_ref($this);};
-%feature("unref", noblock=1) ma::Node {_SWIG_ma_Node_unref($this);};
+%feature("ref", noblock=1) ma::Node {_ma_refcount_incr($this);};
+%feature("unref", noblock=1) ma::Node {_ma_refcount_decr($this);};
 
 #if defined(SWIGMATLAB)
 %include "base_matlab.i"

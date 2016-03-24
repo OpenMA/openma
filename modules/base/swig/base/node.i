@@ -32,34 +32,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-// MUST BE DEFINED BEFORE THE NODE INTERFACE
-%{
-void ma_Node_clear(ma::Node* self)
-{
-  int rc = 0;
-  // Unref parents
-  auto& p1 = self->parents();
-  for (auto parent : p1)
-  {
-    rc = _SWIG_ma_Node_unref(self);
-    self->removeParent(parent);
-  }
-  assert(rc >= 0);
-  // Unref children
-  auto c1 = self->children();
-  for (auto child : c1)
-    _SWIG_ma_Node_unref(child);
-  // Detach remaining children (still in the workspace)
-  auto c2 = self->children();
-  for (auto child : c2)
-    child->removeParent(self);
-  // Node clear
-  self->clear();
-  // Reset the reference counter
-  _SWIG_ma_Node_reset(self, rc);
-};
-%};
-
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(Node)
@@ -93,7 +65,7 @@ namespace ma
   
     %extend {
       Node* child(unsigned index) const;
-      void clear();
+      void clear() {_ma_clear_node($self);};
     }
   
     const std::vector<Node*>& children() const;
