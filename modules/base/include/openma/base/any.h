@@ -61,10 +61,10 @@ namespace ma
     Any(const Any& other);
     Any(Any&& other) _OPENMA_NOEXCEPT;
     template <typename U, typename D = void*, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> Any(U&& value, D&& dimensions = D{});
-    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> Any(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {});
+    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> Any(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions = {});
     ~Any();
     
-    std::vector<size_t> dimensions() const _OPENMA_NOEXCEPT;
+    std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT;
     size_t size() const _OPENMA_NOEXCEPT;
     
     bool isValid() const _OPENMA_NOEXCEPT;
@@ -73,7 +73,7 @@ namespace ma
     
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> bool isEqual(U&& value) const _OPENMA_NOEXCEPT;
     template <typename U, typename D = void*, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(U&& value, D&& dimensions = D{}) _OPENMA_NOEXCEPT;
-    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {}) _OPENMA_NOEXCEPT;
+    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions = {}) _OPENMA_NOEXCEPT;
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast() const _OPENMA_NOEXCEPT;
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast(size_t idx) const _OPENMA_NOEXCEPT;
     

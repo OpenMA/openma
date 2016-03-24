@@ -201,7 +201,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename U, typename > Any::Any(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {});
+   * @fn template <typename U, typename > Any::Any(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions = {});
    * Constructor which store the given @a value and @a dimensions (optional). When no dimension is given, this one is set automatically based on the given @a value.
    *
    * In case the number of elements in the @a value is not the same than the number of @a dimension, the later is chosen. Data can be truncated or expanded with default value.
@@ -219,9 +219,9 @@ namespace ma
   /**
    * Return a vector with the dimensions associated with the data stored.
    */
-  std::vector<size_t> Any::dimensions() const _OPENMA_NOEXCEPT
+  std::vector<unsigned> Any::dimensions() const _OPENMA_NOEXCEPT
   {
-    return (this->mp_Storage != nullptr) ? this->mp_Storage->dimensions() : std::vector<size_t>{};
+    return (this->mp_Storage != nullptr) ? this->mp_Storage->dimensions() : std::vector<unsigned>{};
   };
 
   /**
@@ -269,7 +269,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename U, typename> inline void Any::assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {}) _OPENMA_NOEXCEPT
+   * @fn template <typename U, typename> inline void Any::assign(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions = {}) _OPENMA_NOEXCEPT
    * Convenient method to assign a @a value with optional @a dimensions to an Any object.
    */
   

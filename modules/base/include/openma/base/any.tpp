@@ -60,7 +60,7 @@ namespace ma
     virtual ~Storage() _OPENMA_NOEXCEPT;
     virtual typeid_t id() const _OPENMA_NOEXCEPT = 0;
     virtual bool is_arithmetic() const _OPENMA_NOEXCEPT = 0;
-    virtual std::vector<size_t> dimensions() const _OPENMA_NOEXCEPT = 0;
+    virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT = 0;
     virtual size_t size() const _OPENMA_NOEXCEPT = 0;
     virtual Storage* clone() const = 0;
     virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT = 0;
@@ -219,7 +219,7 @@ namespace ma
       ~_Any_storage_single() _OPENMA_NOEXCEPT;
       virtual typeid_t id() const _OPENMA_NOEXCEPT final;
       virtual bool is_arithmetic() const _OPENMA_NOEXCEPT final;
-      virtual std::vector<size_t> dimensions() const _OPENMA_NOEXCEPT final;
+      virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT final;
       virtual size_t size() const _OPENMA_NOEXCEPT final;
       virtual Storage* clone() const final;
       virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT final;
@@ -232,17 +232,17 @@ namespace ma
       static_assert(std::is_copy_constructible<T>::value, "Impossible to use the ma::Any class with a type which does not have a copy constructor.");
       static_assert(!std::is_pointer<T>::value, "Impossible to store a pointer type.");
     
-      template <typename U> _Any_storage_array(U* values, size_t numValues, const size_t* dimensions, size_t numDims);
+      template <typename U> _Any_storage_array(U* values, size_t numValues, const unsigned* dimensions, size_t numDims);
       ~_Any_storage_array() _OPENMA_NOEXCEPT;
       virtual typeid_t id() const _OPENMA_NOEXCEPT final;
       virtual bool is_arithmetic() const _OPENMA_NOEXCEPT final;
-      virtual std::vector<size_t> dimensions() const _OPENMA_NOEXCEPT final;
+      virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT final;
       virtual size_t size() const _OPENMA_NOEXCEPT final;
       virtual Storage* clone() const final;
       virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT final;
       virtual void* element(size_t idx) const _OPENMA_NOEXCEPT final;
       size_t NumValues;
-      const size_t* Dimensions;
+      const unsigned* Dimensions;
       size_t NumDims;
     };
     
@@ -340,14 +340,14 @@ namespace ma
       using _Any_adapter = _Any_adapt<typename std::remove_cv<typename std::remove_reference<U>::type>::type>;
       // NOTE: The arrays are not deleted as they are onwed by the _Any_storage_array class.
       typename _Any_adapter::type* data = nullptr;
-      size_t* dims = nullptr;
+      unsigned* dims = nullptr;
       if (numDims != 0)
       {
         size_t size = 1;
-        dims = new size_t[numDims];
+        dims = new unsigned[numDims];
         for (size_t i = 0 ; i < numDims ; ++i)
         {
-          dims[i] = static_cast<size_t>(dimensions[i]);
+          dims[i] = static_cast<unsigned>(dimensions[i]);
           size *= dims[i];
         }
         data = _Any_adapter::array(size,values,std::min(size,numValues));
@@ -359,7 +359,7 @@ namespace ma
       {
         data = _Any_adapter::array(numValues,values,numValues);
         numDims = 1;
-        dims = new size_t[1];
+        dims = new unsigned[1];
         dims[0] = numValues;
       }
       Any::Storage* storage = new _Any_storage_array<typename _Any_adapter::type>(data, numValues, dims, numDims);
@@ -401,7 +401,6 @@ namespace ma
       , Any::Storage*>::type
     _any_store(U&& values, D&& dimensions)
     {
-      static_assert(std::is_integral<typename std::decay<D>::type::value_type>::value, "The given dimensions must be a vector with a value_type set to an integral type (e.g. int or size_t).");
       // Need to convert bool as char
       auto temp = std::vector<char>(values.size());
       for (size_t i = 0, len = values.size() ; i < len ; ++i)
@@ -417,7 +416,7 @@ namespace ma
       , Any::Storage*>::type
     _any_store(U&& values, D&& )
     {
-      size_t dims[1] = {values.size()};
+      unsigned dims[1] = {static_cast<unsigned>(values.size())};
       return _any_store(values.data(),values.size(),dims,1ul);
     };
     
@@ -430,10 +429,10 @@ namespace ma
       , Any::Storage*>::type
     _any_store(U&& values, D&& )
     {
-      size_t dims[1] = {values.size()};
+      unsigned dims[1] = {static_cast<unsigned>(values.size())};
       // Need to convert bool as char
-      auto temp = std::vector<char>(dims[0]);
-      for (size_t i = 0 ; i < dims[0] ; ++i)
+      auto temp = std::vector<char>(values.size());
+      for (unsigned i = 0 ; i < dims[0] ; ++i)
         temp[i] = values[i] ? 0x01 : 0x00;
       return _any_store(temp.data(),temp.size(),dims,1ul);
     };
@@ -465,9 +464,9 @@ namespace ma
     };
 
     template <typename T>
-    inline std::vector<size_t> _Any_storage_single<T>::dimensions() const _OPENMA_NOEXCEPT
+    inline std::vector<unsigned> _Any_storage_single<T>::dimensions() const _OPENMA_NOEXCEPT
     {
-      return std::vector<size_t>{};
+      return std::vector<unsigned>{};
     };
 
     template <typename T>
@@ -515,7 +514,7 @@ namespace ma
     // NOTE: The class take the ownership of the data. It will delete the array pointer. This constructor must be used only with allocated array (and not vector data or initializer_list content)
     template <typename T>
     template <typename U>
-    inline _Any_storage_array<T>::_Any_storage_array(U* values, size_t numValues, const size_t* dimensions, size_t numDims)
+    inline _Any_storage_array<T>::_Any_storage_array(U* values, size_t numValues, const unsigned* dimensions, size_t numDims)
     : Any::Storage(values), NumValues(numValues), Dimensions(dimensions),  NumDims(numDims)
     {};
 
@@ -527,9 +526,9 @@ namespace ma
     };
 
     template <typename T>
-    inline std::vector<size_t> _Any_storage_array<T>::dimensions() const _OPENMA_NOEXCEPT
+    inline std::vector<unsigned> _Any_storage_array<T>::dimensions() const _OPENMA_NOEXCEPT
     {
-      auto dims = std::vector<size_t>(this->NumDims,0ul);
+      auto dims = std::vector<unsigned>(this->NumDims,0u);
       for (size_t i = 0 ; i < this->NumDims ; ++i)
         dims[i] = this->Dimensions[i];
       return dims;
@@ -545,9 +544,9 @@ namespace ma
     inline Any::Storage* _Any_storage_array<T>::clone() const
     {
       T* data = new T[this->NumValues];
-      size_t* dims = new size_t[this->NumDims];
+      unsigned* dims = new unsigned[this->NumDims];
       std::copy_n(static_cast<T*>(this->Data),this->NumValues,data);
-      memcpy(dims, this->Dimensions, this->NumDims*sizeof(size_t));
+      memcpy(dims, this->Dimensions, this->NumDims*sizeof(unsigned));
       return new _Any_storage_array<T>(data,this->NumValues,dims,this->NumDims);
     };
 
@@ -949,8 +948,8 @@ namespace ma
   {};
   
   template <typename U, typename >
-  inline Any::Any(std::initializer_list<U> values, std::initializer_list<size_t> dimensions)
-  : mp_Storage(__details::_any_store<std::initializer_list<U>,std::initializer_list<size_t>>(std::move(values), std::move(dimensions)))
+  inline Any::Any(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions)
+  : mp_Storage(__details::_any_store<std::initializer_list<U>,std::initializer_list<unsigned>>(std::move(values), std::move(dimensions)))
   {};
   
   template <typename U, typename>
@@ -967,10 +966,10 @@ namespace ma
   };
   
   template <typename U, typename>
-  inline void Any::assign(std::initializer_list<U> values, std::initializer_list<size_t> dimensions) _OPENMA_NOEXCEPT
+  inline void Any::assign(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions) _OPENMA_NOEXCEPT
   {
     delete this->mp_Storage;
-    this->mp_Storage = __details::_any_store<std::initializer_list<U>,std::initializer_list<size_t>>(std::move(values), std::move(dimensions));
+    this->mp_Storage = __details::_any_store<std::initializer_list<U>,std::initializer_list<unsigned>>(std::move(values), std::move(dimensions));
   };
 
   template <typename U, typename >

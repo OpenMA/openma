@@ -14,7 +14,7 @@ CXXTEST_SUITE(AnyTest)
     ma::Any a;
     TS_ASSERT_EQUALS(a.isEmpty(),true);
     TS_ASSERT_EQUALS(a.isValid(),false);
-    TS_ASSERT_EQUALS(a.dimensions(),std::vector<size_t>());
+    TS_ASSERT_EQUALS(a.dimensions(),std::vector<unsigned>());
     TS_ASSERT_EQUALS(a.size(),size_t(0));
     TS_ASSERT_EQUALS(a.cast<int>(),0);
     TS_ASSERT_EQUALS(a.cast<double>(),0.0);
@@ -280,8 +280,8 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.dimensions().size(),2ul);
     if (!a.dimensions().empty())
     {
-      TS_ASSERT_EQUALS(a.dimensions()[0],1ul);
-      TS_ASSERT_EQUALS(a.dimensions()[1],3ul);
+      TS_ASSERT_EQUALS(a.dimensions()[0],1u);
+      TS_ASSERT_EQUALS(a.dimensions()[1],3u);
     }
     TS_ASSERT_EQUALS(a.size(),3ul);
     TS_ASSERT_EQUALS(a.cast<int>(),1);
@@ -294,13 +294,13 @@ CXXTEST_SUITE(AnyTest)
   {
     std::vector<int> foo = {1,2,3,4};
     // - Dimensions and values not matching (more values than dimensions)
-    ma::Any a = ma::Any(foo,std::vector<size_t>({2,2}));
+    ma::Any a = ma::Any(foo,std::vector<unsigned>({2,2}));
     TS_ASSERT_EQUALS(a.dimensions().empty(),false);
     TS_ASSERT_EQUALS(a.dimensions().size(),2ul);
     if (!a.dimensions().empty())
     {
-      TS_ASSERT_EQUALS(a.dimensions()[0],2ul);
-      TS_ASSERT_EQUALS(a.dimensions()[1],2ul);
+      TS_ASSERT_EQUALS(a.dimensions()[0],2u);
+      TS_ASSERT_EQUALS(a.dimensions()[1],2u);
     }
     TS_ASSERT_EQUALS(a.size(),4ul);
     TS_ASSERT_EQUALS(a.cast<int>(),1);
@@ -390,7 +390,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(strcmp(toto[0],"Coco"),0);
     TS_ASSERT_EQUALS(strcmp(toto[1],"Vroum"),0);
     TS_ASSERT_EQUALS(strcmp(toto[2],"Another"),0);
-    a = ma::Any(std::vector<std::string>({"Coco","Vroum","Another"}),std::vector<size_t>(1,4));
+    a = ma::Any(std::vector<std::string>({"Coco","Vroum","Another"}),std::vector<unsigned>(1,4));
     auto bar = a.cast<std::vector<std::string>>();
     TS_ASSERT_EQUALS(bar.size(),4ul);
     TS_ASSERT_EQUALS(bar[0],std::string("Coco"));
@@ -406,7 +406,7 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(arrayString_Empty)
   {
     std::vector<std::string> p;
-    std::vector<size_t> dims{0};
+    std::vector<unsigned> dims{0};
     ma::Any a{p,dims};
     TS_ASSERT_EQUALS(a.isValid(),true);
     TS_ASSERT_EQUALS(a.isEmpty(),true);
@@ -540,20 +540,20 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(assignArray)
   {
     ma::Any a;
-    a.assign(std::vector<bool>({true,false,false,true}), std::vector<size_t>({2,2}));
+    a.assign(std::vector<bool>({true,false,false,true}), std::vector<unsigned>({2,2}));
     TS_ASSERT_EQUALS(a.cast<bool>(0),true);
     TS_ASSERT_EQUALS(a.cast<bool>(1),false);
     TS_ASSERT_EQUALS(a.cast<bool>(2),false);
     TS_ASSERT_EQUALS(a.cast<bool>(3),true);
-    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({2,2}));
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>({2,2}));
     a.assign(std::array<char,4>{{'a','b','c','d'}});
     TS_ASSERT_EQUALS(a.cast<char>(0),'a');
     TS_ASSERT_EQUALS(a.cast<char>(1),'b');
     TS_ASSERT_EQUALS(a.cast<char>(2),'c');
     TS_ASSERT_EQUALS(a.cast<char>(3),'d');
-    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({4}));
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>({4}));
     a.assign({1,2,3,4,5,6},{2,3});
-    TS_ASSERT_EQUALS(a.dimensions(), std::vector<size_t>({2,3}));
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>({2,3}));
     TS_ASSERT_EQUALS(a.cast<std::vector<float>>(), std::vector<float>({1.0f,2.0f,3.0f,4.0f,5.0f,6.0f}));
   };
 };
