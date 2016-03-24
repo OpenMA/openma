@@ -110,6 +110,15 @@ IF(WIN32)
    ENDIF()
 ENDIF()
 
+# Build language bindings
+OPTION(BUILD_MATLAB_BINDINGS "Build bindings to use OpenMA in Matlab." OFF)
+IF(BUILD_MATLAB_BINDINGS)
+  SET(BUILD_LANGUAGE_BINDINGS 1)
+  INCLUDE(${OPENMA_CMAKE_MODULE_PATH}/OpenMALanguageBindings.cmake)
+ELSE()
+  SET(BUILD_LANGUAGE_BINDINGS 0)
+ENDIF()
+
 # Build unit/regression tests - TDD (Test-driven development) code
 OPTION(BUILD_UNIT_TESTS "Build OpenMA unit and regression tests." OFF)
 IF(BUILD_UNIT_TESTS)
