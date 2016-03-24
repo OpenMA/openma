@@ -36,7 +36,7 @@
 %{
 void ma_Node_clear(ma::Node* self)
 {
-  int rc = 1;
+  int rc = 0;
   // Unref parents
   auto& p1 = self->parents();
   for (auto parent : p1)
@@ -44,13 +44,13 @@ void ma_Node_clear(ma::Node* self)
     rc = _SWIG_ma_Node_unref(self);
     self->removeParent(parent);
   }
-  assert(rc >= 1);
+  assert(rc >= 0);
   // Unref children
-  auto& c1 = self->children();
+  auto c1 = self->children();
   for (auto child : c1)
     _SWIG_ma_Node_unref(child);
   // Detach remaining children (still in the workspace)
-  auto& c2 = self->children();
+  auto c2 = self->children();
   for (auto child : c2)
     child->removeParent(self);
   // Node clear

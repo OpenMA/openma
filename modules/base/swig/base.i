@@ -32,11 +32,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module openma_base
+%module base
 
 %{
 #include "openma/base.h"
 %}
+
+%include "reference_counting.i"
 
 %include <std_string.i>
 
@@ -44,65 +46,14 @@
 //                               UTIL FUNCTIONS
 // ========================================================================= //
 
-%{
-#define _SWIG_ref_count "_SWIG_ref_count"
-
-inline int _SWIG_ma_Node_count(ma::Node* node)
-{
-  return node->property(_SWIG_ref_count).cast<int>();
-};
-
-inline void _SWIG_ma_Node_reset(ma::Node* node, const ma::Any& value, bool recursive = true)
-{
-  if (node == nullptr) return;
-  node->setProperty(_SWIG_ref_count, value);
-  if (recursive)
-  {
-    auto& children = node->children();
-    for (auto child : children)
-      _SWIG_ma_Node_reset(child, value, recursive);
-  }
-};
-
-inline void _SWIG_ma_Node_ref(ma::Node* node)
-{
-  if (node == nullptr) return;
-  node->setProperty(_SWIG_ref_count, _SWIG_ma_Node_count(node) + 1);
-/*  mexPrintf("_SWIG_ma_Node_ref - %s - new count: %i\n",node->name().c_str(), _SWIG_ma_Node_count(node));*/
-};
-
-inline int _SWIG_ma_Node_unref(ma::Node* node)
-{
-  if (node == nullptr) return 0;
-  int rc = _SWIG_ma_Node_count(node);
-  rc -= 1;
-/*  mexPrintf("_SWIG_ma_Node_unref - %s - remaining: %i\n", node->name().c_str(), rc);*/
-  if (rc <= 0)
-  {
-/*    mexPrintf("_SWIG_ma_Node_unref - %s - ~ma::Node\n", node->name().c_str());*/
-    auto& children = node->children();
-    for (auto child : children)
-    {
-      child->removeParent(node);
-      _SWIG_ma_Node_unref(child);
-    }
-    delete node;
-  }
-  else
-    node->setProperty(_SWIG_ref_count, rc);
-  return rc;
-};
-%}
-
 %define SWIG_TYPEMAP_OUT_CONSTRUCTOR(typename)
-// If parent is passed to the constructor, then the C++ must take the ownership too.
-%typemap(out, noblock=1) ma:: ## typename* ma:: ## typename:: ## typename
+// Need to verify if the generated object is not null before being added in the workspace.
+%typemap(check, noblock=1) ma:: ## typename* ma:: ## typename:: ## typename
 {
   if (!result) {
     SWIG_exception_fail(SWIG_RuntimeError, "Impossible to create or cast an object of type 'ma::typename' with given input(s)");
   }
   _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(ma:: ## typename*), 1 | 0);
-  if (result->hasParents() && (argc > 1)) _SWIG_ma_Node_ref(result);
 };
 /*// Same thing for the clone() method
 %typemap(out, noblock=1) ma:: ## typename* ma:: ## typename::clone
@@ -138,17 +89,17 @@ void copy(ma::Node* source)
   _SWIG_ma_Node_reset($self, rc, false);
   auto& children = $self->children();
   for (auto child : children)
-    _SWIG_ma_Node_reset(child,1);
+    _SWIG_ma_Node_reset(child, 0);
 };
 %newobject clone;
 typename* clone(Node* parent = nullptr) const
 {
   ma::typename* ptr = $self->clone(parent);
-  _SWIG_ma_Node_reset(ptr, 0,false); // 0: because the SWIG generated code will take the ownership
+  _SWIG_ma_Node_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
   if (parent != nullptr) _SWIG_ma_Node_ref(ptr);
   auto& children = ptr->children();
   for (auto child : children)
-    _SWIG_ma_Node_reset(child,1);
+    _SWIG_ma_Node_reset(child, 0);
   return ptr;
 };
 };

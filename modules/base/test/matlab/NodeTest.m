@@ -44,21 +44,21 @@ classdef NodeTest < matlab.unittest.TestCase
             % Still exist?
             testCase.verifyEqual(children{1}.name(), 'child1');
             testCase.verifyEqual(children{2}.name(), 'child2');
-            testCase.verifyEqual(children{1}.property('_SWIG_ref_count').cast, 1);
-            testCase.verifyEqual(children{2}.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(children{1}.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(children{2}.property('_SWIG_ref_count').cast, 0);
         end
 
         function clearNode(testCase)
             root = ma.Node('root');
             child1 = ma.Node('child1', root);
             child2 = ma.Node('child2', root);
-            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 1);
-            testCase.verifyEqual(child1.property('_SWIG_ref_count').cast, 2);
-            testCase.verifyEqual(child2.property('_SWIG_ref_count').cast, 2);
-            root.clear();
-            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 0);
             testCase.verifyEqual(child1.property('_SWIG_ref_count').cast, 1);
             testCase.verifyEqual(child2.property('_SWIG_ref_count').cast, 1);
+            root.clear();
+            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(child1.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(child2.property('_SWIG_ref_count').cast, 0);
         end
 
         function copyNode(testCase)
@@ -69,11 +69,11 @@ classdef NodeTest < matlab.unittest.TestCase
             sub1 = ma.Node('sub1', other);
             other.copy(root);
             testCase.verifyEqual(sub1.hasParents, false);
-            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 1);
-            testCase.verifyEqual(child1.property('_SWIG_ref_count').cast, 2);
-            testCase.verifyEqual(child2.property('_SWIG_ref_count').cast, 2);
-            testCase.verifyEqual(other.property('_SWIG_ref_count').cast, 1);
-            testCase.verifyEqual(sub1.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(child1.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(child2.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(other.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(sub1.property('_SWIG_ref_count').cast, 0);
             other.child(1).setName('Goal');
             other.child(1).child(1).setName('Goal2');
             testCase.verifyEqual(child1.name(),'child1');
@@ -88,8 +88,8 @@ classdef NodeTest < matlab.unittest.TestCase
             other.child(1).setName('Bar');
             testCase.verifyEqual(root.hasChildren, true);
             testCase.verifyEqual(other.hasChildren, true);
-            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 1);
-            testCase.verifyEqual(other.property('_SWIG_ref_count').cast, 1);
+            testCase.verifyEqual(root.property('_SWIG_ref_count').cast, 0);
+            testCase.verifyEqual(other.property('_SWIG_ref_count').cast, 0);
             testCase.verifyEqual(root.name(),'root');
             testCase.verifyEqual(other.name(),'Foo');
             testCase.verifyEqual(root.child(1).name(),'child1');
