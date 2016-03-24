@@ -51,7 +51,7 @@ namespace ma
   /**
    * Constructor
    */
-  Subject::Subject(const std::string& name, std::unordered_map<std::string, Any> properties, Node* parent)
+  Subject::Subject(const std::string& name, const std::unordered_map<std::string, Any>& properties, Node* parent)
   : Node(name ,parent)
   {
     for (const auto& property: properties)
