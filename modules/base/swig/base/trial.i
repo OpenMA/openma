@@ -34,14 +34,14 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(Trial)
+  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Trial)
   
   %nodefaultctor;
   class Trial : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(Trial, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(Trial)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Trial, SWIGTYPE)
+    SWIG_EXTEND_DEEPCOPY(ma, Trial)
 
     Trial(const std::string& name, Node* parent = nullptr);
     ~Trial();

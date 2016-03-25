@@ -36,10 +36,9 @@
 
 %{
 #include "openma/base.h"
+#include "openma/bindings.h"
 #include "openma/io.h"
 %}
-
-%include "reference_counting.i"
 
 %import "base.i"
 

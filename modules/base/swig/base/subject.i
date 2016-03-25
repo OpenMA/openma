@@ -34,14 +34,14 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(Subject)
+  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Subject)
   
   %nodefaultctor;
   class Subject : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(Subject, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(Subject)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Subject, SWIGTYPE)
+    SWIG_EXTEND_DEEPCOPY(ma, Subject)
     
     Subject(const std::string& name, const std::unordered_map<std::string, Any>& properties = std::unordered_map<std::string, Any>(), Node* parent = nullptr);
     ~Subject();

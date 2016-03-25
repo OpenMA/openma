@@ -34,15 +34,15 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(Node)
+  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Node)
   
   %newobject Node::child; // Used for the reference counting
   %nodefaultctor;
   class Node : public Object
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(Node, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(Node)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Node, SWIGTYPE)
+    SWIG_EXTEND_DEEPCOPY(ma, Node)
   
     Node(const std::string& name, Node* parent = nullptr);
     ~Node();

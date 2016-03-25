@@ -34,14 +34,14 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(TimeSequence)
+  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, TimeSequence)
   
   %nodefaultctor;
   class TimeSequence : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(TimeSequence, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(TimeSequence)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, TimeSequence, SWIGTYPE)
+    SWIG_EXTEND_DEEPCOPY(ma, TimeSequence)
   
     typedef enum : int {
       Unknown,

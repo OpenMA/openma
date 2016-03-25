@@ -34,14 +34,14 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(Event)
+  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Event)
   
   %nodefaultctor;
   class Event : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(Event, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(Event)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Event, SWIGTYPE)
+    SWIG_EXTEND_DEEPCOPY(ma, Event)
   
     Event(const std::string& name, double time = 0.0, const std::string& context = "", const std::string& subject = "", Node* parent = nullptr);
     ~Event();

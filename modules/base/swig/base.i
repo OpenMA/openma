@@ -32,105 +32,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module base
+%module ma
 
 %{
 #include "openma/base.h"
+#include "openma/bindings.h"
 %}
 
-%include "reference_counting.i"
+%include "bindings/utils.i"
 
 %include <std_string.i>
-
-// ========================================================================= //
-//                               UTIL FUNCTIONS
-// ========================================================================= //
-
-%define SWIG_TYPEMAP_OUT_CONSTRUCTOR(typename)
-// Need to verify if the generated object is not null before being added in the workspace.
-%typemap(check, noblock=1) ma:: ## typename* ma:: ## typename:: ## typename
-{
-  if (!result) {
-    SWIG_exception_fail(SWIG_RuntimeError, "Impossible to create or cast an object of type 'ma::typename' with given input(s)");
-  }
-  _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(ma:: ## typename*), 1 | 0);
-};
-/*// Same thing for the clone() method
-%typemap(out, noblock=1) ma:: ## typename* ma:: ## typename::clone
-{
-  _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(ma:: ## typename*), 1 | 0);
-  if (result->hasParents()) _ma_refcount_incr(result);
-};*/
-%enddef
-
-%define SWIG_EXTEND_CAST_CONSTRUCTOR(typename, swigtype)
-%extend {
-typename(swigtype* other)
-{
-  void* argp1 = nullptr;
-  int res1 = SWIG_ConvertPtr(other, &argp1, SWIGTYPE_p_ma__Node, 0 |  0 );
-  if (!SWIG_IsOK(res1))
-  {
-    SWIG_Error(SWIG_ArgError(res1), "in method 'new_" "typename" "', argument 1 of type 'ma::Node *'");
-    return nullptr;
-  }
-  return ma::node_cast<ma::## typename*>(reinterpret_cast<ma::Node*>(argp1));
-};
-};
-%enddef 
-
-%{
-void _ma_clear_node(ma::Node* self)
-{
-  int count = 0;
-  // Unref parents
-  auto p1 = self->parents();
-  for (auto parent : p1)
-  {
-    count = _ma_refcount_decr(self);
-    self->removeParent(parent);
-  }
-  assert(count >= 0);
-  // Unref children
-  auto c1 = self->children();
-  for (auto child : c1)
-    _ma_refcount_decr(child);
-  // Detach remaining children (still in the workspace)
-  auto c2 = self->children();
-  for (auto child : c2)
-    child->removeParent(self);
-  // Node clear
-  self->clear();
-  // Reset the reference counter
-  _ma_refcount_reset(self, count);
-};
-%};
-
-%define SWIG_EXTEND_DEEPCOPY(typename)
-%extend {
-void copy(ma::Node* source)
-{
-  _ma_clear_node($self);
-  int count = _ma_refcount_set(source);
-  $self->copy(source);
-  _ma_refcount_reset($self, count, false);
-  auto& children = $self->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-};
-%newobject clone;
-typename* clone(Node* parent = nullptr) const
-{
-  ma::typename* ptr = $self->clone(parent);
-  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
-  if (parent != nullptr) _ma_refcount_incr(ptr);
-  auto& children = ptr->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-  return ptr;
-};
-};
-%enddef 
 
 // ========================================================================= //
 //                                INTERFACE

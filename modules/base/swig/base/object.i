@@ -38,8 +38,9 @@ namespace ma
   class Object
   {
   public:
+    ~Object();
     unsigned long timestamp() const;  
-    virtual void modified();
+    void modified();
   protected:
     void setTimestamp(unsigned long ts);
   };
