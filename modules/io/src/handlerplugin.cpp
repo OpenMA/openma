@@ -37,9 +37,9 @@
 #include "openma/io/enums.h"
 #include "openma/base/pluginmanager.h"
 
-#ifdef OPENMA_IO_STATIC_DEFINE
+// #ifdef OPENMA_IO_STATIC_DEFINE
 #include "../plugins/staticiopluginloader.h"
-#endif
+// #endif
 
 namespace ma
 {
@@ -54,14 +54,14 @@ namespace io
     static PluginManager<HandlerPlugin> manager;
     if (manager.plugins().empty())
     {
-#ifndef OPENMA_IO_STATIC_DEFINE
+// #ifndef OPENMA_IO_STATIC_DEFINE
       // Dynamic loading
       // {"trialformats","bodyformats"})
-#error Not yet implemented
-#else
+// #error Not yet implemented
+// #else
       // Static include
       load_handler_plugins(&manager);
-#endif
+// #endif
     }
     return manager.plugins();
   };

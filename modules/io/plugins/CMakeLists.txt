@@ -1,6 +1,6 @@
-IF(OPENMA_BUILD_SHARED_LIBS)
-  MESSAGE(FATAL_ERROR "The IO handler dynamic loading mechanism is not yet implemented. You cannot build this module as a shared library.")
-ENDIF()
+# IF(OPENMA_BUILD_SHARED_LIBS)
+#   MESSAGE(FATAL_ERROR "The IO handler dynamic loading mechanism is not yet implemented. You cannot build this module as a shared library.")
+# ENDIF()
 
 SET(OPENMA_STATIC_IO_PLUGINS_SRCS "")
 SET(OPENMA_STATIC_IO_PLUGIN_LOADER_INCLUDES "")
@@ -31,10 +31,10 @@ FOREACH(_format_path ${FORMATS_PATHS})
 ENDFOREACH()
 
 
-IF(OPENMA_BUILD_SHARED_LIBS)
-  SET(OPENMA_STATIC_IO_PLUGIN_LOADER_INCLUDES "")
-  SET(OPENMA_STATIC_IO_PLUGIN_LOADER_COMMANDS "")
-ENDIF()
+# IF(OPENMA_BUILD_SHARED_LIBS)
+#   SET(OPENMA_STATIC_IO_PLUGIN_LOADER_INCLUDES "")
+#   SET(OPENMA_STATIC_IO_PLUGIN_LOADER_COMMANDS "")
+# ENDIF()
 
 CONFIGURE_FILE(${OPENMA_CMAKE_MODULE_PATH}/templates/staticiopluginloader.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/staticiopluginloader.h @ONLY IMMEDIATE)
