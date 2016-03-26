@@ -5,7 +5,8 @@ IF(BUILD_MATLAB_BINDINGS)
   # SET(SWIG_MODULE_ioMEX_EXTRA_DEPS )
   SET(SWIG_MODULE_ioMEX_EXTRA_FLAGS
     # "-debug-tmsearch"
-    "-pkgname" "ma/+io"
+    "-module" "ma.io"
+    "-mexname" "ioMEX"
     "-I${PROJECT_SOURCE_DIR}/modules/base/swig"
     "-I${PROJECT_SOURCE_DIR}/modules/bindings/swig"
     "-I${SWIG_DIR}/Lib/matlab"
