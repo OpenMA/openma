@@ -42,6 +42,7 @@
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/body/point.h"
+#include "openma/body/plugingait.h"
 #include "openma/body/referenceframe.h"
 #include "openma/body/segment.h"
 #include "openma/body/skeletonhelper.h"
