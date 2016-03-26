@@ -62,7 +62,7 @@ namespace body
    * @relates SkeletonHelper
    * @ingroup openma_body
    */
-  inline bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject)
+  inline bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr)
   {
     if (helper == nullptr)
     {
@@ -147,7 +147,7 @@ namespace body
    * Similar to the other extract_joint_kinematics() method but the computed joint kinematics are added to a returned node.
    * @warning The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
    */
-  inline Node* extract_joint_kinematics(Node* input, bool anglesAdaptation)
+  inline Node* extract_joint_kinematics(Node* input, bool anglesAdaptation = true)
   {
     Node* root = new Node("root");
     if (!extract_joint_kinematics(root, input, anglesAdaptation))
