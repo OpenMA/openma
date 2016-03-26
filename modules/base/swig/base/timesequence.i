@@ -43,19 +43,22 @@ namespace ma
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, TimeSequence, SWIGTYPE)
     SWIG_EXTEND_DEEPCOPY(ma, TimeSequence)
   
-    typedef enum : int {
-      Unknown,
-      Reconstructed,
-      Marker,
-      Angle,
-      Force,
-      Moment,
-      Power,
-      Scalar,
-      Pose,
-      Analog,
-      Other
-    } Type;
+    %extend {
+    enum class Type : int {
+      Unknown = TimeSequence::Unknown,
+      Reconstructed = TimeSequence::Reconstructed,
+      Marker = TimeSequence::Marker,
+      Angle = TimeSequence::Angle,
+      Force = TimeSequence::Force,
+      Moment = TimeSequence::Moment,
+      Power = TimeSequence::Power,
+      Scalar = TimeSequence::Scalar,
+      Pose = TimeSequence::Pose,
+      Analog = TimeSequence::Analog,
+      Other = TimeSequence::Other
+    };
+    };
+    
     static const std::array<double,2> InfinityRange;
     TimeSequence(const std::string& name, unsigned components, unsigned samples, double rate, double start, int type, const std::string& unit, double scale, double offset, const std::array<double,2>& range, Node* parent = nullptr);
     TimeSequence(const std::string& name, unsigned components, unsigned samples, double rate, double start, int type, const std::string& unit, Node* parent = nullptr);
