@@ -90,6 +90,13 @@ namespace ma
     template <typename... Is> double data(unsigned sample, Is... indices) const;
     template <typename... Is> double& data(unsigned sample, Is... indices);
     */
+    
+    %extend
+    {
+      SWIGTYPE* data() const;
+      void setData(const SWIGTYPE* data);
+    };
+    
     void resize(unsigned samples);
   };
   %clearnodefaultctor;
