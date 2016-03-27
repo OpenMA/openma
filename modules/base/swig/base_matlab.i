@@ -65,6 +65,30 @@
   };
 };
 
+// Convert std::array<double,2> to MATLAB double matrix
+%typemap(out, noblock=1) std::array<double,2>&
+{
+  $result = mxCreateDoubleMatrix(1,2,mxREAL);
+  if ($result != nullptr)
+  {
+    double* data = mxGetPr($result);
+    data[0] = (*$1)[0];
+    data[1] = (*$1)[1];
+  };
+};
+
+// Convert MATLAB double matrix to std::array<double,2>
+%typemap(typecheck, noblock=1) std::array<double,2>&
+{
+  $1 = (mxGetClassID($input) == mxDOUBLE_CLASS ? 1 : 0) && (mxGetNumberOfElements($input) == 2);
+};
+%typemap(in) std::array<double,2>& (std::array<double,2> temp)
+{
+  $1 = &temp;
+  double* data = mxGetPr($input);
+  temp[0] = data[0];
+  temp[1] = data[1];
+};
 
 // Convert unsigned to Matlab double scalar
 %typemap(out, noblock=1) unsigned
@@ -99,7 +123,6 @@
     }
   }
 }
-// NOTE: The use of the temporary string is to simplify the managment of the memory allocation for the key.
 %typemap(in) const std::unordered_map<std::string, ma::Any>& (std::unordered_map<std::string, ma::Any> temp)
 {
   $1 = &temp;
