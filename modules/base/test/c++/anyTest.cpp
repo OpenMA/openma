@@ -551,7 +551,7 @@ CXXTEST_SUITE(AnyTest)
     TS_ASSERT_EQUALS(a.cast<char>(1),'b');
     TS_ASSERT_EQUALS(a.cast<char>(2),'c');
     TS_ASSERT_EQUALS(a.cast<char>(3),'d');
-    TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>({4}));
+    TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>(1,4u));
     a.assign({1,2,3,4,5,6},{2,3});
     TS_ASSERT_EQUALS(a.dimensions(), std::vector<unsigned>({2,3}));
     TS_ASSERT_EQUALS(a.cast<std::vector<float>>(), std::vector<float>({1.0f,2.0f,3.0f,4.0f,5.0f,6.0f}));
