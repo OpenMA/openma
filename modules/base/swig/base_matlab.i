@@ -32,6 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%include "bindings/openmamatlab.swg"
+
 // Specific code for Matlab (typemaps, etc.)
 
 // Raw type used by SWIG
@@ -54,15 +56,15 @@
 };
 
 // Convert std::vector<unsigned> to MATLAB double matrix
-%typemap(out, noblock=1) std::vector<unsigned>
+%typemap(out, fragment="OpenMA", noblock=1) std::vector<unsigned>
 {
-  $result = mxCreateDoubleMatrix($1.empty() ? 0 : 1, $1.size(), mxREAL);
-  if ($result != nullptr)
-  {
-    double* data = mxGetPr($result);
-    for (size_t i = 0, len = $1.size() ; i < len ; ++i)
-      data[i] = $1[i];
-  };
+  $result = to_double_matrix(&$1);
+};
+
+// Convert const std::vector<unsigned>& to MATLAB double matrix
+%typemap(out, fragment="OpenMA", noblock=1) const std::vector<unsigned>&
+{
+  $result = to_double_matrix($1);
 };
 
 // Convert std::array<double,2> to MATLAB double matrix
