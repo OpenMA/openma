@@ -40,6 +40,7 @@
 
 #include <cstddef> // size_t
 #include <utility> // std::move
+#include <string> // Used for the required export with MSVC
 
 namespace ma
 {
