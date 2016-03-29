@@ -8,8 +8,6 @@ SET(OPENMA_IO_SRCS
   src/handlerreader.cpp
 )
 
-# ADD_OPENMA_MODULE(io)
-
 # Variable OPENMA_STATIC_IO_PLUGINS_SRCS is used for static build
 SET(OPENMA_STATIC_IO_PLUGINS_SRCS "" CACHE INTERNAL "")
 ADD_SUBDIRECTORY("plugins")
