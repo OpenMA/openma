@@ -465,9 +465,12 @@ ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
 
 mxArray* ma_TimeSequence_data(const ma::TimeSequence* self)
 {
-  std::vector<size_t> dims(self->dimensions().cbegin(), self->dimensions().cend());
-  mxArray* out = mxCreateNumericArray(dims.size(), dims.data(), mxDOUBLE_CLASS, mxREAL);
-  double* dataout = (double*)mxGetData(out);
+  std::vector<mwSize> dims;
+  dims.reserve(self->dimensions().size());
+  auto it = dims.insert(dims.begin(), self->samples());
+  dims.insert(dims.end(), self->dimensions().cbegin(), self->dimensions().cend());
+  mxArray* out = mxCreateNumericArray(static_cast<mwSize>(dims.size()), dims.data(), mxDOUBLE_CLASS, mxREAL);
+  double* dataout = mxGetPr(out);
   memcpy(dataout, self->data(), self->elements()*sizeof(double));
   return out;
 };
@@ -477,14 +480,16 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const mxArray* data)
   const size_t numeltsin = static_cast<size_t>(mxGetNumberOfElements(data));
   if (numeltsin != self->elements())
     mexErrMsgIdAndTxt("SWIG:TimeSequence:setData","Incompatible number of elements");
-  const mwSize numdimsin = mxGetNumberOfDimensions(data);
+  const mwSize numdimsin = mxGetNumberOfDimensions(data)-1;
   const auto& dimsout = self->dimensions();
   if (static_cast<size_t>(numdimsin) != dimsout.size())
     mexErrMsgIdAndTxt("SWIG:TimeSequence:setData","Incompatible number of dimensions");
   const mwSize* dimsin = mxGetDimensions(data);
+  if (self->samples() != dimsin[0])
+    mexErrMsgIdAndTxt("SWIG:TimeSequence:setData","Incompatible number of samples");
   for (size_t i = 0 ; i < static_cast<size_t>(numdimsin) ; ++i)
   {
-    if (dimsin[i] != dimsout[i])
+    if (dimsin[i+1] != dimsout[i])
       mexErrMsgIdAndTxt("SWIG:TimeSequence:setData","Incompatible dimension value");
   }
   memcpy(self->data(), (double*)mxGetData(data), numeltsin*sizeof(double));
