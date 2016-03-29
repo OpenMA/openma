@@ -47,9 +47,9 @@ namespace ma
     Date(unsigned year = 1900, unsigned month = 01, unsigned day = 01);
     ~Date() _OPENMA_NOEXCEPT = default;
     Date(const Date& ) = default;
-    Date(Date&& ) _OPENMA_NOEXCEPT = default;
+    Date(Date&& ) _OPENMA_NOEXCEPT;
     Date& operator=(const Date& ) = default;
-    Date& operator=(Date&& ) _OPENMA_NOEXCEPT = default;
+    Date& operator=(Date&& ) _OPENMA_NOEXCEPT;
     
     void setYear(unsigned value) _OPENMA_NOEXCEPT;
     unsigned year() const _OPENMA_NOEXCEPT;

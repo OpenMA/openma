@@ -52,6 +52,28 @@ namespace ma
     this->setMonth(month);
     this->setDay(day);
   };
+  
+  /**
+   * Move constructor
+   */
+  Date::Date(Date&& other) _OPENMA_NOEXCEPT
+  : m_Value(std::move(other.m_Value))
+  {
+    other.m_Value = 0;
+  };
+  
+  /**
+   * Move assignment operator
+   */
+  Date& Date::operator=(Date&& other) _OPENMA_NOEXCEPT
+  {
+    if (this != &other)
+    {
+      this->m_Value = other.m_Value;
+      other.m_Value = 0;
+    }
+    return *this;
+  };
 
   /**
    *
