@@ -2,6 +2,8 @@
 
 #include <openma/maths.h>
 
+#include <cmath> // M_PI
+
 CXXTEST_SUITE(PoseTest)
 {
   CXXTEST_TEST(constructor)
