@@ -82,8 +82,8 @@ namespace ma
     Any& operator=(const Any& other);
     Any& operator=(Any&& other) _OPENMA_NOEXCEPT;
     
-    friend bool operator==(const Any& lhs, const Any& rhs) _OPENMA_NOEXCEPT;
-    friend bool operator!=(const Any& lhs, const Any& rhs) _OPENMA_NOEXCEPT;
+    OPENMA_BASE_EXPORT friend bool operator==(const Any& lhs, const Any& rhs) _OPENMA_NOEXCEPT;
+    OPENMA_BASE_EXPORT friend bool operator!=(const Any& lhs, const Any& rhs) _OPENMA_NOEXCEPT;
         
     template <typename U, typename A, typename = typename std::enable_if<std::is_same<Any, typename std::decay<A>::type>::value>::type> friend inline bool operator==(const A& lhs, const U& rhs) _OPENMA_NOEXCEPT {return lhs.isEqual(rhs);};
     template <typename U, typename A, typename = typename std::enable_if<std::is_same<Any, typename std::decay<A>::type>::value>::type> friend inline bool operator==(const U& lhs, const A& rhs) _OPENMA_NOEXCEPT {return rhs.isEqual(lhs);};

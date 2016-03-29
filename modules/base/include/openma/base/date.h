@@ -60,8 +60,8 @@ namespace ma
     void setDay(unsigned value) _OPENMA_NOEXCEPT;
     unsigned day() const _OPENMA_NOEXCEPT;
     
-    friend bool operator==(const Date& lhs, const Date& rhs);
-    friend bool operator!=(const Date& lhs, const Date& rhs);
+    OPENMA_BASE_EXPORT friend bool operator==(const Date& lhs, const Date& rhs);
+    OPENMA_BASE_EXPORT friend bool operator!=(const Date& lhs, const Date& rhs);
     
   private:
     unsigned m_Value;
