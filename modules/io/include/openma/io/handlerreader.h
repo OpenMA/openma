@@ -35,6 +35,7 @@
 #ifndef __openma_io_handlerreader_h
 #define __openma_io_handlerreader_h
 
+#include "openma/io_export.h"
 #include "openma/base/opaque.h"
 #include "openma/base/macros.h"
 
@@ -53,7 +54,7 @@ namespace io
   
   class HandlerReaderPrivate;
   
-  class HandlerReader
+  class OPENMA_IO_EXPORT HandlerReader
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(HandlerReader)
     

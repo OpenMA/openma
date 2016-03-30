@@ -38,7 +38,7 @@
 #include "openma/maths_export.h"
 #include "openma/base/timesequence.h"
 
-bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
+OPENMA_MATHS_EXPORT bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
 
 namespace ma
 {

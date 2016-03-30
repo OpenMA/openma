@@ -53,7 +53,7 @@ namespace io
   
   const std::vector<HandlerPlugin*>& load_handler_plugins();
   
-  class HandlerPlugin
+  class OPENMA_IO_EXPORT HandlerPlugin
   {
   public:
     HandlerPlugin();
