@@ -105,9 +105,9 @@ namespace ma
 #else
   #define OPENMA_EXPORT_STATIC_TYPEID(classname, exportname) \
     template<> \
-    exportname inline _OPENMA_CONSTEXPR ma::typeid_t static_typeid<classname>() _OPENMA_NOEXCEPT \
+    exportname inline _OPENMA_CONSTEXPR ma::typeid_t ma::static_typeid<classname>() _OPENMA_NOEXCEPT \
     { \
-      static auto odr = &static_typeid<classname>; \
+      static auto odr = &ma::static_typeid<classname>; \
       return reinterpret_cast<ma::typeid_t::sig>(odr); \
     };
   
