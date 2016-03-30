@@ -467,7 +467,7 @@ mxArray* ma_TimeSequence_data(const ma::TimeSequence* self)
 {
   std::vector<mwSize> dims;
   dims.reserve(self->dimensions().size());
-  auto it = dims.insert(dims.begin(), self->samples());
+  dims.insert(dims.begin(), self->samples());
   dims.insert(dims.end(), self->dimensions().cbegin(), self->dimensions().cend());
   mxArray* out = mxCreateNumericArray(static_cast<mwSize>(dims.size()), dims.data(), mxDOUBLE_CLASS, mxREAL);
   double* dataout = mxGetPr(out);
