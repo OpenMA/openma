@@ -233,7 +233,7 @@ namespace internal
   template <>
   struct traits<ChordOpValues>
   {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<3>>::Values;
+    using ReturnType = ma::maths::Traits<ma::maths::Array<3>>::Values;
   };
   
   struct ChordOpValues : public Eigen::ReturnByValue<ChordOpValues>
