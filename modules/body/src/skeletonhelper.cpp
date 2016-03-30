@@ -123,7 +123,7 @@ namespace body
         error("SkeletonHelper - Trial #%i is null. Movement reconstruction skipped for this trial.", inc);
         continue;
       }
-      auto model = new Model({});
+      auto model = new Model(std::string{});
       if (!this->setupModel(model))
       {
         error("SkeletonHelper - Error in the model set up. Movement reconstruction skipped for the trial #%i", inc);
