@@ -63,7 +63,7 @@ namespace io
   };
   
   HandlerReaderPrivate::HandlerReaderPrivate(Device* device, const std::string& format)
-  : Source(device), Format(format), Reader(nullptr), ErrorCode(Error::None), ErrorMessage({})
+  : Source(device), Format(format), Reader(nullptr), ErrorCode(Error::None), ErrorMessage(std::string{})
   {};
   
   HandlerReaderPrivate::~HandlerReaderPrivate() _OPENMA_NOEXCEPT = default; // Cannot be inlined
