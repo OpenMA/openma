@@ -50,7 +50,7 @@ namespace io
   {
 #if defined(_WIN32)
     const char* substr = strrchr(str, '\\');
-    if (substr == str)
+    if (substr == nullptr)
       substr = strrchr(str, '/');
 #else
     const char* substr = strrchr(str, '/');
