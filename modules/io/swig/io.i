@@ -51,6 +51,6 @@ namespace ma
 namespace io
 {
   %newobject read;
-  Node* read(const std::string& filepath, const std::string& format = std::string{});
+  Node* read(const std::string& filepath, const std::string& format = std::string());
 };
 };
