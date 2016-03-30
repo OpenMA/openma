@@ -32,29 +32,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module io
+#ifndef __openma_bindings_fixwinmatlabchar16_h
+#define __openma_bindings_fixwinmatlabchar16_h
 
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
+#if defined(_SWIG_MATLAB) && defined(_MSC_VER)
+  // Workaround for the char16_t type defined in Matlab and MSVC 2010
+  #include <yvals.h>
+  #if (_MSC_VER >= 1600)
+    #define __STDC_UTF_16__
+  #endif
+#endif
 
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/io.h"
-%}
-
-%import "base.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-namespace ma
-{
-namespace io
-{
-  %newobject read;
-  Node* read(const std::string& filepath, const std::string& format = std::string());
-};
-};
+#endif // __openma_bindings_fixwinmatlabchar16_h

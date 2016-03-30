@@ -34,6 +34,10 @@
 
 %module ma
 
+%begin %{
+#include "openma/matlab/fixwinchar16.h"
+%}
+
 %{
 #include "openma/base.h"
 #include "openma/bindings.h"
