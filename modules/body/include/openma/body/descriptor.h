@@ -62,7 +62,7 @@ namespace body
     Descriptor& operator=(const Descriptor& ) = delete;
     Descriptor& operator=(Descriptor&& ) _OPENMA_NOEXCEPT = delete;
     
-    bool evaluate(Node* output, const Node* input, const std::unordered_map<std::string, Any>& options = {});
+    bool evaluate(Node* output, const Node* input, const std::unordered_map<std::string, Any>& options = std::unordered_map<std::string, Any>{});
     
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     

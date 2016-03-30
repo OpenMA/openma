@@ -606,7 +606,7 @@ namespace ma
   };
   
   /**
-   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
    * Returns the child with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * There are three ways to use this methods.
    *
@@ -648,7 +648,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = {}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Returns the children with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * As with the method findChild(), you can explicitely or implicitely give the type and/or the name of the children. For example:
    * @code{.unparsed}
@@ -672,7 +672,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Convenient method to find children using a regular expression.
    */
   
@@ -692,7 +692,7 @@ namespace ma
   /**
    * Implementation of the findChild method.
    */
-  Node* Node::findNode(typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  Node* Node::findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
@@ -730,7 +730,7 @@ namespace ma
   /**
    * Implementation of the findChildren method.
    */
-  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
@@ -763,7 +763,7 @@ namespace ma
   /**
    * Implementation of the findChildren method.
    */
-  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  void Node::findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();

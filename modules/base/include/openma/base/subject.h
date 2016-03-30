@@ -48,7 +48,7 @@ namespace ma
     OPENMA_DECLARE_NODEID(Subject, Node)
     
   public:
-    Subject(const std::string& name, const std::unordered_map<std::string, Any>& properties = {}, Node* parent = nullptr);
+    Subject(const std::string& name, std::unordered_map<std::string, Any>&& properties = std::unordered_map<std::string, Any>{}, Node* parent = nullptr);
     ~Subject() _OPENMA_NOEXCEPT;
     
     Subject(const Node& ) = delete;

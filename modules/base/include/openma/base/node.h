@@ -41,7 +41,6 @@
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 #include "openma/base/nodeid.h" // Macro OPENMA_DECLARE_NODEID used by inheriting classes.
 
-#include <vector>
 #include <unordered_map>
 #include <string>
 #include <regex>
@@ -95,9 +94,9 @@ namespace ma
     void addParent(Node* node) _OPENMA_NOEXCEPT;
     void removeParent(Node* node) _OPENMA_NOEXCEPT;
     
-    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties = {}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
     
     std::vector<const Node*> retrievePath(const Node* node) const _OPENMA_NOEXCEPT;
     
@@ -115,9 +114,9 @@ namespace ma
     void replaceChild(Node* current, Node* substitute);
     
   private:
-    Node* findNode(typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
-    void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
-    void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    Node* findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
   };
   
   // ----------------------------------------------------------------------- //
@@ -137,7 +136,7 @@ namespace ma
   };
 
   template <typename U>
-  U Node::findChild(const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  U Node::findChild(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
@@ -145,7 +144,7 @@ namespace ma
   };
 
   template <typename U>
-  std::vector<U> Node::findChildren(const std::string& name, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  std::vector<U> Node::findChildren(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
@@ -155,7 +154,7 @@ namespace ma
   };
   
   template <typename U, typename V, typename>
-  std::vector<U> Node::findChildren(const V& regexp, std::vector<std::pair<std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");

@@ -91,7 +91,7 @@ namespace io
     
     Handler(HandlerPrivate& pimpl) _OPENMA_NOEXCEPT;
     
-    void setError(Error code, const std::string& msg = {}) _OPENMA_NOEXCEPT;
+    void setError(Error code, const std::string& msg = std::string{}) _OPENMA_NOEXCEPT;
     
     virtual Signature verifySignature() const _OPENMA_NOEXCEPT = 0;
     virtual void readDevice(Node* output);

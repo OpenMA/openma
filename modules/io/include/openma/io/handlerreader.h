@@ -59,7 +59,7 @@ namespace io
     OPENMA_DECLARE_PIMPL_ACCESSOR(HandlerReader)
     
   public:
-    HandlerReader(Device* device = nullptr, const std::string& format = {});
+    HandlerReader(Device* device = nullptr, const std::string& format = std::string{});
       
     ~HandlerReader();
     
@@ -76,7 +76,7 @@ namespace io
     static const std::vector<std::string>& availableFormats() _OPENMA_NOEXCEPT;
     
   private:
-    void setError(Error code, const std::string& msg = {}) _OPENMA_NOEXCEPT;
+    void setError(Error code, const std::string& msg = std::string{}) _OPENMA_NOEXCEPT;
     
     std::unique_ptr<HandlerReaderPrivate> mp_Pimpl;
   };

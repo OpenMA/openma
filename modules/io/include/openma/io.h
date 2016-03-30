@@ -59,7 +59,7 @@ namespace io
    * @relates HandlerReader
    * @ingroup openma_io
    */
-  inline bool read(Node* root, const std::string& filepath, const std::string& format = {})
+  inline bool read(Node* root, const std::string& filepath, const std::string& format = std::string{})
   {
     File file;
     file.open(filepath.c_str(), Mode::In);
@@ -77,7 +77,7 @@ namespace io
    * @relates HandlerReader
    * @ingroup openma_io
    */
-  inline Node* read(const std::string& filepath, const std::string& format = {})
+  inline Node* read(const std::string& filepath, const std::string& format = std::string{})
   {
     Node* root = new Node("root");
     if (!read(root, filepath, format))
