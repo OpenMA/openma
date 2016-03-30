@@ -1,5 +1,7 @@
 IF(BUILD_MATLAB_BINDINGS)
-  SET(BODY_MATLAB_SRCS "body.i")
+  SET(BODY_MATLAB_SRCS
+    "body.i"
+    "../../bindings/include/openma/matlab/mexFunction.def")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma")
   SET_SOURCE_FILES_PROPERTIES("body.i" PROPERTIES CPLUSPLUS ON)
   SET(SWIG_MODULE_bodyMEX_EXTRA_DEPS
