@@ -66,7 +66,7 @@ namespace body
     
     void setData(const double* values) _OPENMA_NOEXCEPT;
     
-    Point* clone(Node* parent = nullptr) const;
+    virtual Point* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   private:

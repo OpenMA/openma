@@ -104,7 +104,7 @@ namespace body
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;
     
-    PluginGait* clone(Node* parent = nullptr) const;
+    virtual PluginGait* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   protected:

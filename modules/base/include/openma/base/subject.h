@@ -56,7 +56,7 @@ namespace ma
     Subject& operator=(const Subject& ) = delete;
     Subject& operator=(Subject&& ) _OPENMA_NOEXCEPT = delete;
 
-    Subject* clone(Node* parent = nullptr) const;
+    virtual Subject* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };

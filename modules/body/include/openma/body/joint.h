@@ -69,7 +69,7 @@ namespace body
     Segment* distalSegment() const _OPENMA_NOEXCEPT;
     void setDistalSegment(Segment* value) _OPENMA_NOEXCEPT;
     
-    Joint* clone(Node* parent = nullptr) const;
+    virtual Joint* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   private:

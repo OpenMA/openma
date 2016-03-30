@@ -70,7 +70,7 @@ namespace body
     Node* joints();
     Joint* joint(unsigned idx) _OPENMA_NOEXCEPT;
     
-    Model* clone(Node* parent = nullptr) const;
+    virtual Model* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };

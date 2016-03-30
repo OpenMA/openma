@@ -67,7 +67,7 @@ namespace body
     int side() const _OPENMA_NOEXCEPT;
     void setSide(int value) _OPENMA_NOEXCEPT;
     
-    Segment* clone(Node* parent = nullptr) const;
+    virtual Segment* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };

@@ -101,7 +101,7 @@ namespace ma
     
     std::vector<const Node*> retrievePath(const Node* node) const _OPENMA_NOEXCEPT;
     
-    virtual void modified() _OPENMA_NOEXCEPT;
+    virtual void modified() _OPENMA_NOEXCEPT override;
     void clear() _OPENMA_NOEXCEPT;
     
     virtual Node* clone(Node* parent = nullptr) const;

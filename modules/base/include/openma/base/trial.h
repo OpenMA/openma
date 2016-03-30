@@ -67,7 +67,7 @@ namespace ma
     Node* events();
     Event* event(unsigned idx) _OPENMA_NOEXCEPT;
     
-    Trial* clone(Node* parent = nullptr) const;
+    virtual Trial* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };

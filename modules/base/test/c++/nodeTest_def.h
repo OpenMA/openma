@@ -20,8 +20,8 @@ public:
   
   int count() const;
   
-  TestNode* clone(Node* parent = nullptr) const;
-  void copy(const Node* source) _OPENMA_NOEXCEPT;
+  virtual TestNode* clone(Node* parent = nullptr) const override;
+  virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
 };
 
 class TestNodePrivate : public ma::NodePrivate
@@ -105,8 +105,8 @@ public:
   
   int count() const;
   
-  TestNode2* clone(Node* parent = nullptr) const;
-  void copy(const Node* source) _OPENMA_NOEXCEPT;
+  virtual TestNode2* clone(Node* parent = nullptr) const override;
+  virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   
 private:
   std::unique_ptr<TestNode2Private> mp_Pimpl;

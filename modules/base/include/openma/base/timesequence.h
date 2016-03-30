@@ -121,7 +121,7 @@ namespace ma
     
     void resize(unsigned samples);
     
-    TimeSequence* clone(Node* parent = nullptr) const;
+    virtual TimeSequence* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   
   private:
