@@ -14,14 +14,7 @@
 #  MATLAB_ENG_LIBRARY:        Path to libeng.lib
 #  MATLAB_LIBRARIES:          Required libraries: libmex, libmx, libeng
 #  MATLAB_MEXFILE_EXT:        MEX extension required for the current platform
-#  MATLAB_CREATE_MEX:         Macro to build a MEX-file
-#  MATLAB_MATLABR2010B_FOUND: Variable only available under Windows (used to fix compilation issue with MSVC 2010)
 #
-# The macro MATLAB_CREATE_MEX requires in this order:
-#  - function's name which will be called in Matlab;
-#  - C/C++ source files;
-#  - third libraries required.
-
 # Copyright (C) 2016, Moveck Solution Inc., all rights reserved.
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -97,12 +90,7 @@ IF(WIN32)
       SET(MATLAB_OLD_WIN_MEXFILE_EXT 1 CACHE STRING "Old MEX extension for Windows")
     ENDIF()
   ENDIF()
-  
-  FIND_PATH(MATLABR2010B_TEMP "license.txt" "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.11;MATLABROOT]" NO_DEFAULT_PATH)
-  IF(MATLABR2010B_TEMP)
-    SET(MATLAB_MATLABR2010B_FOUND 1)
-  ENDIF()
-  
+
   SET(MATLAB_LIBRARIES_PATHS
       "${MATLAB_ROOT}/extern/lib/win64/microsoft"
       "${MATLAB_ROOT}/extern/lib/win32/microsoft"
@@ -280,7 +268,3 @@ MARK_AS_ADVANCED(
   MATLAB_MEXFILE_EXT
   MATLAB_OLD_WIN_MEXFILE_EXT
 )
-
-IF(WIN32)
-  MARK_AS_ADVANCED(MATLAB_MATLABR2010B_FOUND)
-ENDIF()
