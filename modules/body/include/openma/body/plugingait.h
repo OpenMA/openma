@@ -39,13 +39,15 @@
 #include "openma/body/skeletonhelper.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, PluginGait, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
 {
   class PluginGaitPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, PluginGait) : public SkeletonHelper
+  class OPENMA_BODY_EXPORT PluginGait : public SkeletonHelper
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(PluginGait)
     OPENMA_DECLARE_NODEID(PluginGait, SkeletonHelper)

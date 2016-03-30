@@ -43,11 +43,13 @@
 #include <numeric>
 #include <initializer_list>
 
+OPENMA_EXPORT_NODE_CAST_1(ma, TimeSequence, OPENMA_BASE_EXPORT);
+
 namespace ma
 {
   class TimeSequencePrivate;
   
-  class OPENMA_NODE(OPENMA_BASE_EXPORT, TimeSequence) : public Node
+  class OPENMA_BASE_EXPORT TimeSequence : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(TimeSequence)
     OPENMA_DECLARE_NODEID(TimeSequence, Node)

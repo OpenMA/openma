@@ -39,9 +39,11 @@
 #include "openma/base/any.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_1(ma, Subject, OPENMA_BASE_EXPORT);
+
 namespace ma
 {
-  class OPENMA_NODE(OPENMA_BASE_EXPORT, Subject) : public Node
+  class OPENMA_BASE_EXPORT Subject : public Node
   {
     OPENMA_DECLARE_NODEID(Subject, Node)
     

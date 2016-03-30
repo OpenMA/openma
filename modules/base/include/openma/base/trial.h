@@ -38,6 +38,8 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_1(ma, Trial, OPENMA_BASE_EXPORT);
+
 namespace ma
 {
   class TimeSequence;
@@ -45,7 +47,7 @@ namespace ma
   
   class TrialPrivate;
   
-  class OPENMA_NODE(OPENMA_BASE_EXPORT, Trial) : public Node
+  class OPENMA_BASE_EXPORT Trial : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Trial)
     OPENMA_DECLARE_NODEID(Trial, Node)

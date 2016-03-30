@@ -163,8 +163,15 @@ namespace ma
 // -------------------------------------------------------------------------- //
 
 /**
- * @def OPENMA_NODE(exportname,classname)
- * Convenient macro to export the static type ID associated with the new Node class.
+ * @def OPENMA_EXPORT_NODE_CAST_1(ns, cn, en)
+ * Convenient macro to export the static type ID associated with the new class @a cn in the namespace @a ns with the export symbol @a en.
+ * @relates ma::Node
+ * @ingroup openma_base
+ */
+
+/**
+ * @def OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en)
+ * Convenient macro to export the static type ID associated with the new class @a cn in the nested namespace @a ns::nns with the export symbol @a en.
  * @relates ma::Node
  * @ingroup openma_base
  */
@@ -220,14 +227,19 @@ namespace ma
    * In the previous example, the remaining child of root (pointer to leafA) is a local variable and calling its destructor is incorrect. Thus, when the variable leafA goes out of scope, its destructor is called again. The same memory is freed two times that should crash the program.
    *
    * Finally, to declare a custom node type (i.e. a new inheriting class), several macros can be used:
-   * - OPENMA_NODE()
+   * - OPENMA_EXPORT_NODE_CAST_1() or OPENMA_EXPORT_NODE_CAST_2()
    * - OPENMA_DECLARE_NODEID()
    * - OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED()
    *
-   * For example if you want to add a class inside OpenMA, it is advised to do as following 
+   * For example if you want to add a class inside OpenMA (base mdoule), it is advised to do as following 
    * @code{.unparsed}
    * // Public API
-   * class OPENMA_NODE(OPENMA_BASE_EXPORT, MyNode) : public ma::Node
+   * OPENMA_EXPORT_NODE_CAST_1(ma, MyNode, OPENMA_BASE_EXPORT);
+   *
+   * namespace ma
+   * {
+   *
+   * class OPENMA_BASE_EXPORT MyNode : public ma::Node
    * {
    *   OPENMA_DECLARE_PIMPL_ACCESSOR(MyNode)
    *   OPENMA_DECLARE_NODEID(MyNode, Node)
@@ -249,6 +261,9 @@ namespace ma
    *
    * public:
    *   // ...
+   * }; 
+   *
+   * };
    * @endcode
    *
    * For more details about properties you can read the documentation of the class Property.

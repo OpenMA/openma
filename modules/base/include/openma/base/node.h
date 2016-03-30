@@ -46,10 +46,15 @@
 #include <string>
 #include <regex>
 
-#define OPENMA_NODE(exportname,classname) \
-  classname; \
-  OPENMA_EXPORT_STATIC_TYPEID(classname,exportname) \
-  class exportname classname
+#define OPENMA_EXPORT_NODE_CAST_1(ns, cn, en) \
+  namespace ns { class cn; }; \
+  OPENMA_EXPORT_STATIC_TYPEID(ns::cn,en)
+    
+#define OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en) \
+  namespace ns { namespace nns { class cn; } ;}; \
+  OPENMA_EXPORT_STATIC_TYPEID(ns::nns::cn,en)
+
+OPENMA_EXPORT_NODE_CAST_1(ma, Node, OPENMA_BASE_EXPORT);
 
 namespace ma
 {
@@ -57,7 +62,7 @@ namespace ma
   
   class NodePrivate;
   
-  class OPENMA_NODE(OPENMA_BASE_EXPORT, Node) : public Object
+  class OPENMA_BASE_EXPORT Node : public Object
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Node)
     

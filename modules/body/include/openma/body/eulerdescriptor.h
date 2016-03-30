@@ -39,13 +39,15 @@
 
 #include <array>
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, EulerDescriptor, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
 {
   class EulerDescriptorPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, EulerDescriptor) : public Descriptor
+  class OPENMA_BODY_EXPORT EulerDescriptor : public Descriptor
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
     OPENMA_DECLARE_NODEID(EulerDescriptor, Descriptor)

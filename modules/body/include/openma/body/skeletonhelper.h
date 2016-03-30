@@ -41,6 +41,8 @@
 
 #include <string>
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, SkeletonHelper, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
   class Subject;
@@ -56,7 +58,7 @@ namespace body
   
   class SkeletonHelperPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, SkeletonHelper) : public Node
+  class OPENMA_BODY_EXPORT SkeletonHelper : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(SkeletonHelper)
     OPENMA_DECLARE_NODEID(SkeletonHelper, Node)

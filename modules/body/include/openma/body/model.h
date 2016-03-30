@@ -39,6 +39,8 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, Model, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
@@ -48,7 +50,7 @@ namespace body
   
   class ModelPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, Model) : public Node
+  class OPENMA_BODY_EXPORT Model : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Model)
     OPENMA_DECLARE_NODEID(Model, Node)

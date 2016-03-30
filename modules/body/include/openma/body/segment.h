@@ -39,13 +39,15 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, Segment, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
 {  
   class SegmentPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, Segment) : public Node
+  class OPENMA_BODY_EXPORT Segment : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Segment)
     OPENMA_DECLARE_NODEID(Segment, Node)

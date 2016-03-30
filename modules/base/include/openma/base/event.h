@@ -38,11 +38,13 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_1(ma, Event, OPENMA_BASE_EXPORT);
+
 namespace ma
 {
   class EventPrivate;
   
-  class OPENMA_NODE(OPENMA_BASE_EXPORT, Event) : public Node
+  class OPENMA_BASE_EXPORT Event : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Event)
     OPENMA_DECLARE_NODEID(Event, Node)

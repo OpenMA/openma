@@ -40,13 +40,15 @@
 #include "openma/base/any.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, Descriptor, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
 {
   class DescriptorPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, Descriptor) : public Node
+  class OPENMA_BODY_EXPORT Descriptor : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Descriptor)
     OPENMA_DECLARE_NODEID(Descriptor, Node)
@@ -73,4 +75,5 @@ namespace body
   };
 };
 };
+
 #endif // __openma_body_descriptor_h

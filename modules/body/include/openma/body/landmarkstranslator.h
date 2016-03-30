@@ -42,13 +42,15 @@
 #include <vector>
 #include <string>
 
+OPENMA_EXPORT_NODE_CAST_2(ma, body, LandmarksTranslator, OPENMA_BODY_EXPORT);
+
 namespace ma
 {
 namespace body
 {
   class LandmarksTranslatorPrivate;
   
-  class OPENMA_NODE(OPENMA_BODY_EXPORT, LandmarksTranslator) : public Node
+  class OPENMA_BODY_EXPORT LandmarksTranslator : public Node
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(LandmarksTranslator)
     OPENMA_DECLARE_NODEID(LandmarksTranslator, Node)
