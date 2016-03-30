@@ -105,7 +105,7 @@
 };
 
 // Convert MATLAB cell to std::unordered_map<std::string, ma::Any>
-%typemap(typecheck, noblock=1) const std::unordered_map<std::string, ma::Any>&
+%typemap(typecheck, noblock=1) std::unordered_map<std::string, ma::Any>&&
 {
   $1 = (mxGetClassID($input) == mxCELL_CLASS ? 1 : 0);
   if ($1)
@@ -125,7 +125,7 @@
     }
   }
 }
-%typemap(in) const std::unordered_map<std::string, ma::Any>& (std::unordered_map<std::string, ma::Any> temp)
+%typemap(in) std::unordered_map<std::string, ma::Any>&& (std::unordered_map<std::string, ma::Any> temp)
 {
   $1 = &temp;
   std::string tkey;
