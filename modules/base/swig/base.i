@@ -43,7 +43,7 @@
 #include "openma/bindings.h"
 %}
 
-%include "bindings/utils.i"
+%include "bindings/macros.i"
 
 %include <std_string.i>
 

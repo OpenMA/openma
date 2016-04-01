@@ -32,10 +32,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-// ========================================================================= //
-//                               UTIL FUNCTIONS
-// ========================================================================= //
-
 #define SWIG_CREATE_CLASS_ID_1(ns, cn, st) \
   %{ \
     static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
