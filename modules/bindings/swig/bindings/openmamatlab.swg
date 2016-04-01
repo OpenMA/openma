@@ -32,6 +32,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%fragment("OpenMA_TemplateHelper", "header")
+%{
+  template <typename T>
+  void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
+  {
+    mxArray** _out = reinterpret_cast<mxArray**>(out);
+    T* node = in->findChild<T*>(name, std::move(properties), recursiveSearch);
+    if (node == nullptr) return;
+    *_out = SWIG_NewPointerObj(SWIG_as_voidptr(node), type, 1 |  0 );
+    _ma_refcount_incr(node);
+  };
+  
+  template <typename T>
+  void find_children_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& regexp, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
+  {
+    mxArray** _out = reinterpret_cast<mxArray**>(out);
+    const std::vector<T*>& nodes = in->findChildren<T*>(std::regex(regexp), std::move(properties), recursiveSearch);
+    *_out = mxCreateCellMatrix(nodes.empty() ? 0 : 1, nodes.size());
+    if (*_out != nullptr)
+    {
+      for (size_t i = 0, len = nodes.size() ; i < len ; ++i)
+      {
+        mxArray* elt = SWIG_NewPointerObj(SWIG_as_voidptr(nodes[i]), type, 1 |  0 );
+        if (elt == nullptr) break;
+        _ma_refcount_incr(nodes[i]);
+        mxSetCell(*_out, i, elt);
+      }
+    };
+  };
+%}
+  
 %fragment("OpenMA", "header")
 %{
   template<typename T>

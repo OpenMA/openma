@@ -35,6 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, TimeSequence)
+  SWIG_CREATE_CLASS_ID_1(ma, TimeSequence, SWIGTYPE)
   
   %nodefaultctor;
   class TimeSequence : public Node

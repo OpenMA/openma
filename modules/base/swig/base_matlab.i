@@ -33,6 +33,7 @@
  */
 
 %include "bindings/openmamatlab.swg"
+%fragment("OpenMA_TemplateHelper");
 
 // Specific code for Matlab (typemaps, etc.)
 
@@ -455,10 +456,28 @@ ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
   return self->child(index-1);
 };
 
+mxArray* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
+{
+  mxArray* out = nullptr;
+  id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
+  if (out == nullptr)
+    mexErrMsgIdAndTxt("SWIG:Node:findChild","No child found");
+  return out;
+};
+
+mxArray* ma_Node_findChildren(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& regexp = ".*", std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
+{
+  mxArray* out = nullptr;
+  id->findChildren(&out, *(id->SwigType), self, regexp, std::move(properties), recursiveSearch);
+  if (out == nullptr)
+    mexErrMsgIdAndTxt("SWIG:Node:findChildren","Internal error during cell allocation");
+  return out;
+};
+
 %};
 
 //-------------------------------------------------------------------------- //
-//                                     Node
+//                                  TimeSequence
 //-------------------------------------------------------------------------- //
 
 %{
@@ -499,7 +518,7 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const mxArray* data)
 %}
 
 //-------------------------------------------------------------------------- //
-//                                     Trial
+//                                   Trial
 //-------------------------------------------------------------------------- //
 
 %{

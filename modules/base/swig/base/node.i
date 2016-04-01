@@ -35,6 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Node)
+  SWIG_CREATE_CLASS_ID_1(ma, Node, SWIGTYPE)
   
   %newobject Node::child; // Used for the reference counting
   %nodefaultctor;
@@ -65,6 +66,8 @@ namespace ma
   
     %extend {
       Node* child(unsigned index) const;
+      SWIGTYPE* findChild(const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true);
+      SWIGTYPE* findChildren(const ma::bindings::TemplateHelper* id, const std::string& regexp = ".*", std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true);
       void clear() {_ma_clear_node($self);};
     }
   

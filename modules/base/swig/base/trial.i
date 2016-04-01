@@ -35,6 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Trial)
+  SWIG_CREATE_CLASS_ID_1(ma, Trial, SWIGTYPE)
   
   %nodefaultctor;
   class Trial : public Node

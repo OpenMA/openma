@@ -36,6 +36,18 @@
 //                               UTIL FUNCTIONS
 // ========================================================================= //
 
+#define SWIG_CREATE_CLASS_ID_1(ns, cn, st) \
+  %{ \
+    static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
+  %} \
+  %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##cn;
+  
+#define SWIG_CREATE_CLASS_ID_2(ns, nns, cn, st) \
+  %{ \
+    static const ma::bindings::TemplateHelper T_##ns##_##nns##_##cn = {&SWIGTYPE_p_##ns##__##nns##__##cn, &find_child_helper<ns::nns::cn>, &find_children_helper<ns::nns::cn>}; \
+  %} \
+  %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##nns##_##cn;
+
 %define SWIG_TYPEMAP_OUT_CONSTRUCTOR(nspace, cname)
 // Need to verify if the generated object is not null before being added in the workspace.
 %typemap(check, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
