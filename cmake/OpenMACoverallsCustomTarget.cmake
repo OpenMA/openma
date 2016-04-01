@@ -9,8 +9,8 @@ IF(WITH_COVERALLS_ENABLED)
   ADD_CUSTOM_TARGET(coveralls
     # Generate the output
     COMMAND ${CMAKE_COMMAND}
-      -DCOVERAGE_SRCS_PATH="${PROJECT_SOURCE_DIR}/Code"
-      -DCOVERAGE_SRCS_EXCLUDED="base/macros.h::base/nodeid.h::base/opaque.h::base/type_traits.h::IO/endianformat.h::base/bodyenums.h"
+      -DCOVERAGE_SRCS_PATH="${PROJECT_SOURCE_DIR}/modules"
+      -DCOVERAGE_SRCS_EXCLUDED=""
       -DCOVERALLS_OUTPUT_FILE="${COVERALLS_FILE}"
       -DCOV_PATH="${PROJECT_BINARY_DIR}"
       -DPROJECT_ROOT="${PROJECT_SOURCE_DIR}"
