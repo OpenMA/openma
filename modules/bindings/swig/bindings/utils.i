@@ -68,7 +68,7 @@ cname(swigtype* other)
 void copy(ma::Node* source)
 {
   _ma_clear_node($self);
-  int count = _ma_refcount_set(source);
+  int count = _ma_refcount_get(source);
   $self->copy(source);
   _ma_refcount_reset($self, count, false);
   auto& children = $self->children();

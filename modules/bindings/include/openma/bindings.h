@@ -42,7 +42,7 @@
 
 OPENMA_BINDINGS_EXPORT void _ma_clear_node(ma::Node* self);
 
-OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_set(ma::Node* node);
+OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_get(ma::Node* node);
 OPENMA_BINDINGS_EXPORT void _ma_refcount_set(ma::Node* node, const ma::Any& value);
 OPENMA_BINDINGS_EXPORT void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true);
 OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);

@@ -34,7 +34,7 @@
 
 #include "openma/bindings.h"
 
-ma::Any _ma_refcount_set(ma::Node* node)
+ma::Any _ma_refcount_get(ma::Node* node)
 {
   return node->property(_MA_REF_COUNTER);
 };
@@ -57,7 +57,7 @@ void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive)
 
 void _ma_refcount_incr(ma::Node* node)
 {
-  const auto& prop = _ma_refcount_set(node);
+  const auto& prop = _ma_refcount_get(node);
   if (prop.isValid())
     _ma_refcount_set(node, static_cast<int>(prop) + 1);
   else
@@ -66,7 +66,7 @@ void _ma_refcount_incr(ma::Node* node)
 
 int _ma_refcount_decr(ma::Node* node)
 {
-  int count = _ma_refcount_set(node);
+  int count = _ma_refcount_get(node);
   count -= 1;
   if (count < 0)
   {
