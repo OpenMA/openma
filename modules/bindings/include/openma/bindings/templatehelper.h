@@ -32,22 +32,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_bindings_h
-#define __openma_bindings_h
+#ifndef __openma_bindings_templatehelper_h
+#define __openma_bindings_templatehelper_h
 
-#include "openma/bindings_export.h"
-#include "openma/base/node.h"
+struct swig_type_info;
 
-#define _MA_REF_COUNTER "_MA_REF_COUNTER"
+namespace ma
+{
+namespace bindings
+{
+  using retriever_func_t = void (*) (void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch);
+  
+  struct TemplateHelper
+  {
+    ~TemplateHelper() = default;
+    
+    TemplateHelper() = delete;
+    TemplateHelper(const TemplateHelper& ) = delete;
+    TemplateHelper(TemplateHelper&& ) _OPENMA_NOEXCEPT = delete;
+    TemplateHelper& operator=(const TemplateHelper& ) = delete;
+    TemplateHelper& operator=(TemplateHelper&& ) _OPENMA_NOEXCEPT = delete;
+    
+    swig_type_info** SwigType;
+    retriever_func_t findChild;
+    retriever_func_t findChildren;
+  };
+};
+};
 
-OPENMA_BINDINGS_EXPORT void _ma_clear_node(ma::Node* self);
-
-OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_get(ma::Node* node);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_set(ma::Node* node, const ma::Any& value);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);
-OPENMA_BINDINGS_EXPORT int _ma_refcount_decr(ma::Node* node);
-
-#include "openma/bindings/templatehelper.h"
-
-#endif // __openma_bindings_h
+#endif // __openma_bindings_templatehelper_h
