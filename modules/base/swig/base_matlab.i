@@ -41,19 +41,9 @@
 #define SWIGTYPE mxArray
 
 // Convert std::vector<Node*> to MATLAB cell array
-%typemap(out, noblock=1) const std::vector<ma::Node*>&
+%typemap(out, fragment="OpenMA", noblock=1) const std::vector<ma::Node*>&
 {
-  $result = mxCreateCellMatrix(1, $1->size());
-  if ($result != nullptr)
-  {
-    for (size_t i = 0, len = $1->size() ; i < len ; ++i)
-    {
-      mxArray* elt = SWIG_NewPointerObj(SWIG_as_voidptr($1->operator[](i)), $descriptor(ma::Node*), 1 |  0 );
-      if (elt == nullptr) break;
-      _ma_refcount_incr($1->operator[](i));
-      mxSetCell($result, i, elt);
-    }
-  };
+  $result = to_list($1, $descriptor(ma::Node*));
 };
 
 // Convert std::vector<unsigned> to MATLAB double matrix

@@ -31,8 +31,44 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+  
+%fragment("OpenMA", "header", fragment="OpenMA_ToList")
+%{
+  template<typename T>
+  mxArray* to_double_matrix(const std::vector<T>* in)
+  {
+    mxArray* out = mxCreateDoubleMatrix(in->empty() ? 0 : 1, in->size(), mxREAL);
+    if (out != nullptr)
+    {
+      double* data = mxGetPr(out);
+      for (size_t i = 0, len = in->size() ; i < len ; ++i)
+        data[i] = in->operator[](i);
+    }
+    return out;
+  };
+%};
 
-%fragment("OpenMA_TemplateHelper", "header")
+%fragment("OpenMA_ToList", "header")
+%{
+  template <typename T>
+  mxArray* to_list(const std::vector<T*>* in, swig_type_info* type)
+  {
+    mxArray* out = mxCreateCellMatrix(in->empty() ? 0 : 1, in->size());
+    if (out != nullptr)
+    {
+      for (size_t i = 0, len = in->size() ; i < len ; ++i)
+      {
+        mxArray* elt = SWIG_NewPointerObj(SWIG_as_voidptr(in->operator[](i)), type, 1 |  0 );
+        if (elt == nullptr) break;
+        _ma_refcount_incr(in->operator[](i));
+        mxSetCell(out, i, elt);
+      }
+    }
+    return out;
+  };
+%}
+
+%fragment("OpenMA_TemplateHelper", "header", fragment="OpenMA_ToList")
 %{
   template <typename T>
   void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
@@ -49,32 +85,6 @@
   {
     mxArray** _out = reinterpret_cast<mxArray**>(out);
     const std::vector<T*>& nodes = in->findChildren<T*>(std::regex(regexp), std::move(properties), recursiveSearch);
-    *_out = mxCreateCellMatrix(nodes.empty() ? 0 : 1, nodes.size());
-    if (*_out != nullptr)
-    {
-      for (size_t i = 0, len = nodes.size() ; i < len ; ++i)
-      {
-        mxArray* elt = SWIG_NewPointerObj(SWIG_as_voidptr(nodes[i]), type, 1 |  0 );
-        if (elt == nullptr) break;
-        _ma_refcount_incr(nodes[i]);
-        mxSetCell(*_out, i, elt);
-      }
-    };
+    *_out = to_list(&nodes, type);
   };
 %}
-  
-%fragment("OpenMA", "header")
-%{
-  template<typename T>
-  mxArray* to_double_matrix(T* in)
-  {
-    mxArray* out = mxCreateDoubleMatrix(in->empty() ? 0 : 1, in->size(), mxREAL);
-    if (out != nullptr)
-    {
-      double* data = mxGetPr(out);
-      for (size_t i = 0, len = in->size() ; i < len ; ++i)
-        data[i] = in->operator[](i);
-    };
-    return out;
-  };
-%};
