@@ -35,7 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Node)
-  SWIG_CREATE_CLASS_ID_1(ma, Node, SWIGTYPE)
+  SWIG_CREATE_TEMPLATE_HELPER_1(ma, Node, SWIGTYPE)
   
   %newobject Node::child; // Used for the reference counting
   %nodefaultctor;

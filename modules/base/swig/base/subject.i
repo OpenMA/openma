@@ -35,7 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Subject)
-  SWIG_CREATE_CLASS_ID_1(ma, Subject, SWIGTYPE)
+  SWIG_CREATE_TEMPLATE_HELPER_1(ma, Subject, SWIGTYPE)
   
   %nodefaultctor;
   class Subject : public Node

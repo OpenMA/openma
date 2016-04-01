@@ -37,7 +37,7 @@ namespace ma
 namespace body
 { 
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma::body, PluginGait)
-  SWIG_CREATE_CLASS_ID_2(ma, body, PluginGait, SWIGTYPE)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, PluginGait, SWIGTYPE)
   
   %nodefaultctor;
   class PluginGait : public SkeletonHelper

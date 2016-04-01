@@ -35,7 +35,7 @@
 namespace ma
 {
   SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Event)
-  SWIG_CREATE_CLASS_ID_1(ma, Event, SWIGTYPE)
+  SWIG_CREATE_TEMPLATE_HELPER_1(ma, Event, SWIGTYPE)
   
   %nodefaultctor;
   class Event : public Node
