@@ -32,7 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%include "bindings/openmamatlab.swg"
+%include "openmamatlab.swg"
 %fragment("OpenMA_TemplateHelper");
 
 %rename(extractJointKinematics) extract_joint_kinematics;
