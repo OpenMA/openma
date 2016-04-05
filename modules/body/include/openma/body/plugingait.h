@@ -91,10 +91,10 @@ namespace body
     void setRightAnkleWidth(double value) _OPENMA_NOEXCEPT;
     double leftAnkleWidth() const _OPENMA_NOEXCEPT;
     void setLeftAnkleWidth(double value) _OPENMA_NOEXCEPT;
-    bool rightFootFlat() const _OPENMA_NOEXCEPT;
-    void setRightFootFlat(bool value) _OPENMA_NOEXCEPT;
-    bool leftFootFlat() const _OPENMA_NOEXCEPT;
-    void setLeftFootFlat(bool value) _OPENMA_NOEXCEPT;
+    bool rightFootFlatEnabled() const _OPENMA_NOEXCEPT;
+    void setRightFootFlatEnabled(bool value) _OPENMA_NOEXCEPT;
+    bool leftFootFlatEnabled() const _OPENMA_NOEXCEPT;
+    void setLeftFootFlatEnabled(bool value) _OPENMA_NOEXCEPT;
     double headOffset() const _OPENMA_NOEXCEPT;
     double rightStaticPlantarFlexionOffset() const _OPENMA_NOEXCEPT;
     double rightStaticRotationOffset() const _OPENMA_NOEXCEPT;

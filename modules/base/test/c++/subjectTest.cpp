@@ -15,11 +15,11 @@ ma::Subject* _generate_dummy_subject(ma::Node* parent)
      {"leftLegLength",940.0},
      {"leftKneeWidth",110.0},
      {"leftAnkleWidth",70.0},
-     {"leftFootFlat", true},
+     {"leftFootFlatEnabled", true},
      {"rightLegLength",940.0},
      {"rightKneeWidth",120.0},
      {"rightAnkleWidth",70.0},
-     {"rightFootFlat", true}},
+     {"rightFootFlatEnabled", true}},
     parent);
   return subject;
 }
@@ -35,11 +35,11 @@ void _compare_dummy_subject(ma::Node* subject)
   TS_ASSERT_EQUALS(subject->property("leftLegLength").cast<double>(), 940.0);
   TS_ASSERT_EQUALS(subject->property("leftKneeWidth").cast<double>(), 110.0);
   TS_ASSERT_EQUALS(subject->property("leftAnkleWidth").cast<double>(), 70.0);
-  TS_ASSERT_EQUALS(subject->property("leftFootFlat").cast<bool>(), true);
+  TS_ASSERT_EQUALS(subject->property("leftFootFlatEnabled").cast<bool>(), true);
   TS_ASSERT_EQUALS(subject->property("rightLegLength").cast<double>(), 940.0);
   TS_ASSERT_EQUALS(subject->property("rightKneeWidth").cast<double>(), 120.0);
   TS_ASSERT_EQUALS(subject->property("rightAnkleWidth").cast<double>(), 70.0);
-  TS_ASSERT_EQUALS(subject->property("rightFootFlat").cast<bool>(), true);
+  TS_ASSERT_EQUALS(subject->property("rightFootFlatEnabled").cast<bool>(), true);
 }
 
 CXXTEST_SUITE(SubjectTest)
@@ -58,7 +58,7 @@ CXXTEST_SUITE(SubjectTest)
     auto clone = subject->clone(&root);
     _compare_dummy_subject(clone);
     subject->setProperty("leftAnkleWidth", 80.0);
-    subject->setProperty("rightFootFlat", false);
+    subject->setProperty("rightFootFlatEnabled", false);
     subject->setDescription("");
     _compare_dummy_subject(clone);
   };
@@ -71,7 +71,7 @@ CXXTEST_SUITE(SubjectTest)
     myCopy.copy(subject);
     _compare_dummy_subject(&myCopy);
     subject->setProperty("leftAnkleWidth", 80.0);
-    subject->setProperty("rightFootFlat", false);
+    subject->setProperty("rightFootFlatEnabled", false);
     subject->setDescription("");
     _compare_dummy_subject(&myCopy);
   }

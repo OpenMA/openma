@@ -85,10 +85,10 @@ namespace body
     void setRightAnkleWidth(double value);
     double leftAnkleWidth() const;
     void setLeftAnkleWidth(double value);
-    bool rightFootFlat() const;
-    void setRightFootFlat(bool value);
-    bool leftFootFlat() const;
-    void setLeftFootFlat(bool value);
+    bool rightFootFlatEnabled() const;
+    void setRightFootFlatEnabled(bool value);
+    bool leftFootFlatEnabled() const;
+    void setLeftFootFlatEnabled(bool value);
     double headOffset() const;
     double rightStaticPlantarFlexionOffset() const;
     double rightStaticRotationOffset() const;

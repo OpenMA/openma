@@ -9,11 +9,11 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
-    helper.setLeftFootFlat(true);
+    helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
     helper.setLeftKneeWidth(110.0); // mm
     helper.setLeftAnkleWidth(70.0); // mm
-    helper.setRightFootFlat(true);
+    helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(940.0); // mm
     helper.setRightKneeWidth(120.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
@@ -72,11 +72,11 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
-    helper.setLeftFootFlat(true);
+    helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
     helper.setLeftKneeWidth(110.0); // mm
     helper.setLeftAnkleWidth(70.0); // mm
-    helper.setRightFootFlat(true);
+    helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(940.0); // mm
     helper.setRightKneeWidth(120.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
@@ -144,11 +144,11 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightWristWidth(40.0); // mm
     helper.setLeftHandThickness(30.0); // mm
     helper.setRightHandThickness(30.0); // mm
-    helper.setLeftFootFlat(true);
+    helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(800.0); // mm
     helper.setLeftKneeWidth(105.0); // mm
     helper.setLeftAnkleWidth(55.0); // mm
-    helper.setRightFootFlat(true);
+    helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(800.0); // mm
     helper.setRightKneeWidth(105.0); // mm
     helper.setRightAnkleWidth(55.0); // mm
@@ -185,11 +185,11 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(14.0); // mm
-    helper.setLeftFootFlat(true);
+    helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
     helper.setLeftKneeWidth(102.0); // mm
     helper.setLeftAnkleWidth(70.0); // mm
-    helper.setRightFootFlat(true);
+    helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(920.0); // mm
     helper.setRightKneeWidth(102.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
@@ -215,11 +215,11 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(14.0); // mm
-    helper.setLeftFootFlat(true);
+    helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
     helper.setLeftKneeWidth(102.0); // mm
     helper.setLeftAnkleWidth(70.0); // mm
-    helper.setRightFootFlat(true);
+    helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(920.0); // mm
     helper.setRightKneeWidth(102.0); // mm
     helper.setRightAnkleWidth(70.0); // mm

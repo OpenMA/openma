@@ -87,8 +87,8 @@ namespace body
       Property<PluginGait, double, &PluginGait::leftKneeWidth,                   &PluginGait::setLeftKneeWidth>                 {"leftKneeWidth"},
       Property<PluginGait, double, &PluginGait::rightAnkleWidth,                 &PluginGait::setRightAnkleWidth>               {"rightAnkleWidth"},
       Property<PluginGait, double, &PluginGait::leftAnkleWidth,                  &PluginGait::setLeftAnkleWidth>                {"leftAnkleWidth"},
-      Property<PluginGait, bool,   &PluginGait::rightFootFlat,                   &PluginGait::setRightFootFlat>                 {"rightFootFlat"},
-      Property<PluginGait, bool,   &PluginGait::leftFootFlat,                    &PluginGait::setRightFootFlat>                 {"leftFootFlat"},
+      Property<PluginGait, bool,   &PluginGait::rightFootFlatEnabled,                   &PluginGait::setRightFootFlatEnabled>                 {"rightFootFlatEnabled"},
+      Property<PluginGait, bool,   &PluginGait::leftFootFlatEnabled,                    &PluginGait::setRightFootFlatEnabled>                 {"leftFootFlatEnabled"},
       // Get only
       Property<PluginGait, double, &PluginGait::headOffset>                                                                     {"headOffset"},
       Property<PluginGait, double, &PluginGait::rightStaticPlantarFlexionOffset>                                                {"rightStaticPlantarFlexionOffset"},
@@ -127,8 +127,8 @@ namespace body
     double RightAnkleWidth;
     double LeftAnkleWidth;
     
-    bool RightFootFlat;
-    bool LeftFootFlat;
+    bool RightFootFlatEnabled;
+    bool LeftFootFlatEnabled;
     double HeadOffset;
     double RightStaticPlantarFlexionOffset;
     double RightStaticRotationOffset;

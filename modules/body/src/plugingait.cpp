@@ -80,8 +80,8 @@ namespace body
     LeftKneeWidth(0.0),
     RightAnkleWidth(0.0),
     LeftAnkleWidth(0.0),
-    RightFootFlat(false), 
-    LeftFootFlat(false),
+    RightFootFlatEnabled(false), 
+    LeftFootFlatEnabled(false),
     HeadOffset(0.0),
     RightStaticPlantarFlexionOffset(0.0),
     RightStaticRotationOffset(0.0),
@@ -103,7 +103,7 @@ namespace body
       s = 1.0;
       ankleWidth = this->LeftAnkleWidth;
       kneeWidth = this->LeftKneeWidth;
-      footFlat = this->LeftFootFlat;
+      footFlat = this->LeftFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->LeftStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->LeftStaticRotationOffset);
     }
@@ -113,7 +113,7 @@ namespace body
       s = -1.0;
       ankleWidth = this->RightAnkleWidth;
       kneeWidth = this->RightKneeWidth;
-      footFlat = this->RightFootFlat;
+      footFlat = this->RightFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->RightStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->RightStaticRotationOffset);
     }
@@ -637,14 +637,14 @@ namespace body
   double LeftAnkleWidth;
   /**
    * [Required] This property holds the confirmation the subject is able to stand with the foot on the ground. By default, this property is set to false.
-   * @sa rightFootFlat() setRightFootFlat()
+   * @sa rightFootFlatEnabled() setRightFootFlatEnabled()
    */
-  bool RightFootFlat;
+  bool RightFootFlatEnabled;
   /**
    * [Required] This property holds the confirmation the subject is able to stand with the foot on the ground.  By default, this property is set to false.
-   * @sa leftFootFlat() setLeftFootFlat()
+   * @sa leftFootFlatEnabled() setLeftFootFlatEnabled()
    */
-  bool LeftFootFlat;
+  bool LeftFootFlatEnabled;
   /**
    * [Calculated] This property holds the head offset angle. By default, this property contains the value 0.0.
    * @sa headOffset()
@@ -834,8 +834,8 @@ namespace body
       optr->LeftKneeWidth = subject->property("leftKneeWidth");
       optr->RightAnkleWidth = subject->property("rightAnkleWidth");
       optr->LeftAnkleWidth = subject->property("leftAnkleWidth");
-      optr->RightFootFlat = subject->property("rightFootFlat");
-      optr->LeftFootFlat = subject->property("leftFootFlat");
+      optr->RightFootFlatEnabled = subject->property("rightFootFlatEnabled");
+      optr->LeftFootFlatEnabled = subject->property("leftFootFlatEnabled");
     }
     
     // Calibrate the helper
@@ -1537,44 +1537,44 @@ namespace body
   };
   
   /**
-   * Returns the internal parameter RightFootFlat.
+   * Returns the internal parameter RightFootFlatEnabled.
    */
-  bool PluginGait::rightFootFlat() const _OPENMA_NOEXCEPT
+  bool PluginGait::rightFootFlatEnabled() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->RightFootFlat;
+    return optr->RightFootFlatEnabled;
   };
   
   /**
-   * Set the internal parameter RightFootFlat.
+   * Set the internal parameter RightFootFlatEnabled.
    */
-  void PluginGait::setRightFootFlat(bool value) _OPENMA_NOEXCEPT
+  void PluginGait::setRightFootFlatEnabled(bool value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (value == optr->RightFootFlat)
+    if (value == optr->RightFootFlatEnabled)
       return;
-    optr->RightFootFlat = value;
+    optr->RightFootFlatEnabled = value;
     this->modified();
   };
   
   /**
-   * Returns the internal parameter LeftFootFlat.
+   * Returns the internal parameter LeftFootFlatEnabled.
    */
-  bool PluginGait::leftFootFlat() const _OPENMA_NOEXCEPT
+  bool PluginGait::leftFootFlatEnabled() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->LeftFootFlat;
+    return optr->LeftFootFlatEnabled;
   };
   
   /**
-   * Set the internal parameter LeftFootFlat.
+   * Set the internal parameter LeftFootFlatEnabled.
    */
-  void PluginGait::setLeftFootFlat(bool value) _OPENMA_NOEXCEPT
+  void PluginGait::setLeftFootFlatEnabled(bool value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (value == optr->LeftFootFlat)
+    if (value == optr->LeftFootFlatEnabled)
       return;
-    optr->LeftFootFlat = value;
+    optr->LeftFootFlatEnabled = value;
     this->modified();
   };
   
@@ -1740,8 +1740,8 @@ namespace body
     optr->LeftKneeWidth = optr_src->LeftKneeWidth;
     optr->RightAnkleWidth = optr_src->RightAnkleWidth;
     optr->LeftAnkleWidth = optr_src->LeftAnkleWidth;
-    optr->RightFootFlat = optr_src->RightFootFlat;
-    optr->LeftFootFlat = optr_src->LeftFootFlat;
+    optr->RightFootFlatEnabled = optr_src->RightFootFlatEnabled;
+    optr->LeftFootFlatEnabled = optr_src->LeftFootFlatEnabled;
     optr->HeadOffset = optr_src->HeadOffset;
     optr->RightStaticPlantarFlexionOffset = optr_src->RightStaticPlantarFlexionOffset;
     optr->RightStaticRotationOffset = optr_src->RightStaticRotationOffset;

@@ -14,11 +14,11 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 16.0},
-       {"leftFootFlat", true},
+       {"leftFootFlatEnabled", true},
        {"leftLegLength", 940.0},
        {"leftKneeWidth", 110.0},
        {"leftAnkleWidth", 70.0},
-       {"rightFootFlat", true},
+       {"rightFootFlatEnabled", true},
        {"rightLegLength", 940.0},
        {"rightKneeWidth", 120.0},
        {"rightAnkleWidth", 70.0}});
@@ -97,11 +97,11 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 16.0},
-       {"leftFootFlat", true},
+       {"leftFootFlatEnabled", true},
        {"leftLegLength", 940.0},
        {"leftKneeWidth", 110.0},
        {"leftAnkleWidth", 70.0},
-       {"rightFootFlat", true},
+       {"rightFootFlatEnabled", true},
        {"rightLegLength", 940.0},
        {"rightKneeWidth", 120.0},
        {"rightAnkleWidth", 70.0}});
@@ -188,11 +188,11 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
        {"rightWristWidth", 40.0},
        {"leftHandThickness", 30.0},
        {"rightHandThickness", 30.0},
-       {"leftFootFlat", true},
+       {"leftFootFlatEnabled", true},
        {"leftLegLength", 800.0},
        {"leftKneeWidth", 105.0},
        {"leftAnkleWidth", 55.0},
-       {"rightFootFlat", true},
+       {"rightFootFlatEnabled", true},
        {"rightLegLength", 800.0},
        {"rightKneeWidth", 105.0},
        {"rightAnkleWidth", 55.0}});
@@ -240,11 +240,11 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 14.0},
-       {"leftFootFlat", true},
+       {"leftFootFlatEnabled", true},
        {"leftLegLength", 920.0},
        {"leftKneeWidth", 102.0},
        {"leftAnkleWidth", 70.0},
-       {"rightFootFlat", true},
+       {"rightFootFlatEnabled", true},
        {"rightLegLength", 920.0},
        {"rightKneeWidth", 102.0},
        {"rightAnkleWidth", 70.0}});
@@ -280,11 +280,11 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 14.0},
-       {"leftFootFlat", true},
+       {"leftFootFlatEnabled", true},
        {"leftLegLength", 920.0},
        {"leftKneeWidth", 102.0},
        {"leftAnkleWidth", 70.0},
-       {"rightFootFlat", true},
+       {"rightFootFlatEnabled", true},
        {"rightLegLength", 920.0},
        {"rightKneeWidth", 102.0},
        {"rightAnkleWidth", 70.0}});
