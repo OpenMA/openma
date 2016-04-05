@@ -39,6 +39,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
     helper.setRightShoulderOffset(50.0); // mm
     helper.setLeftElbowWidth(80.0); // mm
@@ -102,6 +103,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
     helper.setRightShoulderOffset(50.0); // mm
     helper.setLeftElbowWidth(80.0); // mm
@@ -136,6 +138,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
     helper.setRightShoulderOffset(50.0); // mm
     helper.setLeftElbowWidth(80.0); // mm

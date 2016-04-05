@@ -63,6 +63,7 @@ namespace body
   : SkeletonHelperPrivate(pint,name,region,side),
     // All the options are null by default
     MarkerDiameter(0.0),
+    HeadOffsetEnabled(false),
     RightShoulderOffset(0.0),
     LeftShoulderOffset(0.0),
     RightElbowWidth(0.0),
@@ -551,6 +552,11 @@ namespace body
    */
   double MarkerDiameter;
   /**
+   * [Required] This property holds the confirmation the subject has the head not oriented along the longitudinal horizontal axis. By default, this property is set to false.
+   * @sa headOffsetEnabled() setLHeadOffsetEnabled()
+   */
+  bool HeadOffsetEnabled;
+  /**
    * [Required] This property holds the vertical distance from the centre of the glenohumeral joint to the marker on the acromion calivicular joint. By default, this property contains the value 0.0.
    * @sa rightShoulderOffset() setRightShoulderOffset()
    */
@@ -817,6 +823,7 @@ namespace body
     if (subject != nullptr)
     {
       optr->MarkerDiameter = subject->property("markerDiameter");
+      optr->HeadOffsetEnabled = subject->property("headOffsetEnabled");
       optr->RightShoulderOffset = subject->property("rightShoulderOffset");
       optr->LeftShoulderOffset = subject->property("leftShoulderOffset");
       optr->RightElbowWidth = subject->property("rightElbowWidth");
@@ -946,7 +953,7 @@ namespace body
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
-    if (optr->Region & Region::Upper)
+    if ((optr->Region & Region::Upper) && optr->HeadOffsetEnabled)
     {
       // -----------------------------------------
       // Head
@@ -1167,6 +1174,27 @@ namespace body
     if (fabs(value - optr->MarkerDiameter) < std::numeric_limits<double>::epsilon())
       return;
     optr->MarkerDiameter = value;
+    this->modified();
+  };
+  
+  /**
+   * Return the internal parameter HeadOffsetEnabled
+   */
+  bool PluginGait::headOffsetEnabled() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->HeadOffsetEnabled;
+  };
+  
+  /**
+   * Sets the internal parameter HeadOffsetEnabled
+   */
+  void PluginGait::setHeadOffsetEnabled(bool value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (value == optr->HeadOffsetEnabled)
+      return;
+    optr->HeadOffsetEnabled = value;
     this->modified();
   };
 
@@ -1723,6 +1751,7 @@ namespace body
     auto optr_src = src->pimpl();
     this->SkeletonHelper::copy(src);
     optr->MarkerDiameter = optr_src->MarkerDiameter;
+    optr->HeadOffsetEnabled = optr_src->HeadOffsetEnabled;
     optr->RightShoulderOffset = optr_src->RightShoulderOffset;
     optr->LeftShoulderOffset = optr_src->LeftShoulderOffset;
     optr->RightElbowWidth = optr_src->RightElbowWidth;

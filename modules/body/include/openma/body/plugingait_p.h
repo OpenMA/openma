@@ -70,6 +70,7 @@ namespace body
     OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(PluginGait, SkeletonHelper,
       // Get / Set
       Property<PluginGait, double, &PluginGait::markerDiameter,                  &PluginGait::setMarkerDiameter>                {"markerDiameter"},
+      Property<PluginGait, bool  , &PluginGait::headOffsetEnabled,               &PluginGait::setHeadOffsetEnabled>             {"headOffsetEnabled"},
       Property<PluginGait, double, &PluginGait::rightShoulderOffset,             &PluginGait::setRightShoulderOffset>           {"rightShoulderOffset"},
       Property<PluginGait, double, &PluginGait::leftShoulderOffset,              &PluginGait::setLeftShoulderOffset>            {"leftShoulderOffset"},
       Property<PluginGait, double, &PluginGait::rightElbowWidth,                 &PluginGait::setRightElbowWidth>               {"rightElbowWidth"},
@@ -107,6 +108,8 @@ namespace body
     bool reconstructLowerLimb(Model* model, Trial* trial, int side, const maths::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     
     double MarkerDiameter;
+    
+    bool HeadOffsetEnabled;
     
     double RightShoulderOffset;
     double LeftShoulderOffset;

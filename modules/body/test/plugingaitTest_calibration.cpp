@@ -9,6 +9,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Left);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
     helper.setLeftKneeWidth(110.0); // mm
@@ -35,6 +36,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Right);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setRightFootFlatEnabled(true);
     helper.setRightLegLength(940.0); // mm
     helper.setRightKneeWidth(120.0); // mm
@@ -61,6 +63,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
     helper.setMarkerDiameter(16.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
     helper.setLeftKneeWidth(110.0); // mm
@@ -97,6 +100,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   CXXTEST_TEST(calibrateBothUpperBodyFullFrames)
   {
     ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
+    helper.setHeadOffsetEnabled(true);
     
     ma::Node root("root");
     generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
@@ -116,6 +120,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   CXXTEST_TEST(calibrateBothLowerBodyFullFrames)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    helper.setHeadOffsetEnabled(true);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(800.0); // mm
@@ -144,6 +149,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   CXXTEST_TEST(calibrateBothFullBodyFullFrames)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    helper.setHeadOffsetEnabled(true);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(800.0); // mm
@@ -172,6 +178,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   CXXTEST_TEST(calibrateBothFullBodyHoleFrames)
   {
     ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    helper.setHeadOffsetEnabled(true);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
@@ -201,6 +208,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(14.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setInterAsisDistance(255.0); // mm
     helper.setLeftLegLength(905.0); // mm
     helper.setLeftKneeWidth(105.0); // mm
@@ -227,6 +235,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(14.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
     helper.setLeftKneeWidth(102.0); // mm
@@ -254,6 +263,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setMarkerDiameter(14.0); // mm
+    helper.setHeadOffsetEnabled(true);
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
     helper.setLeftKneeWidth(102.0); // mm

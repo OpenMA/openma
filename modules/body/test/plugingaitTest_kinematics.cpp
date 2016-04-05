@@ -54,6 +54,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 16.0},
+       {"headOffsetEnabled", true},
        {"leftShoulderOffset", 50.0},
        {"rightShoulderOffset", 50.0},
        {"leftElbowWidth", 80.0},
@@ -137,6 +138,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 16.0},
+       {"headOffsetEnabled", true},
        {"leftShoulderOffset", 50.0},
        {"rightShoulderOffset", 50.0},
        {"leftElbowWidth", 80.0},
@@ -180,6 +182,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 16.0},
+       {"headOffsetEnabled", true},
        {"leftShoulderOffset", 50.0},
        {"rightShoulderOffset", 50.0},
        {"leftElbowWidth", 80.0},
