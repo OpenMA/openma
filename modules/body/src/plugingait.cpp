@@ -251,7 +251,7 @@ namespace body
     const maths::Position EJC = compute_chord((elbowWidth + this->MarkerDiameter) / 2.0, LHE, SJC, CVM);
     // Compute the wrist joint centre (WJC)
     // NOTE: The scale factor was found experimentaly when comparing with the Vicon data.
-    const maths::Position WJC = s * (US - RS).cross(EJC - MWP).normalized() * wristWidth * 0.7 + MWP;
+    const maths::Position WJC = s * (US - RS).cross(EJC - MWP).normalized() * (wristWidth + this->MarkerDiameter) / 2.0 + MWP;
     // Arm frame
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
     w = (SJC - EJC).normalized();
