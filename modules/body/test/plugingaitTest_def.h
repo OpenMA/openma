@@ -6,6 +6,9 @@
 #include <openma/body/model.h>
 #include <openma/base/timesequence.h>
 #include <openma/base/trial.h>
+
+#if defined(_TEST_BODY_USE_IO)
+
 #include <openma/io/handlerreader.h>
 #include <openma/io/file.h>
 #include <openma/maths.h>
@@ -115,6 +118,64 @@ void compare_joint_kinematics(ma::Node* kinematics, ma::Trial* trial, const std:
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 1st axis", d.block<1>(0).values(), a.block<1>(0).values(), precision[0]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 2nd axis", d.block<1>(1).values(), a.block<1>(1).values(), precision[1]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 3rd axis", d.block<1>(2).values(), a.block<1>(2).values(), precision[2]);
+  
 }
+
+#endif
+
+void fill_parameters_with_fake_value(ma::body::PluginGait* helper)
+{
+  helper->setMarkerDiameter(14.0);
+  helper->setHeadOffsetEnabled(true);
+  helper->setRightShoulderOffset(70.0);
+  helper->setLeftShoulderOffset(71.0);
+  helper->setRightElbowWidth(50.0);
+  helper->setLeftElbowWidth(52.0);
+  helper->setRightWristWidth(30.0);
+  helper->setLeftWristWidth(34.0);
+  helper->setRightHandThickness(20.0);
+  helper->setLeftHandThickness(22.0);
+  helper->setInterAsisDistance(123.56);
+  helper->setRightLegLength(950.0);
+  helper->setLeftLegLength(940.0);
+  helper->setRightAsisTrochanterAPDistance(123.3); 
+  helper->setLeftAsisTrochanterAPDistance(122.8);
+  helper->setRightKneeWidth(90.0);
+  helper->setLeftKneeWidth(95.0);
+  helper->setRightAnkleWidth(65.0);
+  helper->setLeftAnkleWidth(56.9);
+  helper->setRightFootFlatEnabled(true);
+  helper->setLeftFootFlatEnabled(true);
+};
+
+void compare_parameters_with_fake_value(ma::body::PluginGait* helper)
+{
+  TS_ASSERT_EQUALS(helper->markerDiameter(), 14.0);
+  TS_ASSERT_EQUALS(helper->headOffsetEnabled(), true);
+  TS_ASSERT_EQUALS(helper->rightShoulderOffset(), 70.0);
+  TS_ASSERT_EQUALS(helper->leftShoulderOffset(), 71.0);
+  TS_ASSERT_EQUALS(helper->rightElbowWidth(), 50.0);
+  TS_ASSERT_EQUALS(helper->leftElbowWidth(), 52.0);
+  TS_ASSERT_EQUALS(helper->rightWristWidth(), 30.0);
+  TS_ASSERT_EQUALS(helper->leftWristWidth(), 34.0);
+  TS_ASSERT_EQUALS(helper->rightHandThickness(), 20.0);
+  TS_ASSERT_EQUALS(helper->leftHandThickness(), 22.0);
+  TS_ASSERT_EQUALS(helper->interAsisDistance(), 123.56);
+  TS_ASSERT_EQUALS(helper->rightLegLength(), 950.0);
+  TS_ASSERT_EQUALS(helper->leftLegLength(), 940.0);
+  TS_ASSERT_EQUALS(helper->rightAsisTrochanterAPDistance(), 123.3);
+  TS_ASSERT_EQUALS(helper->leftAsisTrochanterAPDistance(), 122.8);
+  TS_ASSERT_EQUALS(helper->rightKneeWidth(), 90.0);
+  TS_ASSERT_EQUALS(helper->leftKneeWidth(), 95.0);
+  TS_ASSERT_EQUALS(helper->rightAnkleWidth(), 65.0);
+  TS_ASSERT_EQUALS(helper->leftAnkleWidth(), 56.9);
+  TS_ASSERT_EQUALS(helper->rightFootFlatEnabled(), true);
+  TS_ASSERT_EQUALS(helper->leftFootFlatEnabled(), true);
+  TS_ASSERT_EQUALS(helper->headOffset(), 0.0);
+  TS_ASSERT_EQUALS(helper->rightStaticPlantarFlexionOffset(), 0.0);
+  TS_ASSERT_EQUALS(helper->rightStaticRotationOffset(), 0.0);
+  TS_ASSERT_EQUALS(helper->leftStaticPlantarFlexionOffset(), 0.0);
+  TS_ASSERT_EQUALS(helper->leftStaticRotationOffset(), 0.0);
+};
 
 #endif // plugingaitTest_def_h
