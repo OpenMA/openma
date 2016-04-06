@@ -394,7 +394,8 @@ namespace body
     maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
     maths::Scalar mult = optr->OutputData.block<1>(0);
     optr->OutputData.values().col(1) = optr->OutputData.values().col(0) - mult.normalized().values() * range;
-    optr->OutputData.values().col(2) -= range;
+    mult = optr->OutputData.block<1>(2);
+    optr->OutputData.values().col(2) -= mult.normalized().values() * range;
     optr->OutputData.values().col(2) *= -1.0;
     optr->OutputData.values().col(0) = temp;
     maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
