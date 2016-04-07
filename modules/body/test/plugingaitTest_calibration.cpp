@@ -1,5 +1,7 @@
 #include <cxxtest/TestDrive.h>
 
+#define _TEST_BODY_USE_IO
+
 #include "plugingaitTest_def.h"
 #include "test_file_path.h"
 
@@ -309,6 +311,25 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 0.128716, 1e-4);
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), -0.00978336, 1e-4);
   };
+  
+  CXXTEST_TEST(calibrate2BothUpperBodyHeadOffsetDisabled)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
+    
+    ma::Node root("root");
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    TS_ASSERT_EQUALS(root.children().size(),1u);
+    helper.calibrate(&root, nullptr);
+    
+    TS_ASSERT_EQUALS(helper.interAsisDistance(), 0.0);
+    TS_ASSERT_EQUALS(helper.headOffset(), 0.0);
+    TS_ASSERT_EQUALS(helper.leftAsisTrochanterAPDistance(), 0.0);
+    TS_ASSERT_EQUALS(helper.leftStaticPlantarFlexionOffset(), 0.0);
+    TS_ASSERT_EQUALS(helper.leftStaticRotationOffset(), 0.0);
+    TS_ASSERT_EQUALS(helper.rightAsisTrochanterAPDistance(), 0.0);
+    TS_ASSERT_EQUALS(helper.rightStaticPlantarFlexionOffset(), 0.0);
+    TS_ASSERT_EQUALS(helper.rightStaticRotationOffset(), 0.0);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitCalibrationTest)  
@@ -323,3 +344,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothFullBodyNoOpt
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)

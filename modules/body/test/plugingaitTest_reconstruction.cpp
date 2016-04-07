@@ -1,5 +1,7 @@
 #include <cxxtest/TestDrive.h>
 
+#define _TEST_BODY_USE_IO
+
 #include "plugingaitTest_def.h"
 #include "test_file_path.h"
 
@@ -271,6 +273,53 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
   };
+  
+  CXXTEST_TEST(reconstruct2BothUpperBodyHeadOffsetDisabled)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    helper.setMarkerDiameter(14.0); // mm
+    helper.setLeftShoulderOffset(50.0); // mm
+    helper.setRightShoulderOffset(50.0); // mm
+    helper.setLeftElbowWidth(80.0); // mm
+    helper.setRightElbowWidth(80.0); // mm
+    helper.setLeftWristWidth(40.0); // mm
+    helper.setRightWristWidth(40.0); // mm
+    helper.setLeftHandThickness(30.0); // mm
+    helper.setRightHandThickness(30.0); // mm
+    helper.setLeftLegLength(780.0); // mm
+    helper.setLeftKneeWidth(90.0); // mm
+    helper.setLeftAnkleWidth(70.0); // mm
+    helper.setRightLegLength(780.0); // mm
+    helper.setRightKneeWidth(95.0); // mm
+    helper.setRightAnkleWidth(70.0); // mm
+    
+    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
+    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
+    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
+    TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
+    
+    auto trial = rootDynamic.findChild<ma::Trial*>();
+    auto model = rootModel.findChild<ma::body::Model*>();
+    // NOTE: Why the toleranace are so different? for the upper limb when the marker diameter is not 16 mm?
+    compare_segment_motion(model, trial, "Head.SCS", {"HEDO","HEDA","HEDL","HEDP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "Torso.SCS", {"TRXO","TRXA","TRXL","TRXP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Clavicle.SCS", {"LCLO","LCLA","LCLL","LCLP"}, {5.1e-4});
+    compare_segment_motion(model, trial, "R.Clavicle.SCS", {"RCLO","RCLA","RCLL","RCLP"}, {3.1e-4});
+    compare_segment_motion(model, trial, "L.Arm.SCS", {"LHUO","LHUA","LHUL","LHUP"}, {3.5e-4});
+    compare_segment_motion(model, trial, "R.Arm.SCS", {"RHUO","RHUA","RHUL","RHUP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Forearm.SCS", {"LRAO","LRAA","LRAL","LRAP"}, {3e-4});
+    compare_segment_motion(model, trial, "R.Forearm.SCS", {"RRAO","RRAA","RRAL","RRAP"}, {5.8e-4});
+    compare_segment_motion(model, trial, "L.Hand.SCS", {"LHNO","LHNA","LHNL","LHNP"}, {3.1e-4});
+    compare_segment_motion(model, trial, "R.Hand.SCS", {"RHNO","RHNA","RHNL","RHNP"}, {6.1e-4});
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {5e-4});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {6.1e-4});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitReconstructionTest)
@@ -282,3 +331,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructBothFullBodyF
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyNoFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct2BothUpperBodyHeadOffsetDisabled)
