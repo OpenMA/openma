@@ -172,10 +172,10 @@ namespace io
   
   enum class ByteOrder : int
   {
-    NotApplicable,
-    VAXLittleEndian,
-    IEEELittleEndian,
-    IEEEBigEndian,
+    NotApplicable = 0x00,
+    VAXLittleEndian = 0x02,
+    IEEELittleEndian = 0x01,
+    IEEEBigEndian = 0x03,
 #if _OPENMA_ARCH == _OPENMA_IEEE_LE
     Native = IEEELittleEndian
 #elif _OPENMA_ARCH == _OPENMA_VAX_LE
