@@ -155,7 +155,7 @@ namespace io
 {
 
   /*
-   * Note: Events containing the property "fromc3dheader" will be stored in the header of the format. However a maximum of 18 events
+   * Note: Events containing the property "c3d_fromheader" will be stored in the header of the format. However a maximum of 18 events
    */
 
   C3DHandler::C3DHandler()
@@ -234,6 +234,7 @@ namespace io
       firstSampleIndex = stream.readU16(); // (word 04)
       lastSampleIndex = stream.readU16(); // (word 05)
       optr->PointMaximumInterpolationGap = stream.readU16(); // (word 06)
+      trial->setProperty("c3d_pointmaxinterpgap", optr->PointMaximumInterpolationGap);
       pointScaleFactor = stream.readFloat(); // (word 07-08)
       if (pointScaleFactor == 0)
         throw(FormatError("Incorrect 3D scale factor"));
@@ -272,7 +273,7 @@ namespace io
         {
           events[i]->setName(trim_string(stream.readString(numCharLabelEvent)));
           // Property to know that these events are stored in the header of the C3D format. 
-          events[i]->setProperty("fromc3dheader",true);
+          events[i]->setProperty("c3d_fromheader",true);
         }
       }
   // Parameter
@@ -409,7 +410,7 @@ namespace io
           break; // Parameter section end
         optr->Source->seek(offset, Origin::Current);
       }
-      // Assemble grousp and parameters
+      // Assemble groups and parameters
       auto itG = groups.begin();
       auto itP = parameters.begin();
       if (!parameters.empty())
