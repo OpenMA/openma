@@ -122,7 +122,6 @@ namespace io
     return str;
   };
   
-  
   /** 
    * Writes the character @a val in the device.
    */  
@@ -1251,6 +1250,17 @@ namespace io
   {
     for (size_t i = 0 ; i < n ; ++i)
       values[i] = this->readString(len);
+  };
+  
+  /**
+   * Fills @a nb bytes with 0x00 in the stream.
+   */
+  size_t BinaryStream::fill(size_t n)
+  {
+    auto optr = this->pimpl();
+    for (size_t i = 0 ; i < n ; ++i)
+      optr->Converter->writeChar(0x00, optr->Source);
+    return n;
   };
   
   /** 

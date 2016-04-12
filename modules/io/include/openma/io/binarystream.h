@@ -108,6 +108,8 @@ namespace io
     std::string readString(size_t len);
     void readString(size_t len, size_t n, std::string* values);
     
+    size_t fill(size_t n);
+    
     size_t writeChar(char value);
     size_t writeChar(size_t n, const char* values);
     
