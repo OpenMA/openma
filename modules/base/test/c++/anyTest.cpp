@@ -14,6 +14,8 @@ CXXTEST_SUITE(AnyTest)
     ma::Any a;
     TS_ASSERT_EQUALS(a.isEmpty(),true);
     TS_ASSERT_EQUALS(a.isValid(),false);
+    TS_ASSERT_EQUALS(a.isArithmetic(),false);
+    TS_ASSERT_EQUALS(a.isString(),false);
     TS_ASSERT_EQUALS(a.dimensions(),std::vector<unsigned>());
     TS_ASSERT_EQUALS(a.size(),size_t(0));
     TS_ASSERT_EQUALS(a.cast<int>(),0);
@@ -24,6 +26,9 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(singleInt)
   {
     ma::Any a = 12;
+    TS_ASSERT_EQUALS(a.isArithmetic(),true);
+    TS_ASSERT_EQUALS(a.isString(),false);
+    TS_ASSERT_EQUALS(a.type(),ma::static_typeid<int>());
     TS_ASSERT_EQUALS(a.cast<int>(),12);
     TS_ASSERT_EQUALS(static_cast<int>(a),12);
     TS_ASSERT_EQUALS(static_cast<float>(a),12.0f);
@@ -32,6 +37,9 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(singleFloat)
   {
     ma::Any b = 12.5f;
+    TS_ASSERT_EQUALS(b.isArithmetic(),true);
+    TS_ASSERT_EQUALS(b.isString(),false);
+    TS_ASSERT_EQUALS(b.type(),ma::static_typeid<float>());
     TS_ASSERT_EQUALS(b.cast<int>(),12);
     TS_ASSERT_EQUALS(static_cast<int>(b),12);
     TS_ASSERT_EQUALS(b.cast<float>(),12.5f);
@@ -41,6 +49,9 @@ CXXTEST_SUITE(AnyTest)
   CXXTEST_TEST(singleChar)
   {
     ma::Any c = 'a';
+    TS_ASSERT_EQUALS(c.isArithmetic(),true);
+    TS_ASSERT_EQUALS(c.isString(),false);
+    TS_ASSERT_EQUALS(c.type(),ma::static_typeid<char>());
     TS_ASSERT_EQUALS(c.cast<int>(),97);
     TS_ASSERT_EQUALS(static_cast<float>(c),97.0f);
     TS_ASSERT_EQUALS(c.cast<char>(),'a');
@@ -260,6 +271,9 @@ CXXTEST_SUITE(AnyTest)
     std::vector<int> bar, foo{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
     // Vector constructor
     ma::Any a = foo;
+    TS_ASSERT_EQUALS(a.isArithmetic(),true);
+    TS_ASSERT_EQUALS(a.isString(),false);
+    TS_ASSERT_EQUALS(a.type(),ma::static_typeid<int>());
     TS_ASSERT_EQUALS(a.dimensions().empty(),false);
     TS_ASSERT_EQUALS(a.dimensions().size(),1ul);
     if (!a.dimensions().empty())
@@ -408,6 +422,9 @@ CXXTEST_SUITE(AnyTest)
     std::vector<std::string> p;
     std::vector<unsigned> dims{0};
     ma::Any a{p,dims};
+    TS_ASSERT_EQUALS(a.isArithmetic(),false);
+    TS_ASSERT_EQUALS(a.isString(),true);
+    TS_ASSERT_EQUALS(a.type(),ma::static_typeid<std::string>());
     TS_ASSERT_EQUALS(a.isValid(),true);
     TS_ASSERT_EQUALS(a.isEmpty(),true);
     p = {{"foo"}};
@@ -469,6 +486,9 @@ CXXTEST_SUITE(AnyTest)
   {
     enum class myEnum {Foo= 1, Bar = 2, Toto = 4};
     ma::Any m(std::vector<myEnum>{myEnum::Foo,myEnum::Toto});
+    TS_ASSERT_EQUALS(m.isArithmetic(),true);
+    TS_ASSERT_EQUALS(m.isString(),false);
+    TS_ASSERT_EQUALS(m.type(),ma::static_typeid<int>()); // Convert to the underlying type
     TS_ASSERT_EQUALS(m.cast<int>(0),1);
     TS_ASSERT_EQUALS(m.cast<int>(1),4);
     TS_ASSERT_EQUALS(m.cast<std::string>(0),"1");
@@ -519,6 +539,9 @@ CXXTEST_SUITE(AnyTest)
   {
     std::vector<bool> foo{{true,false,false,true}};
     ma::Any a = foo;
+    TS_ASSERT_EQUALS(a.isArithmetic(),true);
+    TS_ASSERT_EQUALS(a.isString(),false);
+    TS_ASSERT_EQUALS(a.type(),ma::static_typeid<bool>());
     TS_ASSERT_EQUALS(a.cast<bool>(0),true);
     TS_ASSERT_EQUALS(a.cast<bool>(1),false);
     TS_ASSERT_EQUALS(a.cast<bool>(2),false);

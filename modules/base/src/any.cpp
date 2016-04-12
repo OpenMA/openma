@@ -248,6 +248,58 @@ namespace ma
   {
     return (!this->isValid() || this->mp_Storage->size() <= 0) ? true : false;
   };
+  
+  /**
+   * Returns true if the stored data came from an arithmetic type.
+   * An arithmetic type is one of the following types:
+   *  - bool
+   *  - char
+   *  - char16_t // same as unsigned short int
+   *  - char32_t // same as unsigned int
+   *  - wchar_t
+   *  - signed char
+   *  - short int
+   *  - int
+   *  - long int
+   *  - long long int
+   *  - unsigned char
+   *  - unsigned short int
+   *  - unsigned int
+   *  - unsigned long int
+   *  - unsigned long long int
+   *  - float
+   *  - double
+   *  - long double
+   */
+  bool Any::isArithmetic() const _OPENMA_NOEXCEPT
+  {
+    return ((this->mp_Storage == nullptr) ? false : this->mp_Storage->is_arithmetic());
+  };
+  
+  /**
+   * Returns true if the stored data came from a string type.
+   * An string type is one of the following types:
+   *  - std::string
+   *  - const char*
+   */
+  bool Any::isString() const _OPENMA_NOEXCEPT
+  {
+    return ((this->mp_Storage == nullptr) ? false : ((this->mp_Storage->id() == static_typeid<std::string>()) || (this->mp_Storage->id() == static_typeid<const char*>())));
+  };
+  
+  /**
+   * Returns the static type id associated with the stored data.
+   * @code{.unparsed}
+   * // Store a const char*
+   * ma::Any a("An example");
+   * // Compare the internal static type id with the one for the type 'const char*'.
+   * std::cout << std::boolalpha << a.type() == static_typeid<const char*>() << std::endl;
+   * @endcode
+   */
+  typeid_t Any::type() const _OPENMA_NOEXCEPT
+  {
+    return ((this->mp_Storage == nullptr) ? typeid_t() : this->mp_Storage->id());
+  };
  
   /**
    * Swap the content of two Any object.

@@ -36,7 +36,6 @@
 #define __openma_base_any_tpp
 
 #include "openma/base/exception.h"
-#include "openma/base/typeid.h"
 #include "openma/base/type_traits.h"
 
 #include <string>
@@ -138,7 +137,7 @@ namespace ma
       }
     };
     
-    // (std) Vector boll conversion (only)
+    // (std) Vector bool conversion (only)
     template <typename U>
     inline typename std::enable_if<
        is_stl_vector<typename std::decay<U>::type>::value
@@ -152,9 +151,9 @@ namespace ma
         value->resize(storage->size());
         for (size_t i = 0 ; i < value->size() ; ++i)
         {
-          char c = 0x00;
-          doConversion(storage->element(i),&c);
-          value->operator[](i) = (c != 0x00);
+          bool b = false;
+          doConversion(storage->element(i),&b);
+          value->operator[](i) = b;
         }
       }
     };
@@ -401,11 +400,12 @@ namespace ma
       , Any::Storage*>::type
     _any_store(U&& values, D&& dimensions)
     {
-      // Need to convert bool as char
-      auto temp = std::vector<char>(values.size());
+      bool* temp = new bool[values.size()];
       for (size_t i = 0, len = values.size() ; i < len ; ++i)
-        temp[i] = values[i] ? 0x01 : 0x00;
-      return _any_store(temp.data(),temp.size(),dimensions.data(),dimensions.size());
+        temp[i] = values[i];
+      auto storage = _any_store(temp,values.size(),dimensions.data(),dimensions.size());
+      delete[] temp;
+      return storage;
     };
     
     template <typename U, typename D>
@@ -430,11 +430,12 @@ namespace ma
     _any_store(U&& values, D&& )
     {
       unsigned dims[1] = {static_cast<unsigned>(values.size())};
-      // Need to convert bool as char
-      auto temp = std::vector<char>(values.size());
+      bool* temp = new bool[values.size()];
       for (unsigned i = 0 ; i < dims[0] ; ++i)
         temp[i] = values[i] ? 0x01 : 0x00;
-      return _any_store(temp.data(),temp.size(),dims,1ul);
+      auto storage = _any_store(temp,values.size(),dims,1ul);
+      delete[] temp;
+      return storage;
     };
     
     // From initializer lists
@@ -849,9 +850,9 @@ namespace ma
       value->resize(storage->size());
       for (size_t i = 0 ; i < value->size() ; ++i)
       {
-        char c = 0x00;
-        res &= _any_cast(&c,storage,i);
-        value->operator[](i) = (c != 0x00);
+        bool b = false;
+        res &= _any_cast(&b,storage,i);
+        value->operator[](i) = b;
       }
       return res;
     };

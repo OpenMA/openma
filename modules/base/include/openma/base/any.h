@@ -36,6 +36,7 @@
 #define __openma_base_any_h
 
 #include "openma/base_export.h"
+#include "openma/base/typeid.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 #include <type_traits>
@@ -69,6 +70,10 @@ namespace ma
     
     bool isValid() const _OPENMA_NOEXCEPT;
     bool isEmpty() const _OPENMA_NOEXCEPT;
+    bool isArithmetic() const _OPENMA_NOEXCEPT;
+    bool isString() const _OPENMA_NOEXCEPT;
+    typeid_t type() const _OPENMA_NOEXCEPT;
+    
     void swap(Any& other) _OPENMA_NOEXCEPT;
     
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> bool isEqual(U&& value) const _OPENMA_NOEXCEPT;
