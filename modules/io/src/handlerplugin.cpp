@@ -41,6 +41,8 @@
 #include "../plugins/staticiopluginloader.h"
 // #endif
 
+#include <algorithm> // std::transform
+
 namespace ma
 {
 namespace io
@@ -98,9 +100,9 @@ namespace io
    * Capability MyHandler::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
    * {
    *    if (format.compare("openma.foo") == 0)
-   *      eturn Capability::CanReadAndWrite;
+   *      return Capability::CanReadAndWrite;
    *    else if (format.compare("openma.bar") == 0)
-   *      eturn Capability::CanRead;
+   *      return Capability::CanRead;
    * };
    * @endcode
    */
@@ -120,13 +122,16 @@ namespace io
   {
     auto formats = this->supportedFormats();
     auto idx = str.find_last_of('.');
-    if (idx != std::string::npos)
+    if ((idx != std::string::npos) && (idx != (str.size()-1)))
     {  
       auto ext = str.substr(idx+1);
+      std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
       auto len = ext.length();
       for (const auto& f: formats)
       {
-        if (f.substr(f.length()-len,len).compare(ext) == 0)
+        auto subf = f.substr(f.length()-len,len);
+        std::transform(subf.begin(), subf.end(), subf.begin(), tolower);
+        if (subf.compare(ext) == 0)
         {
           if (format != nullptr)
             *format = f;
