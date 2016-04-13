@@ -101,12 +101,12 @@ CXXTEST_SUITE(C3DReaderTest)
 
   CXXTEST_TEST(sample01)
   {
-    c3dhandlertest_sample01("PI", "Eb015pi.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pi.c3d"));
-    c3dhandlertest_sample01("SI", "Eb015si.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015si.c3d"));
-    c3dhandlertest_sample01("VI", "Eb015vi.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015vi.c3d"));
-    c3dhandlertest_sample01("PR", "Eb015pr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pr.c3d"));
-    c3dhandlertest_sample01("SR", "Eb015sr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015sr.c3d"));
-    c3dhandlertest_sample01("VR", "Eb015vr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015vr.c3d"));
+    c3dhandlertest_read_sample01("PI", "Eb015pi.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pi.c3d"));
+    c3dhandlertest_read_sample01("SI", "Eb015si.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015si.c3d"));
+    c3dhandlertest_read_sample01("VI", "Eb015vi.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015vi.c3d"));
+    c3dhandlertest_read_sample01("PR", "Eb015pr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pr.c3d"));
+    c3dhandlertest_read_sample01("SR", "Eb015sr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015sr.c3d"));
+    c3dhandlertest_read_sample01("VR", "Eb015vr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015vr.c3d"));
   };
 };
 

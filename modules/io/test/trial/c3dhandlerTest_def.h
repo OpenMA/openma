@@ -1,12 +1,36 @@
 #ifndef c3dhandlerTest_def_h
 
-#include "openma/io/handler.h"
+#include "openma/io.h"
 #include "openma/base/node.h"
 #include "openma/base/trial.h"
 #include "openma/base/timesequence.h"
 #include "openma/base/event.h"
 
-inline void c3dhandlertest_sample01(const char* msgid, const char* filename, ma::Node* root)
+inline bool c3dhandlertest_read(const char* msgid, const char* filepath, ma::Node* root)
+{
+  ma::io::File file;
+  file.open(filepath, ma::io::Mode::In);
+  ma::io::HandlerReader reader(&file, "org.c3d");
+  bool ret = reader.read(root);
+  TSM_ASSERT_EQUALS(msgid, ret, true);
+  TSM_ASSERT_EQUALS(msgid, reader.errorCode(), ma::io::Error::None);
+  TSM_ASSERT_EQUALS(msgid, reader.errorMessage(), "");
+  return ret;
+};
+
+inline bool c3dhandlertest_write(const char* msgid, const char* filepath, ma::Node* root)
+{
+  ma::io::File file;
+  file.open(filepath, ma::io::Mode::Out);
+  ma::io::HandlerWriter writer(&file, "org.c3d");
+  bool ret = writer.write(root);
+  TSM_ASSERT_EQUALS(msgid, ret, true);
+  TSM_ASSERT_EQUALS(msgid, writer.errorCode(), ma::io::Error::None);
+  TSM_ASSERT_EQUALS(msgid, writer.errorMessage(), "");
+  return ret;
+};
+
+inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename, ma::Node* root)
 {
   TSM_ASSERT_EQUALS(msgid, root->children().size(),1ul);
   
@@ -45,20 +69,12 @@ inline void c3dhandlertest_sample01(const char* msgid, const char* filename, ma:
   TSM_ASSERT_DELTA(msgid, evts[2]->time(), 7.32, 1e-4);
 };
 
-
-inline void c3dhandlertest_sample01(const char* msgid, const char* filename, const char* filepath)
+inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename, const char* filepath)
 {
-  ma::io::File file;
-  file.open(filepath, ma::io::Mode::In);
-  ma::io::HandlerReader reader(&file, "org.c3d");
   ma::Node root("root");
-  
-  TSM_ASSERT_EQUALS(msgid, reader.read(&root),true);
-  TSM_ASSERT_EQUALS(msgid, reader.errorCode(), ma::io::Error::None);
-  TSM_ASSERT_EQUALS(msgid, reader.errorMessage(), "");
-  
-  c3dhandlertest_sample01(msgid, filename, &root);
-}
+  if (!c3dhandlertest_read(msgid, filepath, &root)) return;
+  c3dhandlertest_read_sample01(msgid, filename, &root);
+};
 
 
 #endif // c3dhandlerTest_def_h
