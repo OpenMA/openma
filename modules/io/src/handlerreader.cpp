@@ -106,7 +106,7 @@ namespace io
    * ma::Trial* trial = root.findChild<ma::Trial*>();
    * @endcode
    *
-   * You can reuse a reader by modifying the set device or format using the methods setDevice() and setFormat() respectively. The modification of the format will reset the internal format handler. If you set a new device and you are not sure about its format, you should set the later to en empty string. This will run a new auto-detection when the method read() will be used.
+   * You can reuse a reader by modifying the set device or format using the methods setDevice() and setFormat() respectively. The modification of the format will reset the internal format handler. If you set a new device and you are not sure about its format, you should set the later to an empty string. This will run a new auto-detection when the method read() will be used.
    *
    * @ingroup openma_io
    */
@@ -212,7 +212,7 @@ namespace io
         const std::string name(optr->Source->name());
         for (const auto& plugin: missingSignature)
         {
-          if (plugin->detectExtension(name, &(optr->Format)))
+          if (plugin->detectExtension(name, &(optr->Format)) && ((plugin->capabilities(optr->Format) & Capability::CanRead) == Capability::CanRead))
           {
             optr->Reader = plugin->create(optr->Source, optr->Format);
             break;
@@ -224,9 +224,10 @@ namespace io
       if (optr->Reader == nullptr)
       {
         const std::string name(optr->Source->name());
+        std::string format;
         for (const auto& plugin: invalidSignature)
         {
-          if (plugin->detectExtension(name))
+          if (plugin->detectExtension(name, &format) && ((plugin->capabilities(format) & Capability::CanRead) == Capability::CanRead))
           {
             this->setError(Error::InvalidData, "The content of your device might be corrupted as no handler signature was found, but the extension is known");
             break;
