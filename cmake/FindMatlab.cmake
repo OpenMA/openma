@@ -217,17 +217,6 @@ SET(MATLAB_LIBRARIES
   ${MATLAB_ENG_LIBRARY}  
 )
 
-# Fix for Matlab 2007b under MacOS X
-IF(APPLE)
-  FIND_FILE(MATLAB_BOOST_FILESYSTEM_LIBRARY "libboost_filesystem-1_33_1.dylib" "${MATLAB_ROOT}/bin/maci/")
-  IF(MATLAB_BOOST_FILESYSTEM_LIBRARY)
-    SET(MATLAB_LIBRARIES
-      ${MATLAB_LIBRARIES}
-      ${MATLAB_BOOST_FILESYSTEM_LIBRARY}
-    )
-  ENDIF()
-ENDIF()
-
 # Macros for building MEX-files
 MACRO(MATLAB_EXTRACT_SOURCES_LIBRARIES sources thirdlibraries)
   SET(${sources})
