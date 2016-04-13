@@ -695,7 +695,8 @@ namespace io
           ++inc;
         }
         // Point's type and unit
-        const std::array<std::string,6> pointTypeNames{{"POINT:ANGLES","POINT:FORCES","POINT:MOMENTS","POINT:POWERS","POINT:SCALARS"}};
+        const std::array<std::string,5> pointTypeNames{{"POINT:ANGLES","POINT:FORCES","POINT:MOMENTS","POINT:POWERS","POINT:SCALARS"}};
+        const std::array<int,5> pointTypeTypes{{TimeSequence::Angle,TimeSequence::Force,TimeSequence::Moment,TimeSequence::Power,TimeSequence::Scalar}};
         for(size_t i = 0 ; i < pointTypeNames.size() ; ++i)
         {
           std::vector<std::string> labels;
@@ -706,7 +707,7 @@ namespace io
             if (pt != nullptr)
             {
               pt->setUnit(trim_string(pointUnits[i+1])); // +1: because the first element in pointUnits stores markers' unit.
-              pt->setType(i+1);
+              pt->setType(pointTypeTypes[i]);
             }
           }
         }
