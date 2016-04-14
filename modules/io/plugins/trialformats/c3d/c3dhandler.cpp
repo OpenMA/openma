@@ -53,6 +53,7 @@
 #include <tuple>
 #include <array>
 #include <memory> // std::unique_ptr
+#include <functional> // std::function
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
