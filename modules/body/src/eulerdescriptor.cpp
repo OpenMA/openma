@@ -299,6 +299,11 @@ namespace body
           error("Impossible to find at least one of the time sequences required. Impossible to describe the movement of the joint %s", joint->name().c_str());
           return false;
         }
+        if (proximalTimeSequence->samples() != distalTimeSequence->samples())
+        {
+          error("The number of samples is not the same in the time sequences. Impossible to describe the movement of the joint %s", joint->name().c_str());
+          return false;
+        }
         optr->OutputSampleRate = proximalTimeSequence->sampleRate();
         optr->OutputStartTime = proximalTimeSequence->startTime();
         if (std::fabs(distalTimeSequence->sampleRate() - optr->OutputSampleRate) > std::numeric_limits<float>::epsilon())
