@@ -32,63 +32,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_io_h
-#define __openma_io_h
+#ifndef __openma_io_handlerwriter_h
+#define __openma_io_handlerwriter_h
 
-#include "openma/io/binarystream.h"
-#include "openma/io/buffer.h"
-#include "openma/io/device.h"
-#include "openma/io/enums.h"
-#include "openma/io/file.h"
-#include "openma/io/handler.h"
-#include "openma/io/handlerplugin.h"
-#include "openma/io/handlerreader.h"
-#include "openma/io/handlerwriter.h"
+#include "openma/io_export.h"
+#include "openma/base/opaque.h"
+#include "openma/base/macros.h"
 
-#include "openma/base/node.h"
-#include "openma/base/logger.h"
-
+#include <memory> // std::unique_ptr
 #include <string>
+#include <vector>
 
 namespace ma
 {
+  class Node;
+  
 namespace io
 {
-  /**
-   * Convenient function to read the content of a file and set it in @a root.
-   * Internally, this function use the class HandlerReader.
-   * @relates HandlerReader
-   * @ingroup openma_io
-   */
-  inline bool read(Node* root, const std::string& filepath, const std::string& format = std::string{})
+  class Device;
+  enum class Error;
+  
+  class HandlerWriterPrivate;
+  
+  class OPENMA_IO_EXPORT HandlerWriter
   {
-    File file;
-    file.open(filepath.c_str(), Mode::In);
-    HandlerReader reader(&file, format);
-    bool result = reader.read(root);
-    if (!result && (reader.errorCode() != Error::None))
-      error(reader.errorMessage().c_str());
-    return result;
-  };
+    OPENMA_DECLARE_PIMPL_ACCESSOR(HandlerWriter)
     
-  /**
-   * Convenient function to read the content of a file and return it in a Node object.
-   * In case the result is null (@c nullptr), this certainly means that an error was thrown. Error message are sent to the logger and might help to determine the problem.
-   * @note The returned Node was created by the new() operator. It is the responsability of the developer to delete it.
-   * @relates HandlerReader
-   * @ingroup openma_io
-   */
-  inline Node* read(const std::string& filepath, const std::string& format = std::string{})
-  {
-    Node* root = new Node("root");
-    if (!read(root, filepath, format))
-    {
-      delete root;
-      root = nullptr;
-    }
-    return root;
+  public:
+    HandlerWriter(Device* device = nullptr, const std::string& format = std::string{});
+      
+    ~HandlerWriter();
+    
+    void setDevice(Device* device);
+    void setFormat(const std::string& format);
+    const std::string& format() const _OPENMA_NOEXCEPT;
+    
+    bool canWrite();
+    bool write(Node* root);
+    
+    Error errorCode() const _OPENMA_NOEXCEPT;
+    const std::string& errorMessage() const _OPENMA_NOEXCEPT;
+    
+    static const std::vector<std::string>& availableFormats() _OPENMA_NOEXCEPT;
+    
+  private:
+    void setError(Error code, const std::string& msg = std::string{}) _OPENMA_NOEXCEPT;
+    
+    std::unique_ptr<HandlerWriterPrivate> mp_Pimpl;
   };
-}  
-}
+};
+};
 
-#endif // __openma_io_h
+#endif // __openma_io_handlerwriter_h

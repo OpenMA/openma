@@ -6,6 +6,7 @@ SET(OPENMA_IO_SRCS
   src/handler.cpp
   src/handlerplugin.cpp
   src/handlerreader.cpp
+  src/handlerwriter.cpp
 )
 
 # Variable OPENMA_STATIC_IO_PLUGINS_SRCS is used for static build
