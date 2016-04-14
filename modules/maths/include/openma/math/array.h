@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_array_h
-#define __openma_maths_array_h
+#ifndef __openma_math_array_h
+#define __openma_math_array_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   // ----------------------------------------------------------------------- //
   //                                   ARRAY
@@ -58,7 +58,7 @@ namespace maths
   // NOTE: The documentation is inlined due to the use of the CRTP.
 
   /**
-   * @class Array openma/maths/array.h
+   * @class Array openma/math/array.h
    * @brief Class to store reconstructed data.
    * @tparam Cols The number of columns for the data (without the colum for the residuals)
    *
@@ -69,7 +69,7 @@ namespace maths
    *
    * @todo Add example related to the automatic management of the residuals.
    *
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <int Cols>
   class Array : public ArrayBase<Array<Cols>>
@@ -157,10 +157,10 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @headerfile openma/maths/array.h
+   * @headerfile openma/math/array.h
    * Define an Array with one column. This could represent a scalar value along a sequence.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   using Scalar = Array<1>;
   
@@ -169,10 +169,10 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @headerfile openma/maths/array.h
+   * @headerfile openma/math/array.h
    * Define an Array with three columns. This could represent a 3D vector along a sequence.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   using Vector = Array<3>;
   
@@ -181,10 +181,10 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @headerfile openma/maths/array.h
+   * @headerfile openma/math/array.h
    * Define an Array with three columns. This could represent a 3D trajectory along a sequence.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   using Position = Vector;
   
@@ -199,11 +199,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class Pose openma/maths/array.h
+   * @class Pose openma/math/array.h
    * @brief Define an Array with 12 columns to represent a 3D orientation and a 3D position along a sequence.
    * Convenient class with dedicated methods to construct/access poses.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   class Pose : public Array<12>
   {
@@ -302,4 +302,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_array_h
+#endif // __openma_math_array_h

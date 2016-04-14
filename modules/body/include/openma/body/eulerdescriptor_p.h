@@ -41,7 +41,7 @@
  */
 
 #include "openma/body/descriptor_p.h"
-#include "openma/maths.h"
+#include "openma/math.h"
 
 #include <array>
 #include <string>
@@ -63,8 +63,8 @@ namespace body
     
     std::array<int,3> Sequence;
     std::array<double,3> Scale;
-    maths::Pose BufferData;
-    maths::Vector OutputData;
+    math::Pose BufferData;
+    math::Vector OutputData;
     double OutputSampleRate;
     double OutputStartTime;
     std::string OutputUnit;

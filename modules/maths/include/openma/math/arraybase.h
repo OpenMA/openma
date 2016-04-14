@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_arraybase_h
-#define __openma_maths_arraybase_h
+#ifndef __openma_math_arraybase_h
+#define __openma_math_arraybase_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   // ----------------------------------------------------------------------- //
   
@@ -66,7 +66,7 @@ namespace maths
    * @brief Base class for data storage
    * @tparam Derived Exact type used to store data
    * @todo Write a detailed description
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Derived>
   class ArrayBase : public XprBase<ArrayBase<Derived>>
@@ -271,4 +271,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_arraybase_h
+#endif // __openma_math_arraybase_h

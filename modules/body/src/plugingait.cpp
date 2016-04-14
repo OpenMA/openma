@@ -94,7 +94,7 @@ namespace body
     
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
   
-  bool PluginGaitPrivate::calibrateLowerLimb(int side, const maths::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
   {
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0;
@@ -137,7 +137,7 @@ namespace body
       return false;
     }
     // Compute the knee joint centre (KJC)
-    const maths::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
+    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -150,14 +150,14 @@ namespace body
       return false;
     }
     // Compute the ankle joint centre (AJC)
-    const maths::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
+    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     
     // -----------------------------------------
     // Foot
     // -----------------------------------------
     // Required landmarks: *.MTH2, *.HEE
     const auto& MTH2 = (*landmarks)[prefix+"MTH2"];
-    maths::Position HEE = (*landmarks)[prefix+"HEE"]; // Copy instead of a map due to possible modification on its coordinates if the foot flat option is activated
+    math::Position HEE = (*landmarks)[prefix+"HEE"]; // Copy instead of a map due to possible modification on its coordinates if the foot flat option is activated
     if (!MTH2.isValid() || !HEE.isValid())
     {
       error("PluginGait - Missing landmarks to define the foot. Calibration aborted.");
@@ -170,17 +170,17 @@ namespace body
       HEE.block<1>(2) = MTH2.block<1>(2);
     }
     // Shank axes
-    maths::Vector w = (KJC - AJC).normalized();
-    maths::Vector u = s * (KJC - AJC).cross(LS - AJC).normalized();
-    maths::Vector v_shank = w.cross(u);
+    math::Vector w = (KJC - AJC).normalized();
+    math::Vector u = s * (KJC - AJC).cross(LS - AJC).normalized();
+    math::Vector v_shank = w.cross(u);
     // Foot reference
     w = (MTH2 - HEE).normalized();
     u = v_shank.cross(w).normalized();
-    maths::Pose foot(u,w.cross(u),w,AJC);
+    math::Pose foot(u,w.cross(u),w,AJC);
     // Uncorrected foot reference
     w = (MTH2 - AJC).normalized();
     u = v_shank.cross(w).normalized();
-    maths::Pose uncorrected_foot(u,w.cross(u),w,AJC);
+    math::Pose uncorrected_foot(u,w.cross(u),w,AJC);
 
     // Offset angles
     if (foot.isOccluded() || uncorrected_foot.isOccluded())
@@ -188,13 +188,13 @@ namespace body
       error("PluginGait - Impossible to find a least one valid frame for the foot motion. Calibration aborted.");
       return false;
     }
-    maths::Vector::Values offsetAngles = uncorrected_foot.inverse().transform(foot).eulerAngles(1,0,2).mean().values();
+    math::Vector::Values offsetAngles = uncorrected_foot.inverse().transform(foot).eulerAngles(1,0,2).mean().values();
     *staticPlantarFlexionOffset = 1.0 * offsetAngles.coeff(0);
     *staticRotationOffset = -1.0 * s * offsetAngles.coeff(1);
     return true;
   };
   
-  bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const maths::Vector* u_torso, const maths::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     std::string prefix;
     double s = 0.0, shoulderOffset = 0.0, elbowWidth = 0.0, wristWidth = 0.0, handThickness = 0.0;
@@ -223,7 +223,7 @@ namespace body
     }
     // Temporary variable use to construct segments' motion
     Segment* seg;
-    maths::Vector u, v, w, o;
+    math::Vector u, v, w, o;
     // -----------------------------------------
     // Arm & clavicle (optional)
     // -----------------------------------------
@@ -238,33 +238,33 @@ namespace body
       return false;
     }
     // VWM: virtual "wand" marker
-    const maths::Position VWM = (AC - *o_torso).cross(*u_torso) + AC;
+    const math::Position VWM = (AC - *o_torso).cross(*u_torso) + AC;
     // Compute the shoulder joint centre (SJC)
-    const maths::Position SJC = compute_chord(s * (shoulderOffset + this->MarkerDiameter / 2.0), AC, *o_torso, VWM);
+    const math::Position SJC = compute_chord(s * (shoulderOffset + this->MarkerDiameter / 2.0), AC, *o_torso, VWM);
     // Clavicle
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Clavicle}},false);
     w = (*o_torso - SJC).normalized();
     u = w.cross(VWM - SJC).normalized();
     v = w.cross(u);
-    maths::to_timesequence(u, v, w, SJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(u, v, w, SJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // Construction of the vector marker (CVM) for the elbow
-    const maths::Position MWP = (US + RS) / 2.0; // Middle Wrist Point
-    const maths::Position CVM = s * (MWP - LHE).cross(SJC - LHE).normalized() + LHE;
-    const maths::Position EJC = compute_chord((elbowWidth + this->MarkerDiameter) / 2.0, LHE, SJC, CVM);
-    const maths::Position WJC = s * (US - RS).cross(EJC - MWP).normalized() * (wristWidth + this->MarkerDiameter) / 2.0 + MWP;
+    const math::Position MWP = (US + RS) / 2.0; // Middle Wrist Point
+    const math::Position CVM = s * (MWP - LHE).cross(SJC - LHE).normalized() + LHE;
+    const math::Position EJC = compute_chord((elbowWidth + this->MarkerDiameter) / 2.0, LHE, SJC, CVM);
+    const math::Position WJC = s * (US - RS).cross(EJC - MWP).normalized() * (wristWidth + this->MarkerDiameter) / 2.0 + MWP;
     // Arm frame
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
     w = (SJC - EJC).normalized();
     v = (WJC - EJC).cross(w).normalized();
     u = v.cross(w);
-    maths::to_timesequence(u, v, w, EJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(u, v, w, EJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Forearm}},false);
     w = (EJC - WJC).normalized();
     u = v.cross(w); // The 'v' axis is the same than the one defined for the arm
-    maths::to_timesequence(u, v, w, WJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(u, v, w, WJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -277,16 +277,16 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Hand}},false);
     // HO: Hand Origin
-    const maths::Position HO = compute_chord((handThickness + this->MarkerDiameter) / 2.0, MH2, WJC, MWP);
+    const math::Position HO = compute_chord((handThickness + this->MarkerDiameter) / 2.0, MH2, WJC, MWP);
     o =  2.0 * (HO - WJC) + WJC;
     w = (WJC - HO).normalized();
     u = s * w.cross(US - RS).normalized();
     v = w.cross(u);
-    maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
     return true;
   };
   
-  bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const maths::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
@@ -316,7 +316,7 @@ namespace body
     }
     // Temporary variable use to construct segments' motion
     Segment* seg = nullptr;
-    maths::Vector u,v,w,o;
+    math::Vector u,v,w,o;
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -329,11 +329,11 @@ namespace body
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
-    const maths::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
+    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
     w = (*HJC - KJC).normalized();
     v = w.cross(u);
-    maths::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
     
     // -----------------------------------------
     // Shank
@@ -348,11 +348,11 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
     // Compute the ankle joint centre (AJC)
-    const maths::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
+    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     w = (KJC - AJC).normalized();
     u = s * w.cross(LS - AJC).normalized();
-    maths::Vector v_shank = w.cross(u);
-    maths::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::Vector v_shank = w.cross(u);
+    math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -369,11 +369,11 @@ namespace body
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
                  cy = cos(staticPlantarFlexionOffset), sy = sin(staticPlantarFlexionOffset);
-    const maths::Vector ur = u * cy - w * sy;
-    const maths::Vector vr = u * sx*sy + v * cx + w * cy*sx;
-    const maths::Vector wr = u * cx*sy - v * sx + w * cx*cy;
+    const math::Vector ur = u * cy - w * sy;
+    const math::Vector vr = u * sx*sy + v * cx + w * cy*sx;
+    const math::Vector wr = u * cx*sy - v * sx + w * cx*cy;
     // FIXME: This is not the good origin. None anatomical meaning was discovered to explain this position...
-    maths::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     return true;
   };
   
@@ -391,14 +391,14 @@ namespace body
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
       range = 180.0;
     auto optr = this->pimpl();
-    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
-    maths::Scalar mult = optr->OutputData.block<1>(0);
+    math::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    math::Scalar mult = optr->OutputData.block<1>(0);
     optr->OutputData.values().col(1) = optr->OutputData.values().col(0) - mult.normalized().values() * range;
     mult = optr->OutputData.block<1>(2);
     optr->OutputData.values().col(2) -= mult.normalized().values() * range;
     optr->OutputData.values().col(2) *= -1.0;
     optr->OutputData.values().col(0) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 
@@ -417,12 +417,12 @@ namespace body
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
       range = 180.0;
     auto optr = this->pimpl();
-    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    math::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
     optr->OutputData.values().col(1) = range - optr->OutputData.values().col(0);
-    maths::Scalar mult = optr->OutputData.block<1>(2);
+    math::Scalar mult = optr->OutputData.block<1>(2);
     optr->OutputData.values().col(2) -= mult.normalized().values() * range;
     optr->OutputData.values().col(0) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 
@@ -440,14 +440,14 @@ namespace body
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
       range = 180.0;
     auto optr = this->pimpl();
-    maths::Scalar mult = optr->OutputData.block<1>(0);
+    math::Scalar mult = optr->OutputData.block<1>(0);
     optr->OutputData.values().col(0) -= mult.normalized().values() * range;
     mult = optr->OutputData.block<1>(2);
     optr->OutputData.values().col(2) -= mult.normalized().values() * range;
-    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     optr->OutputData.values().col(1) *= -1.0;
     optr->OutputData.values().col(2) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 
@@ -466,10 +466,10 @@ namespace body
       offset = 90.0;
     auto optr = this->pimpl();
     optr->OutputData.values().col(0) -= offset;
-    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    math::Scalar::Values temp = optr->OutputData.values().col(1);
     optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
     optr->OutputData.values().col(2) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 
@@ -488,10 +488,10 @@ namespace body
       offset = 90.0;
     auto optr = this->pimpl();
     optr->OutputData.values().col(0) -= offset;
-    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    math::Scalar::Values temp = optr->OutputData.values().col(1);
     optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
     optr->OutputData.values().col(2) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 
@@ -509,14 +509,14 @@ namespace body
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
       range = 180.0;
     auto optr = this->pimpl();
-    maths::Scalar mult = optr->OutputData.block<1>(0);
+    math::Scalar mult = optr->OutputData.block<1>(0);
     optr->OutputData.values().col(0) -= mult.normalized().values() * range;
     mult = optr->OutputData.block<1>(2);
     optr->OutputData.values().col(2) -= mult.normalized().values() * range;
-    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     optr->OutputData.values().col(1) *= -1.0;
     optr->OutputData.values().col(2) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
   
@@ -531,10 +531,10 @@ namespace body
     OPENMA_UNUSED(options);
     auto optr = this->pimpl();
     optr->OutputData.values().col(1) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     optr->OutputData.values().col(1) *= -1.0;
     optr->OutputData.values().col(2) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
   
@@ -552,15 +552,15 @@ namespace body
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
       range = 180.0;
     auto optr = this->pimpl();
-    maths::Scalar mult = optr->OutputData.block<1>(0);
+    math::Scalar mult = optr->OutputData.block<1>(0);
     optr->OutputData.values().col(0) -= mult.normalized().values() * range;
-    maths::Scalar::Values temp = optr->OutputData.values().col(2);
+    math::Scalar::Values temp = optr->OutputData.values().col(2);
     mult = optr->OutputData.block<1>(2);
     optr->OutputData.values().col(2) = mult.normalized().values() * range - temp;
-    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     optr->OutputData.values().col(1) *= -1.0;
     optr->OutputData.values().col(2) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
   
@@ -580,10 +580,10 @@ namespace body
     auto optr = this->pimpl();
     optr->OutputData.values().col(0) *= -1.0;
     optr->OutputData.values().col(1) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     optr->OutputData.values().col(1) *= -1.0;
     optr->OutputData.values().col(2) *= -1.0;
-    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
   
@@ -597,10 +597,10 @@ namespace body
   {
     OPENMA_UNUSED(options)
     auto optr = this->pimpl();
-    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    math::Scalar::Values temp = optr->OutputData.values().col(1);
     optr->OutputData.values().col(1) = -1.0 * optr->OutputData.values().col(2);
     optr->OutputData.values().col(2) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
   
@@ -614,10 +614,10 @@ namespace body
   {
     OPENMA_UNUSED(options)
     auto optr = this->pimpl();
-    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    math::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
     optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
     optr->OutputData.values().col(2) = temp;
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
 };
@@ -955,8 +955,8 @@ namespace body
     // --------------------------------------------------
     if (optr->Region & Region::Lower)
     {
-      maths::Position L_HJC(1); L_HJC.residuals().setZero();
-      maths::Position R_HJC(1); R_HJC.residuals().setZero();
+      math::Position L_HJC(1); L_HJC.residuals().setZero();
+      math::Position R_HJC(1); R_HJC.residuals().setZero();
       auto& _R_HJC = R_HJC.values();
       auto& _L_HJC = L_HJC.values();
       const auto& L_ASIS = landmarks["L.ASIS"];
@@ -1020,7 +1020,7 @@ namespace body
       // Required landmarks: *.ASIS, SC or *.PSIS
       const auto& L_PSIS = landmarks["L.PSIS"];
       const auto& R_PSIS = landmarks["R.PSIS"];
-      maths::Position SC = landmarks["SC"];
+      math::Position SC = landmarks["SC"];
       if (!L_ASIS.isValid() || !R_ASIS.isValid())
       {
         error("PluginGait - Missing landmarks (ASISs) to define the pelvis. Calibration aborted.");
@@ -1034,21 +1034,21 @@ namespace body
       if (!SC.isValid())
         SC = (L_PSIS + R_PSIS) / 2.0;
       
-      const maths::Vector v = (L_ASIS - R_ASIS).normalized();
-      const maths::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
-      const maths::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
+      const math::Vector v = (L_ASIS - R_ASIS).normalized();
+      const math::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
+      const math::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
       // -----------------------------------------
       // Other lower limbs (dependant of the hip joint centres)
       // -----------------------------------------
       if ((optr->Side & Side::Left) == Side::Left)
       {
-        const maths::Position HJC = pelvis.transform(L_HJC.replicate(pelvis.rows()));
+        const math::Position HJC = pelvis.transform(L_HJC.replicate(pelvis.rows()));
         if (!optr->calibrateLowerLimb(Side::Left, &HJC, &landmarks))
           return false;
       }
       if ((optr->Side & Side::Right) == Side::Right)
       {
-        const maths::Position HJC = pelvis.transform(R_HJC.replicate(pelvis.rows()));
+        const math::Position HJC = pelvis.transform(R_HJC.replicate(pelvis.rows()));
         if (!optr->calibrateLowerLimb(Side::Right, &HJC, &landmarks))
           return false;
        }
@@ -1072,14 +1072,14 @@ namespace body
         return false;
       }
       // NOTE : The markers are first averaged before the computation of the offset!
-      const maths::Position _L_HF = L_HF.mean();
-      const maths::Position _L_HB = L_HB.mean();
-      const maths::Position _R_HF = R_HF.mean();
-      const maths::Position _R_HB = R_HB.mean();        
+      const math::Position _L_HF = L_HF.mean();
+      const math::Position _L_HB = L_HB.mean();
+      const math::Position _R_HF = R_HF.mean();
+      const math::Position _R_HB = R_HB.mean();        
       // WARNING: The origin (set to the middle of the four points) is not the same than Vicon!
-      const maths::Vector u = ((_L_HF + _R_HF) / 2.0 - (_L_HB + _R_HB) / 2.0).normalized();
-      const maths::Vector w = u.cross((_L_HF + _L_HB) / 2.0 - (_R_HF + _R_HB) / 2.0).normalized();
-      const maths::Pose head(u, w.cross(u), w, (_L_HF + _R_HF + _L_HB + _R_HB) / 4.0);
+      const math::Vector u = ((_L_HF + _R_HF) / 2.0 - (_L_HB + _R_HB) / 2.0).normalized();
+      const math::Vector w = u.cross((_L_HF + _L_HB) / 2.0 - (_R_HF + _R_HB) / 2.0).normalized();
+      const math::Pose head(u, w.cross(u), w, (_L_HF + _R_HF + _L_HB + _R_HB) / 4.0);
       if (head.isOccluded())
       {
         error("PluginGait - Impossible to find a least one valid frame for the head motion. Calibration aborted.");
@@ -1140,11 +1140,11 @@ namespace body
         error("PluginGait - Missing landmarks to define the torso. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
         return false;
       }
-      const maths::Vector w = ((XP + T10) / 2.0 - (SS + C7) / 2.0).normalized();
-      const maths::Vector v = w.cross((XP + SS) / 2.0 - (T10 + C7) / 2.0).normalized();
-      const maths::Vector u = v.cross(w);
-      const maths::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
-      torsoSCS = maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
+      const math::Vector w = ((XP + T10) / 2.0 - (SS + C7) / 2.0).normalized();
+      const math::Vector v = w.cross((XP + SS) / 2.0 - (T10 + C7) / 2.0).normalized();
+      const math::Vector u = v.cross(w);
+      const math::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
+      torsoSCS = math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -1190,7 +1190,7 @@ namespace body
       const auto& R_ASIS = landmarks["R.ASIS"];
       const auto& L_PSIS = landmarks["L.PSIS"];
       const auto& R_PSIS = landmarks["R.PSIS"];
-      maths::Position SC = landmarks["SC"];
+      math::Position SC = landmarks["SC"];
       if (!L_ASIS.isValid() || !R_ASIS.isValid())
       {
         error("PluginGait - Missing landmarks (ASISs) to define the pelvis. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
@@ -1203,22 +1203,22 @@ namespace body
       }
       if (!SC.isValid())
         SC = (L_PSIS + R_PSIS) / 2.0;
-      const maths::Vector v = (L_ASIS - R_ASIS).normalized();
-      const maths::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
-      const maths::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
-      pelvisSCS = maths::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
+      const math::Vector v = (L_ASIS - R_ASIS).normalized();
+      const math::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
+      const math::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
+      pelvisSCS = math::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------
       if ((optr->Side & Side::Left) == Side::Left)
       {
-        const maths::Position HJC = transform_relative_point(leftHipJointCenter, seg, pelvis);
+        const math::Position HJC = transform_relative_point(leftHipJointCenter, seg, pelvis);
         if (!optr->reconstructLowerLimb(model, trial, Side::Left, &HJC, &landmarks, sampleRate, startTime))
           return false;
       }
       if ((optr->Side & Side::Right) == Side::Right)
       {
-        const maths::Position HJC = transform_relative_point(rightHipJointCenter, seg, pelvis);
+        const math::Position HJC = transform_relative_point(rightHipJointCenter, seg, pelvis);
         if (!optr->reconstructLowerLimb(model, trial, Side::Right, &HJC, &landmarks, sampleRate, startTime))
           return false;
       }
@@ -1262,7 +1262,7 @@ namespace body
       unsigned uidx = 0;
       if (fabs(udiff[1]) > fabs(udiff[uidx])) uidx = 1;
       if (fabs(udiff[2]) > fabs(udiff[uidx])) uidx = 2;
-      maths::Vector::Values u(1,3);
+      math::Vector::Values u(1,3);
       switch(uidx)
       {
       case 0:
@@ -1285,7 +1285,7 @@ namespace body
       unsigned widx = 0;
       if (fabs(wsum[1]) > fabs(wsum[widx])) widx = 1;
       if (fabs(wsum[2]) > fabs(wsum[widx])) widx = 2;
-      maths::Vector::Values w(1,3);
+      math::Vector::Values w(1,3);
       switch(widx)
       {
       case 0:
@@ -1302,7 +1302,7 @@ namespace body
         return false;
       }
       // Create the TimeSequence representing the pose of the progression frame
-      maths::Vector::Values v(1,3);
+      math::Vector::Values v(1,3);
       v << w.coeff(1) * u.coeff(2) - u.coeff(1) * w.coeff(2),
            w.coeff(2) * u.coeff(0) - u.coeff(2) * w.coeff(0),
            w.coeff(0) * u.coeff(1) - u.coeff(0) * w.coeff(1);
@@ -1334,15 +1334,15 @@ namespace body
         error("PluginGait - Missing landmarks to define the head. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
         return false;
       }
-      const maths::Vector u = ((L_HF + R_HF) / 2.0 - (L_HB + R_HB) / 2.0).normalized();
-      const maths::Vector w = u.cross((L_HF + L_HB) / 2.0 - (R_HF + R_HB) / 2.0).normalized();
-      const maths::Vector v = w.cross(u);
-      const maths::Vector o = (L_HF + R_HF + L_HB + R_HB) / 4.0;
+      const math::Vector u = ((L_HF + R_HF) / 2.0 - (L_HB + R_HB) / 2.0).normalized();
+      const math::Vector w = u.cross((L_HF + L_HB) / 2.0 - (R_HF + R_HB) / 2.0).normalized();
+      const math::Vector v = w.cross(u);
+      const math::Vector o = (L_HF + R_HF + L_HB + R_HB) / 4.0;
       // Rotate the head frame along its axis Y using the offset "HeadOffset"
       const double cy = cos(optr->HeadOffset), sy = sin(optr->HeadOffset);
-      const maths::Vector ur = u * cy - w * sy;
-      const maths::Vector wr = u * sy + w * cy;
-      maths::to_timesequence(ur, v, wr, o, seg->name()+".SCS", sampleRate, startTime, seg);
+      const math::Vector ur = u * cy - w * sy;
+      const math::Vector wr = u * sy + w * cy;
+      math::to_timesequence(ur, v, wr, o, seg->name()+".SCS", sampleRate, startTime, seg);
     }
     return true;
   };

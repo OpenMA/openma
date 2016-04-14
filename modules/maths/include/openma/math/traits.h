@@ -32,14 +32,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_traits_h
-#define __openma_maths_traits_h
+#ifndef __openma_math_traits_h
+#define __openma_math_traits_h
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   enum : int
   {
@@ -59,4 +59,4 @@ namespace maths
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-#endif // __openma_maths_traits_h
+#endif // __openma_math_traits_h

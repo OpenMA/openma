@@ -1,6 +1,6 @@
 #include <cxxtest/TestDrive.h>
 
-#include <openma/maths.h>
+#include <openma/math.h>
 
 #include <cmath> // M_PI
 
@@ -8,18 +8,18 @@ CXXTEST_SUITE(PoseTest)
 {
   CXXTEST_TEST(constructor)
   {
-    ma::maths::Position a(1), b(1), c(1);
+    ma::math::Position a(1), b(1), c(1);
     a.values() << 0.0, 0.0, 0.0; a.residuals() << 0.0;
     b.values() << 9.9, 0.0, 0.0; b.residuals() << 0.0;
     c.values() << 0.0,-4.1, 0.0; c.residuals() << 0.0;
       
     auto u = (b-a).normalized();
     auto v = (c-a).normalized();
-    ma::maths::Pose motion(u, v, u.cross(v), (a+b+c)/3.0);
+    ma::math::Pose motion(u, v, u.cross(v), (a+b+c)/3.0);
     TS_ASSERT_EQUALS(motion.isValid(),true);
     TS_ASSERT_EQUALS(motion.isOccluded(),false);
     
-    const ma::maths::Pose::Values& mv = motion.values();
+    const ma::math::Pose::Values& mv = motion.values();
     TS_ASSERT_DELTA(mv.coeff(0,0),   1.0, 1e-15);
     TS_ASSERT_DELTA(mv.coeff(0,1),   0.0, 1e-15);
     TS_ASSERT_DELTA(mv.coeff(0,2),   0.0, 1e-15);
@@ -38,11 +38,11 @@ CXXTEST_SUITE(PoseTest)
   
   CXXTEST_TEST(inverse)
   {
-    ma::maths::Pose motion(3);
+    ma::math::Pose motion(3);
     motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
                        0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
                        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
-    ma::maths::Pose::Values inv = motion.inverse().values();
+    ma::math::Pose::Values inv = motion.inverse().values();
     // Row #1
     TS_ASSERT_DELTA(inv.coeff(0, 0), 0.0, 1e-15);
     TS_ASSERT_DELTA(inv.coeff(0, 1), -1.0, 1e-15);
@@ -86,11 +86,11 @@ CXXTEST_SUITE(PoseTest)
   
   CXXTEST_TEST(transformPose)
   {
-    ma::maths::Pose motion(3);
+    ma::math::Pose motion(3);
     motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
                        0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
                        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
-    ma::maths::Pose::Values eye = motion.transform(motion.inverse()).values();
+    ma::math::Pose::Values eye = motion.transform(motion.inverse()).values();
     
     // Row #1
     TS_ASSERT_DELTA(eye.coeff(0, 0), 1.0, 1e-15);
@@ -135,17 +135,17 @@ CXXTEST_SUITE(PoseTest)
   
   CXXTEST_TEST(transformPosition)
   {
-    ma::maths::Pose motion(3);
+    ma::math::Pose motion(3);
     motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
                        0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
                        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
     
-    ma::maths::Position traj(3);
+    ma::math::Position traj(3);
     traj.values() << 33.1,-13.56, 1034.12,
                      0.23, 34.12, -98.0,
                      66.0, 333.869, 4598.234;
       
-    ma::maths::Position::Values result = motion.transform(traj).values();
+    ma::math::Position::Values result = motion.transform(traj).values();
     
     // Row #1
     TS_ASSERT_DELTA(result.coeff(0, 0),    23.56, 5e-15);
@@ -163,7 +163,7 @@ CXXTEST_SUITE(PoseTest)
   
   CXXTEST_TEST(transformPositionBis)
   {
-    ma::maths::Pose motion(3);
+    ma::math::Pose motion(3);
     motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
                        0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
                        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
@@ -173,7 +173,7 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_EQUALS(motion.cols(),12);
 
     const auto values = Eigen::Matrix<double,1,3>(0.0,0.0,0.0);
-    ma::maths::Position position(values);
+    ma::math::Position position(values);
     TS_ASSERT_EQUALS(position.rows(),1);
     
     const auto replicate = position.replicate(motion.rows());
@@ -184,7 +184,7 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_EQUALS(transform.rows(),3);
     TS_ASSERT_EQUALS(transform.cols(),3);
     
-    ma::maths::Position t = transform;
+    ma::math::Position t = transform;
     TS_ASSERT_EQUALS(t.rows(),3);
     TS_ASSERT_EQUALS(t.cols(),3);
     // Row #1
@@ -200,7 +200,7 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_DELTA(t.values().coeff(2, 1), 0.0, 1e-15);
     TS_ASSERT_DELTA(t.values().coeff(2, 2), 0.0, 1e-15);
     
-    ma::maths::Position tt = motion.transform(ma::maths::Position(Eigen::Matrix<double,1,3>(0.0,0.0,0.0)).replicate(motion.rows()));
+    ma::math::Position tt = motion.transform(ma::math::Position(Eigen::Matrix<double,1,3>(0.0,0.0,0.0)).replicate(motion.rows()));
     TS_ASSERT_EQUALS(tt.rows(),3);
     TS_ASSERT_EQUALS(tt.cols(),3);
     // Row #1
@@ -219,12 +219,12 @@ CXXTEST_SUITE(PoseTest)
   
   CXXTEST_TEST(eulerAngles)
   {
-    ma::maths::Pose motion(3);
+    ma::math::Pose motion(3);
     motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
                        0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
                        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
     motion.residuals() << 0.0, 0.0, -1.0;                   
-    ma::maths::Array<3> angles = motion.eulerAngles(0,1,2);
+    ma::math::Array<3> angles = motion.eulerAngles(0,1,2);
     TS_ASSERT_EQUALS(angles.values().rows(),3);
     TS_ASSERT_EQUALS(angles.values().cols(),3);
     // Row #1
@@ -240,12 +240,12 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_DELTA(angles.values().coeff(2, 1), 0.0, 1e-15);
     TS_ASSERT_DELTA(angles.values().coeff(2, 2), 0.0, 1e-15);
     
-    ma::maths::Array<3> mean = motion.eulerAngles(0,1,2).mean();
+    ma::math::Array<3> mean = motion.eulerAngles(0,1,2).mean();
     TS_ASSERT_DELTA(mean.values().coeff(0, 0), 1.160643952576229, 1e-5);
     TS_ASSERT_DELTA(mean.values().coeff(0, 1), 0.541052068118242, 1e-5);
     TS_ASSERT_DELTA(mean.values().coeff(0, 2), 1.225221134900019, 1e-5);
     
-    ma::maths::Array<3> meanbis = angles.mean();
+    ma::math::Array<3> meanbis = angles.mean();
     TS_ASSERT_DELTA(meanbis.values().coeff(0, 0), 1.160643952576229, 1e-5);
     TS_ASSERT_DELTA(meanbis.values().coeff(0, 1), 0.541052068118242, 1e-5);
     TS_ASSERT_DELTA(meanbis.values().coeff(0, 2), 1.225221134900019, 1e-5);

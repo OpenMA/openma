@@ -32,9 +32,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "openma/maths.h"
+#include "openma/math.h"
 
-bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset)
+bool _ma_math_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset)
 {
   if (ts == nullptr)
     return false;
@@ -51,7 +51,7 @@ bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigne
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   TimeSequence* to_timesequence(unsigned components, unsigned samples, const double* values, const double* residuals, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
   {

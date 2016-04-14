@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_unaryop_h
-#define __openma_maths_unaryop_h
+#ifndef __openma_math_unaryop_h
+#define __openma_math_unaryop_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   
   // ----------------------------------------------------------------------- //
@@ -65,7 +65,7 @@ namespace maths
   // NOTE: The documentation is inlined due to the use of the CRTP.
 
   /**
-   * @class UnaryOp openma/maths/unaryop.h
+   * @class UnaryOp openma/math/unaryop.h
    * @brief Base class for unary operations
    * @tparam Derived Class representing a binary operation
    * @tparam Xpr Type of the expression to transform
@@ -74,7 +74,7 @@ namespace maths
    *  - Index rows() const _OPENMA_NOEXCEPT
    *  - auto values() const _OPENMA_NOEXCEPT
    *  - auto residuals() const _OPENMA_NOEXCEPT
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Derived, typename Xpr>
   class UnaryOp : public XprBase<UnaryOp<Derived, Xpr>>
@@ -137,11 +137,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class NormOp openma/maths/unaryop.h
+   * @class NormOp openma/math/unaryop.h
    * @brief Compute the Euclidean norm for each row 
    * @tparam Xpr Type of the expression to transform
    * Template expression to compute the Euclidean norm for each row and the associated residuals.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class NormOp : public UnaryOp<NormOp<Xpr>,Xpr>
@@ -199,11 +199,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
 
   /**
-   * @class MeanOp openma/maths/unaryop.h
+   * @class MeanOp openma/math/unaryop.h
    * @brief Compute the average for each row
    * @tparam Xpr Type of the expression to transform
    * Template expression to compute the average for each row and the associated residuals.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class MeanOp : public UnaryOp<MeanOp<Xpr>,Xpr>
@@ -269,11 +269,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
 
   /**
-   * @class ScaleOp openma/maths/unaryop.h
+   * @class ScaleOp openma/math/unaryop.h
    * @brief Scale the data
    * @tparam Xpr Type of the expression to transform
    * Template expression to scale the content of each row and the associated residuals.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class ScaleOp : public UnaryOp<ScaleOp<Xpr>,Xpr>
@@ -325,11 +325,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class NormalizedOp openma/maths/unaryop.h
+   * @class NormalizedOp openma/math/unaryop.h
    * @brief Normalize the data
    * @tparam Xpr Type of the expression to transform
    * Template expression to normalize each row and the associated residuals.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class NormalizedOp : public UnaryOp<NormalizedOp<Xpr>,Xpr>
@@ -388,11 +388,11 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class ReplicateOp openma/maths/unaryop.h
+   * @class ReplicateOp openma/math/unaryop.h
    * @brief Replicate the rows vertically.
    * @tparam Xpr Type of the expression to transform
    * Template expression to replicate the rows and generate the associated residuals.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class ReplicateOp : public UnaryOp<ReplicateOp<Xpr>,Xpr>
@@ -454,12 +454,12 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class InverseOp openma/maths/unaryop.h
+   * @class InverseOp openma/math/unaryop.h
    * @brief Compute the inverse
    * @tparam Xpr Type of the expression to transform
    * Template expression to compute the inverse for each row and the associated residuals.
    * @note this operator would be used with Pose object or Array with 12 columns.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class InverseOp : public UnaryOp<InverseOp<Xpr>,Xpr>
@@ -529,13 +529,13 @@ namespace maths
   // ----------------------------------------------------------------------- //
 
   /**
-   * @class EulerAnglesOp openma/maths/unaryop.h
+   * @class EulerAnglesOp openma/math/unaryop.h
    * @brief Compute euler angles.
    * @tparam Xpr Type of the expression to transform
    * Template expression to compute euler angles for each row and the associated residuals.
    * 
    * @note This operator would be used with an array with at least 9 columns representing an orientation. It can be for example a Pose object.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr>
   class EulerAnglesOp : public UnaryOp<EulerAnglesOp<Xpr>,Xpr>
@@ -597,4 +597,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_unaryop_h
+#endif // __openma_math_unaryop_h

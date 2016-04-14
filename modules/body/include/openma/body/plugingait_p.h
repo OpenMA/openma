@@ -45,7 +45,7 @@
 #include "openma/body/point.h"
 #include "openma/base/property.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR
-#include "openma/maths.h"
+#include "openma/math.h"
 
 #include <unordered_map>
 
@@ -61,7 +61,7 @@ namespace body
   class Model;
   class PluginGait;
   
-  using ummp = std::unordered_map<std::string,maths::Map<maths::Position>>;
+  using ummp = std::unordered_map<std::string,math::Map<math::Position>>;
   
   class PluginGaitPrivate : public SkeletonHelperPrivate
   {
@@ -103,9 +103,9 @@ namespace body
     ~PluginGaitPrivate() _OPENMA_NOEXCEPT;
     
     void computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
-    bool calibrateLowerLimb(int side, const maths::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT;
-    bool reconstructUpperLimb(Model* model, Trial* trial, int side, const maths::Vector* u_torso, const maths::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
-    bool reconstructLowerLimb(Model* model, Trial* trial, int side, const maths::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    bool calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT;
+    bool reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    bool reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     
     double MarkerDiameter;
     
@@ -291,7 +291,7 @@ namespace internal
   template <>
   struct traits<ChordOpValues>
   {
-    using ReturnType = ma::maths::Traits<ma::maths::Array<3>>::Values;
+    using ReturnType = ma::math::Traits<ma::math::Array<3>>::Values;
   };
   
   struct ChordOpValues : public Eigen::ReturnByValue<ChordOpValues>
@@ -312,7 +312,7 @@ namespace internal
   
 namespace ma
 {
-namespace maths
+namespace math
 {
   template <typename XprOne, typename XprTwo, typename XprThree> class ChordOp;
   
@@ -333,7 +333,7 @@ namespace maths
   };
   
   template <typename XprOne, typename XprTwo, typename XprThree>
-  class ChordOp : public maths::XprBase<ChordOp<XprOne, XprTwo, XprThree>>
+  class ChordOp : public math::XprBase<ChordOp<XprOne, XprTwo, XprThree>>
   {
     static_assert(XprOne::ColsAtCompileTime == XprTwo::ColsAtCompileTime && XprOne::ColsAtCompileTime == XprThree::ColsAtCompileTime, "The number of columns must be the same.");
     static_assert(XprOne::ColsAtCompileTime == 3 && XprTwo::ColsAtCompileTime == 3 && XprThree::ColsAtCompileTime == 3, "The chord operation is only available for array with 3 columns.");

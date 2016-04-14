@@ -32,17 +32,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_utils_h
-#define __openma_maths_utils_h
+#ifndef __openma_math_utils_h
+#define __openma_math_utils_h
 
-#include "openma/maths_export.h"
+#include "openma/math_export.h"
 #include "openma/base/timesequence.h"
 
-OPENMA_MATHS_EXPORT bool _ma_maths_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
+OPENMA_MATHS_EXPORT bool _ma_math_verify_timesequence(const ma::TimeSequence* ts, int type, unsigned components, unsigned offset);
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   // ======================================================================= //
   //                    EXPORT TO MATHS::ARRAY AND DERIVED
@@ -56,14 +56,14 @@ namespace maths
    * @tparam Result Type of the extraction.
    * @a tparam T Type of the TimeSequence (w/o const correctness). 
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Result, typename T>
   inline Result to_arraybase_derived(T* ts, unsigned components, unsigned offset = 0, int type = -1)
   {
     static_assert(std::is_base_of<ArrayBase<Result>, Result>::value, "The template parameter is not a derived class of ArrayBase.");
     static_assert(std::is_same<TimeSequence, typename std::remove_const<T>::type>::value, "The type of the first arguement is not TimeSequence.");
-    if (_ma_maths_verify_timesequence(ts, type, components, offset))
+    if (_ma_math_verify_timesequence(ts, type, components, offset))
       return Result(ts->samples(), ts->data() + ts->samples() * offset, ts->data() + ts->samples() * (ts->components()-1) );
     else
       return Result();
@@ -77,7 +77,7 @@ namespace maths
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @tparam N Number of columns to extract.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <int N>
   inline Map<Array<N>> to_array(TimeSequence* ts, unsigned offset = 0, int type = -1)
@@ -91,7 +91,7 @@ namespace maths
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @tparam N Number of columns to extract.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <int N>
   inline Map<const Array<N>> to_array(const TimeSequence* ts, unsigned offset = 0, int type = -1)
@@ -106,7 +106,7 @@ namespace maths
    * It is possible to specify a possible @a offset to shift the data to extract.
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<Scalar> to_scalar(TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
@@ -118,7 +118,7 @@ namespace maths
    * It is possible to specify a possible @a offset to shift the data to extract.
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<const Scalar> to_scalar(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
@@ -132,7 +132,7 @@ namespace maths
    * It is possible to specify a possible @a offset to shift the data to extract.
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<Vector> to_vector(TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
@@ -144,7 +144,7 @@ namespace maths
    * It is possible to specify a possible @a offset to shift the data to extract.
    * The use of @a type will verify if the TimeSequence has the requeted type.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<const Vector> to_vector(const TimeSequence* ts, unsigned offset = 0, int type = -1)
   {
@@ -156,7 +156,7 @@ namespace maths
   /**
    * Specialized extraction method where the resulting Map<Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<Position> to_position(TimeSequence* ts)
   {
@@ -166,7 +166,7 @@ namespace maths
   /**
    * Specialized extraction method where the resulting Map<const Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
    * @relates Array
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<const Position> to_position(const TimeSequence* ts)
   {
@@ -178,7 +178,7 @@ namespace maths
   /**
    * Specialized extraction method where the result is a Map<Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
    * @relates Pose
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<Pose> to_pose(TimeSequence* ts)
   {
@@ -188,7 +188,7 @@ namespace maths
   /**
    * Specialized extraction method where the result is a Map<const Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
    * @relates Pose
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   inline Map<const Pose> to_pose(const TimeSequence* ts)
   {
@@ -210,7 +210,7 @@ namespace maths
   OPENMA_MATHS_EXPORT TimeSequence* to_timesequence(unsigned components, unsigned samples, const double* values, const double* residuals, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent);
   
   /**
-   * Convenient method to transform maths array object (and derived) to a time sequence.
+   * Convenient method to transform math array object (and derived) to a time sequence.
    */
   template <typename T>
   inline TimeSequence* to_timesequence(const ArrayBase<T>& source, const std::string& name, double rate, double start, int type, const std::string& unit, Node* parent)
@@ -219,7 +219,7 @@ namespace maths
   };
   
   /**
-   * Convenient method to export the vectors U, V, W and orign O (aka the content of maths::Pose) to a TimeSequence object
+   * Convenient method to export the vectors U, V, W and orign O (aka the content of math::Pose) to a TimeSequence object
    */
   template <typename U, typename V, typename W, typename O>
   inline TimeSequence* to_timesequence(const ArrayBase<U>& u,const ArrayBase<V>& v, const ArrayBase<W>& w, const ArrayBase<O>& o, const std::string& name, double rate, double start, Node* parent)
@@ -245,4 +245,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_utils_h
+#endif // __openma_math_utils_h

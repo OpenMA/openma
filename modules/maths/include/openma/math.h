@@ -1,10 +1,10 @@
-#ifndef __openma_maths_h
-#define __openma_maths_h
+#ifndef __openma_math_h
+#define __openma_math_h
 
 #if defined(_MSC_VER)
   // Disable warning for too long decorated name
   // See: https://msdn.microsoft.com/en-us/library/074af4b6.aspx
-  // NOTE: This warning is raised when complex ma::maths expressions are used.
+  // NOTE: This warning is raised when complex ma::math expressions are used.
   #pragma warning(disable : 4503)
 #endif
 
@@ -21,20 +21,20 @@
 
 #include <utility> // std::declval
 #define OPENMA_MATHS_DECLVAL_NESTED(xpr) \
-  std::declval<const typename ma::maths::Nested<xpr>::type>()
+  std::declval<const typename ma::math::Nested<xpr>::type>()
 
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 
-#include "openma/maths/forwarddeclarations.h"
-#include "openma/maths/traits.h"    
-#include "openma/maths/xprbase.h"
-#include "openma/maths/arraybase.h"
-#include "openma/maths/array.h"
-#include "openma/maths/map.h"
-#include "openma/maths/returnbyvalue.h"
-#include "openma/maths/blockop.h"
-#include "openma/maths/unaryop.h"
-#include "openma/maths/binaryop.h"
-#include "openma/maths/utils.h"
+#include "openma/math/forwarddeclarations.h"
+#include "openma/math/traits.h"    
+#include "openma/math/xprbase.h"
+#include "openma/math/arraybase.h"
+#include "openma/math/array.h"
+#include "openma/math/map.h"
+#include "openma/math/returnbyvalue.h"
+#include "openma/math/blockop.h"
+#include "openma/math/unaryop.h"
+#include "openma/math/binaryop.h"
+#include "openma/math/utils.h"
 
-#endif // __openma_maths_h
+#endif // __openma_math_h

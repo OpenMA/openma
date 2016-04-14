@@ -1,9 +1,9 @@
 #include <cxxtest/TestDrive.h>
 
-#include <openma/maths.h>
+#include <openma/math.h>
 
-using MappedScalar = ma::maths::Map<ma::maths::Scalar>;
-using MappedConstScalar = ma::maths::Map<const ma::maths::Scalar>;
+using MappedScalar = ma::math::Map<ma::math::Scalar>;
+using MappedConstScalar = ma::math::Map<const ma::math::Scalar>;
 
 CXXTEST_SUITE(MapTest)
 {
@@ -63,20 +63,20 @@ CXXTEST_SUITE(MapTest)
     MappedConstScalar d = b;
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(a.values()[i], d.values()[i]);
-    ma::maths::Scalar e = a;
+    ma::math::Scalar e = a;
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(a.values()[i], e.values()[i]);
     e.values().setRandom();
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_DIFFERS(a.values()[i], e.values()[i]);
-    const ma::maths::Scalar f = a;
+    const ma::math::Scalar f = a;
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(a.values()[i], f.values()[i]);
-    ma::maths::Scalar g = d;
+    ma::math::Scalar g = d;
     g.values().setRandom();
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_DIFFERS(d.values()[i], g.values()[i]);
-    const ma::maths::Scalar h = d;
+    const ma::math::Scalar h = d;
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(d.values()[i], h.values()[i]);
   };

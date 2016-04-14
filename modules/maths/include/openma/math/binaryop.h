@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_binaryop_h
-#define __openma_maths_binaryop_h
+#ifndef __openma_math_binaryop_h
+#define __openma_math_binaryop_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   // ----------------------------------------------------------------------- //
   //                                 BINARYOP
@@ -64,7 +64,7 @@ namespace maths
   // NOTE: The documentation is inlined due to the use of the CRTP.
   
   /**
-   * @class BinaryOp openma/maths/binaryop.h
+   * @class BinaryOp openma/math/binaryop.h
    * @brief Base class for binary operations
    * @tparam Derived Class representing a binary operation
    * @tparam XprOne type of the left hand side operation
@@ -74,7 +74,7 @@ namespace maths
    *  - Index rows() const _OPENMA_NOEXCEPT
    *  - auto values() const _OPENMA_NOEXCEPT
    *  - auto residuals() const _OPENMA_NOEXCEPT
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Derived, typename XprOne, typename XprTwo>
   class BinaryOp : public XprBase<BinaryOp<Derived, XprOne, XprTwo>>
@@ -130,12 +130,12 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class DifferenceOp openma/maths/binaryop.h
+   * @class DifferenceOp openma/math/binaryop.h
    * @brief Compute difference between given expressions
    * @tparam XprOne type of the left hand side operation
    * @tparam XprTwo type of the right hand side operation
    * Template expression to compute an algebric difference. This class is used by the method XprBase::operator-().
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename XprOne, typename XprTwo>
   class DifferenceOp : public BinaryOp<DifferenceOp<XprOne, XprTwo>, XprOne, XprTwo>
@@ -190,12 +190,12 @@ namespace maths
   // ----------------------------------------------------------------------- //
 
   /**
-   * @class SumOp openma/maths/binaryop.h
+   * @class SumOp openma/math/binaryop.h
    * @brief Compute the sum of two expressions
    * @tparam XprOne type of the left hand side operation
    * @tparam XprTwo type of the right hand side operation
    * Template expression to compute an algebric sum. This class is used by the method XprBase::operator+().
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename XprOne, typename XprTwo>
   class SumOp : public BinaryOp<SumOp<XprOne, XprTwo>, XprOne, XprTwo>
@@ -249,12 +249,12 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class CrossOp openma/maths/binaryop.h
+   * @class CrossOp openma/math/binaryop.h
    * @brief Compute the cross product of two expressions
    * @tparam XprOne type of the left hand side operation
    * @tparam XprTwo type of the right hand side operation
    * Template expression to compute a geometric cross product.
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename XprOne, typename XprTwo>
   class CrossOp : public BinaryOp<CrossOp<XprOne, XprTwo>, XprOne, XprTwo>
@@ -324,12 +324,12 @@ namespace maths
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class TransformOp openma/maths/binaryop.h
+   * @class TransformOp openma/math/binaryop.h
    * @brief Compute the transformation of two expressions
    * @tparam XprOne type of the left hand side operation
    * @tparam XprTwo type of the right hand side operation
    * Template expression to compute a geometric transformation like A * B (Pose x Pose) or A * b (Pose x Vector).
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename XprOne, typename XprTwo>
   class TransformOp : public BinaryOp<TransformOp<XprOne, XprTwo>, XprOne, XprTwo>
@@ -379,4 +379,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_binaryop_h
+#endif // __openma_math_binaryop_h

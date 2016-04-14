@@ -56,9 +56,9 @@ namespace body
    * If all the landmarks have the same start time, and if the output @a start is given, its value will be assigned to the found common start time (-1.0 otherwise).
    * If all the landmarks have the same sample rate and start time, and if the output @a ok is given, its value will be assigned to true (false otherwise).
    */
-  std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
+  std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
   {
-    std::unordered_map<std::string,maths::Map<maths::Vector>> positions;
+    std::unordered_map<std::string,math::Map<math::Vector>> positions;
     
     double sampleRate = -1.0, startTime = -1.0;
     bool common = true;
@@ -74,7 +74,7 @@ namespace body
     {
       for (auto it = markers.cbegin() ; it != markers.cend() ; ++it)
       {
-        positions.insert(std::make_pair((*it)->name(),maths::to_position(*it)));
+        positions.insert(std::make_pair((*it)->name(),math::to_position(*it)));
         landmarks.push_back(*it);
       }
     }
@@ -86,7 +86,7 @@ namespace body
         std::string name = lt->convertIfExists((*it)->name());
         if (!name.empty())
         {
-          positions.insert(std::make_pair(name,maths::to_position(*it)));
+          positions.insert(std::make_pair(name,math::to_position(*it)));
           landmarks.push_back(*it);
         }
       }
@@ -127,23 +127,23 @@ namespace body
    * @relates ReferenceFrame
    * @ingroup openma_body
    */
-  maths::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const maths::Pose& segpose) _OPENMA_NOEXCEPT
+  math::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const math::Pose& segpose) _OPENMA_NOEXCEPT
   {
     assert(seg->findChild<const ReferenceFrame*>(relframe->name()) == relframe);
     auto path = seg->retrievePath(relframe);
     // No path found?
     if (path.empty())
-      return maths::Pose();
+      return math::Pose();
     // Compute the pose
     const double res[1] = {0.};
-    maths::Pose temp, mot(1); mot.residuals().setZero();
+    math::Pose temp, mot(1); mot.residuals().setZero();
     std::copy_n(relframe->data(), 12, mot.values().data());
     for (size_t i = path.size()-2 ; i > 0 ; --i)
     {
       auto relrefframe = node_cast<const ReferenceFrame*>(path[i]);
       if (relrefframe == nullptr)
         continue;
-      temp = maths::Map<const maths::Pose>(1,relrefframe->data(),res).transform(mot);
+      temp = math::Map<const math::Pose>(1,relrefframe->data(),res).transform(mot);
       mot = temp;
     }
     temp = segpose.transform(mot.replicate(segpose.rows()));
@@ -156,23 +156,23 @@ namespace body
    * @relates Point
    * @ingroup openma_body
    */
-  maths::Position transform_relative_point(const Point* relpoint, const Segment* seg, const maths::Pose& segpose) _OPENMA_NOEXCEPT
+  math::Position transform_relative_point(const Point* relpoint, const Segment* seg, const math::Pose& segpose) _OPENMA_NOEXCEPT
   {
     assert(seg->findChild<const Point*>(relpoint->name()) == relpoint);
     auto path = seg->retrievePath(relpoint);
     // No path found?
     if (path.empty())
-      return maths::Position();
+      return math::Position();
     // Compute the position
     const double res[1] = {0.};
-    maths::Position temp, traj(1); traj.residuals().setZero();
+    math::Position temp, traj(1); traj.residuals().setZero();
     std::copy_n(relpoint->data(), 3, traj.values().data());
     for (size_t i = path.size()-2 ; i > 0 ; --i)
     {
       auto relrefframe = node_cast<const ReferenceFrame*>(path[i]);
       if (relrefframe == nullptr)
         continue;
-      temp = maths::Map<const maths::Pose>(1,relrefframe->data(),res).transform(traj);
+      temp = math::Map<const math::Pose>(1,relrefframe->data(),res).transform(traj);
       traj = temp;
     }
     temp = segpose.transform(traj.replicate(segpose.rows()));

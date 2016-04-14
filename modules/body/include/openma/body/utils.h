@@ -37,7 +37,7 @@
 
 #include "openma/body_export.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
-#include "openma/maths.h"
+#include "openma/math.h"
 
 #include <unordered_map>
 #include <string>
@@ -56,10 +56,10 @@ namespace body
   class Segment;
   class SkeletonHelper;
   
-  OPENMA_BODY_EXPORT std::unordered_map<std::string,maths::Map<maths::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
+  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
   
-  OPENMA_BODY_EXPORT maths::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const maths::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT maths::Position transform_relative_point(const Point* relpoint, const Segment* seg, const maths::Pose& pose) _OPENMA_NOEXCEPT;
+  OPENMA_BODY_EXPORT math::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
+  OPENMA_BODY_EXPORT math::Position transform_relative_point(const Point* relpoint, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
   
 };
 };

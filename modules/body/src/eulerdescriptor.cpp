@@ -316,8 +316,8 @@ namespace body
           error("The start time of used time sequences is not the same. Impossible to describe the movement of the joint %s", joint->name().c_str());
           return false;
         }
-        auto proximalPose = maths::to_pose(proximalTimeSequence);
-        auto distalPose = maths::to_pose(distalTimeSequence);
+        auto proximalPose = math::to_pose(proximalTimeSequence);
+        auto distalPose = math::to_pose(distalTimeSequence);
         optr->BufferData = proximalPose.inverse().transform(distalPose);
       }
       else if ((proximal == nullptr) && (distal != nullptr))
@@ -330,7 +330,7 @@ namespace body
         }
         optr->OutputSampleRate = distalTimeSequence->sampleRate();
         optr->OutputStartTime = distalTimeSequence->startTime();
-        optr->BufferData = maths::to_pose(distalTimeSequence);
+        optr->BufferData = math::to_pose(distalTimeSequence);
       }
       else if ((proximal != nullptr) && (distal == nullptr))
       {
@@ -359,7 +359,7 @@ namespace body
       }
       optr->OutputSampleRate = ts->sampleRate();
       optr->OutputStartTime = ts->startTime();
-      optr->BufferData = maths::to_pose(ts);
+      optr->BufferData = math::to_pose(ts);
     }
     else
     {
@@ -416,7 +416,7 @@ namespace body
   {
     OPENMA_UNUSED(options);
     auto optr = this->pimpl();
-    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    math::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
  };

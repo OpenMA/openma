@@ -32,21 +32,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_xprbase_h
-#define __openma_maths_xprbase_h
+#ifndef __openma_math_xprbase_h
+#define __openma_math_xprbase_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   // NOTE: The documentation is inlined due to the use of the CRTP.
   
   /**
-   * @class XprBase openma/maths/xprbase.h
-   * @brief Base class for all template expressions used in the maths module.
+   * @class XprBase openma/math/xprbase.h
+   * @brief Base class for all template expressions used in the math module.
    * @tparam Derived Class representing any kind of expression
    * @todo Write a detailed description 
-   * ingroup openma_maths
+   * ingroup openma_math
    */
   template <typename Derived>
   class XprBase
@@ -165,7 +165,7 @@ namespace maths
    * For elements where the condition is respected, the value is set to 0. Otherwise the value is set to -1.0.
    * This represent valid (>= 0) and invalid (< 0) reconstructed data.
    * @relates XprBase
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename U> 
   inline auto generate_residuals(const U& condition) -> decltype(condition.select(Traits<Array<U::ColsAtCompileTime>>::Residuals::Zero(condition.rows(),1),-1.0))
@@ -233,4 +233,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_xprbase_h
+#endif // __openma_math_xprbase_h

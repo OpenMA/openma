@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_map_h
-#define __openma_maths_map_h
+#ifndef __openma_math_map_h
+#define __openma_math_map_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   template <typename Derived>
   struct Traits<Map<Derived>>
@@ -83,11 +83,11 @@ namespace maths
   };
   
   /**
-   * @class Map openma/maths/map.h
+   * @class Map openma/math/map.h
    * @brief An array expression mapping an existing array of data.
    * @tparam Derived Declaration of the mapping array expression
    * @todo Write a detailed description
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   /**
    * @var Map::Values
@@ -153,4 +153,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_map_h
+#endif // __openma_math_map_h

@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_returnbyvalue_h
-#define __openma_maths_returnbyvalue_h
+#ifndef __openma_math_returnbyvalue_h
+#define __openma_math_returnbyvalue_h
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -52,7 +52,7 @@ namespace internal
   template<typename V1, typename V2>
   struct traits<CrossOpValues<V1,V2>>
   {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<std::decay<V1>::type::ColsAtCompileTime>>::Values;
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V1>::type::ColsAtCompileTime>>::Values;
   };
   
   template<typename V1, typename V2>
@@ -92,7 +92,7 @@ namespace internal
   template<typename V1, typename V2>
   struct traits<TransformOpValues<V1,V2>>
   {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<std::decay<V2>::type::ColsAtCompileTime>>::Values;
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V2>::type::ColsAtCompileTime>>::Values;
   };
   
   // Motion against motion (12 vs 12)
@@ -217,7 +217,7 @@ namespace internal
   template<typename V>
   struct traits<InverseOpValues<V>>
   {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
   };
   
   template<typename V>
@@ -327,7 +327,7 @@ namespace internal
   template<typename V>
   struct traits<EulerAnglesOpValues<V>>
   {
-    using ReturnType = typename ma::maths::Traits<ma::maths::Array<3>>::Values;
+    using ReturnType = typename ma::math::Traits<ma::math::Array<3>>::Values;
   };
   
   template<typename V>
@@ -383,4 +383,4 @@ namespace internal
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-#endif // __openma_maths_returnbyvalue_h
+#endif // __openma_math_returnbyvalue_h

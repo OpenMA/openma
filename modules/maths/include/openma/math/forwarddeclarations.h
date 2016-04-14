@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_forwarddeclarations_h
-#define __openma_maths_forwarddeclarations_h
+#ifndef __openma_math_forwarddeclarations_h
+#define __openma_math_forwarddeclarations_h
 
 // ----------------------------------------------------------------------- //
 //                           FORWARD DECLARATIONS
@@ -41,7 +41,7 @@
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   template <typename Derived> class ArrayBase;
   template <int Cols> class Array;
@@ -66,4 +66,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_forwarddeclarations_h
+#endif // __openma_math_forwarddeclarations_h

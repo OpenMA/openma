@@ -32,12 +32,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_maths_blockop_h
-#define __openma_maths_blockop_h
+#ifndef __openma_math_blockop_h
+#define __openma_math_blockop_h
 
 namespace ma
 {
-namespace maths
+namespace math
 {
   template <typename Xpr, int Cols>
   struct Traits<BlockOp<Xpr,Cols>>
@@ -65,7 +65,7 @@ namespace maths
    * @tparam Xpr Type of the expression that will be used by the block operation.
    * @tparam Cols The number of columns to extract.
    * @todo Write a detailed description
-   * @ingroup openma_maths
+   * @ingroup openma_math
    */
   template <typename Xpr, int Cols>
   class BlockOp : public XprBase<BlockOp<Xpr, Cols>>
@@ -200,4 +200,4 @@ namespace maths
 };
 };
 
-#endif // __openma_maths_blockop_h
+#endif // __openma_math_blockop_h

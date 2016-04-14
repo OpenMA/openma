@@ -1,12 +1,12 @@
 #include <cxxtest/TestDrive.h>
 
-#include <openma/maths.h>
+#include <openma/math.h>
 
 CXXTEST_SUITE(ArrayTest)
 {
   CXXTEST_TEST(assignment)
   {
-    ma::maths::Vector a(10);
+    ma::math::Vector a(10);
     a.values() << -1.0 , -1.0 , -1.0 , 
                    1.0 ,  1.0 ,  1.0 , 
                    0.5 ,  0.5 ,  0.5 , 
@@ -18,7 +18,7 @@ CXXTEST_SUITE(ArrayTest)
                    0.0 ,  0.0 ,  0.0 , 
                   -0.4 , -0.4 , -0.4;
     a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
-    ma::maths::Vector b = a;
+    ma::math::Vector b = a;
     for (int i = 0 ; i < 30 ; ++i)
       TS_ASSERT_EQUALS(a.values().data()[i], b.values().data()[i]);
     for (int i = 0 ; i < 10 ; ++i)
@@ -27,7 +27,7 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(norm)
   {
-    ma::maths::Vector a(10);
+    ma::math::Vector a(10);
     a.values() << -1.0 , -1.0 , -1.0 , 
                    1.0 ,  1.0 ,  1.0 , 
                    0.5 ,  0.5 ,  0.5 , 
@@ -40,7 +40,7 @@ CXXTEST_SUITE(ArrayTest)
                   -0.4 , -0.4 , -0.4;
     a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
     
-    ma::maths::Scalar b = a.norm();
+    ma::math::Scalar b = a.norm();
 
     TS_ASSERT_DELTA(b.values().coeff(0), 0.0, 1e-15);
     TS_ASSERT_DELTA(b.values().coeff(1), 1.732050807568877, 1e-15);
@@ -67,8 +67,8 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(mean)
   {  
-    ma::maths::Scalar a(10), b(10);
-    ma::maths::Position c(10);
+    ma::math::Scalar a(10), b(10);
+    ma::math::Position c(10);
     a.values() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
     a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
     b.values() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
@@ -85,9 +85,9 @@ CXXTEST_SUITE(ArrayTest)
                   -0.4 , -0.4 , -0.4;
     c.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
     
-    ma::maths::Scalar a_ = a.mean();
-    ma::maths::Scalar b_ = b.mean();
-    ma::maths::Position c_ = c.mean();
+    ma::math::Scalar a_ = a.mean();
+    ma::math::Scalar b_ = b.mean();
+    ma::math::Position c_ = c.mean();
 
     TS_ASSERT_EQUALS(a_.values().coeff(0), 0.6375);
     TS_ASSERT_EQUALS(a_.residuals().coeff(0), 0.0);
@@ -109,13 +109,13 @@ CXXTEST_SUITE(ArrayTest)
 
   CXXTEST_TEST(scaledDifference)
   {
-    ma::maths::Scalar a(10), b(10);
+    ma::math::Scalar a(10), b(10);
     a.values().setRandom();
     a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
     b.values().setRandom();
     b.residuals() <<  0.5, 0.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0,  0.0;
     
-    ma::maths::Scalar c = 0.5 * (a - b);
+    ma::math::Scalar c = 0.5 * (a - b);
 
     TS_ASSERT_EQUALS(c.residuals().coeff(0), -1.0);
     TS_ASSERT_EQUALS(c.residuals().coeff(9), -1.0);
@@ -135,15 +135,15 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(normalized)
   {
-    ma::maths::Vector a(10);
+    ma::math::Vector a(10);
     a.values().setRandom();
     a.values().row(9) << 0.0, 0.0, 0.0;
     a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
-    ma::maths::Vector b(10);
+    ma::math::Vector b(10);
     b.values().setRandom();
     b.residuals() << 1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, 0.4;
-    ma::maths::Vector c = a.normalized();
-    ma::maths::Vector d = (b-a).normalized();
+    ma::math::Vector c = a.normalized();
+    ma::math::Vector d = (b-a).normalized();
 
     Eigen::Matrix<double,Eigen::Dynamic,1> norm = c.values().matrix().rowwise().norm();
     for (int i = 1 ; i < 9 ; ++i)
@@ -160,7 +160,7 @@ CXXTEST_SUITE(ArrayTest)
 
   CXXTEST_TEST(cross)
   {
-    ma::maths::Vector a(4), b(4);
+    ma::math::Vector a(4), b(4);
     a.values() << 1.0, 0.0, 0.0,
                   0.0, 1.0, 0.0,
                   0.0, 0.0, 1.0,
@@ -171,10 +171,10 @@ CXXTEST_SUITE(ArrayTest)
                   1.0, 0.0, 0.0,
                   0.0, 0.0, 0.0;
     b.residuals() << 1.0, 0.5, 0.5, 1.0;
-    ma::maths::Vector c = a.cross(b);
+    ma::math::Vector c = a.cross(b);
 
-    const ma::maths::Vector::Values& cv = c.values();
-    const ma::maths::Vector::Residuals& cr = c.residuals();
+    const ma::math::Vector::Values& cv = c.values();
+    const ma::math::Vector::Residuals& cr = c.residuals();
 
     TS_ASSERT_DELTA(cv.coeff(0,0), 0.0, 1e-15);
     TS_ASSERT_DELTA(cv.coeff(0,1), 0.0, 1e-15);
@@ -200,7 +200,7 @@ CXXTEST_SUITE(ArrayTest)
 
   CXXTEST_TEST(crossBis)
   {
-    ma::maths::Vector a(4), b(4), c(4);
+    ma::math::Vector a(4), b(4), c(4);
     a.values().setZero();
     a.residuals().setZero();
     b.values() << 0.0, 0.4, 0.0,
@@ -213,10 +213,10 @@ CXXTEST_SUITE(ArrayTest)
                   0.0, 0.0, 1.5,
                   0.0, 0.0, 0.0;
     c.residuals() << 1.0, 0.5, 0.5, -1.0;
-    ma::maths::Vector d = (c-a).normalized().cross((b-a).normalized());
+    ma::math::Vector d = (c-a).normalized().cross((b-a).normalized());
 
-    const ma::maths::Vector::Values& dv = d.values();
-    const ma::maths::Vector::Residuals& dr = d.residuals();
+    const ma::math::Vector::Values& dv = d.values();
+    const ma::math::Vector::Residuals& dr = d.residuals();
 
     TS_ASSERT_DELTA(dv.coeff(0,0), 0.0, 1e-15);
     TS_ASSERT_DELTA(dv.coeff(0,1), 0.0, 1e-15);
@@ -242,7 +242,7 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(operatorDouble)
   {
-    ma::maths::Position c(10);
+    ma::math::Position c(10);
     c.values() << -1.0 , -1.0 , -1.0 , 
                    1.0 ,  1.0 ,  1.0 , 
                    0.5 ,  0.5 ,  0.5 , 
@@ -266,14 +266,14 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(replicate)
   {
-    ma::maths::Position a(2);
+    ma::math::Position a(2);
     a.values() << -1.0 , -1.0 , -1.0 , 
                    1.0 ,  1.0 ,  1.0;
     a.residuals() << -1.0, 1.0;
     
-    ma::maths::Position b = a.replicate(3);
-    const ma::maths::Position::Values& bv = b.values();
-    const ma::maths::Position::Residuals& br = b.residuals();
+    ma::math::Position b = a.replicate(3);
+    const ma::math::Position::Values& bv = b.values();
+    const ma::math::Position::Residuals& br = b.residuals();
     TS_ASSERT_EQUALS(b.rows(), 6);
     
     TS_ASSERT_DELTA(bv.coeff(0,0),  -1.0, 1e-15);
@@ -305,13 +305,13 @@ CXXTEST_SUITE(ArrayTest)
   
   CXXTEST_TEST(replicateBis)
   {
-    ma::maths::Position::Values av(2,3);
+    ma::math::Position::Values av(2,3);
     av << -1.0 , -1.0 , -1.0 , 
            1.0 ,  1.0 ,  1.0;
            
-    ma::maths::Position b = ma::maths::Position(av,ma::maths::Position::Residuals::Zero(av.rows())).replicate(3);
-    const ma::maths::Position::Values& bv = b.values();
-    const ma::maths::Position::Residuals& br = b.residuals();
+    ma::math::Position b = ma::math::Position(av,ma::math::Position::Residuals::Zero(av.rows())).replicate(3);
+    const ma::math::Position::Values& bv = b.values();
+    const ma::math::Position::Residuals& br = b.residuals();
     TS_ASSERT_EQUALS(b.rows(), 6);
     
     TS_ASSERT_DELTA(bv.coeff(0,0),  -1.0, 1e-15);

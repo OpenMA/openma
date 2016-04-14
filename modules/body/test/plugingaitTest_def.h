@@ -11,7 +11,7 @@
 
 #include <openma/io/handlerreader.h>
 #include <openma/io/file.h>
-#include <openma/maths.h>
+#include <openma/math.h>
 
 #include <cassert>
 
@@ -92,11 +92,11 @@ void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std:
 {
   assert(markers.size() == 4);
   precision.resize(4,1e-5);
-  const auto mot = ma::maths::to_pose(model->segments()->findChild<const ma::TimeSequence*>(frame));
-  const auto o = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[0]));
-  const auto a = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[1]));
-  const auto l = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[2]));  
-  const auto p = ma::maths::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[3]));
+  const auto mot = ma::math::to_pose(model->segments()->findChild<const ma::TimeSequence*>(frame));
+  const auto o = ma::math::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[0]));
+  const auto a = ma::math::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[1]));
+  const auto l = ma::math::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[2]));  
+  const auto p = ma::math::to_position(trial->timeSequences()->findChild<const ma::TimeSequence*>(markers[3]));
   TSM_ASSERT_EQUALS(frame+": mapped pose", mot.isValid(), true);
   TSM_ASSERT_EQUALS(frame+": mapped origin", o.isValid(), true);
   TSM_ASSERT_EQUALS(frame+": mapped AP", a.isValid(), true);
@@ -111,8 +111,8 @@ void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std:
 void compare_joint_kinematics(ma::Node* kinematics, ma::Trial* trial, const std::string& descriptor, const std::string angle, std::vector<double> precision = std::vector<double>(3,1e-4))
 {
   precision.resize(3,1e-4);
-  const auto d = ma::maths::to_vector(kinematics->findChild<const ma::TimeSequence*>(descriptor));
-  const auto a = ma::maths::to_vector(trial->timeSequences()->findChild<const ma::TimeSequence*>(angle));
+  const auto d = ma::math::to_vector(kinematics->findChild<const ma::TimeSequence*>(descriptor));
+  const auto a = ma::math::to_vector(trial->timeSequences()->findChild<const ma::TimeSequence*>(angle));
   TSM_ASSERT_EQUALS(descriptor+": mapped descriptor", d.isValid(), true);
   TSM_ASSERT_EQUALS(angle+": mapped angle", a.isValid(), true);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 1st axis", d.block<1>(0).values(), a.block<1>(0).values(), precision[0]);
