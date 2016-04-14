@@ -47,6 +47,8 @@
 #include "openma/base/trial.h"
 #include "openma/base/logger.h"
 
+#include "Eigen_openma/Utils/sign.h"
+
 #include <algorithm> // std::copy_n
 
 // -------------------------------------------------------------------------- //
@@ -517,6 +519,107 @@ namespace body
     maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
     return true;
   };
+  
+  // ----------------------------------------------------------------------- //
+  
+  PluginGaitPelvisDescriptor::PluginGaitPelvisDescriptor(Node* parent)
+  : EulerDescriptor("Pelvis.Progress.Angle", EulerDescriptor::YXZ, parent)
+  {};
+  
+  bool PluginGaitPelvisDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    OPENMA_UNUSED(options);
+    auto optr = this->pimpl();
+    optr->OutputData.values().col(1) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    optr->OutputData.values().col(1) *= -1.0;
+    optr->OutputData.values().col(2) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  PluginGaitThoraxDescriptor::PluginGaitThoraxDescriptor(Node* parent)
+  : EulerDescriptor("Thorax.Progress.Angle", EulerDescriptor::YXZ, parent)
+  {};
+  
+  bool PluginGaitThoraxDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    maths::Scalar mult = optr->OutputData.block<1>(0);
+    optr->OutputData.values().col(0) -= mult.normalized().values() * range;
+    maths::Scalar::Values temp = optr->OutputData.values().col(2);
+    mult = optr->OutputData.block<1>(2);
+    optr->OutputData.values().col(2) = mult.normalized().values() * range - temp;
+    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    optr->OutputData.values().col(1) *= -1.0;
+    optr->OutputData.values().col(2) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  PluginGaitHeadDescriptor::PluginGaitHeadDescriptor(Node* parent)
+  : EulerDescriptor("Head.Progress.Angle", EulerDescriptor::YXZ, parent)
+  {};
+  
+  bool PluginGaitHeadDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    double range = M_PI;
+    // Option enableDegreeConversion activated?
+    auto it = options.cend();
+    if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
+      range = 180.0;
+    auto optr = this->pimpl();
+    optr->OutputData.values().col(0) *= -1.0;
+    optr->OutputData.values().col(1) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "R."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    optr->OutputData.values().col(1) *= -1.0;
+    optr->OutputData.values().col(2) *= -1.0;
+    maths::to_timesequence(optr->OutputData, "L."+this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+  
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitRightFootDescriptor::PluginGaitRightFootDescriptor(Node* parent)
+  : EulerDescriptor("R.Foot.Progress.Angle", EulerDescriptor::YXZ, parent)
+  {};
+
+  bool PluginGaitRightFootDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    OPENMA_UNUSED(options)
+    auto optr = this->pimpl();
+    maths::Scalar::Values temp = optr->OutputData.values().col(1);
+    optr->OutputData.values().col(1) = -1.0 * optr->OutputData.values().col(2);
+    optr->OutputData.values().col(2) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
+  
+  // ----------------------------------------------------------------------- //
+
+  PluginGaitLeftFootDescriptor::PluginGaitLeftFootDescriptor(Node* parent)
+  : EulerDescriptor("L.Foot.Progress.Angle", EulerDescriptor::YXZ, parent)
+  {};
+
+  bool PluginGaitLeftFootDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
+  {
+    OPENMA_UNUSED(options)
+    auto optr = this->pimpl();
+    maths::Scalar::Values temp = -1.0 * optr->OutputData.values().col(1);
+    optr->OutputData.values().col(1) = optr->OutputData.values().col(2);
+    optr->OutputData.values().col(2) = temp;
+    maths::to_timesequence(optr->OutputData, this->name(), optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Angle, optr->OutputUnit, output);
+    return true;
+  };
 };
 };
 
@@ -703,7 +806,8 @@ namespace body
     }
     Node* segments = model->segments();
     Node* joints = model->joints();
-    Segment *torso = nullptr, *pelvis = nullptr;
+    Segment *torso = nullptr, *pelvis = nullptr,
+            *progression = new Segment("Progression", Part::User, Side::Center, segments);
     Joint* jnt;
     if (optr->Region & Region::Upper)
     {
@@ -738,12 +842,12 @@ namespace body
       }
       jnt = new Joint("Neck", head, torso, joints);
       new PluginGaitNeckDescriptor(jnt);
-      jnt = new Joint("Thorax", nullptr, torso, joints);
-      jnt->setDescription("Torso relative to global frame");
-      // new PluginGaitThoraxDescriptor(jnt);
-      jnt = new Joint("Head", nullptr, head, joints);
-      jnt->setDescription("Head relative to global frame");
-      // new PluginGaitHeadDescriptor(jnt);
+      jnt = new Joint("Thorax.Progress", progression, torso, joints);
+      jnt->setDescription("Torso relative to progression frame");
+      new PluginGaitThoraxDescriptor(jnt);
+      jnt = new Joint("Head.Progress", progression, head, joints);
+      jnt->setDescription("Head relative to progression frame");
+      new PluginGaitHeadDescriptor(jnt);
     }
     if (optr->Region & Region::Lower)
     {
@@ -760,9 +864,9 @@ namespace body
         new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
         jnt = new Joint("L.Ankle", leftShank, leftFoot, joints);
         new PluginGaitLeftAnkleDescriptor(jnt);
-        jnt = new Joint("L.FootProgress", nullptr, leftFoot, joints);
-        jnt->setDescription("Left foot relative to global frame");
-        // new PluginGaitLeftFootProgressDescriptor(jnt);
+        jnt = new Joint("L.Foot.Progress", progression, leftFoot, joints);
+        jnt->setDescription("Left foot relative to progression frame");
+        new PluginGaitLeftFootDescriptor(jnt);
       }
       if (optr->Side & Side::Right)
       {
@@ -775,12 +879,12 @@ namespace body
         new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
         jnt = new Joint("R.Ankle", rightShank, rightFoot, joints);
         new PluginGaitRightAnkleDescriptor(jnt);
-        jnt = new Joint("R.FootProgress", nullptr, rightFoot, joints);
-        jnt->setDescription("Right foot relative to global frame");
-        // new PluginGaitRightFootProgressDescriptor(jnt);
+        jnt = new Joint("R.Foot.Progress", progression, rightFoot, joints);
+        jnt->setDescription("Right foot relative to progression frame");
+        new PluginGaitRightFootDescriptor(jnt);
       }
-      jnt = new Joint("Pelvis", nullptr, pelvis, joints);
-      // new PluginGaitPelvisDescriptor(jnt);
+      jnt = new Joint("Pelvis.Progress", progression, pelvis, joints);
+      new PluginGaitPelvisDescriptor(jnt);
     }
     if ((optr->Region & Region::Full) == Region::Full)
     {
@@ -1016,7 +1120,7 @@ namespace body
     }
     auto optr = this->pimpl();
     Segment* seg = nullptr;
-    
+    TimeSequence *torsoSCS = nullptr, *pelvisSCS = nullptr;
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
@@ -1040,7 +1144,7 @@ namespace body
       const maths::Vector v = w.cross((XP + SS) / 2.0 - (T10 + C7) / 2.0).normalized();
       const maths::Vector u = v.cross(w);
       const maths::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
-      maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
+      torsoSCS = maths::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -1102,7 +1206,7 @@ namespace body
       const maths::Vector v = (L_ASIS - R_ASIS).normalized();
       const maths::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
       const maths::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
-      maths::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
+      pelvisSCS = maths::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------
@@ -1123,6 +1227,96 @@ namespace body
     // --------------------------------------------------
     // Other Segment
     // --------------------------------------------------
+    
+    // -----------------------------------------
+    // Progression frame
+    // -----------------------------------------
+    // Try to find a trajectory can inform us on the direction of progression of the movement
+    // WARNING: This method is not robust in the case where there is a return!
+    seg = model->segments()->findChild<Segment*>("Progression",{{"part", Part::User}},false);
+    {
+      // Keep in local scope
+      TimeSequence* scs = nullptr;
+      if (optr->Region & Region::Lower)
+        scs = pelvisSCS;
+      else if (optr->Region & Region::Upper)
+        scs = torsoSCS;
+      if ((scs == nullptr) || (scs->samples() == 0))
+      {
+        error("Missing data to compute the progression frame. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+        return false;
+      }
+      // Valid first and last samples
+      unsigned fs = 0, ls = scs->samples()-1;
+      while(scs->data(fs,12) < 0.0) ++fs;
+      while(scs->data(ls,12) < 0.0) --ls;
+      if (ls <= fs)
+      {
+        error("Not enough samples to compute the progression frame. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+        return false;
+      }
+      // Find the main axis
+      double udiff[3] = { scs->data(ls,9)  - scs->data(fs,9),
+                          scs->data(ls,10) - scs->data(fs,10),
+                          scs->data(ls,11) - scs->data(fs,11) };
+      unsigned uidx = 0;
+      if (fabs(udiff[1]) > fabs(udiff[uidx])) uidx = 1;
+      if (fabs(udiff[2]) > fabs(udiff[uidx])) uidx = 2;
+      maths::Vector::Values u(1,3);
+      switch(uidx)
+      {
+      case 0:
+        u << sign(udiff[uidx]), 0., 0.;
+        break;
+      case 1:
+        u << 0., sign(udiff[uidx]), 0.;
+        break;
+      case 2:
+        u << 0., 0., sign(udiff[uidx]);
+        break;
+      default:
+        error("Internal error during the computation of the progression frame (u axis). Please contact the developers.");
+        return false;
+      }
+      // Find the vertical axis
+      double wsum[3] = { (scs->data(ls,6) + scs->data(fs,6)) / 2.0,
+                         (scs->data(ls,7) + scs->data(fs,7)) / 2.0,
+                         (scs->data(ls,8) + scs->data(fs,8)) / 2.0 };
+      unsigned widx = 0;
+      if (fabs(wsum[1]) > fabs(wsum[widx])) widx = 1;
+      if (fabs(wsum[2]) > fabs(wsum[widx])) widx = 2;
+      maths::Vector::Values w(1,3);
+      switch(widx)
+      {
+      case 0:
+        w << 1., 0., 0.;
+        break;
+      case 1:
+        w << 0., 1., 0.;
+        break;
+      case 2:
+        w << 0., 0., 1.;
+        break;
+      default:
+        error("Internal error during the computation of the progression frame (w axis). Please contact the developers.");
+        return false;
+      }
+      // Create the TimeSequence representing the pose of the progression frame
+      maths::Vector::Values v(1,3);
+      v << w.coeff(1) * u.coeff(2) - u.coeff(1) * w.coeff(2),
+           w.coeff(2) * u.coeff(0) - u.coeff(2) * w.coeff(0),
+           w.coeff(0) * u.coeff(1) - u.coeff(0) * w.coeff(1);
+      auto progression = new TimeSequence(seg->name()+".SCS", 13, scs->samples(), sampleRate, startTime, TimeSequence::Pose, "", seg);
+      double* data = progression->data();
+      for (size_t i = 0, len = scs->samples() ; i < len ; ++i)
+      {
+        data[i]        = u.coeff(0); data[i+   len] = u.coeff(1); data[i+ 2*len] = u.coeff(2);
+        data[i+ 3*len] = v.coeff(0); data[i+ 4*len] = v.coeff(1); data[i+ 5*len] = v.coeff(2);
+        data[i+ 6*len] = w.coeff(0); data[i+ 7*len] = w.coeff(1); data[i+ 8*len] = w.coeff(2);
+        data[i+ 9*len] = 0.        ; data[i+10*len] = 0.        ; data[i+11*len] = 0.;
+        data[i+12*len] = 0.;
+      }
+    }
     
     // -----------------------------------------
     // Head

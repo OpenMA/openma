@@ -319,6 +319,26 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {6.1e-4});
     compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); // 1e4 : Not the same origin
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4}); // 1e4 : Not the same origin
+    
+    auto progression = model->findChild<ma::TimeSequence*>("Progression.SCS");
+    TS_ASSERT_DIFFERS(progression, nullptr);
+    if (progression == nullptr) return;
+    for (size_t i = 0 ; i < progression->samples() ; ++i)
+    {
+      TS_ASSERT_DELTA(progression->data(i, 0), 1.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 1), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 2), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 3), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 4), 1.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 5), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 6), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 7), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 8), 1.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i, 9), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i,10), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i,11), 0.0, 1e-15);
+      TS_ASSERT_DELTA(progression->data(i,12), 0.0, 1e-15);
+    }
   };
 };
 

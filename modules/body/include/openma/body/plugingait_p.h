@@ -218,6 +218,61 @@ namespace body
   protected:
     virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
   };
+  
+  class PluginGaitPelvisDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitPelvisDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitPelvisDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitThoraxDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitThoraxDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitThoraxDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitHeadDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitHeadDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitHeadDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitRightFootDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitRightFootDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitRightFootDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
+  
+  class PluginGaitLeftFootDescriptor : public EulerDescriptor
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(EulerDescriptor)
+    OPENMA_DECLARE_NODEID(PluginGaitLeftFootDescriptor, EulerDescriptor)
+      
+  public:
+    PluginGaitLeftFootDescriptor(Node* parent);
+  protected:
+    virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) override;
+  };
 };
 };
 

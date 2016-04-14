@@ -50,6 +50,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {1e-4,1e-4,1.1e-4});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
   };
   
   CXXTEST_TEST(kinematicsBothUpperBodyOneFrame)
@@ -94,6 +98,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Shoulder.Angle", "RShoulderAngles");
     compare_joint_kinematics(kinematics, trial, "R.Elbow.Angle", "RElbowAngles");
     compare_joint_kinematics(kinematics, trial, "R.Wrist.Angle", "RWristAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Thorax.Progress.Angle", "RThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Thorax.Progress.Angle", "LThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Head.Progress.Angle", "RHeadAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LHeadAngles");
   };
 
   CXXTEST_TEST(kinematicsBothLowerBodyHoleFrames)
@@ -134,6 +142,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles");
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {1e-4,1e-4,1.1e-4});
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles", {1e-4,1e-4,1.3e-4});
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
   };
 
   CXXTEST_TEST(kinematicsBothUpperBodyHoleFrames)
@@ -178,6 +190,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Shoulder.Angle", "RShoulderAngles");
     compare_joint_kinematics(kinematics, trial, "R.Elbow.Angle", "RElbowAngles");
     compare_joint_kinematics(kinematics, trial, "R.Wrist.Angle", "RWristAngles", {1.5e-4,1e-4,1.3e-4});
+    compare_joint_kinematics(kinematics, trial, "R.Thorax.Progress.Angle", "RThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Thorax.Progress.Angle", "LThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Head.Progress.Angle", "RHeadAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LHeadAngles");
   };
 
   CXXTEST_TEST(kinematicsBothFullBodyFullFrames)
@@ -239,6 +255,14 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {1e-4,1e-4,1.2e-4});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Thorax.Progress.Angle", "RThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Thorax.Progress.Angle", "LThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Head.Progress.Angle", "RHeadAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LHeadAngles");
   };
   
   CXXTEST_TEST(kinematics3BothLowerBodyFF)
@@ -279,6 +303,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAnglesV");
   };
 
   CXXTEST_TEST(kinematics3BothLowerBodyFF_N18)
@@ -319,6 +347,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAnglesV");
   };
 
   CXXTEST_TEST(kinematics3BothLowerBodyNoFF)
@@ -357,6 +389,10 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAnglesV");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAnglesV");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAnglesV");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAnglesV");
   };
   
   CXXTEST_TEST(kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
@@ -415,16 +451,24 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RViconHipAngles");
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RViconKneeAngles");
     compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RViconAnkleAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RViconPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LViconPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RViconFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LViconFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Thorax.Progress.Angle", "RViconThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Thorax.Progress.Angle", "LViconThoraxAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Head.Progress.Angle", "RViconHeadAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LViconHeadAngles");
   };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitKinematicsTest)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyOneFrame)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyOneFrame)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyHoleFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyHoleFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyOneFrame)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyOneFrame)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyHoleFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyHoleFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
