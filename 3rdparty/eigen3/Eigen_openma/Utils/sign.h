@@ -36,7 +36,7 @@
 #define __eigen_openma_sign_h
 
 template <typename T>
-int sign(const T &val)
+inline int sign(const T &val)
 {
   return (val > T(0)) - (val < T(0));
 };
