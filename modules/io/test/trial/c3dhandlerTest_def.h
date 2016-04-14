@@ -81,6 +81,14 @@ inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename
   c3dhandlertest_read_sample01(msgid, filename, &root);
 };
 
+inline void c3dhandlertest_rewrite_sample01(const char* msgid, const char* filenameOut, const char* filepathOut, const char* filepathIn)
+{
+  ma::Node rootIn("rootIn"), rootOut("rootOut");
+  if (!c3dhandlertest_read(msgid, filepathIn, &rootIn)) return;
+  if (!c3dhandlertest_write(msgid, filepathOut, &rootIn)) return;
+  if (!c3dhandlertest_read(msgid, filepathOut, &rootOut)) return;
+  c3dhandlertest_read_sample01(msgid, filenameOut, &rootOut);
+};
 
 #endif // c3dhandlerTest_def_h
 

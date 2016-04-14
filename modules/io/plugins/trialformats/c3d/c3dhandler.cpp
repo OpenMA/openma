@@ -780,9 +780,427 @@ namespace io
     }
   };
   
+  /**
+   * Use the native byte order format to write data
+   */
   void C3DHandler::writeDevice(const Node* const input)
   {
-    OPENMA_UNUSED(input);
+    auto optr = this->pimpl();
+    // Any valid data?
+    auto trials = input->findChildren<const Trial*>({},{},false);
+    if (trials.empty())
+      throw(FormatError("ORG.C3D - No Trial object found in the children of the given node."));
+    else if (trials.size() > 1)
+      throw(FormatError("ORG.C3D - More than one Trial object was found in the children of the given node."));
+    auto trial = trials[0];
+    // Create a native binary stream
+    BinaryStream stream(optr->Source);
+    size_t writtenBytes = 0;
+    double sampleRate = 0.0;
+    double startTime = 0.0;
+    unsigned frames = 0;
+    double pointScaleFactor = 1.0;
+    uint16_t numberAnalogSamplesPerPointSample = 1;
+    const size_t maxNumEventsHeader = 18;
+    std::vector<const TimeSequence*> points, analogs;
+    std::vector<const Event*> events, eventsHeader;
+    // Prepare the content of the Trial
+    //  - Any timesequence? If yes, then this is not a template file
+    auto timeSequencesNode = trial->findChild("TimeSequences",{},false);
+    if ((timeSequencesNode != nullptr) && !timeSequencesNode->children().empty())
+    {
+      // Verify if:
+      //  1. All the time sequence starts at the same time
+      //  2. All the sample frequencies are the same
+      //  3. All the number of samples are the same
+      // Do it on the points
+      points = timeSequencesNode->findChildren<const TimeSequence*>({},{{"components",4}},false);
+      auto it = points.begin();
+      while (it != points.end())
+      {
+        if (((*it)->type() & TimeSequence::Reconstructed) != TimeSequence::Reconstructed)
+          it = points.erase(it);
+        else
+          ++it;
+      }
+      bool first = true;
+      for (const auto& point: points)
+      {
+        if (first)
+        {
+          sampleRate = point->sampleRate();
+          startTime = point->startTime();
+          frames = point->samples();
+          pointScaleFactor = point->scale();
+          first = false;
+        }
+        if (fabs(point->sampleRate() - sampleRate) > std::numeric_limits<float>::epsilon())
+          throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same sample frequency than the others."));
+        if (fabs(point->startTime() - startTime) > std::numeric_limits<float>::epsilon())
+          throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same start time than the others."));
+        if (point->samples() != frames)
+          throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same number of samples than the others."));
+      }
+      // And then the analog channels
+      analogs = timeSequencesNode->findChildren<const TimeSequence*>({},{{"type",TimeSequence::Analog},{"components",1}},false);
+      optr->AnalogChannelScale.resize(analogs.size());
+      optr->AnalogZeroOffset.resize(analogs.size());
+      first = true;
+      size_t inc = 0;
+      for (const auto& analog: analogs)
+      {
+        if (first)
+        {
+          numberAnalogSamplesPerPointSample = analog->samples() / frames;
+          first = false;
+        }
+        if ((analog->samples() / frames) != numberAnalogSamplesPerPointSample)
+          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have the same number of samples than the others."));
+        if ((analog->samples() % frames) != 0)
+          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have the same sample rate than the others."));
+        optr->AnalogChannelScale[inc] = analog->scale();
+        optr->AnalogZeroOffset[inc] = analog->offset();
+        ++inc;
+      }
+    }
+    int firstFrame = static_cast<int>(startTime * sampleRate) + 1;
+    int lastFrame = firstFrame + frames - 1;
+    const Any& pointMaximumInterpolationGapProperty = trial->property("c3d_pointmaxinterpgap");
+    uint16_t pointMaximumInterpolationGap = pointMaximumInterpolationGapProperty.isValid() ? pointMaximumInterpolationGapProperty.cast<uint16_t>() : 10;
+    //  - Look for events to store in the header.
+    auto eventsNode = trial->findChild("Events",{},false);
+    if (eventsNode != nullptr)
+    {
+      events = eventsNode->findChildren<const Event*>();
+      auto it = events.begin();
+      while (it != events.end())
+      {
+        if ((*it)->property("c3d_fromheader").cast<bool>())
+        {
+          if ((*it)->name().size() > 4)
+            throw(FormatError("ORG.C3D - The event '" + (*it)->name() + "' is set to be stored in the format header but its label has more than 4 characters."));
+          eventsHeader.push_back(*it);
+          it = events.erase(it);
+        }
+        else
+          ++it;
+      }
+      if (eventsHeader.size() > maxNumEventsHeader)
+        throw(FormatError("ORG.C3D - The number of events to store in the header is greater to the maximum number allowed (i.e. " + std::to_string(maxNumEventsHeader) + ")."));
+    }
+    bool templateContent = analogs.empty() && points.empty() && events.empty() && eventsHeader.empty();
+    // Write the prepared content
+    if (!templateContent)
+    {
+    // ====== //
+    // HEADER //
+    // ====== //
+      // The number of the first block of the Parameter section
+      writtenBytes += stream.writeI8(static_cast<int8_t>(2));
+      // C3D header key
+      writtenBytes += stream.writeI8(static_cast<int8_t>(80));
+      // Number of points
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(points.size()));
+      // Total number of analog samples per 3d frame
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(analogs.size() * numberAnalogSamplesPerPointSample));
+      // First frame
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(firstFrame > 65535 ? 65535 : firstFrame));
+      // Last frame
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(lastFrame > 65535 ? 65535 : lastFrame));
+      // Maximum interpolation gap in 3D frames
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(pointMaximumInterpolationGap));
+      // The 3D scale factor
+      writtenBytes += stream.writeFloat(-1.0f * static_cast<float>(pointScaleFactor));
+      // The (false) number of the first block of the Data section
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(0));
+      // The number of analog samples per analog channel
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(numberAnalogSamplesPerPointSample));
+      // The 3D frame rate
+      writtenBytes += stream.writeFloat(static_cast<float>(sampleRate));
+      // For future used : word 13-147 => 135 words unused => 270 bytes
+      writtenBytes += stream.fill(270);
+      // Label and Range data
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(0));
+      // The first block of the Label and Range section
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(0));
+      // The event label format. 
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(12345));
+      // Number of defined time events
+      writtenBytes += stream.writeI16(static_cast<int16_t>(eventsHeader.size()));
+      // Word 152 : Reserved for future use
+      writtenBytes += stream.fill(2);
+      // Event time
+      for(const auto& event : eventsHeader)
+        writtenBytes += stream.writeFloat(static_cast<float>(event->time()));
+      writtenBytes += stream.fill(4*(maxNumEventsHeader-eventsHeader.size()));
+      // Event display flags (not supported in OpenMA. Always set to 1)
+      for(size_t i = 0, len = eventsHeader.size() ; i < len ; ++i)
+        writtenBytes += stream.writeI8(static_cast<int8_t>(1));
+      writtenBytes += stream.fill(maxNumEventsHeader-eventsHeader.size());
+      // Word 198 : Reserved for future use
+      writtenBytes += stream.fill(2);
+      // Event labels
+      for(const auto& event : eventsHeader)
+      {  
+        std::string label = event->name();
+        label.resize(4,' ');
+        writtenBytes += stream.writeString(label);
+      }
+      writtenBytes += stream.fill(4*(maxNumEventsHeader-eventsHeader.size()));
+      // Fill the end of the header section with 0x00
+      stream.fill(512 - writtenBytes);
+    }
+    // ========= //
+    // PARAMETER //
+    // ========= //
+    writtenBytes = 0;
+    // The number of the first block of the Parameter data in the Parameter section
+    writtenBytes += stream.writeI8(static_cast<int8_t>(1));
+     // C3D header key
+    writtenBytes += stream.writeI8(static_cast<int8_t>(80));
+    // The (false) number of parameter block. This data is re-write at the end of this function
+    writtenBytes += stream.writeI8(static_cast<int8_t>(0));
+    // The processor type
+    writtenBytes += stream.writeI8(static_cast<int8_t>(static_cast<int>(stream.byteOrder()) + 83));
+    // Transfrom the trial's dynamic properties into group and parameters
+    const auto& dynamicProperties = trial->dynamicProperties();
+    std::vector<const char*> properties;
+    properties.reserve(dynamicProperties.size());
+    for (auto it = dynamicProperties.cbegin() ; it != dynamicProperties.cend() ; ++it)
+    {
+      // Remove properties that do not find the required format: 'GROUP:PARAMETER'.
+      if (it->first.find(':') == std::string::npos)
+        continue;
+      // Special parameter updated during the writing 
+      if (it->first.compare("POINT:DATA_START") == 0)
+        continue;
+      properties.push_back(it->first.c_str());
+    }
+    std::sort(properties.begin(), properties.end(), [](const char* lhs, const char* rhs){return strcmp(lhs,rhs) < 0;});
+    using group_t = std::tuple<const char*,uint8_t,int8_t>; // label (chars & len), id
+    std::vector<group_t> groups;
+    using parameter_t = std::tuple<const char*,uint8_t,const Any&,int8_t>; // label (chars & len), value, id
+    std::vector<parameter_t> parameters;
+    const char* cur = nullptr;
+    int id = 0;
+    int8_t idPoint = 0;
+    for (auto it = properties.cbegin() ; it != properties.cend() ; ++it)
+    {
+      const char* ch = strchr(*it,':');
+      size_t idx = ch - *it;
+      if ((idx == 0) || (idx > 127))
+        throw(FormatError("ORG.C3D - The name of the group must be between 1 and 127 characters: '" + std::string(*it,idx+1) + "'."));
+      if ((cur == nullptr) || (strncmp(cur, *it, idx) != 0))
+      {
+        if (id > 127)
+          throw(FormatError("ORG.C3D - A maximum of 127 groups was reached."));
+        groups.emplace_back(*it, static_cast<uint8_t>(idx), static_cast<int8_t>(++id));
+        if (strncmp(*it, "POINT", idx) == 0)
+          idPoint = id;
+        cur = *it;
+      }
+      ++ch; ++idx; // Next character
+      size_t len = strlen(*it) - idx;
+      if ((len == 0) || (len > 127))
+        throw(FormatError("ORG.C3D - The name of the parameter must be between 1 and 127 characters: '" + std::string(ch,idx+1) + "'."));
+      const auto& value = dynamicProperties.find(*it)->second;
+      if (!value.isArithmetic() && !value.isString())
+        throw(FormatError("ORG.C3D - The value stored in the ma::Any object '" + std::string(*it) + "' is not compatible with the C3D format."));
+      parameters.emplace_back(ch, static_cast<uint8_t>(len), value, id);
+    }
+    for (const auto& group: groups)
+    {
+      // Number of characters in the name
+      writtenBytes += stream.writeI8(std::get<1>(group));
+      // ID number
+      writtenBytes += stream.writeI8(static_cast<int8_t>(-1 * std::get<2>(group)));
+      // Name
+      writtenBytes += stream.writeChar(std::get<1>(group),std::get<0>(group));
+      // The Offset to the next parameter/group
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(3));
+      // Number of characters in the description
+      writtenBytes += stream.writeU8(static_cast<uint8_t>(0));
+      // The description
+      // writtenBytes += stream.writeString(???);
+    }
+    for (const auto& parameter: parameters)
+    {
+      // Verify the compatibility of the property (format, dimensions, etc.)
+      const auto& data = std::get<2>(parameter);
+      const auto& type = data.type();
+      bool single = (data.size() == 1);
+      auto dimensions = data.dimensions();
+      int8_t format = 0;
+      std::vector<std::string> temp;
+      std::function<size_t()> writeValue;
+      if ((type == static_typeid<const char*>()) || (type == static_typeid<std::string>()))
+      {
+        format = -1;
+        temp = data.cast<std::vector<std::string>>();
+        if (single)
+        {
+          dimensions[0] = temp[0].length();
+        }
+        else
+        {
+          size_t max = 0;
+          for (auto& t : temp)
+            max = std::max(max, t.length());
+          dimensions.insert(dimensions.begin(), max);
+          for (auto& t : temp)
+            t.resize(max,' ');
+        }
+        writeValue = [&]()->size_t{return stream.writeString(temp.size(), temp.data());};
+      }
+      else if ((type == static_typeid<bool>()) || (type == static_typeid<int8_t>()))
+      {
+        format = 1;
+        if (single) dimensions.clear();
+        writeValue = [&]()->size_t{return stream.writeI8(data.size(), data.cast<std::vector<int8_t>>().data());};
+      }
+      else if ((type == static_typeid<uint8_t>()) || (type == static_typeid<int16_t>()))
+      {
+        format = 2;
+        if (single) dimensions.clear();
+        writeValue = [&]()->size_t{return stream.writeI16(data.size(), data.cast<std::vector<int16_t>>().data());};
+      }
+      else if (type == static_typeid<float>())
+      {
+        format = 4;
+        if (single) dimensions.clear();
+        writeValue = [&]()->size_t{return stream.writeFloat(data.size(), data.cast<std::vector<float>>().data());};
+      }
+      else if ((type == static_typeid<double>()) || (type == static_typeid<long double>()))
+      {
+        // Check if the values are greater than the maximum allowed for a float
+        const auto& values = data.cast<std::vector<double>>();
+        for (const auto& value: values)
+          if (value > std::numeric_limits<float>::max()) throw(FormatError("ORG.C3D - At least one value in a parameter exceeds the maximum for a real."));
+        writeValue = [&]()->size_t{return stream.writeFloat(data.size(), data.cast<std::vector<float>>().data());};
+        format = 4;
+        if (single) dimensions.clear();
+      }
+      else 
+      {
+        // All the other formats are integer. Check if the values are not greater than the maximum allowed for an int16_t.
+        const auto& values = data.cast<std::vector<int>>();
+        for (const auto& value: values)
+          if (value > std::numeric_limits<int16_t>::max()) throw(FormatError("ORG.C3D - At least one value in a parameter exceeds the maximum for an integer."));
+        writeValue = [&]()->size_t{return stream.writeI16(data.size(), data.cast<std::vector<int16_t>>().data());};
+        format = 2;
+        if (single) dimensions.clear();
+      }
+      if (dimensions.size() > 7)
+        throw(FormatError("ORG.C3D - The number of dimensions exceeds the maximum of 7 dimensions."));
+      for (const auto& dim : dimensions)
+        if (dim > 255) throw(FormatError("ORG.C3D - One of the dimension exceeds the maximum of 255 elements."));
+      size_t size = std::accumulate(dimensions.begin(), dimensions.end(), std::abs(format), std::multiplies<size_t>());;
+      size_t offset = 5 + dimensions.size() + size;
+      if (offset > 65535)
+        throw(FormatError("ORG.C3D - Elements' size exceeds the maximum of 65535 bytes."));
+      std::vector<uint8_t> dims(dimensions.cbegin(), dimensions.cend());
+      // Write the data
+      // Number of characters in the name
+      writtenBytes += stream.writeI8(std::get<1>(parameter));
+      // ID number
+      writtenBytes += stream.writeI8(std::get<3>(parameter));
+      // Name
+      writtenBytes += stream.writeChar(std::get<1>(parameter),std::get<0>(parameter));
+      // Offset
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(offset));
+      // Format
+      writtenBytes += stream.writeI8(format);
+      // Dimension(s)
+      writtenBytes += stream.writeU8(static_cast<uint8_t>(dims.size()));
+      writtenBytes += stream.writeU8(dims.size(), dims.data());
+      // Values
+      writtenBytes += writeValue();
+      // Number of characters in the description
+      writtenBytes += stream.writeU8(static_cast<uint8_t>(0));
+      // The description
+      // writtenBytes += stream.writeString(???);
+    }
+    // POINT:DATA_START final
+    uint16_t dataStartBlock = 0;
+    if (!templateContent)
+    {
+      size_t totalWrittenBytes = writtenBytes + 25; // 25: 1 + 1 + 16 + 2 + 1 + 1 + 2 + 1
+      totalWrittenBytes += (512 - (totalWrittenBytes % 512));
+      uint8_t pNB = static_cast<uint8_t>(totalWrittenBytes / 512);
+      dataStartBlock = 2 + pNB;
+
+      writtenBytes += stream.writeI8(10);
+      // ID number
+      writtenBytes += stream.writeI8(idPoint);
+      // Name
+      writtenBytes += stream.writeChar(10,"DATA_START");
+      // Offset
+      writtenBytes += stream.writeU16(7);
+      // Format
+      writtenBytes += stream.writeI8(2);
+      // Dimension's size
+      writtenBytes += stream.writeU8(0);
+      // Values
+      writtenBytes += stream.writeU16(dataStartBlock);
+      // Number of characters in the description
+      writtenBytes += stream.writeU8(static_cast<uint8_t>(0));
+
+      writtenBytes += stream.fill(512 - (writtenBytes % 512));
+      // Back to the parameter: number of blocks
+      optr->Source->seek(512 * (2 - 1) + 2, Origin::Begin);
+      stream.writeU8(pNB);
+      // Back to the header: data first block
+      optr->Source->seek(16, Origin::Begin);
+      stream.writeU16(dataStartBlock);
+    }
+    else
+    {
+      writtenBytes += stream.fill(512 - (writtenBytes % 512));
+      uint8_t pNB = static_cast<uint8_t>(writtenBytes / 512);
+      // Back to the parameter: number of blocks
+      optr->Source->seek(2, Origin::Begin);
+      stream.writeU8(pNB);
+    }
+    if (writtenBytes > (255 * 512)) // 255 * 512 = max size
+      throw(FormatError("ORG.C3D - Total size reserved for the parameters was exceeded."));
+    
+    // ==== //
+    // DATA //
+    // ==== //
+    if (!templateContent)
+    {
+      optr->Source->seek(512 * (dataStartBlock - 1), Origin::Begin);
+      C3DDataStreamFloat dataStream(&stream);
+      for (size_t frame = 0 ; frame < frames ; ++frame)
+      {
+        for (const auto& point : points)
+        {
+          dataStream.writePoint(
+            point->data()[frame],
+            point->data()[frame + frames],
+            point->data()[frame + 2*frames],
+            point->data()[frame + 3*frames],
+            pointScaleFactor);
+        }
+        size_t inc = 0, incChannel = 0, analogFrame = numberAnalogSamplesPerPointSample * frame;
+        auto itA = analogs.cbegin();
+        while (itA != analogs.cend())
+        {
+          dataStream.writeAnalog(
+            (*itA)->data()[analogFrame]
+            / optr->AnalogChannelScale[incChannel]
+            / optr->AnalogUniversalScale
+            + optr->AnalogZeroOffset[incChannel]);
+          ++itA; ++incChannel;
+          if ((itA == analogs.cend()) && (inc < static_cast<size_t>(numberAnalogSamplesPerPointSample - 1)))
+          {
+            itA = analogs.cbegin();
+            incChannel = 0;
+            ++inc; ++analogFrame;
+          }
+        }
+      }
+    }
   };
 };
 };
