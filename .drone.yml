@@ -1,0 +1,36 @@
+# NOTE: This configuration file is not used by drone.io but as a backup file.
+
+# BEFORE
+# ======
+# Switch to GCC 4.8 to have the C++11 support
+echo 2 | sudo update-alternatives --config gcc
+# Root path
+ROOT=`pwd`
+
+# INSTALL
+# =======
+# CMake 3.1 or later is needed but drone.io still uses CMake 2.8.7
+sudo add-apt-repository ppa:george-edison55/precise-backports -y > /dev/null 2>&1
+# Doxygen 1.8.9
+sudo add-apt-repository ppa:ricotz/staging -y > /dev/null 2>&1
+# Error with google chrome binaries
+sudo rm -f /etc/apt/sources.list.d/google*
+# Update the package manager
+sudo apt-get update > /dev/null 2>&1
+# Install cmake & doxygen
+sudo apt-get install cmake doxygen > /dev/null 2>&1
+
+# SCRIPT
+# ======
+# Download the data used for the unit test
+git clone https://github.com/OpenMA/openma-data.git data
+# Building folder
+mkdir build && cd build
+# Configure
+cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=$ROOT/data -G "Unix Makefiles" ..
+# Compile
+make
+# Test
+ctest -VV
+# Generate the doxygen documentation
+make doxygen_cpp
