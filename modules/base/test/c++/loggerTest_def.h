@@ -3,6 +3,8 @@
 
 #include <openma/base/logger.h>
 
+#include <cstring> // strcmp
+
 struct Verifier : ma::Logger::Device
 {
   Verifier() : ma::Logger::Device(), ref(nullptr) {};

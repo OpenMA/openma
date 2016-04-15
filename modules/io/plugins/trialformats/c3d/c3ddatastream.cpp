@@ -37,6 +37,7 @@
 #include "openma/io/binarystream.h"
 
 #include <cmath> // fabs
+#include <cstring> // memcpy
 
 namespace ma
 {

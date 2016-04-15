@@ -35,6 +35,7 @@
 #ifndef __eigen_openma_gammaln_h
 #define __eigen_openma_gammaln_h
 
+#include <limits>
 #include <cassert>
 
 /**
