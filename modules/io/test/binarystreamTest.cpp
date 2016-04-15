@@ -5,8 +5,6 @@
 #include <openma/io/binarystream.h>
 #include <openma/io/enums.h>
 
-#include "BinaryStreamTest_def.h"
-
 CXXTEST_SUITE(BinaryStreamTest)
 {
   CXXTEST_TEST(readIeeeLittleEndian)
