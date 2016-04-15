@@ -18,7 +18,9 @@ sudo rm -f /etc/apt/sources.list.d/google*
 # Update the package manager
 sudo apt-get update > /dev/null 2>&1
 # Install cmake & doxygen
-sudo apt-get install cmake doxygen > /dev/null 2>&1
+sudo apt-get install cmake doxygen libclang1 > /dev/null 2>&1
+# libclang.so is not found by Doxygen
+sudo ln -s /usr/lib/libclang.so.1 /usr/lib/libclang.so
 
 # SCRIPT
 # ======
