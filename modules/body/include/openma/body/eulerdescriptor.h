@@ -67,7 +67,7 @@ namespace body
     static _OPENMA_CONSTEXPR std::array<int,3> XZX;
     static _OPENMA_CONSTEXPR std::array<int,3> YXY;
 #else
-    // Tait–Bryan (Cardan) angles 
+    // Tait-Bryan (Cardan) angles
     static _OPENMA_CONSTEXPR std::array<int,3> XYZ{{0,1,2}};
     static _OPENMA_CONSTEXPR std::array<int,3> YZX{{1,2,0}};
     static _OPENMA_CONSTEXPR std::array<int,3> ZXY{{2,0,1}};
