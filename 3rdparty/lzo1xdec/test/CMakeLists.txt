@@ -1,0 +1,1 @@
+ADD_CXXTEST_TESTDRIVER(lzo1xdec lzo1xdecTest.cpp lzo1xdec)
