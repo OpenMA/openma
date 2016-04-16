@@ -6,20 +6,22 @@ OpenMA is an open-source and cross-platform library for movement analysis and re
 
 ##Documentation##
 
-The user documentation is centralized and accessible over our website [openma.org](http://openma.org). The developer documentation is available on the Github [wiki].
+The user documentation is centralized and accessible over our website [openma.org](http://openma.org). The developer documentation is available on the Github [wiki](https://github.com/OpenMA/openma/wiki).
 
 ##Programming languages##
 
 Most of the code is written in C++. If this language is mostly used in the industry, this is not the case in research laboratories. To tackle this problem, the C++ code was wrapped to different scientific programming languages.
+
  - Matlab toolbox composed of packages and classes
  - Python 2 & 3 packages composed of classes (coming soon)
+
 The API for binding languages is as close as possible to the C++ API. But when possible it uses native types (e.g. matrices, cells, etc.).
 
 ##Technologies##
 
 This project uses lots of features introduced in the **C++11 standard** (variadic template, smart pointer, unordered map, auto keyword, etc.). For this reason, a compiler supporting the C++11 standard must be used (e.g MSVC 2013, GCC 4.8, or clang 3.3). The application [CMake](http://www.cmake.org) used for the build system must be at least the release version 3.1.
 
-The numerical computation is realized internally using the [Eigen](http://eigen.tuxfamily.org) library that uses **template expression**. On top of Eigen, OpenMA propose the nested namespace `math`. Several types and operations are proposed to handle data occlusion automatically. Thus, the implementation of numerical analysis is simplified (e.g. no need of ```for``` loop to process each sample, or to know if the sample is occluded or not).
+The numerical computation is realized internally by the [Eigen](http://eigen.tuxfamily.org) library that uses **template expression**. On top of Eigen, OpenMA propose the nested namespace `math`. Several types and operations are proposed to handle data occlusion automatically. Thus, the implementation of numerical analysis is simplified (e.g. no need of ```for``` loop to process each sample, or to know if the sample is occluded or not).
 
 The **opaque pointer** technique (also known as the pimpl idiom) is used in order to keep ABI compatibility between minor release of OpenMA. This point is important for third-party software (and plugins) which uses OpenMA as dynamic libraries.
 
@@ -58,7 +60,7 @@ This part verifies the quality of the implementation (i.e. no lexical, syntactic
 
 To be sure that unit tests executed in the *continuous integration* part covers all the classes/functions proposed in OpenMA, a coverage analysis is realized. It gives a metrics regarding the number of calls used in the unit tests for each methods/functions.
 
-###API documentation [![Doxygen Coverage Status](https://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.svg)](https://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.resume.txt)###
+###API documentation [![Doxygen Coverage Status](http://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.svg)](http://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.resume.txt)###
 The documentation of the API is built each time a commit is sent on the server. Internally, [Doxygen](http://www.doxygen.org) is used to verify and generate documentation of the C++ code (classes, methods, etc.). Then, a custom engine is used to generate the online documentation available on [openma.org](http://openma.org).
 
 ##License##
