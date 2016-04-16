@@ -9,8 +9,9 @@ IF(WITH_COVERALLS_ENABLED)
   ADD_CUSTOM_TARGET(coveralls
     # Generate the output
     COMMAND ${CMAKE_COMMAND}
-      -DCOVERAGE_SRCS_PATH="${PROJECT_SOURCE_DIR}/modules"
-      -DCOVERAGE_SRCS_EXCLUDED=""
+      -DCOVERAGE_SRC_PATH="${PROJECT_SOURCE_DIR}/modules"
+      -DCOVERAGE_SRC_EXCLUDED=".*_p.h::.*test.*::.*bindings.*::.*plugins.*"
+      -DCOVERAGE_BIN_EXCLUDED=".*3rdparty.*"
       -DCOVERALLS_OUTPUT_FILE="${COVERALLS_FILE}"
       -DCOV_PATH="${PROJECT_BINARY_DIR}"
       -DPROJECT_ROOT="${PROJECT_SOURCE_DIR}"
