@@ -48,7 +48,8 @@ namespace io
 inline void load_handler_plugins(PluginManager<HandlerPlugin>* manager)
 {
   HandlerPlugin* plugin = nullptr;
-  @OPENMA_STATIC_IO_PLUGIN_LOADER_COMMANDS@
+  
+@OPENMA_STATIC_IO_PLUGIN_LOADER_COMMANDS@
 };
 
 };
