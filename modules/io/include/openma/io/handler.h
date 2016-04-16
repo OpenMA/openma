@@ -58,6 +58,12 @@ namespace io
   
   class HandlerPrivate;
   
+  class OPENMA_IO_EXPORT FormatError : public Exception
+  {
+  public:
+    explicit FormatError(const std::string& msg) : Exception(msg) {};
+  };
+  
   class OPENMA_IO_EXPORT Handler
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(Handler)
@@ -81,14 +87,6 @@ namespace io
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;
   
   protected:
-    class FormatError : public Exception
-    {
-    public:
-      explicit FormatError(const std::string& msg)
-      : Exception(msg)
-      {};
-    };
-    
     Handler(HandlerPrivate& pimpl) _OPENMA_NOEXCEPT;
     
     void setError(Error code, const std::string& msg = std::string{}) _OPENMA_NOEXCEPT;

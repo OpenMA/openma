@@ -149,7 +149,7 @@ namespace io
         excmsg = "Unknown error associated with the device";
       this->setError(Error::Device, excmsg);
     }
-    catch (Handler::FormatError& e)
+    catch (FormatError& e)
     {
       this->setError(Error::InvalidData, e.what());
     }
@@ -188,7 +188,7 @@ namespace io
       this->setError(Error::None); // reset
       this->writeDevice(input);
     }
-    catch (Handler::FormatError& e)
+    catch (FormatError& e)
     {
       this->setError(Error::InvalidData, e.what());
     }
@@ -286,14 +286,14 @@ namespace io
   // ----------------------------------------------------------------------- //
   
   /**
-   * @class Handler::FormatError openma/io/handler.h
+   * @class FormatError openma/io/handler.h
    * @brief General exception to use when an error happens during the reading/writing of data.
    * The internal implementation of a Handler use exception to determine if something wrong happened.
    * All kind of exceptions are catched, but it is strongly advise to use FormatError for case managed by an handler.
    */
   
   /**
-   * @fn explicit Handler::FormatError::FormatError(const std::string& msg)
+   * @fn explicit FormatError::FormatError(const std::string& msg)
    * Construct a FormatError exception
    */
 };
