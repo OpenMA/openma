@@ -261,9 +261,9 @@ namespace io
    */
   bool HandlerReader::read(Node* root)
   {
-    auto optr = this->pimpl();
-    if ((optr->Reader == nullptr) && !this->canRead())
+    if (!this->canRead())
       return false;
+    auto optr = this->pimpl();
     auto result = optr->Reader->read(root);
     this->setError(optr->Reader->errorCode(), optr->Reader->errorMessage());
     return result;
