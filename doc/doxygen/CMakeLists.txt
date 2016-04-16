@@ -15,7 +15,7 @@ ADD_CUSTOM_TARGET(doxygen_cpp
 
 IF(PYTHONINTERP_FOUND)
   ADD_CUSTOM_COMMAND(TARGET doxygen_cpp POST_BUILD
-    COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/3rdparty/doxygen/doxy-coverage.py --badge --noerror ${PROJECT_BINARY_DIR}/doc/_doxygen/xml > doxy-coverage.resume.txt
+    COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/doc/doxygen/doxy-coverage.py --badge --noerror ${PROJECT_BINARY_DIR}/doc/_doxygen/xml > doxy-coverage.resume.txt
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     )
 ENDIF()
