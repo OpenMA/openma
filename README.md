@@ -40,7 +40,7 @@ This part compiles the code on different operating systems in release mode and v
   - Processor architecture(s): x86_64
   - Libraries build mode(s): Static / Shared
 
- - **Linux [[![Build Status](https://drone.io/github.com/OpenMA/openma/status.png)](https://drone.io/github.com/OpenMA/openma/latest)**
+ - **Linux [![Build Status](https://drone.io/github.com/OpenMA/openma/status.png)](https://drone.io/github.com/OpenMA/openma/latest)**
   - Compiler(s): GCC >= 4.8
   - Processor architecture(s): x86_64
   - Libraries build mode(s): Shared
