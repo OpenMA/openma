@@ -41,6 +41,7 @@ import sys
 import argparse
 import urllib
 import xml.etree.ElementTree as ET
+import math
 
 # Defaults
 ACCEPTABLE_COVERAGE = 80
@@ -169,7 +170,7 @@ def main():
 	# Arguments
 	parser = argparse.ArgumentParser()
 	parser.add_argument ("dir",         action="store",      help="Path to Doxygen's XML doc directory")
-	parser.add_argument ("--badge",     action="store_true", help="Generate a badge from shields.io")
+	parser.add_argument ("--badge",     action="store_true", help="Generate a badge like shields.io")
 	parser.add_argument ("--noerror",   action="store_true", help="Do not return error code after execution")
 	parser.add_argument ("--threshold", action="store",      help="Min acceptable coverage percentage (Default: %s)"%(ACCEPTABLE_COVERAGE), default=ACCEPTABLE_COVERAGE, type=int)
 
@@ -187,19 +188,37 @@ def main():
 	# Generate badge
 	if ns.badge:
 		total_per = ns.threshold - err
+        # Color
 		if total_per >= 95:
-			color = "brightgreen"
+			color = "#4c1" # brightgreen
 		elif total_per >= 80:
-			color = "green"
+			color = "#97CA00" # green
 		elif total_per >= 65:
-			color = "yellowgreen"
+			color = "#a4a61d" # yellowgreen
 		elif total_per >= 50:
-			color = "yellow"
+			color = "#dfb317" # yellow
 		elif total_per >= 35:
-			color = "orange"
+			color = "#fe7d37" # orange
 		else:
-			color = 'red'
-		urllib.urlretrieve("http://img.shields.io/badge/doxygen-"+str(total_per)+"%25-"+color+".svg", "doxy-coverage.svg")
+			color = '#e05d44' # red
+        # With
+        digits = int(math.log10(total_per))+1
+        if digits == 1:
+            width = "88"
+            d = "29"
+            x = "72.5"
+        elif digits == 2:
+            width = "94"
+            d = "35"
+            x = "75.5"
+        else:
+            width = "102"
+            d = "43"
+            x = "79.5"
+        # SVG
+        f = open('doxy-coverage.svg','w')
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="20"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><mask id="a"><rect width="' + width + '" height="20" rx="3" fill="#fff"/></mask><g mask="url(#a)"><path fill="#555" d="M0 0h59v20H0z"/><path fill="' + color + '" d="M59 0h' + d + 'v20H59z"/><path fill="url(#b)" d="M0 0h' + width + 'v20H0z"/></g><g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11"><text x="29.5" y="15" fill="#010101" fill-opacity=".3">Doxygen</text><text x="29.5" y="14">doxygen</text><text x="' + x + '" y="15" fill="#010101" fill-opacity=".3">' + str(total_per) + '%</text><text x="' + x + '" y="14">' + str(total_per) + '%</text></g></svg>')
+        f.close()
 
 	if ns.noerror:
 		return
