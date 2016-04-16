@@ -5,7 +5,7 @@
 # - Merging of GCDA file results (very important when the files to cover are 
 #   used in different libraries/binaries)
 #
-# [1]see https://github.com/JoakimSoderberg/coveralls-cmake)
+# [1]see https://github.com/JoakimSoderberg/coveralls-cmake
 #
 # This is intended to be run by a custom target in a CMake project like this.
 # 0. Compile program with coverage support.
@@ -26,8 +26,9 @@
 # ADD_CUSTOM_TARGET(coveralls
 #   # Generate the output
 #   COMMAND ${CMAKE_COMMAND}
-#     -DCOVERAGE_SRCS_PATH="${PROJECT_SOURCE_DIR}/Code"
-#     -DCOVERAGE_SRCS_EXCLUDED=""
+#     -DCOVERAGE_SRC_PATH="${PROJECT_SOURCE_DIR}/Code"
+#     -DCOVERAGE_SRC_EXCLUDED=""
+#     -DCOVERAGE_BIN_EXCLUDED=""
 #     -DCOVERALLS_OUTPUT_FILE="${COVERALLS_FILE}"
 #     -DCOV_PATH="${PROJECT_BINARY_DIR}"
 #     -DPROJECT_ROOT="${PROJECT_SOURCE_DIR}"
@@ -47,8 +48,8 @@ IF(NOT COV_PATH)
   message(FATAL_ERROR "Coveralls: Missing coverage directory path where gcov files will be generated. Please set COV_PATH")
 ENDIF()
 
-IF(NOT COVERAGE_SRCS_PATH)
-  message(FATAL_ERROR "Coveralls: Missing the path of source files that we should get the coverage data for COVERAGE_SRCS_PATH")
+IF(NOT COVERAGE_SRC_PATH)
+  message(FATAL_ERROR "Coveralls: Missing the path of source files that we should get the coverage data for COVERAGE_SRC_PATH")
 ENDIF()
 
 if (NOT PROJECT_ROOT)
@@ -101,21 +102,33 @@ FILE(WRITE "${COVERALLS_OUTPUT_FILE}"
 
 # Get the files to cover
 FOREACH(_EXT h hh hpp hxx c cc cpp cxx tpp txx)
-  FILE(GLOB_RECURSE _COVERAGE_SRCS RELATIVE "${COVERAGE_SRCS_PATH}" "${COVERAGE_SRCS_PATH}/*.${_EXT}")
+  FILE(GLOB_RECURSE _COVERAGE_SRCS RELATIVE "${COVERAGE_SRC_PATH}" "${COVERAGE_SRC_PATH}/*.${_EXT}")
   LIST(APPEND COVERAGE_SRCS ${_COVERAGE_SRCS})
 ENDFOREACH()
 LIST(SORT COVERAGE_SRCS)
 
-# Transform the optional string argument COVERAGE_SRCS_EXCLUDED into a list
-string(REGEX REPLACE "\\::" ";" COVERAGE_SRCS_EXCLUDED "${COVERAGE_SRCS_EXCLUDED}")
+# Transform the optional string argument COVERAGE_SRC_EXCLUDED into a list
+string(REGEX REPLACE "\\::" ";" COVERAGE_SRC_EXCLUDED "${COVERAGE_SRC_EXCLUDED}")
+
+# Transform the optional string argument COVERAGE_BIN_EXCLUDED into a list
+string(REGEX REPLACE "\\::" ";" COVERAGE_BIN_EXCLUDED "${COVERAGE_BIN_EXCLUDED}")
 
 # Get the coverage data.
 FILE(GLOB_RECURSE GCDA_FILES RELATIVE "${COV_PATH}" "${COV_PATH}/*.gcda")
 # Get a list of all the object directories needed by gcov
 # (The directories the .gcda files and .o files are found in)
 # and run gcov on those.
-file(MAKE_DIRECTORY ${COV_PATH}/_temp_gcov)
+FILE(MAKE_DIRECTORY ${COV_PATH}/_temp_gcov)
 FOREACH(GCDA ${GCDA_FILES})
+  FOREACH(_PATTERN ${COVERAGE_BIN_EXCLUDED})
+    STRING(REGEX MATCH ${_PATTERN} _FOUND ${GCDA})
+    IF(_FOUND)
+      BREAK()
+    ENDIF()
+  ENDFOREACH()
+  IF(_FOUND)
+    CONTINUE()
+  ENDIF()
   GET_FILENAME_COMPONENT(GCDA_DIR ${GCDA} PATH)
   EXECUTE_PROCESS(
     COMMAND ${GCOV_EXECUTABLE} -pl -o "${COV_PATH}/${GCDA_DIR}" "${COV_PATH}/${GCDA}"
@@ -129,9 +142,10 @@ FILE(GLOB _GCOV_FILES RELATIVE "${COV_PATH}/_temp_gcov" "${COV_PATH}/_temp_gcov/
 SET(INC 0)
 FOREACH(_GCOV_FILE ${_GCOV_FILES})
   GET_SOURCE_PATH_FROM_GCOV_FILENAME(_GCOV_SRC_FILE ${_GCOV_FILE})
-  STRING(FIND "${_GCOV_SRC_FILE}" "${COVERAGE_SRCS_PATH}" FOUND)
+  STRING(FIND "${_GCOV_SRC_FILE}" "${COVERAGE_SRC_PATH}" FOUND)
   IF(NOT FOUND EQUAL -1)
-    FILE(RELATIVE_PATH _GCOV_SRC_REL_VAR "${COVERAGE_SRCS_PATH}" "${_GCOV_SRC_FILE}")
+    MESSAGE(STATUS "Processing: ${_GCOV_SRC_FILE}")
+    FILE(RELATIVE_PATH _GCOV_SRC_REL_VAR "${COVERAGE_SRC_PATH}" "${_GCOV_SRC_FILE}")
     STRING(REGEX REPLACE "/" "_" _GCOV_SRC_REL_VAR ${_GCOV_SRC_REL_VAR})
     STRING(REGEX REPLACE "\\." "_" _GCOV_SRC_REL_VAR ${_GCOV_SRC_REL_VAR})
     LIST(APPEND "${_GCOV_SRC_REL_VAR}" ${INC})
@@ -139,29 +153,35 @@ FOREACH(_GCOV_FILE ${_GCOV_FILES})
   MATH(EXPR INC "${INC}+1")
 ENDFOREACH()
 
-LIST(LENGTH COVERAGE_SRCS COVERAGE_SRCS_LENGTH)
+string(ASCII 27 Esc)
+LIST(LENGTH COVERAGE_SRCS COVERAGE_SRC_LENGTH)
 SET(INC 0)
 FOREACH(_COVERAGE_SRC ${COVERAGE_SRCS})
   MATH(EXPR INC "${INC}+1")
   # Check if the file is not excluded from the coverage
-  LIST(FIND COVERAGE_SRCS_EXCLUDED "${_COVERAGE_SRC}" FOUND)
-  IF(NOT FOUND EQUAL -1)
-    MESSAGE(STATUS "EXCLUDED: ${_COVERAGE_SRC}")
+  FOREACH(_PATTERN ${COVERAGE_SRC_EXCLUDED})
+    STRING(REGEX MATCH ${_PATTERN} _FOUND ${_COVERAGE_SRC})
+    IF(_FOUND)
+      BREAK()
+    ENDIF()
+  ENDFOREACH()
+  IF(_FOUND)
+    MESSAGE(STATUS "${Esc}[36mExcluded${Esc}[m: ${_COVERAGE_SRC}")
   ELSE()
-    FILE(RELATIVE_PATH GCOV_SRC_REL_PATH "${PROJECT_ROOT}" "${COVERAGE_SRCS_PATH}/${_COVERAGE_SRC}")
-    FILE(MD5 "${COVERAGE_SRCS_PATH}/${_COVERAGE_SRC}" GCOV_CONTENTS_MD5)
+    FILE(RELATIVE_PATH GCOV_SRC_REL_PATH "${PROJECT_ROOT}" "${COVERAGE_SRC_PATH}/${_COVERAGE_SRC}")
+    FILE(MD5 "${COVERAGE_SRC_PATH}/${_COVERAGE_SRC}" GCOV_CONTENTS_MD5)
     # Check if the file is covered or not
     SET(_GCOV_SRC_REL_VAR "${_COVERAGE_SRC}")
     STRING(REGEX REPLACE "/" "_" _GCOV_SRC_REL_VAR ${_GCOV_SRC_REL_VAR})
     STRING(REGEX REPLACE "\\." "_" _GCOV_SRC_REL_VAR ${_GCOV_SRC_REL_VAR})
     IF(DEFINED ${_GCOV_SRC_REL_VAR})
-      MESSAGE(STATUS "COVERED: ${_COVERAGE_SRC}")
+      MESSAGE(STATUS "${Esc}[32mCovered${Esc}[m: ${_COVERAGE_SRC}")
       SET(GCOV_FILE_COVERAGE "[")
       # The file is covered but might be used by different GCDA files. We need to merge their results together
       LIST(GET _GCOV_FILES ${${_GCOV_SRC_REL_VAR}} _SRC_GCOV_FILES)
       # Reset the total number of calls by line
       SET(INC_LINE 1)
-      FILE(STRINGS "${COVERAGE_SRCS_PATH}/${_COVERAGE_SRC}" SRC_LINES)
+      FILE(STRINGS "${COVERAGE_SRC_PATH}/${_COVERAGE_SRC}" SRC_LINES)
       FOREACH(_SRC_LINE ${SRC_LINES})
         UNSET(_GCOV_LINE_CALL_${INC_LINE})
         MATH(EXPR INC_LINE "${INC_LINE}+1")
@@ -204,14 +224,14 @@ FOREACH(_COVERAGE_SRC ${COVERAGE_SRCS})
               IF (NOT DEFINED _GCOV_LINE_CALL_${LINE})
                 SET(_GCOV_LINE_CALL_${LINE} 0)
               ENDIF()
-              IF(${HITCOUNT} STREQUAL "#####")
+              IF((${HITCOUNT} STREQUAL "#####") OR (${HITCOUNT} STREQUAL "====="))
                 MATH(EXPR _GCOV_LINE_CALL_${LINE} "${_GCOV_LINE_CALL_${LINE}}+0")
               ELSE()
                 MATH(EXPR _GCOV_LINE_CALL_${LINE} "${_GCOV_LINE_CALL_${LINE}}+${HITCOUNT}")
               ENDIF()
             ENDIF()
           ELSE()
-            MESSAGE(WARNING "Failed to properly parse line (RES_COUNT = ${RES_COUNT}) ${GCOV_FILE}:${GCOV_LINE_COUNT}\n-->${GCOV_LINE}")
+            MESSAGE(WARNING "Failed to properly parse line (RES_COUNT = ${RES_COUNT}) ${_SRC_GCOV_FILE}:${GCOV_LINE_COUNT}\n-->${GCOV_LINE}")
           ENDIF()
 
           IF(RESET_SKIP)
@@ -231,9 +251,9 @@ FOREACH(_COVERAGE_SRC ${COVERAGE_SRCS})
         MATH(EXPR INC_LINE "${INC_LINE}+1")
       ENDFOREACH()
     ELSE()
-      MESSAGE(STATUS "NOT COVERED: ${_COVERAGE_SRC}")
+      MESSAGE(STATUS "${Esc}[31mNOT COVERED${Esc}[m: ${_COVERAGE_SRC}")
       # The file is not covered and all these lines are set to 0 (no call)
-      FILE(STRINGS "${COVERAGE_SRCS_PATH}/${_COVERAGE_SRC}" SRC_LINES)
+      FILE(STRINGS "${COVERAGE_SRC_PATH}/${_COVERAGE_SRC}" SRC_LINES)
       SET(GCOV_FILE_COVERAGE "[")
       FOREACH(SOURCE ${SRC_LINES})
         SET(GCOV_FILE_COVERAGE "${GCOV_FILE_COVERAGE}0, ")
@@ -245,7 +265,7 @@ FOREACH(_COVERAGE_SRC ${COVERAGE_SRCS})
          "      \"source_digest\": \"${GCOV_CONTENTS_MD5}\",\n"
          "      \"coverage\": ${GCOV_FILE_COVERAGE}\n"
       "  }")
-    IF(INC LESS COVERAGE_SRCS_LENGTH)
+    IF(INC LESS COVERAGE_SRC_LENGTH)
       FILE(APPEND "${COVERALLS_OUTPUT_FILE}" ", ")
     ENDIF()
   ENDIF()
