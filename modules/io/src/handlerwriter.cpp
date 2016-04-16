@@ -217,9 +217,9 @@ namespace io
    */
   bool HandlerWriter::write(Node* root)
   {
-    auto optr = this->pimpl();
-    if ((optr->Writer == nullptr) && !this->canWrite())
+    if (!this->canWrite())
       return false;
+    auto optr = this->pimpl();
     auto result = optr->Writer->write(root);
     this->setError(optr->Writer->errorCode(), optr->Writer->errorMessage());
     return result;
