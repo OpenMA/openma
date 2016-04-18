@@ -56,7 +56,7 @@ namespace io
 {
   /**
    * Convenient function to read the content of a file and set it in @a root.
-   * Internally, this function use the class HandlerReader.
+   * Internally, this function uses the class HandlerReader.
    * @relates HandlerReader
    * @ingroup openma_io
    */
@@ -87,6 +87,23 @@ namespace io
       root = nullptr;
     }
     return root;
+  };
+  
+  /**
+   * Convenient function to write the content of the Node @a root into a file.
+   * Internally, this function uses the class HandlerWriter.
+   * @relates HandlerWriter
+   * @ingroup openma_io
+   */
+  inline bool write(Node* root, const std::string& filepath, const std::string& format = std::string{})
+  {
+    File file;
+    file.open(filepath.c_str(), Mode::Out);
+    HandlerWriter writer(&file, format);
+    bool result = writer.write(root);
+    if (!result && (writer.errorCode() != Error::None))
+      error(writer.errorMessage().c_str());
+    return result;
   };
 }  
 }
