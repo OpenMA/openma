@@ -93,18 +93,17 @@ CXXTEST_SUITE(C3DWriterTest)
   CXXTEST_TEST(sample01Rewrited)
   {
     c3dhandlertest_rewrite_sample01("PI", "sample01_Eb015pi.c3d", OPENMA_TDD_PATH_OUT("c3d/sample01_Eb015pi.c3d"), OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pi.c3d"));
-    
   }
 };
 
 CXXTEST_SUITE_REGISTRATION(C3DWriterTest)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, capability)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, supportedTrialFormats)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectNoDevice)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectDeviceNotOpen)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectFail)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectOk)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkOne)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkTwo)
-// CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkThree)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, capability)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, supportedTrialFormats)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectNoDevice)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectDeviceNotOpen)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectFail)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, detectOk)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkOne)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkTwo)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkThree)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample01Rewrited)
