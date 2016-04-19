@@ -56,5 +56,7 @@ namespace io
 {
   %newobject read;
   Node* read(const std::string& filepath, const std::string& format = std::string());
+  bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string());
+  
 };
 };
