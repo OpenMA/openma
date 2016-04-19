@@ -75,9 +75,11 @@ namespace ma
     bool hasChildren() const;
     const std::vector<Node*>& parents() const;
     bool hasParents() const;
+    %extend {
+      void addParent(Node* node);
+      void removeParent(Node* node);
+    }
   /*
-    void addParent(Node* node);
-    void removeParent(Node* node);
     template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
     template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
     template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
@@ -87,3 +89,22 @@ namespace ma
   };
   %clearnodefaultctor;
 };
+
+
+%{
+void ma_Node_addParent(ma::Node* self, ma::Node* parent)
+{
+  size_t num = self->parents().size();
+  self->addParent(parent);
+  if (num != self->parents().size())
+    _ma_refcount_incr(self);
+};
+
+void ma_Node_removeParent(ma::Node* self, ma::Node* parent)
+{
+  size_t num = self->parents().size();
+  self->removeParent(parent);
+  if (num != self->parents().size())
+    _ma_refcount_decr(self);
+};
+%}

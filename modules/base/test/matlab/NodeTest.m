@@ -95,5 +95,26 @@ classdef NodeTest < matlab.unittest.TestCase
             testCase.verifyEqual(root.child(1).name(),'child1');
             testCase.verifyEqual(other.child(1).name(),'Bar');
         end
+        
+        function addParent(testCase)
+            root = ma.Node('root');
+            child1 = ma.Node('child1');
+            child1.addParent(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 1);
+            testCase.verifyEqual(root.hasChildren, true);
+            testCase.verifyEqual(child1.hasParents, true);
+            testCase.verifyEqual(root.child(1).name, 'child1');
+            delete(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+        end
+        
+        function removeParent(testCase)
+            root = ma.Node('root');
+            child1 = ma.Node('child1', root);
+            child1.removeParent(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(root.hasChildren, false);
+            testCase.verifyEqual(child1.hasParents, false);
+        end
     end
 end
