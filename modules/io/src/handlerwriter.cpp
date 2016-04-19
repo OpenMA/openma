@@ -215,7 +215,7 @@ namespace io
    * This method returns @c true if no error was thrown during the writing of the data.
    * In case @c false is returned, you could find more information on the error using the methods errorCode() and errorMessage().
    */
-  bool HandlerWriter::write(Node* root)
+  bool HandlerWriter::write(const Node* const root)
   {
     if (!this->canWrite())
       return false;

@@ -95,7 +95,7 @@ namespace io
    * @relates HandlerWriter
    * @ingroup openma_io
    */
-  inline bool write(Node* root, const std::string& filepath, const std::string& format = std::string{})
+  inline bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string{})
   {
     File file;
     file.open(filepath.c_str(), Mode::Out);
