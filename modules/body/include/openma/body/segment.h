@@ -39,8 +39,6 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, Segment, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -72,5 +70,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::Segment, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_segment_h

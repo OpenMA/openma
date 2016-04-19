@@ -35,6 +35,8 @@
 #include "openma/base/date.h"
 #include "openma/base/logger.h"
 
+OPENMA_INSTANCE_STATIC_TYPEID(Date);
+
 namespace ma
 {
   /**

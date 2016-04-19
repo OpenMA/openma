@@ -18,7 +18,7 @@
  *       derived from this software without specific prior written
  *       permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -32,47 +32,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_position_h
-#define __openma_body_position_h
+#include "openma/base/typeid.h"
 
-#include "openma/body_export.h"
-#include "openma/base/node.h"
-#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
-
-namespace ma
-{
-namespace body
-{
-  class PointPrivate;
-  
-  class OPENMA_BODY_EXPORT Point : public Node
-  {
-    OPENMA_DECLARE_PIMPL_ACCESSOR(Point)
-    OPENMA_DECLARE_NODEID(Point, Node)
-    
-  public:
-    Point(const std::string& name, const double coordinates[3] = nullptr, Node* parent = nullptr);
-    ~Point() _OPENMA_NOEXCEPT;
-    
-    Point(const Point& ) = delete;
-    Point(Point&& ) _OPENMA_NOEXCEPT = delete;
-    Point& operator=(const Point& ) = delete;
-    Point& operator=(Point&& ) _OPENMA_NOEXCEPT = delete;
-    
-    const double* data() const _OPENMA_NOEXCEPT;
-    double* data() _OPENMA_NOEXCEPT;
-    
-    void setData(const double* values) _OPENMA_NOEXCEPT;
-    
-    virtual Point* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
-    
-  private:
-    Point(PointPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
-  };
-};
-};
-
-OPENMA_EXPORT_STATIC_TYPEID(ma::body::Point, OPENMA_BODY_EXPORT);
-
-#endif // __openma_body_position_h
+// Arithmetic types
+OPENMA_INSTANCE_STATIC_TYPEID(bool)
+OPENMA_INSTANCE_STATIC_TYPEID(char)
+// OPENMA_INSTANCE_STATIC_TYPEID(char16_t) // same as unsigned short int
+// OPENMA_INSTANCE_STATIC_TYPEID(char32_t) // same as unsigned int
+OPENMA_INSTANCE_STATIC_TYPEID(wchar_t)
+OPENMA_INSTANCE_STATIC_TYPEID(signed char)
+OPENMA_INSTANCE_STATIC_TYPEID(short int)
+OPENMA_INSTANCE_STATIC_TYPEID(int)
+OPENMA_INSTANCE_STATIC_TYPEID(long int)
+OPENMA_INSTANCE_STATIC_TYPEID(long long int)
+OPENMA_INSTANCE_STATIC_TYPEID(unsigned char)
+OPENMA_INSTANCE_STATIC_TYPEID(unsigned short int)
+OPENMA_INSTANCE_STATIC_TYPEID(unsigned int)
+OPENMA_INSTANCE_STATIC_TYPEID(unsigned long int)
+OPENMA_INSTANCE_STATIC_TYPEID(unsigned long long int)
+OPENMA_INSTANCE_STATIC_TYPEID(float)
+OPENMA_INSTANCE_STATIC_TYPEID(double)
+OPENMA_INSTANCE_STATIC_TYPEID(long double)
+// String types
+OPENMA_INSTANCE_STATIC_TYPEID(std::string)
+OPENMA_INSTANCE_STATIC_TYPEID(const char*)

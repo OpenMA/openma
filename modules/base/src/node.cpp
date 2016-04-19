@@ -162,19 +162,7 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-/**
- * @def OPENMA_EXPORT_NODE_CAST_1(ns, cn, en)
- * Convenient macro to export the static type ID associated with the new class @a cn in the namespace @a ns with the export symbol @a en.
- * @relates ma::Node
- * @ingroup openma_base
- */
-
-/**
- * @def OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en)
- * Convenient macro to export the static type ID associated with the new class @a cn in the nested namespace @a ns::nns with the export symbol @a en.
- * @relates ma::Node
- * @ingroup openma_base
- */
+OPENMA_INSTANCE_STATIC_TYPEID(Node);
 
 namespace ma
 {
@@ -226,15 +214,16 @@ namespace ma
    *
    * In the previous example, the remaining child of root (pointer to leafA) is a local variable and calling its destructor is incorrect. Thus, when the variable leafA goes out of scope, its destructor is called again. The same memory is freed two times that should crash the program.
    *
-   * Finally, to declare a custom node type (i.e. a new inheriting class), several macros can be used:
-   * - OPENMA_EXPORT_NODE_CAST_1() or OPENMA_EXPORT_NODE_CAST_2()
+   * Finally, to declare a custom node type (i.e. a new inheriting class), several macros must be used:
+   * - OPENMA_EXPORT_STATIC_TYPEID() and OPENMA_INSTANCE_STATIC_TYPEID()
    * - OPENMA_DECLARE_NODEID()
    * - OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED()
    *
    * For example if you want to add a class inside OpenMA (base mdoule), it is advised to do as following 
    * @code{.unparsed}
+   * // HEADER FILE (e.g MyNode.h)
+   *
    * // Public API
-   * OPENMA_EXPORT_NODE_CAST_1(ma, MyNode, OPENMA_BASE_EXPORT);
    *
    * namespace ma
    * {
@@ -247,6 +236,10 @@ namespace ma
    * public:
    *   // ...
    * }
+   *
+   * };
+   *
+   * OPENMA_EXPORT_STATIC_TYPEID(ma::MyNode, OPENMA_BASE_EXPORT);
    *
    * // PRIVATE API (declared for example in a private header file)
    * class MyNode;
@@ -264,6 +257,15 @@ namespace ma
    * }; 
    *
    * };
+   *
+   * // SOURCE FILE (e.g. MyNode.cpp)
+   *
+   * OPENMA_INSTANCE_STATIC_TYPEID(ma::MyNode);
+   *
+   * namespace ma
+   * {
+   * // Definition of the class MyNode...
+   *
    * @endcode
    *
    * For more details about properties you can read the documentation of the class Property.

@@ -41,8 +41,6 @@
 
 #include <string>
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, SkeletonHelper, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
   class Subject;
@@ -86,5 +84,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::SkeletonHelper, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_skeletonhelper_h

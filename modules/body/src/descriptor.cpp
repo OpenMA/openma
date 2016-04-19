@@ -61,6 +61,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Descriptor);
+
 namespace ma
 {
 namespace body

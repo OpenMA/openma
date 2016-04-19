@@ -45,16 +45,6 @@
 #include <string>
 #include <regex>
 
-#define OPENMA_EXPORT_NODE_CAST_1(ns, cn, en) \
-  namespace ns { class cn; }; \
-  OPENMA_EXPORT_STATIC_TYPEID(ns::cn,en)
-    
-#define OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en) \
-  namespace ns { namespace nns { class cn; } ;}; \
-  OPENMA_EXPORT_STATIC_TYPEID(ns::nns::cn,en)
-
-OPENMA_EXPORT_NODE_CAST_1(ma, Node, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   template <typename T, typename N> T node_cast(N* node) _OPENMA_NOEXCEPT;
@@ -118,9 +108,12 @@ namespace ma
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
   };
-  
-  // ----------------------------------------------------------------------- //
-  
+};
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Node, OPENMA_BASE_EXPORT);
+
+namespace ma
+{ 
   template <typename U>
   U Node::child(unsigned index) const _OPENMA_NOEXCEPT
   {

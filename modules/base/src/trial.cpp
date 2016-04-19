@@ -58,6 +58,8 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(Trial);
+
 namespace ma
 {
   /**

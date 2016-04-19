@@ -39,8 +39,6 @@
 
 #include <array>
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, EulerDescriptor, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -107,4 +105,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::EulerDescriptor, OPENMA_BODY_EXPORT);
+
 #endif // __openma_body_eulerdescriptor_h

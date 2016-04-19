@@ -42,8 +42,6 @@
 #include <vector>
 #include <string>
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, LandmarksTranslator, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -72,5 +70,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::LandmarksTranslator, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_landmarkstranslator_h

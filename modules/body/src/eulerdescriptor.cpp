@@ -66,6 +66,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(body::EulerDescriptor);
+
 namespace ma
 {
 namespace body

@@ -66,8 +66,8 @@ namespace ma
   private:
     unsigned m_Value;
   };
-  
-  OPENMA_EXPORT_STATIC_TYPEID(Date, OPENMA_BASE_EXPORT)
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Date, OPENMA_BASE_EXPORT);
 
 #endif // __openma_base_date_h

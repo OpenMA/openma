@@ -61,6 +61,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(body::SkeletonHelper);
+
 namespace ma
 {
 namespace body

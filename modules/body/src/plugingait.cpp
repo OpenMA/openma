@@ -629,6 +629,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(body::PluginGait);
+
 namespace ma
 {
 namespace body

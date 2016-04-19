@@ -59,6 +59,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(body::LandmarksTranslator);
+
 namespace ma
 {
 namespace body

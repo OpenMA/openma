@@ -43,8 +43,6 @@
 #include <numeric>
 #include <initializer_list>
 
-OPENMA_EXPORT_NODE_CAST_1(ma, TimeSequence, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   class TimeSequencePrivate;
@@ -128,7 +126,12 @@ namespace ma
     TimeSequence(const std::string& name, Node* parent = nullptr);
     double& data(unsigned sample, std::initializer_list<unsigned>&& indices) const _OPENMA_NOEXCEPT;
   };
+};
   
+OPENMA_EXPORT_STATIC_TYPEID(ma::TimeSequence, OPENMA_BASE_EXPORT);
+
+namespace ma
+{  
   template <typename... Is>
   inline double TimeSequence::data(unsigned sample, Is... indices) const _OPENMA_NOEXCEPT
   {

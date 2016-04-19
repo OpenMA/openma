@@ -39,8 +39,6 @@
 #include "openma/body/skeletonhelper.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, PluginGait, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -115,5 +113,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::PluginGait, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_plugingait_h
