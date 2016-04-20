@@ -35,7 +35,7 @@
 #include "qtmplugin.h"
 #include "openma/io/enums.h"
 
-#define _OPENMA_IO_HANDLER_ORG_QTM_FORMAT "qualisys.qtm"
+#define _OPENMA_IO_HANDLER_QUALISYS_QTM_FORMAT "qualisys.qtm"
 
 namespace ma
 {
@@ -48,7 +48,7 @@ namespace io
   
   std::vector<std::string> QTMPlugin::supportedFormats() const _OPENMA_NOEXCEPT
   {
-    return {_OPENMA_IO_HANDLER_ORG_QTM_FORMAT};
+    return {_OPENMA_IO_HANDLER_QUALISYS_QTM_FORMAT};
   };
 
   Capability QTMPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
@@ -63,7 +63,7 @@ namespace io
     if ((detected = QTMHandler::verifySignature(device)) == Signature::Valid)
     {
       if (format != nullptr)
-        *format = _OPENMA_IO_HANDLER_ORG_QTM_FORMAT;
+        *format = _OPENMA_IO_HANDLER_QUALISYS_QTM_FORMAT;
     }
     return detected;
   };
