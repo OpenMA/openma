@@ -32,41 +32,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module ma
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
+%fragment("OpenMA", "header", fragment="OpenMA_ToList")
 %{
-#include "openma/base.h"
-#include "openma/bindings.h"
+%};
+
+
+%fragment("OpenMA_ToList", "header")
+%{
+  template <typename T>
+  PyObject* to_list(const std::vector<T*>* in, swig_type_info* type)
+  {
+    PyObject* out = PyList_New(in->size());
+    if (out != nullptr)
+    {
+      for (size_t i = 0, len = in->size() ; i < len ; ++i)
+      {
+        PyObject* elt = SWIG_NewPointerObj(SWIG_as_voidptr(in->operator[](i)), type, 1 |  0 );
+        if (elt == nullptr) break;
+        _ma_refcount_incr(in->operator[](i));
+        PyList_SetItem(out, i, elt);
+      }
+    }
+    return out;
+  };
 %}
 
-%include "macros.i"
+%fragment("OpenMA_TemplateHelper", "header", fragment="OpenMA_ToList")
+%{
+  template <typename T>
+  void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
+  {
+    PyObject** _out = reinterpret_cast<PyObject**>(out);
+    T* node = in->findChild<T*>(name, std::move(properties), recursiveSearch);
+    if (node == nullptr) return;
+    *_out = SWIG_NewPointerObj(SWIG_as_voidptr(node), type, 1 |  0 );
+    _ma_refcount_incr(node);
+  };
 
-%include <std_string.i>
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-// Use a single threaded reference counting mechanism to release the data
-%feature("ref", noblock=1) ma::Node {_ma_refcount_incr($this);};
-%feature("unref", noblock=1) ma::Node {_ma_refcount_decr($this);};
-
-#if defined(SWIGMATLAB)
-%include "base_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "base_python.i"
-#endif
-
-%include "../include/openma/base/enums.h"
-
-%include "base/any.i"
-%include "base/object.i"
-%include "base/node.i"
-%include "base/event.i"
-%include "base/subject.i"
-%include "base/timesequence.i"
-%include "base/trial.i"
+  template <typename T>
+  void find_children_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& regexp, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
+  {
+    PyObject** _out = reinterpret_cast<PyObject**>(out);
+    const std::vector<T*>& nodes = in->findChildren<T*>(std::regex(regexp), std::move(properties), recursiveSearch);
+    *_out = to_list(&nodes, type);
+  };
+%}

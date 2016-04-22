@@ -61,3 +61,12 @@ IF(BUILD_MATLAB_BINDINGS)
     ENDFUNCTION()
   ENDIF()
 ENDIF()
+
+IF(BUILD_PYTHON_BINDINGS)
+  IF(NOT OPENMA_BUILD_SHARED_LIBS)
+    MESSAGE(FATAL_ERROR "OpenMA must be compiled as shared libraries to build the Python binding")
+  ENDIF()
+  
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  FIND_PACKAGE(Numpy REQUIRED)
+ENDIF()
