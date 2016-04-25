@@ -46,7 +46,7 @@
 
 %define SWIG_TYPEMAP_OUT_CONSTRUCTOR(nspace, cname)
 // Need to verify if the generated object is not null before being added in the workspace.
-%typemap(check, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
+%typemap(out, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
 {
   if (!result) {
     SWIG_exception_fail(SWIG_RuntimeError, "Impossible to create or cast an object of type 'nspace::cname' with given input(s)");
