@@ -256,16 +256,11 @@ PyObject* ma_Any_cast(const ma::Any* self)
 
 // ------------------------------------------------------------------------- //
 
-template <typename T>
-void _ma_Any_assign(ma::Any* out, const PyObject* in)
-{
-};
-
 void ma_Any_assign(ma::Any* self, const PyObject* value)
 {
   if (PyList_Check(value))
   {
-    
+    PyErr_SetString(PyExc_NotImplementedError, "The support of list is not implemented.");
   }
   else
   {
