@@ -48,10 +48,10 @@
 // Need to verify if the generated object is not null before being added in the workspace.
 %typemap(out, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
 {
-  if (!result) {
+  if (!$1) {
     SWIG_exception_fail(SWIG_RuntimeError, "Impossible to create or cast an object of type 'nspace::cname' with given input(s)");
   }
-  _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(nspace:: ## cname*), 1 | 0);
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
 };
 %enddef
 
