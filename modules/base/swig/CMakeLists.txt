@@ -18,6 +18,8 @@ IF(BUILD_MATLAB_BINDINGS)
     "base.i"
     "../../bindings/include/openma/matlab/mexFunction.def")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma")
+  SET(SWIG_MODULE_maMEX_EXTRA_DEPS
+    ${SWIG_MODULE_base_EXTRA_DEPS})
   SET(SWIG_MODULE_maMEX_EXTRA_FLAGS
     ${SWIG_MODULE_base_EXTRA_FLAGS}
     "-I${SWIG_DIR}/Lib/matlab")
@@ -35,6 +37,8 @@ IF(BUILD_PYTHON_BINDINGS)
   SET(BASE_PYTHON_SRCS
     "base.i")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/python/openma")
+  SET(SWIG_MODULE_ma_EXTRA_DEPS
+    ${SWIG_MODULE_base_EXTRA_DEPS})
   SET(SWIG_MODULE_ma_EXTRA_FLAGS
     ${SWIG_MODULE_base_EXTRA_FLAGS}
     "-I${SWIG_DIR}/Lib/python")
