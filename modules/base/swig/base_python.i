@@ -177,10 +177,76 @@
 //-------------------------------------------------------------------------- //
 
 %{
+  
+PyObject* _ma_Any_cast_generate_list(std::vector<PyObject*>* data, const std::vector<unsigned>& dims, unsigned idx)
+{
+  PyObject* ptr = PyList_New(dims[idx]);
+  if (idx < (dims.size()-1))
+  {
+    for (Py_ssize_t i = 0 ; i < static_cast<Py_ssize_t>(dims[idx]) ; ++i)
+      PyList_SetItem(ptr, i, _ma_Any_cast_generate_list(data, dims, idx+1));
+  }
+  else
+  {
+    data->push_back(ptr);
+  }
+  return ptr;
+}
+
+template <typename T>
+PyObject* _ma_Any_cast(const ma::Any* self, PyObject*(*func)(T))
+{
+  PyObject* ptr = nullptr;
+  size_t numelts = self->size();
+  if (numelts <= 1)
+  {
+    ptr = func(self->cast<T>());
+  }
+  else
+  {
+    const auto& dims = self->dimensions();
+    size_t numlists = numelts / dims.back();
+    std::vector<PyObject*> data(numlists, nullptr);
+    ptr = _ma_Any_cast_generate_list(&data, dims, 0);
+    for (size_t i = 0 ; i < numlists ; ++i)
+      for (size_t j = 0, len = dims.back() ; j < len ; ++j)
+        PyList_SetItem(data[i], j, func(self->cast<T>(((i-1) * len) + j)));
+  }
+  return ptr;
+};
+
+inline PyObject* PyString_FromStdString(std::string v)
+{
+  return PyString_FromStringAndSize(v.c_str(), static_cast<Py_ssize_t>(v.size()));
+};
 
 PyObject* ma_Any_cast(const ma::Any* self, const char* type)
 {
-  return nullptr;
+  PyObject* ptr = nullptr;
+  if (strcmp(type,"bool") == 0)
+  {
+    ptr = _ma_Any_cast<long>(self, &PyBool_FromLong);
+  }
+  else if (strcmp(type,"int") == 0)
+  {
+    ptr = _ma_Any_cast<long>(self, &PyInt_FromLong);
+  }
+  else if (strcmp(type,"long") == 0)
+  {
+    ptr = _ma_Any_cast<long>(self, &PyLong_FromLong);
+  }
+  else if (strcmp(type,"float") == 0)
+  {
+    ptr = _ma_Any_cast<double>(self, &PyFloat_FromDouble);
+  }
+  else if (strcmp(type,"string") == 0)
+  {
+    ptr = _ma_Any_cast<std::string>(self, &PyString_FromStdString);
+  }
+  else
+    PyErr_Format(PyExc_ValueError,"Unsupported data type for conversion: '%s'.", type);
+    
+  return ptr;
 }
 
 PyObject* ma_Any_cast(const ma::Any* self)
