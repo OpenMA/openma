@@ -34,7 +34,7 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Event)
+  SWIG_TYPEMAP_NODE_OUT(ma, Event)
   SWIG_CREATE_TEMPLATE_HELPER_1(ma, Event, SWIGTYPE)
   
   %nodefaultctor;

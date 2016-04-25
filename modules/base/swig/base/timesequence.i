@@ -34,7 +34,7 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, TimeSequence)
+  SWIG_TYPEMAP_NODE_OUT(ma, TimeSequence)
   SWIG_CREATE_TEMPLATE_HELPER_1(ma, TimeSequence, SWIGTYPE)
   
   %nodefaultctor;

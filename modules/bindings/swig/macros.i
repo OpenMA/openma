@@ -44,7 +44,7 @@
   %} \
   %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##nns##_##cn;
 
-%define SWIG_TYPEMAP_OUT_CONSTRUCTOR(nspace, cname)
+%define SWIG_TYPEMAP_NODE_OUT(nspace, cname)
 // Need to verify if the generated object is not null before being added in the workspace.
 %typemap(out, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
 {
