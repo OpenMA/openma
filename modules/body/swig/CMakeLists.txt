@@ -14,7 +14,8 @@ IF(BUILD_MATLAB_BINDINGS)
     "../../bindings/include/openma/matlab/mexFunction.def")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma")
   SET(SWIG_MODULE_bodyMEX_EXTRA_DEPS
-    ${SWIG_MODULE_body_EXTRA_DEPS})
+    ${SWIG_MODULE_body_EXTRA_DEPS}
+    "body_matlab.i")
   SET(SWIG_MODULE_bodyMEX_EXTRA_FLAGS
     "-module" "ma.body"
     ${SWIG_MODULE_body_EXTRA_FLAGS}
