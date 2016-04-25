@@ -32,7 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module body
+%module(package="ma.body") body
 
 %begin %{
 #include "openma/matlab/fixwinchar16.h"
