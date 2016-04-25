@@ -53,6 +53,12 @@
   }
   $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
 };
+%typemap(out, noblock=1) nspace:: ## cname*
+{
+  if ($1 == nullptr) SWIG_fail;
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
+};
+
 %enddef
 
 %define SWIG_EXTEND_CAST_CONSTRUCTOR(nspace, cname, swigtype)
