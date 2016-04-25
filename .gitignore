@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+# Python module files
+*.pyc
