@@ -32,10 +32,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%include "openma.swg"
+
 %fragment("OpenMA", "header", fragment="OpenMA_ToList")
 %{
 %};
-
 
 %fragment("OpenMA_ToList", "header")
 %{
@@ -54,26 +55,5 @@
       }
     }
     return out;
-  };
-%}
-
-%fragment("OpenMA_TemplateHelper", "header", fragment="OpenMA_ToList")
-%{
-  template <typename T>
-  void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
-  {
-    PyObject** _out = reinterpret_cast<PyObject**>(out);
-    T* node = in->findChild<T*>(name, std::move(properties), recursiveSearch);
-    if (node == nullptr) return;
-    *_out = SWIG_NewPointerObj(SWIG_as_voidptr(node), type, 1 |  0 );
-    _ma_refcount_incr(node);
-  };
-
-  template <typename T>
-  void find_children_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& regexp, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
-  {
-    PyObject** _out = reinterpret_cast<PyObject**>(out);
-    const std::vector<T*>& nodes = in->findChildren<T*>(std::regex(regexp), std::move(properties), recursiveSearch);
-    *_out = to_list(&nodes, type);
   };
 %}
