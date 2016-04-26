@@ -15,6 +15,7 @@ IF(BUILD_MATLAB_BINDINGS)
   SET(SWIG_MODULE_ioMEX_EXTRA_DEPS ${SWIG_MODULE_io_EXTRA_SRCS})
   SET(SWIG_MODULE_ioMEX_EXTRA_FLAGS
     "-module" "ma.io"
+    "-mexname" "ioMEX"
     ${SWIG_MODULE_io_EXTRA_FLAGS}
     "-I${SWIG_DIR}/Lib/matlab")
   SWIG_ADD_MODULE(ioMEX matlab "${IO_MATLAB_SRCS}")

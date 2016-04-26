@@ -18,6 +18,7 @@ IF(BUILD_MATLAB_BINDINGS)
     "body_matlab.i")
   SET(SWIG_MODULE_bodyMEX_EXTRA_FLAGS
     "-module" "ma.body"
+    "-mexname" "bodyMEX"
     ${SWIG_MODULE_body_EXTRA_FLAGS}
     "-I${SWIG_DIR}/Lib/matlab")
   SWIG_ADD_MODULE(bodyMEX matlab "${BODY_MATLAB_SRCS}")
