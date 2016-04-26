@@ -56,4 +56,40 @@ namespace ma
     };
   };
   %clearnodefaultctor;
+  
+  %{
+  
+  ma::Event* ma_Trial_event(ma::Trial* self, unsigned index)
+  {    
+#if defined(SWIGMATLAB)
+    if ((index > 0) && (index <= self->events()->children().size()))
+      return self->event(index-1);
+#else
+    if (index < self->events()->children().size())
+      return self->event(index);
+#endif
+    else
+    {
+      SWIG_SendError(SWIG_IndexError, "Index out of range");
+      return nullptr;
+    }
+  };
+
+  ma::TimeSequence* ma_Trial_timeSequence(ma::Trial* self, unsigned index)
+  {
+#if defined(SWIGMATLAB)
+    if ((index > 0) && (index <= self->timeSequences()->children().size()))
+      return self->timeSequence(index-1);
+#else
+    if (index < self->timeSequences()->children().size())
+      return self->timeSequence(index);
+#endif
+    else
+    {
+      SWIG_SendError(SWIG_IndexError, "Index out of range");
+      return nullptr;
+    }
+  };
+  
+  %};
 };

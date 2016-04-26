@@ -506,25 +506,3 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const mxArray* data)
 };
   
 %}
-
-//-------------------------------------------------------------------------- //
-//                                   Trial
-//-------------------------------------------------------------------------- //
-
-%{
-  
-ma::Event* ma_Trial_event(ma::Trial* self, unsigned index)
-{
-  if ((index == 0) || (index > self->events()->children().size()))
-    mexErrMsgIdAndTxt("SWIG:Trial:event","Index out of range");
-  return self->event(index-1);
-};
-
-ma::TimeSequence* ma_Trial_timeSequence(ma::Trial* self, unsigned index)
-{
-  if ((index == 0) || (index > self->timeSequences()->children().size()))
-    mexErrMsgIdAndTxt("SWIG:Trial:timeSequence","Index out of range");
-  return self->timeSequence(index-1);
-};
-
-%};

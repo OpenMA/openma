@@ -359,25 +359,3 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const PyObject* data)
 };
   
 %}
-
-//-------------------------------------------------------------------------- //
-//                                   Trial
-//-------------------------------------------------------------------------- //
-
-%{
-  
-ma::Event* ma_Trial_event(ma::Trial* self, unsigned index)
-{
-  if (index >= self->events()->children().size())
-    PyErr_SetString(PyExc_IndexError, "Index out of range");
-  return self->event(index);
-};
-
-ma::TimeSequence* ma_Trial_timeSequence(ma::Trial* self, unsigned index)
-{
-  if (index >= self->timeSequences()->children().size())
-    PyErr_SetString(PyExc_IndexError, "Index out of range");
-  return self->timeSequence(index);
-};
-
-%};

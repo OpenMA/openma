@@ -32,6 +32,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if defined(SWIGMATLAB)
+  %{ #define SWIG_SendError(code, msg) mexErrMsgIdAndTxt(SWIG_ErrorType(code), msg) %}
+#elif defined(SWIGPYTHON)
+  %{ #define SWIG_SendError(code, msg) SWIG_Error(code, msg) %}
+#else
+  #error Unsupported language
+#endif
+
 #define SWIG_CREATE_TEMPLATE_HELPER_1(ns, cn, st) \
   %{ \
     static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
