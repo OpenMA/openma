@@ -14,7 +14,7 @@ classdef NodeTest < matlab.unittest.TestCase
 
         function child0(testCase)
             root = ma.Node('root');
-            testCase.verifyError(@()root.child(0), 'SWIG:Node:child');
+            testCase.verifyError(@()root.child(0), 'SWIG:IndexError');
         end
 
         function child1(testCase)
