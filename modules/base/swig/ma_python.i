@@ -33,14 +33,12 @@
  */
 
 // Specific code for Python (typemaps, etc.)
+
 %{
 #include <numpy/arrayobject.h>
 %}
 %include "openmapython.swg"
 %fragment("OpenMA_TemplateHelper");
-
-// Raw type used by SWIG
-SWIG_SetType(PyObject)
 
 // Convert std::vector<Node*> to Python list
 %typemap(out, fragment="OpenMA", noblock=1) const std::vector<ma::Node*>&

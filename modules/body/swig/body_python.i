@@ -31,39 +31,3 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-%module(package="ma.io") io
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/io.h"
-%}
-
-%include "macros.i"
-
-%import "ma.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-%typemap(out, noblock=1) ma::Node* ma::io::read
-{
-  if ($1 == nullptr) SWIG_exception_fail(SWIG_IOError, "An error occurred during the loading of a file");
-  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
-};
-
-namespace ma
-{
-namespace io
-{
-  %newobject read;
-  Node* read(const std::string& filepath, const std::string& format = std::string());
-  bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string());
-};
-};

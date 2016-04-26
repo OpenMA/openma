@@ -44,7 +44,9 @@
 #include "openma/body.h"
 %}
 
-%import "base.i"
+%include "macros.i"
+
+%import "ma.i"
 
 // ========================================================================= //
 //                                INTERFACE
@@ -52,6 +54,8 @@
 
 #if defined(SWIGMATLAB)
 %include "body_matlab.i"
+#elif defined(SWIGPYTHON)
+%include "body_python.i"
 #endif
 
 %include "body/enums.i"

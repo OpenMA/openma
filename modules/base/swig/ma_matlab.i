@@ -32,13 +32,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%include "openmamatlab.swg"
-%fragment("OpenMA_TemplateHelper");
-
 // Specific code for Matlab (typemaps, etc.)
 
-// Raw type used by SWIG
-SWIG_SetType(mxArray)
+%include "openmamatlab.swg"
+%fragment("OpenMA_TemplateHelper");
 
 // Convert std::vector<Node*> to MATLAB cell array
 %typemap(out, fragment="OpenMA", noblock=1) const std::vector<ma::Node*>&
