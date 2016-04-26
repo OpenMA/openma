@@ -40,7 +40,7 @@
 %fragment("OpenMA_TemplateHelper");
 
 // Raw type used by SWIG
-#define SWIGTYPE PyObject
+SWIG_SetType(PyObject)
 
 // Convert std::vector<Node*> to Python list
 %typemap(out, fragment="OpenMA", noblock=1) const std::vector<ma::Node*>&

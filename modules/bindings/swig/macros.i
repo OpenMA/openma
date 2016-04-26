@@ -32,6 +32,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%define SWIG_SetType(swigtype)
+  #define SWIGTYPE swigtype
+  %begin %{ #define SWIGTYPE swigtype %}
+%enddef
+  
 #if defined(SWIGMATLAB)
   %{ #define SWIG_SendError(code, msg) mexErrMsgIdAndTxt(SWIG_ErrorType(code), msg) %}
 #elif defined(SWIGPYTHON)
