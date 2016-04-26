@@ -90,8 +90,24 @@ namespace ma
   %clearnodefaultctor;
 };
 
-
 %{
+
+ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
+{
+#if defined(SWIGMATLAB)
+  if ((index > 0) && (index <= self->children().size()))
+    return self->child(index-1);
+#else
+  if (index < self->children().size())
+    return self->child(index);
+#endif
+  else
+  {
+    SWIG_SendError(SWIG_IndexError, "Index out of range");
+    return nullptr;
+  }
+};
+  
 void ma_Node_addParent(ma::Node* self, ma::Node* parent)
 {
   size_t num = self->parents().size();
@@ -107,4 +123,5 @@ void ma_Node_removeParent(ma::Node* self, ma::Node* parent)
   if (num != self->parents().size())
     _ma_refcount_decr(self);
 };
+
 %}

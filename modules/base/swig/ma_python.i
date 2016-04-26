@@ -292,14 +292,6 @@ void ma_Any_assign(ma::Any* self, const PyObject* value)
 //-------------------------------------------------------------------------- //
 
 %{
-
-ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
-{
-  if (index > self->children().size())
-    PyErr_SetString(PyExc_IndexError, "Index out of range");
-  return self->child(index);
-};
-
 PyObject* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
 {
   PyObject* out = nullptr;
