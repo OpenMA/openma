@@ -116,5 +116,6 @@ classdef NodeTest < matlab.unittest.TestCase
             testCase.verifyEqual(root.hasChildren, false);
             testCase.verifyEqual(child1.hasParents, false);
         end
+        
     end
 end
