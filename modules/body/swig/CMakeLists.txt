@@ -1,5 +1,5 @@
 SET_SOURCE_FILES_PROPERTIES("body.i" PROPERTIES CPLUSPLUS ON)
-SET(SWIG_MODULE_body_EXTRA_DEPS
+SET(SWIG_MODULE_body_EXTRA_SRCS
   "body/plugingait.i"
   "body/skeletonhelper.i")
 SET(SWIG_MODULE_body_EXTRA_FLAGS
@@ -14,7 +14,7 @@ IF(BUILD_MATLAB_BINDINGS)
     "../../bindings/include/openma/matlab/mexFunction.def")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma")
   SET(SWIG_MODULE_bodyMEX_EXTRA_DEPS
-    ${SWIG_MODULE_body_EXTRA_DEPS}
+    ${SWIG_MODULE_body_EXTRA_SRCS}
     "body_matlab.i")
   SET(SWIG_MODULE_bodyMEX_EXTRA_FLAGS
     "-module" "ma.body"
@@ -34,6 +34,9 @@ IF(BUILD_PYTHON_BINDINGS)
   SET(BODY_PYTHON_SRCS
     "body.i")
   SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma")
+  SET(SWIG_MODULE_body_EXTRA_DEPS
+    ${SWIG_MODULE_body_EXTRA_SRCS}
+    "body_python.i")
   SET(SWIG_MODULE_body_EXTRA_FLAGS
     ${SWIG_MODULE_body_EXTRA_FLAGS}
     "-I${SWIG_DIR}/Lib/python")
