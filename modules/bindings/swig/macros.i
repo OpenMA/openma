@@ -71,7 +71,9 @@
 %typemap(out, noblock=1) nspace:: ## cname*
 {
   if ($1 == nullptr) SWIG_fail;
-  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
+  // The result is always owned because some language check this before decrease the reference counter.
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, 1);
+  _ma_refcount_incr($1);
 };
 
 %enddef
@@ -104,7 +106,6 @@ void copy(ma::Node* source)
   for (auto child : children)
     _ma_refcount_reset(child, 0);
 };
-%newobject clone;
 nspace::## cname* clone(Node* parent = nullptr) const
 {
   nspace::## cname* ptr = $self->clone(parent);

@@ -67,11 +67,7 @@ namespace ma
 namespace body
 {
   void calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  
-  %newobject reconstruct;
   Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  
-  %newobject extract_joint_kinematics;
   Node* extract_joint_kinematics(Node* input, bool anglesAdaptation = true);
 };
 };
