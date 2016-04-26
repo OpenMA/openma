@@ -56,9 +56,9 @@
 %feature("unref", noblock=1) ma::Node {_ma_refcount_decr($this);};
 
 #if defined(SWIGMATLAB)
-%include "base_matlab.i"
+%include "ma_matlab.i"
 #elif defined(SWIGPYTHON)
-%include "base_python.i"
+%include "ma_python.i"
 #endif
 
 %include "../include/openma/base/enums.h"
