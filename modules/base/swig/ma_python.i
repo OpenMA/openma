@@ -242,14 +242,13 @@ PyObject* ma_Any_cast(const ma::Any* self, const char* type)
     ptr = _ma_Any_cast<std::string>(self, &PyString_FromStdString);
   }
   else
-    PyErr_Format(PyExc_ValueError,"Unsupported data type for conversion: '%s'.", type);
-    
+    PyErr_Format(PyExc_ValueError, "Unsupported data type for conversion '%s'", type);
   return ptr;
 }
 
 PyObject* ma_Any_cast(const ma::Any* self)
 {
-  return ma_Any_cast(self, "double");
+  return ma_Any_cast(self, "float");
 };
 
 // ------------------------------------------------------------------------- //
