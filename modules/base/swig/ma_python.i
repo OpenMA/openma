@@ -251,7 +251,26 @@ PyObject* ma_Any_cast(const ma::Any* self)
   return ma_Any_cast(self, "float");
 };
 
+%}
+
 // ------------------------------------------------------------------------- //
+
+%typemap(out, noblock=1) ma::Any* ma::Any::Any
+{
+  if (PyErr_Occurred())
+  {
+    delete $1;
+    SWIG_fail;
+  }
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
+};
+
+%typemap(out, noblock=1) void ma::Any::assign
+{
+  if (PyErr_Occurred()) SWIG_fail;
+};
+
+%{
 
 void ma_Any_assign(ma::Any* self, const PyObject* value)
 {
