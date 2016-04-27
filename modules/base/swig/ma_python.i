@@ -220,7 +220,7 @@ inline PyObject* PyString_FromStdString(std::string v)
 
 PyObject* ma_Any_cast(const ma::Any* self, const char* type)
 {
-  PyObject* ptr = nullptr;
+  PyObject* ptr = NULL;
   if (strcmp(type,"bool") == 0)
   {
     ptr = _ma_Any_cast<long>(self, &PyBool_FromLong);
