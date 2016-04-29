@@ -169,7 +169,6 @@
   };
 };
 
-
 //-------------------------------------------------------------------------- //
 //                                     Any
 //-------------------------------------------------------------------------- //
@@ -456,11 +455,12 @@ void ma_Any_assign(ma::Any* self, const PyObject* value)
 //-------------------------------------------------------------------------- //
 
 %{
+
 PyObject* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
 {
   PyObject* out = nullptr;
   id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
-  if (out == nullptr)
+  if (out == NULL)
     PyErr_SetString(PyExc_ValueError,"No child found");
   return out;
 };
@@ -469,7 +469,7 @@ PyObject* ma_Node_findChildren(const ma::Node* self, const ma::bindings::Templat
 {
   PyObject* out = nullptr;
   id->findChildren(&out, *(id->SwigType), self, regexp, std::move(properties), recursiveSearch);
-  if (out == nullptr)
+  if (out == NULL)
     PyErr_SetString(PyExc_SystemError,"Internal error during list allocation");
   return out;
 };
@@ -479,6 +479,11 @@ PyObject* ma_Node_findChildren(const ma::Node* self, const ma::bindings::Templat
 //-------------------------------------------------------------------------- //
 //                                  TimeSequence
 //-------------------------------------------------------------------------- //
+
+%typemap(out, noblock=1) void ma::TimeSequence::setData
+{
+  if (PyErr_Occurred()) SWIG_fail;
+};
 
 %{
 
@@ -497,18 +502,30 @@ PyObject* ma_TimeSequence_data(const ma::TimeSequence* self)
 void ma_TimeSequence_setData(ma::TimeSequence* self, const PyObject* data)
 {
   if (!PyArray_Check(data) || (PyArray_TYPE(data) != NPY_DOUBLE))
+  {
     PyErr_SetString(PyExc_TypeError, "The given input is not an NumPy array composed of floating point elements");
+    return;
+  }
   const int numdimsin = PyArray_NDIM(data)-1;
   const auto& dimsout = self->dimensions();
   if (static_cast<size_t>(numdimsin) != dimsout.size())
+  {
     PyErr_SetString(PyExc_ValueError, "Incompatible number of dimensions");
+    return;
+  }
   const npy_intp* dimsin = PyArray_DIMS(data);
   if (self->samples() != dimsin[0])
+  {
     PyErr_SetString(PyExc_ValueError, "Incompatible number of samples");
+    return;
+  }
   for (size_t i = 0 ; i < static_cast<size_t>(numdimsin) ; ++i)
   {
     if (dimsin[i+1] != dimsout[i])
+    {
       PyErr_SetString(PyExc_ValueError, "Incompatible dimension value");
+      return;
+    }
   }
   memcpy(self->data(), (double*)PyArray_DATA(data), self->elements()*sizeof(double));
   self->modified();
