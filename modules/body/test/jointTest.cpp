@@ -38,6 +38,27 @@ CXXTEST_SUITE(JointTest)
     TS_ASSERT_EQUALS(joint.distalSegment(),&dist);
   }
   
+  CXXTEST_TEST(setNullSegments)
+  {
+    TS_WARN("TO FINALIZE FIRST!"); return;
+    ma::body::Segment* prox = new ma::body::Segment("prox", 0, 0);
+    ma::body::Segment* dist = new ma::body::Segment("dist", 0, 0);
+    ma::body::Joint joint("test", prox, dist);
+    joint.setProximalSegment(nullptr);
+    TS_ASSERT_EQUALS(joint.proximalSegment(), nullptr);
+    joint.setDistalSegment(nullptr);
+    TS_ASSERT_EQUALS(joint.distalSegment(), nullptr);
+  };
+  
+  CXXTEST_TEST(deleteSegment)
+  {
+    TS_WARN("TO FINALIZE FIRST!"); return;
+    ma::body::Segment* prox = new ma::body::Segment("prox", 0, 0);
+    ma::body::Joint joint("test", prox, nullptr);
+    delete prox;
+    TS_ASSERT_EQUALS(joint.proximalSegment(), nullptr);
+  }
+  
   CXXTEST_TEST(clone)
   {
     ma::body::Segment* prox = new ma::body::Segment("prox", 0, 0);
@@ -77,5 +98,7 @@ CXXTEST_SUITE(JointTest)
 CXXTEST_SUITE_REGISTRATION(JointTest)
 CXXTEST_TEST_REGISTRATION(JointTest, constructor)
 CXXTEST_TEST_REGISTRATION(JointTest, mutator)
+CXXTEST_TEST_REGISTRATION(JointTest, setNullSegments)
+CXXTEST_TEST_REGISTRATION(JointTest, deleteSegment)
 CXXTEST_TEST_REGISTRATION(JointTest, clone)
 CXXTEST_TEST_REGISTRATION(JointTest, copy)
