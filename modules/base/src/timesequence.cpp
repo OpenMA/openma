@@ -588,4 +588,37 @@ namespace ma
     }
     return optr->Data[col*optr->Samples+sample];
   };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * Compare different properties for each TimeSequence passed in @a timeSequences.
+   * If for each property the values are the same, this function returns true, otherwise false.
+   * The properties compared are:
+   *  - the sample rate ;
+   *  - the start time ;
+   *  - the number of samples.
+   * The common values are returned by the inout arguments @a sampleRate, @a startTime, @a samples.
+   * @relates TimeSequence
+   * @ingroup openma_base
+   */
+  bool compare_timesequences_properties(const std::vector<TimeSequence*>& timeSequences, double& sampleRate, double& startTime, unsigned& samples)
+  {
+    bool first = true;
+    for (const auto& ts: timeSequences)
+    {
+      if (first)
+      {
+        sampleRate = ts->sampleRate();
+        startTime = ts->startTime();
+        samples = ts->samples();
+        first = false;
+      }
+      if ((fabs(ts->sampleRate() - sampleRate) > std::numeric_limits<float>::epsilon())
+       || (fabs(ts->startTime() - startTime) > std::numeric_limits<float>::epsilon())
+       || (ts->samples() != samples))
+        return false;
+    }
+    return true;
+  };
 };
