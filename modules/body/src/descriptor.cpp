@@ -84,7 +84,7 @@ namespace body
   /**
    * Constructor to be used by inherited object which want to add informations (static properties, members, etc) into the private implementation.
    */
-  Descriptor::Descriptor(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
+  Descriptor::Descriptor(DescriptorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Node(pimpl, parent)
   {};
   
