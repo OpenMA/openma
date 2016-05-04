@@ -109,11 +109,11 @@ namespace body
    *  - suffixProximal is set to ".SCS"
    *  - suffixDistal is set to ".SCS"
    *  - enableDegreeConversion is enabled
-   *  - enableScaleAdaptation is set to the value passed in @a anglesAdaptation
-   * The use of these options means that computed Euler angles are expressed in degrees. The TimeSequence associated with each Segment will use both the corresponding segments' name concatenated with the suffix ".SCS". They are adapted or not depending of the value in @a anglesAdaptation.
+   *  - enableScaleAdaptation is set to the value passed in @a sideAdaptation
+   * The use of these options means that computed Euler angles are expressed in degrees. The TimeSequence associated with each Segment will use both the corresponding segments' name concatenated with the suffix ".SCS". They are adapted or not depending of the value in @a sideAdaptation.
    * The adaptation of the angles depends of the setting of each descriptor. You should refer to the model's definition (or helper) to know the descriptor used. For example with the PluginGait helper, the adaptation is used to be able to compare directly the left/right sides.
    */
-  inline bool extract_joint_kinematics(Node* output, Node* input, bool anglesAdaptation = true)
+  inline bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true)
   {
     if (output == nullptr)
     {
@@ -125,7 +125,7 @@ namespace body
       {"suffixProximal", ".SCS"},
       {"suffixDistal", ".SCS"},
       {"enableDegreeConversion", true},
-      {"enableScaleAdaptation", anglesAdaptation}
+      {"enableScaleAdaptation", sideAdaptation}
     };
     for (auto& model: models)
     {
@@ -147,10 +147,10 @@ namespace body
    * Similar to the other extract_joint_kinematics() method but the computed joint kinematics are added to a returned node.
    * @warning The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
    */
-  inline Node* extract_joint_kinematics(Node* input, bool anglesAdaptation = true)
+  inline Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true)
   {
     Node* root = new Node("root");
-    if (!extract_joint_kinematics(root, input, anglesAdaptation))
+    if (!extract_joint_kinematics(root, input, sideAdaptation))
     {
       delete root;
       root = nullptr;
