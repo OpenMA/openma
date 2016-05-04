@@ -70,7 +70,7 @@ namespace body
   /**
    * @class Descriptor openma/body/descriptor.h
    * @brief Abstract class to describe a node or set of node
-   * To generalize the way to describe/measure Node's data, this class propose an evaluate() method. Internally, it calls prepare(), process() and finalize() methods. These three last methods have to be speciallized by each inheriting object.
+   * To generalize the way to describe/measure Node's data, this class proposes an evaluate() method. Internally, it calls prepare(), process() and finalize() methods. These three last methods have to be speciallized by each inheriting object.
    * @ingroup openma_body
    */
   
