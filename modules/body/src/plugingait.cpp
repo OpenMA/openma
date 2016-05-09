@@ -813,7 +813,7 @@ namespace body
     Joint* jnt;
     if (optr->Region & Region::Upper)
     {
-      model->setName(this->name() + "Upper Limb");
+      model->setName(this->name() + "_UpperLimb");
       Segment* head = new Segment("Head", Part::Head, Side::Center, segments);
       torso = new Segment("Torso", Part::Torso, Side::Center, segments);
       if (optr->Side & Side::Left)
@@ -853,7 +853,7 @@ namespace body
     }
     if (optr->Region & Region::Lower)
     {
-      model->setName(this->name() + "Lower Limb");
+      model->setName(this->name() + "_LowerLimb");
       pelvis = new Segment("Pelvis", Part::Pelvis, Side::Center, segments);
       if (optr->Side & Side::Left)
       {
@@ -890,7 +890,7 @@ namespace body
     }
     if ((optr->Region & Region::Full) == Region::Full)
     {
-      model->setName(this->name() + "Full Body");
+      model->setName(this->name() + "_FullBody");
       jnt = new Joint("Spine", torso, pelvis, joints);
       jnt->setDescription("Torso relative to pelvis");
       new PluginGaitSpineDescriptor(jnt);

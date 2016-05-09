@@ -129,7 +129,7 @@ namespace body
     };
     for (auto& model: models)
     {
-      auto analysis = new Node(model->name() + " - Joint Kinematics Analysis", output);
+      auto analysis = new Node(model->name() + "_JointKinematics", output);
       auto joints = model->joints()->findChildren<Joint*>({},{},false);
       for (auto& joint: joints)
       {
