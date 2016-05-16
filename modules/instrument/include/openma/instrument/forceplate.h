@@ -70,7 +70,7 @@ namespace instrument
     double* calibrationMatrixData() const _OPENMA_NOEXCEPT;
     void setCalibrationMatrixData(const double* data);
     
-    virtual TimeSequence* wrench(Location loc, bool global = true, double threshold = 0.0) = 0;
+    TimeSequence* wrench(Location loc, bool global = true, double threshold = 0.0);
     
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
@@ -79,6 +79,9 @@ namespace instrument
     
     std::string stringifyLocation(Location loc) const _OPENMA_NOEXCEPT;
     std::vector<TimeSequence*> retrieveChannels() const _OPENMA_NOEXCEPT;
+    virtual bool computeWrenchAtOrigin(TimeSequence* w) = 0;
+    bool computePosition(TimeSequence* w, Location loc, double threshold);
+    bool transformToGlobal(TimeSequence* w);
   };
 }
 };

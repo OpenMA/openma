@@ -47,10 +47,11 @@ namespace instrument
   public:
     ForcePlateType5(const std::string& name, Node* parent = nullptr);
     
-    virtual TimeSequence* wrench(Location loc, bool global = true, double threshold = 0.0) final;
-    
     virtual ForcePlateType5* clone(Node* parent = nullptr) const final;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT final;
+    
+  protected:
+    virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
   };
 };
 };

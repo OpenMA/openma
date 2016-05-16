@@ -252,6 +252,43 @@ namespace instrument
       this->modified();
     }
   };
+  
+  /**
+   *
+   */
+  TimeSequence* ForcePlate::wrench(Location loc, bool global, double threshold)
+  {
+    auto channels = this->retrieveChannels();
+    if (channels.empty())
+    {
+      error("At least one channel for the force plate '%s' was not found. Impossible to do wrench computation.", this->name().c_str());
+      return nullptr;
+    }
+    double sampleRate = 0., startTime = 0.;
+    unsigned samples = 0;
+    if (!compare_timesequences_properties(channels, sampleRate, startTime, samples))
+    {
+      error("At least one channel for the force plate '%s' does not have the same sample rate, start time, or number of samples than the other. Impossible to do wrench computation.", this->name().c_str());
+      return nullptr;
+    }
+    std::string name = this->name() + ".Wrench." + (global ? "Global." : "Local.") + this->stringifyLocation(loc);
+    auto w = this->outputs()->findChild<TimeSequence*>(name,{{"type",ma::TimeSequence::Wrench},{"components",10}},false);
+    if (w == nullptr)
+      w = new TimeSequence(name, 10, samples, sampleRate, startTime, ma::TimeSequence::Wrench,"",this->outputs());
+    // Is it necessary to do the computation or the cache is still up to date?
+    if (w->timestamp() < this->timestamp())
+    {
+      if (!this->computeWrenchAtOrigin(w)
+          || !this->computePosition(w, loc, threshold)
+            || (global && !this->transformToGlobal(w)))
+      {
+        // An error message should aready be displayed by the other methods
+        delete w;
+        w = nullptr;
+      }
+    }
+    return w;
+  };
 
   /**
    *
@@ -319,5 +356,84 @@ namespace instrument
     }
     return channels;
   };
+  
+  bool ForcePlate::computePosition(TimeSequence* w, Location loc, double threshold)
+  {
+    auto W = math::to_wrench(w);
+    auto o = this->relativeSurfaceOrigin();
+    // Adaptation of the moment and position depending of the specified location
+    auto Fx = W.values().col(0);
+    auto Fy = W.values().col(1);
+    auto Fz = W.values().col(2);
+    auto Mx = W.values().col(3);
+    auto My = W.values().col(4);
+    auto Mz = W.values().col(5);
+    auto Px = W.values().col(6);
+    auto Py = W.values().col(7);
+    auto Pz = W.values().col(8);
+    auto res = W.residuals();
+    if (loc == Location::Origin)
+    {
+      Px.setZero();
+      Py.setZero();
+      Pz.setZero();
+      res.setZero();
+    }
+    else
+    {
+      // Position
+      Px.setConstant(o[0]);
+      Py.setConstant(o[1]);
+      Pz.setConstant(o[2]);
+      // Moment
+      Mx += Fy * o[2] - o[1] * Fz;
+      My += Fz * o[0] - o[2] * Fx;
+      Mz += Fx * o[1] - o[0] * Fy;
+      // Residuals
+      res.setZero();
+    }
+    if (loc == Location::CentreOfPressure)
+    {
+      Px = - My / Fz;
+      Py =   Mx / Fz;
+      Pz.setZero();
+    }
+    else if (loc == Location::PointOfApplication)
+    {
+      // For explanations of the PWA calculation, see Shimba T. (1984), 
+      // "An estimation of center of gravity from force platform data", 
+      // Journal of Biomechanics 17(1), 53–60.
+      math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum().sqrt();
+      Px = (Fy * Mz - Fz * My) / sNF - (Fx.square() * My - Fx * (Fy * Mx)) / (sNF * Fz);
+      Py = (Fz * Mx - Fx * Mz) / sNF - (Fx * (Fy * My) - Fy.square() * Mx) / (sNF * Fz);
+      Pz.setZero();
+    }
+    if ((loc == Location::CentreOfPressure) || (loc == Location::PointOfApplication))
+    {
+      // Moment
+      Mx += Fy * Pz - Py * Fz;
+      My += Fz * Px - Pz * Fx;
+      Mz += Fx * Py - Px * Fy;
+      // In case the threshold is activated, set the residuals in consequence
+      res = (Fz.abs() < threshold).select(-1.0, res);
+    }
+    return true;
+  };
+  
+  bool ForcePlate::transformToGlobal(TimeSequence* w)
+  {
+    auto W = math::to_wrench(w);
+    Eigen::Map<const Eigen::Matrix<double, 3, 3>> R(this->referenceFrame(),  3,3);
+    Eigen::Map<const Eigen::Array<double, 1, 3>> t(this->referenceFrame()+9,1,3);
+    // Forces rotation
+    W.values().block(0,0,W.rows(),3).matrix() *= R.transpose();
+    // Moments rotation
+    W.values().block(0,3,W.rows(),3).matrix() *= R.transpose();
+    // Position rotation
+    W.values().block(0,6,W.rows(),3).matrix() *= R.transpose();
+    // Position translation
+    W.values().block(0,6,W.rows(),3) += t.replicate(W.rows(),1);
+    return true;
+  }
 };
 };
