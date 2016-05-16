@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "openma/instrument/device.h"
-#include "openma/instrument/device_p.h"
+#include "openma/base/hardware.h"
+#include "openma/base/hardware_p.h"
 #include "openma/base/timesequence.h"
 #include "openma/base/logger.h"
 
@@ -45,17 +45,14 @@
 
 namespace ma
 {
-namespace instrument
-{
-  DevicePrivate::DevicePrivate(Device* pint, const std::string& name, std::vector<std::string>&& labels)
+  HardwarePrivate::HardwarePrivate(Hardware* pint, const std::string& name, std::vector<std::string>&& labels)
   : NodePrivate(pint,name), MappedChannels()
   {
     for (const auto& label : labels)
       this->MappedChannels.emplace(label, nullptr);
   };
   
-  DevicePrivate::~DevicePrivate() _OPENMA_NOEXCEPT = default;
-};
+  HardwarePrivate::~HardwarePrivate() _OPENMA_NOEXCEPT = default;
 };
 
 #endif
@@ -64,16 +61,21 @@ namespace instrument
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(instrument::Device);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Hardware);
 
 namespace ma
 {
-namespace instrument
-{
+  /**
+   * @class Hardware openma/base/hardware.h
+   * @brief
+   *
+   * @ingroup openma_base
+   */
+  
   /**
    *
    */
-  Node* Device::channels()
+  Node* Hardware::channels()
   {
     auto pt = this->findChild("Channels",{},false);
     if (pt == nullptr)
@@ -84,7 +86,7 @@ namespace instrument
   /**
    *
    */
-  TimeSequence* Device::channel(const std::string& label) const _OPENMA_NOEXCEPT
+  TimeSequence* Hardware::channel(const std::string& label) const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     const auto it = optr->MappedChannels.find(label);
@@ -96,7 +98,7 @@ namespace instrument
   /**
    * In case no mapped channel use the given @a label, and error is sent to the logger. Thus, the channel @a sig will be not assigned.
    */
-  void Device::setChannel(const std::string& label, TimeSequence* sig)
+  void Hardware::setChannel(const std::string& label, TimeSequence* sig)
   {
     auto optr = this->pimpl();
     auto it = optr->MappedChannels.find(label);
@@ -115,7 +117,7 @@ namespace instrument
   /**
    *
    */
-  Node* Device::outputs()
+  Node* Hardware::outputs()
   {
     auto pt = this->findChild("Outputs",{},false);
     if (pt == nullptr)
@@ -126,9 +128,9 @@ namespace instrument
   /**
    *
    */
-  void Device::copy(const Node* source) _OPENMA_NOEXCEPT
+  void Hardware::copy(const Node* source) _OPENMA_NOEXCEPT
   {
-    auto src = node_cast<const Device*>(source);
+    auto src = node_cast<const Hardware*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();
@@ -141,9 +143,8 @@ namespace instrument
   /**
    *
    */
-  Device::Device(DevicePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
+  Hardware::Hardware(HardwarePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Node(pimpl, parent)
   {};
   
-};
 };

@@ -32,24 +32,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_device_h
-#define __openma_instrument_device_h
+#ifndef __openma_base_hardware_h
+#define __openma_base_hardware_h
 
-#include "openma/instrument_export.h"
 #include "openma/base/node.h"
+#include "openma/base/macros.h"
 
 namespace ma
 {
   class TimeSequence;
   
-namespace instrument
-{
-  class DevicePrivate;
+  class HardwarePrivate;
   
-  class OPENMA_INSTRUMENT_EXPORT Device : public Node
+  class OPENMA_BASE_EXPORT Hardware : public Node
   {
-    OPENMA_DECLARE_PIMPL_ACCESSOR(Device)
-    OPENMA_DECLARE_NODEID(Device, Node)
+    OPENMA_DECLARE_PIMPL_ACCESSOR(Hardware)
+    OPENMA_DECLARE_NODEID(Hardware, Node)
     
   public:
     Node* channels();
@@ -61,12 +59,10 @@ namespace instrument
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   protected:
-    Device(DevicePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+    Hardware(HardwarePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
-}
 };
 
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::Device, OPENMA_INSTRUMENT_EXPORT);
+OPENMA_EXPORT_STATIC_TYPEID(ma::Hardware, OPENMA_BASE_EXPORT);
 
-
-#endif // __openma_instrument_device_h
+#endif // __openma_base_hardware_h

@@ -1,5 +1,4 @@
 SET(OPENMA_INSTRUMENT_SRCS
-  src/device.cpp
   src/forceplate.cpp
   src/forceplatetype5.cpp
 )

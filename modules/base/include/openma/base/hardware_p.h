@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_device_p_h
-#define __openma_instrument_device_p_h
+#ifndef __openma_base_hardware_p_h
+#define __openma_base_hardware_p_h
 
 /*
  * WARNING: This file and its content are not included in the public API and 
@@ -50,19 +50,16 @@ namespace ma
 {
   class TimeSequence;
   
-namespace instrument
-{
-  class DevicePrivate : public NodePrivate
+  class HardwarePrivate : public NodePrivate
   {
-    OPENMA_DECLARE_PINT_ACCESSOR(Device)
+    OPENMA_DECLARE_PINT_ACCESSOR(Hardware)
       
   public:
-    DevicePrivate(Device* pint, const std::string& name, std::vector<std::string>&& labels);
-    ~DevicePrivate() _OPENMA_NOEXCEPT;
+    HardwarePrivate(Hardware* pint, const std::string& name, std::vector<std::string>&& labels);
+    ~HardwarePrivate() _OPENMA_NOEXCEPT;
     
     std::unordered_map<std::string, TimeSequence*> MappedChannels;
   };
 };
-};
 
-#endif // __openma_instrument_device_p_h
+#endif // __openma_base_hardware_p_h

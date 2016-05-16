@@ -2,6 +2,7 @@ SET(OPENMA_BASE_SRCS
   src/any.cpp
   src/date.cpp
   src/event.cpp
+  src/hardware.cpp
   src/logger.cpp
   src/node.cpp
   src/object.cpp

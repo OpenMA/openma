@@ -40,7 +40,7 @@
  * can change drastically from one release to another.
  */
 
-#include "openma/instrument/device_p.h"
+#include "openma/base/hardware_p.h"
 
 namespace ma
 {
@@ -48,11 +48,11 @@ namespace instrument
 {
   class ForcePlate;
   
-  class ForcePlatePrivate : public DevicePrivate
+  class ForcePlatePrivate : public HardwarePrivate
   {
     OPENMA_DECLARE_PINT_ACCESSOR(ForcePlate)
       
-    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(ForcePlate, Device,
+    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(ForcePlate, Hardware,
       Property<ForcePlate, int, &ForcePlate::type>{"type"}
     )
       

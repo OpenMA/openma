@@ -35,8 +35,9 @@
 #ifndef __openma_instrument_forceplate_h
 #define __openma_instrument_forceplate_h
 
-#include "openma/instrument/device.h"
+#include "openma/instrument_export.h"
 #include "openma/instrument/enums.h"
+#include "openma/base/hardware.h"
 
 #include <vector>
 
@@ -46,10 +47,10 @@ namespace instrument
 {
   class ForcePlatePrivate;
   
-  class OPENMA_INSTRUMENT_EXPORT ForcePlate : public Device
+  class OPENMA_INSTRUMENT_EXPORT ForcePlate : public Hardware
   {
     OPENMA_DECLARE_PIMPL_ACCESSOR(ForcePlate)
-    OPENMA_DECLARE_NODEID(ForcePlate, Device)
+    OPENMA_DECLARE_NODEID(ForcePlate, Hardware)
     
   public:
     int type() const _OPENMA_NOEXCEPT;

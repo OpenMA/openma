@@ -54,7 +54,7 @@ namespace ma
 namespace instrument
 {
   ForcePlatePrivate::ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, int rows, int cols)
-  : DevicePrivate(pint, name, std::move(labels)),
+  : HardwarePrivate(pint, name, std::move(labels)),
     Type(type),
     ReferenceFrame{1.,0.,0.,0.,1.,0.,0.,0.,1.,0.,0.,0.},
     SurfaceCorners{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},
@@ -272,7 +272,7 @@ namespace instrument
     assert(optr_src->CalibrationMatrixDimensions[1] == optr->CalibrationMatrixDimensions[1]);
     assert(((optr_src->CalibrationMatrixData != nullptr) && (optr->CalibrationMatrixData != nullptr))
         || ((optr_src->CalibrationMatrixData == nullptr) && (optr->CalibrationMatrixData == nullptr)));
-    this->Device::copy(src);
+    this->Hardware::copy(src);
     optr->Type = optr_src->Type;
     std::copy(optr_src->ReferenceFrame, optr_src->ReferenceFrame+12, optr->ReferenceFrame);
     std::copy(optr_src->SurfaceCorners, optr_src->SurfaceCorners+12, optr->SurfaceCorners);
@@ -282,7 +282,7 @@ namespace instrument
   };
   
   ForcePlate::ForcePlate(ForcePlatePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
-  : Device(pimpl, parent)
+  : Hardware(pimpl, parent)
   {};
   
   std::string ForcePlate::stringifyLocation(Location loc) const _OPENMA_NOEXCEPT
