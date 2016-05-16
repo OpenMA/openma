@@ -1,5 +1,7 @@
 SET(OPENMA_INSTRUMENT_SRCS
   src/forceplate.cpp
+  src/forceplatetype2.cpp
+  src/forceplatetype4.cpp
   src/forceplatetype5.cpp
 )
 
@@ -22,10 +24,10 @@ ENDIF()
 # IF(BUILD_LANGUAGE_BINDINGS)
 #   ADD_SUBDIRECTORY(swig)
 # ENDIF()
-#
-# IF(BUILD_UNIT_TESTS)
-#   ADD_SUBDIRECTORY(test)
-# ENDIF()
+
+IF(BUILD_UNIT_TESTS)
+  ADD_SUBDIRECTORY(test)
+ENDIF()
 
 INSTALL(TARGETS instrument EXPORT OpenMATargets
   LIBRARY DESTINATION lib

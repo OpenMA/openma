@@ -1,0 +1,2 @@
+ADD_CXXTEST_TESTDRIVER(openma_instrument_forceplatetype2 forceplatetype2Test.cpp instrument)
+ADD_CXXTEST_TESTDRIVER(openma_instrument_forceplatetype4 forceplatetype4Test.cpp instrument)
