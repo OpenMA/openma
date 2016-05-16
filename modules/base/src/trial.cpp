@@ -34,8 +34,9 @@
 
 #include "openma/base/trial.h"
 #include "openma/base/trial_p.h"
-#include "openma/base/timesequence.h"
 #include "openma/base/event.h"
+#include "openma/base/hardware.h"
+#include "openma/base/timesequence.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -150,6 +151,27 @@ namespace ma
   Event* Trial::event(unsigned idx) _OPENMA_NOEXCEPT
   {
     return this->events()->child<Event*>(idx);
+  };
+  
+  /**
+   * Returns the subnode "Hardwares".
+   * If the subnode does not exist, this one is created. 
+   */
+  Node* Trial::hardwares()
+  {
+    auto pt = this->findChild("Hardwares",{},false);
+    if (pt == nullptr)
+      pt = new Node("Hardwares",this);
+    return pt;
+  };
+  
+  /**
+   * Returns the @a idx child of the subnode "Hardwares" and cast it as an Hardware object.
+   * If @a idx is out of range or if the extracted node is not an Hardware object, the method returns nullptr.
+   */
+  Hardware* Trial::hardware(unsigned idx) _OPENMA_NOEXCEPT
+  {
+    return this->hardwares()->child<Hardware*>(idx);
   };
   
   /**
