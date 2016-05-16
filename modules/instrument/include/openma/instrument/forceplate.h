@@ -53,6 +53,30 @@ namespace instrument
     OPENMA_DECLARE_NODEID(ForcePlate, Hardware)
     
   public:
+    typedef enum : int {
+      Unknown = 0x00,
+      // Type1 = 0x01,
+      // Raw9x6 = Type1,
+      Type2 = 0x02,
+      Raw6x6 = Type2,
+      // Type3 = 0x03,
+      // Raw6x8 = Type3,
+      Type4 = 0x04,
+      Cal6x6 = Type4,
+      Type5 = 0x05,
+      Cal6x8 = Type5,
+      // Type6 = 0x06,
+      // Cal12x12 = Type6,
+      // Type7 = 0x07,
+      // Poly8x8 = Type7,
+      // Type11 = 0x0B,
+      // KistlerSplitBeltTreadmill = Type11,
+      // Type12 = 0x0C,
+      // KistlerGaitwayTreadmill = Type12,
+      // Type21 = 0x15,
+      // AmtiStairway = Type21
+    } Type;
+    
     int type() const _OPENMA_NOEXCEPT;
     
     void setGeometry(double rso[3], double sc1[3], double sc2[3], double sc3[3], double sc4[3]);
