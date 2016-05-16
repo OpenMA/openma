@@ -68,7 +68,7 @@ namespace instrument
    
     const int* calibrationMatrixDimensions() const _OPENMA_NOEXCEPT;
     double* calibrationMatrixData() const _OPENMA_NOEXCEPT;
-    void setCalibrationMatrixData(int rows, int cols, double* data);
+    void setCalibrationMatrixData(const double* data);
     
     virtual TimeSequence* wrench(Location loc, bool global = true, double threshold = 0.0) = 0;
     

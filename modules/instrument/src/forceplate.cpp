@@ -233,14 +233,9 @@ namespace instrument
   /**
    *
    */
-  void ForcePlate::setCalibrationMatrixData(int rows, int cols, double* data)
+  void ForcePlate::setCalibrationMatrixData(const double* data)
   {
     auto optr = this->pimpl();
-    if ((optr->CalibrationMatrixDimensions[0] != rows) || optr->CalibrationMatrixDimensions[1] != cols)
-    {
-      error("The dimensions of the given data does not fit with the stored calibration matrix");
-      return;
-    }
     int num = optr->CalibrationMatrixDimensions[0] * optr->CalibrationMatrixDimensions[1];
     bool isEqual = true;
     for (int i = 0 ; i < num ; ++i)
