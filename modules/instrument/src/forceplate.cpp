@@ -60,8 +60,7 @@ namespace instrument
     SurfaceCorners{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},
     RelativeSurfaceOrigin{0.,0.,0.},
     CalibrationMatrixDimensions{rows,cols},
-    CalibrationMatrixData(nullptr),
-    LastWrenchComputation(0ul)
+    CalibrationMatrixData(nullptr)
   {
     if ((rows != 0) && (cols != 0))
     {

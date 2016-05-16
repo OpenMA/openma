@@ -67,7 +67,6 @@ namespace instrument
     double RelativeSurfaceOrigin[3];
     int CalibrationMatrixDimensions[2];
     double* CalibrationMatrixData;
-    unsigned long LastWrenchComputation;
   };
 };
 };
