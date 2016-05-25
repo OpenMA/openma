@@ -74,7 +74,7 @@ namespace math
   /**
    * Extract from a TimeSequence @a ts a Map<Array>> where the number of columns of the resulting array is used as the number of components to extract.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @tparam N Number of columns to extract.
    * @relates Array
    * @ingroup openma_math
@@ -88,7 +88,7 @@ namespace math
   /**
    * Extract from a TimeSequence @a ts a Map<const Array>> where the number of columns of the resulting array is used as the number of components to extract.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @tparam N Number of columns to extract.
    * @relates Array
    * @ingroup openma_math
@@ -104,7 +104,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<Array> has 1 column.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -116,7 +116,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<const Array> has 1 column.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -130,7 +130,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<Array> has 3 columns.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -142,7 +142,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<const Array> has 3 columns.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -154,7 +154,7 @@ namespace math
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the resulting Map<Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
    * @relates Array
    * @ingroup openma_math
    */
@@ -164,7 +164,7 @@ namespace math
   };
   
   /**
-   * Specialized extraction method where the resulting Map<const Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
    * @relates Array
    * @ingroup openma_math
    */
@@ -172,11 +172,11 @@ namespace math
   {
     return to_vector(ts,0,TimeSequence::Marker);
   };
-  
+ 
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the result is a Map<Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
+   * Specialized extraction method where the result is a Map<Pose> object. The input must have 12 columns and the type must be set to TimeSequence::Pose.
    * @relates Pose
    * @ingroup openma_math
    */
@@ -186,7 +186,7 @@ namespace math
   };
   
   /**
-   * Specialized extraction method where the result is a Map<const Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
+   * Specialized extraction method where the result is a Map<const Pose> object. The input must have 12 columns and the type must be set to TimeSequence::Pose.
    * @relates Pose
    * @ingroup openma_math
    */
