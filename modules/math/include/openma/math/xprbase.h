@@ -61,7 +61,6 @@ namespace math
     
     static _OPENMA_CONSTEXPR int Processing = Traits<DerivedType>::Processing; ///< Determine the type of processing realized by the derived template expression regarding the computation of the values and the associated residuals. @note This information is only for internal purpose.
     
-    
     /**
      * Returns a casted version of @a this object as a reference to a @a Derived type.
      */
@@ -126,7 +125,7 @@ namespace math
     /**
      * Returns an object representing a cross product operator between @a this object and the @a other object.
      */
-    template <typename U> const CrossOp<Derived, U> cross(const XprBase<U>& other) const _OPENMA_NOEXCEPT;
+    template <typename OtherDerived> const CrossOp<Derived, OtherDerived> cross(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class InverseOp
     
@@ -147,7 +146,7 @@ namespace math
     /**
      * Returns an object representing a transformation between @a this object and the @a other object.
      */
-    template <typename U> const TransformOp<Derived,U> transform(const XprBase<U>& other) const _OPENMA_NOEXCEPT;    
+    template <typename OtherDerived> const TransformOp<Derived,OtherDerived> transform(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class EulerAnglesOp
     
