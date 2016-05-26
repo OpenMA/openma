@@ -4,7 +4,7 @@
 #include <openma/instrument/forceplate.h>
 #include <openma/base/timesequence.h>
 
-static unsigned fpsamples = 22;
+static unsigned sample10_fpsamples = 22;
 
 const double fp2data[132] = {
   0., -177.80544, 0., 0., 0., 0., 0., -177.8054363, 0., 0., 0., 0., -177.8054363, 0., -177.8054363, 0., 381.9178679, 0., 0., 0., 0., -382.2910167,
@@ -44,22 +44,24 @@ const double fp4cal[36] = {
 
 void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* data)
 {
-  auto fx = new ma::TimeSequence("FX1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"N");
+  double rate = 60.0;
+  double start = 0.0;
+  auto fx = new ma::TimeSequence("FX1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
   std::copy(data   , data+22, fx->data());
   fp->setChannel("Fx", fx);
-  auto fy = new ma::TimeSequence("FY1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"N");
+  auto fy = new ma::TimeSequence("FY1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
   std::copy(data+22, data+44, fy->data());
   fp->setChannel("Fy", fy);
-  auto fz = new ma::TimeSequence("FZ1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"N");
+  auto fz = new ma::TimeSequence("FZ1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
   std::copy(data+44, data+66, fz->data());
   fp->setChannel("Fz", fz);
-  auto mx = new ma::TimeSequence("MX1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"Nmm");
+  auto mx = new ma::TimeSequence("MX1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
   std::copy(data+66, data+88, mx->data());
   fp->setChannel("Mx", mx);
-  auto my = new ma::TimeSequence("MY1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"Nmm");
+  auto my = new ma::TimeSequence("MY1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
   std::copy(data+88, data+110, my->data());
   fp->setChannel("My", my);
-  auto mz = new ma::TimeSequence("MZ1",1,fpsamples,60.0,0.0,ma::TimeSequence::Analog,"Nmm");
+  auto mz = new ma::TimeSequence("MZ1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
   std::copy(data+110, data+132, mz->data());
   fp->setChannel("Mz", mz);
 };
@@ -75,19 +77,19 @@ void forceplatetest_fill_sample10_type4(ma::instrument::ForcePlate* fp)
   fp->setCalibrationMatrixData(fp4cal);
 };
 
-void forceplatetest_compare_wrench_at_origin(ma::instrument::ForcePlate* fp, const double* dataref)
+void forceplatetest_compare_sample10_wrench_at_origin(ma::instrument::ForcePlate* fp, const double* dataref)
 {
-  auto w = fp->wrench(ma::instrument::Location::Origin);
-  for (unsigned i = 0 ; i < fpsamples ; ++i)
+  auto w = fp->wrench(ma::instrument::Location::Origin,false);
+  for (unsigned i = 0 ; i < sample10_fpsamples ; ++i)
   {
     const std::string s = std::to_string(i);
-    TSM_ASSERT_DELTA(s, w->data()[i],             dataref[i],             1e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+  fpsamples], dataref[i+  fpsamples], 1e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+2*fpsamples], dataref[i+2*fpsamples], 1e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+3*fpsamples], dataref[i+3*fpsamples], 1e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+4*fpsamples], dataref[i+4*fpsamples], 1e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+5*fpsamples], dataref[i+5*fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i],                      dataref[i],                      1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+  sample10_fpsamples], dataref[i+  sample10_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+2*sample10_fpsamples], dataref[i+2*sample10_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+3*sample10_fpsamples], dataref[i+3*sample10_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+4*sample10_fpsamples], dataref[i+4*sample10_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+5*sample10_fpsamples], dataref[i+5*sample10_fpsamples], 1e-4);
   }
-}
+};
 
 #endif // forceplateTest_def_h

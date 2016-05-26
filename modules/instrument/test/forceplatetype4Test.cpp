@@ -10,7 +10,7 @@ CXXTEST_SUITE(ForcePlateType4Test)
   {
     ma::instrument::ForcePlateType4 fp("FP");
     forceplatetest_fill_sample10_type4(&fp);
-    forceplatetest_compare_wrench_at_origin(&fp, fp4dataout);
+    forceplatetest_compare_sample10_wrench_at_origin(&fp, fp4dataout);
   };
 };
 
