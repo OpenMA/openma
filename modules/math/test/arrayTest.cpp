@@ -406,6 +406,65 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_EIGEN_DELTA(E.values().col(8), R.values().col(0), 1e-5);
     TS_ASSERT_EIGEN_DELTA(E.residuals(), R.residuals(), 1e-15);
   };
+  
+  CXXTEST_TEST(compoundAssignmentOperators)
+  {
+    ma::math::Array<3>::Residuals rref = ma::math::Position::Residuals::Zero(10,1);
+    
+    ma::math::Position::Values val1 = ma::math::Position::Values::Random(10,3);
+    ma::math::Position::Residuals res1 = rref;
+    ma::math::Position pos1(val1,res1);
+    
+    ma::math::Position::Values val2 = ma::math::Position::Values::Random(10,3);
+    ma::math::Position::Residuals res2 = rref;
+    ma::math::Position pos2(val2,res2);
+    
+    pos1 += pos2;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1+val2), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 -= pos2;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), val1, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 *= 2.0;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1*2.0), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 /= 2.0;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), val1, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 += 10.0;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1+10.0), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 -= 10.0;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), val1, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos2.residuals().coeffRef(6) = -1.0;
+    rref.coeffRef(6) = -1.0;
+    pos1 += pos2;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1+val2), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    pos1 -= pos2;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), val1, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    ma::math::Position pos3(1);
+    pos3.values() << 10.0, -45.0, 0.111;
+    pos3.residuals() << 0.0;
+    pos1 *= pos3.replicate(10);
+    TS_ASSERT_EIGEN_DELTA(pos1.x().values(), (val1.col(0) * 10.0), 5e-14);
+    TS_ASSERT_EIGEN_DELTA(pos1.y().values(), (val1.col(1) * -45.0), 5e-14);
+    TS_ASSERT_EIGEN_DELTA(pos1.z().values(), (val1.col(2) * 0.111), 5e-14);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+    
+    pos1 /= pos3.replicate(10) / 2.9;
+    TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1 * 2.9), 5e-14);
+    TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -422,3 +481,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, replicateBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transpose)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
+CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
