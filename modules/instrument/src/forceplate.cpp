@@ -119,7 +119,7 @@ namespace instrument
   /**
    *
    */
-  void ForcePlate::setGeometry(double rso[3], double sc1[3], double sc2[3], double sc3[3], double sc4[3])
+  void ForcePlate::setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3])
   {
     auto optr = this->pimpl();
     // Copy directly the coordinates of the relative surface origin

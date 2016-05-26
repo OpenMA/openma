@@ -79,7 +79,7 @@ namespace instrument
     
     int type() const _OPENMA_NOEXCEPT;
     
-    void setGeometry(double rso[3], double sc1[3], double sc2[3], double sc3[3], double sc4[3]);
+    void setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3]);
     
     const double* referenceFrame() const _OPENMA_NOEXCEPT;
     // void setReferenceFrame(double u[3], double v[3], double w[3], double o[3]);
