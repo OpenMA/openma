@@ -103,7 +103,6 @@ namespace instrument
       c.coeffRef(5) = cFx34[i];
       c.coeffRef(6) = cFy14[i];
       c.coeffRef(7) = cFy23[i];
-      // W.block<1,6>(i,0) = X * c;
       W.values().block<1,6>(i,0) = X * c;
     }
     return true;
