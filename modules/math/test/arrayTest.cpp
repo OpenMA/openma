@@ -340,6 +340,72 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_DELTA(br.coeff(4), 0.0, 1e-15);
     TS_ASSERT_DELTA(br.coeff(5), 0.0, 1e-15);
   };
+  
+  CXXTEST_TEST(transpose)
+  {
+    ma::math::Array<9> O(2);
+    O.values() << 0.90926, 0.14403, 0.39051, -0.12315, 0.98931, -0.07815, -0.39759, 0.02297, 0.91728,
+                  0.9095,  0.12366, 0.39689, -0.09854, 0.99165, -0.08316, -0.40386, 0.03653, 0.91409;
+    O.residuals() << 0.12345678, 0.45678910;
+    ma::math::Array<9> Ot = O.transpose();
+    TS_ASSERT_EIGEN_DELTA(O.values().col(0), Ot.values().col(0), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(1), Ot.values().col(3), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(2), Ot.values().col(6), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(3), Ot.values().col(1), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(4), Ot.values().col(4), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(5), Ot.values().col(7), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(6), Ot.values().col(2), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(7), Ot.values().col(5), 1e-15);
+    TS_ASSERT_EIGEN_DELTA(O.values().col(8), Ot.values().col(8), 1e-15);
+    TS_ASSERT_DELTA(Ot.residuals().coeff(0), 0.0, 1e-15);
+    TS_ASSERT_DELTA(Ot.residuals().coeff(1), 0.0, 1e-15);
+  };
+    
+  CXXTEST_TEST(transposeBis)
+  {
+    ma::math::Array<9> O(2);
+    O.values() << 0.90926, 0.14403, 0.39051, -0.12315, 0.98931, -0.07815, -0.39759, 0.02297, 0.91728,
+                  0.9095,  0.12366, 0.39689, -0.09854, 0.99165, -0.08316, -0.40386, 0.03653, 0.91409;
+    O.residuals() << 0.1234, 0.4567;
+    ma::math::Array<9> E = O.transform(O.transpose());
+    ma::math::Array<2> R(2);
+    R.values() << 1., 0.,
+                  1., 0.;
+    R.residuals() << 0., 0.;
+    TS_ASSERT_EIGEN_DELTA(E.values().col(0), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(1), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(2), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(3), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(4), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(5), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(6), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(7), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(8), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.residuals(), R.residuals(), 1e-15);
+  };
+  
+  CXXTEST_TEST(transposeTer)
+  {
+    ma::math::Pose T(2);
+    T.values() << 0.90926, 0.14403, 0.39051, -0.12315, 0.98931, -0.07815, -0.39759, 0.02297, 0.91728, 826.32837, 81.19634, 134.22374,
+                  0.9095,  0.12366, 0.39689, -0.09854, 0.99165, -0.08316, -0.40386, 0.03653, 0.91409, 832.89762, 79.14663, 133.15111;
+    T.residuals() << 0.1234, 0.4567;
+    ma::math::Array<9> E = T.block<9>(0).transform(T.block<9>(0).transpose());
+    ma::math::Array<2> R(2);
+    R.values() << 1., 0.,
+                  1., 0.;
+    R.residuals() << 0., 0.;
+    TS_ASSERT_EIGEN_DELTA(E.values().col(0), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(1), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(2), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(3), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(4), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(5), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(6), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(7), R.values().col(1), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.values().col(8), R.values().col(0), 1e-5);
+    TS_ASSERT_EIGEN_DELTA(E.residuals(), R.residuals(), 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -353,3 +419,6 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, crossBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, operatorDouble)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicate)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicateBis)
+CXXTEST_TEST_REGISTRATION(ArrayTest, transpose)
+CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
+CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)

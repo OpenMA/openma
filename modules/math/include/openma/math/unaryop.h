@@ -442,6 +442,70 @@ namespace math
   };
   
   // ----------------------------------------------------------------------- //
+  //                                 TRANSPOSEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<TransposeOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = ValuesOnly;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class TransposeOp openma/math/unaryop.h
+   * @brief Compute the transpose
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to compute the transpose for each row and the associated residuals.
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class TransposeOp : public UnaryOp<TransposeOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<TransposeOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+    static_assert(Xpr::ColsAtCompileTime == 9, "The transpose operation is currently available only for array with 9 columns. Contact the developers to extend this feature.");
+    
+  public:
+    /**
+     * Constructor
+     */
+    TransposeOp(const XprBase<Xpr>& x)
+    : UnaryOp<TransposeOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype(Eigen::internal::TransposeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()))
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::TransposeOpValues<V>(this->m_Xpr.values());
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())
+    {
+      return this->m_Xpr.residuals();
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const TransposeOp<Derived> XprBase<Derived>::transpose() const _OPENMA_NOEXCEPT
+  {
+    return TransposeOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
   //                                 INVERSEOP
   // ----------------------------------------------------------------------- //
   

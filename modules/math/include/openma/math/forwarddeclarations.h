@@ -59,6 +59,7 @@ namespace math
   template <typename Xpr> class ScaleOp;
   template <typename Xpr> class NormalizedOp;
   template <typename XprOne, typename XprTwo> class CrossOp;
+  template <typename Xpr> class TransposeOp;
   template <typename XprOne, typename XprTwo> class TransformOp;
   template <typename U> class ReplicateOp;
   template <typename Xpr> class InverseOp;

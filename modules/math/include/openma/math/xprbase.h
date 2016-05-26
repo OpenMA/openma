@@ -127,6 +127,13 @@ namespace math
      */
     template <typename OtherDerived> const CrossOp<Derived, OtherDerived> cross(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
     
+   // Next method is defined after the declaration of the class TransposeOp
+   
+   /**
+    * Returns an object representing this object but where column were transposed.
+    */
+   const TransposeOp<Derived> transpose() const _OPENMA_NOEXCEPT;
+    
     // Next method is defined after the declaration of the class InverseOp
     
     /**

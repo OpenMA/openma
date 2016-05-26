@@ -207,6 +207,42 @@ namespace internal
     Index rows() const {return this->m_V2.rows();};
     Index cols() const {return this->m_V2.cols();};
   };
+  
+  // ----------------------------------------------------------------------- //
+  //                         TransposeOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct TransposeOpValues;
+
+  template<typename V>
+  struct traits<TransposeOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+  
+  template<typename V>
+  struct TransposeOpValues : public Eigen::ReturnByValue<TransposeOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+  public:
+    TransposeOpValues(const V& v) : m_V(v) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      result.col(0) = this->m_V.col(0);
+      result.col(1) = this->m_V.col(3);
+      result.col(2) = this->m_V.col(6);
+      result.col(3) = this->m_V.col(1);
+      result.col(4) = this->m_V.col(4);
+      result.col(5) = this->m_V.col(7);
+      result.col(6) = this->m_V.col(2);
+      result.col(7) = this->m_V.col(5);
+      result.col(8) = this->m_V.col(8);
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return this->m_V.cols();};
+  };
  
   // ----------------------------------------------------------------------- //
   //                         InverseOp return value
