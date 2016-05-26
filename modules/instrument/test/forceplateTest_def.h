@@ -5,6 +5,7 @@
 #include <openma/base/timesequence.h>
 
 static unsigned sample10_fpsamples = 22;
+static unsigned gait1_fpsamples = 17;
 
 const double fp2data[132] = {
   0., -177.80544, 0., 0., 0., 0., 0., -177.8054363, 0., 0., 0., 0., -177.8054363, 0., -177.8054363, 0., 381.9178679, 0., 0., 0., 0., -382.2910167,
@@ -42,6 +43,50 @@ const double fp4cal[36] = {
   -0.001781886, -0.004845061, -0.002341907, -3.250343829, -0.593823663, 391.879169
 };
 
+const double fp5datain[136] = {
+  -0.162814, -0.210117, -0.181125, -0.182956, -0.160678, -0.208896, -0.202182, -0.187839, -0.183566, -0.175937, -0.18265,  -0.186313, -0.19028,  -0.17258,  -0.184176, -0.189364, -0.203098,
+  -0.066682, -0.080415, -0.065156, -0.078584, -0.052338, -0.092622, -0.081331, -0.075837, -0.075532, -0.063325, -0.076143, -0.073091, -0.095979, -0.065766, -0.074617, -0.079194, -0.0795,
+  -0.043793, -0.052338, -0.025177, -0.046845, -0.031281, -0.050507, -0.061494, -0.04715,  -0.054475, -0.031891, -0.030671, -0.066682, -0.045319, -0.041962, -0.042267, -0.048981, -0.058137,
+  -0.07187,  -0.083467, -0.065156, -0.062104, -0.059968, -0.075837, -0.086213, -0.086213, -0.077363, -0.062715, -0.061189, -0.076753, -0.070344, -0.077974, -0.078279, -0.074311, -0.08957,
+  -0.013886, -0.017853, -0.016632, -0.001068,  0.005341, -0.016632, -0.022736, -0.015106, -0.013275, -0.000458, -0.008392, -0.004425, -0.011749, -0.009613, -0.018463, -0.017548, -0.030671,
+  -0.067292, -0.065766, -0.023346, -0.027314, -0.006867, -0.027008, -0.043793, -0.032807, -0.043183, -0.020295, -0.046845, -0.042878, -0.040742, -0.03006,  -0.039826, -0.046845, -0.066987,
+  -0.048981, -0.04654,  -0.020905, -0.043488, -0.027924, -0.034028, -0.07187,  -0.044709, -0.041352, -0.031891, -0.033112, -0.036164, -0.029755, -0.037385, -0.043793, -0.049592, -0.080415,
+  -0.027924, -0.027619, -0.007782, -0.019989, -0.017548, -0.029755, -0.037995, -0.017853, -0.006867, -0.012055, -0.038605, -0.034028, -0.015412, -0.02884,  -0.052338, -0.034333, -0.058747
+};
+
+const double fp5dataout[153] = {
+  0.934072, 0.936098, 0.084225, -0.791014, -1.069198, -0.372141, -1.364467, -0.563446, 0.105632, -0.585571, 0.658296, 0.290865, 0.567465, -0.36459, -0.214151, -0.134446, -0.644618,
+  -1.613139, -1.685705, -0.733881, -0.482943, -0.168369, -1.656966, -2.378406, -1.067708, -0.459805, -0.137758, -1.819456, -1.369817, -0.74167, -1.404462, -2.961395, -2.006249, -3.819845,
+  35.874054, 44.33185, 35.028599, 38.538669, 31.683601, 44.492424, 44.822778, 41.277087, 40.638552, 34.751917, 36.48176, 41.889862, 41.776964, 37.260579, 39.444418, 40.7395, 44.72067,
+  -2.173685, -2.962837, -3.002722, -2.92713, -2.339375, -3.359468, -2.59013, -2.488611, -2.42885, -2.781605, -3.212493, -2.206202, -3.271178, -2.262776, -2.646729, -2.781088, -2.573186,
+  -1.354635, -1.947222, -1.506959, -1.75639, -1.566817, -1.803725, -1.899998, -1.458408, -1.684952, -1.613838, -1.508508, -2.02412, -1.390111, -1.410233, -1.466781, -1.680697, -1.825992,
+  1.668103, 1.547178, 0.414967, 1.118698, 0.70486, 0.907141, 1.648793, 0.992044, 0.969687, 0.784297, 1.398942, 1.36878, 0.917455, 1.082669, 1.485301, 1.428891, 2.239469,
+  37.335437, 43.578775, 42.981543, 45.910098, 50.003366, 40.676707, 42.886485, 35.555181, 41.419439, 46.714136, 41.054816, 48.20659, 33.05264, 38.007717, 37.274738, 41.308647, 41.066577,
+  -59.857415, -66.211856, -85.379708, -75.748326, -73.748674, -74.898042, -56.919032, -59.867737, -59.582283, -79.977002, -87.242645, -52.132435, -78.010943, -60.112557, -65.873538, -67.460514, -56.143471,
+  0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0
+};
+
+const double fp5rso[3] = { 0., 0., -16.33887 };
+
+const double fp5sc1[3] = { -501.800001, 497.799993, 0.};
+
+const double fp5sc2[3] = { -4.0, 497.799993, 0. };
+
+const double fp5sc3[3] = { -4.0, 0., 0. };
+
+const double fp5sc4[3] = { -501.800001, 0., 0. };
+
+const double fp5cal[48] = {
+  -1.6121, 0.976148, 105.019852, -19528.01563, -19094.32813, -158.667999,
+  2.450264, 3.797407, 102.728424, -19156.98047, 18638.98242, -155.205994,
+  -1.303078, 0.46725, 103.483261, 19787.05273, -18830.75977, -156.345993,
+  1.663982, 0.631969, 103.279465, 19710.96484, 18588.61719, -156.037994,
+  -1.019092, -49.462944, -0.851459, 0, 0, -13128.5293,
+  49.613453, -1.280832, -0.229795, 0, 0, 13479.35742,
+  -47.475616, 1.225642, -0.148471, 0, 0, 12898.53516,
+  -1.016865, -49.354858, 0.187208, 0, 0, 13099.8418
+};
+
 void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* data)
 {
   double rate = 60.0;
@@ -77,6 +122,38 @@ void forceplatetest_fill_sample10_type4(ma::instrument::ForcePlate* fp)
   fp->setCalibrationMatrixData(fp4cal);
 };
 
+void forceplatetest_fill_gait1_type5(ma::instrument::ForcePlate* fp)
+{
+  double rate = 1000.0;
+  double start = 0.0;
+  auto p1 = new ma::TimeSequence("Pin1",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
+  std::copy(fp5datain   , fp5datain+17, p1->data());
+  fp->setChannel("Fz1", p1);
+  auto p2 = new ma::TimeSequence("Pin2",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
+  std::copy(fp5datain+17, fp5datain+34, p2->data());
+  fp->setChannel("Fz2", p2);
+  auto p3 = new ma::TimeSequence("Pin3",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
+  std::copy(fp5datain+34, fp5datain+51, p3->data());
+  fp->setChannel("Fz3", p3);
+  auto p4 = new ma::TimeSequence("Pin4",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
+  std::copy(fp5datain+51, fp5datain+68, p4->data());
+  fp->setChannel("Fz4", p4);
+  auto p5 = new ma::TimeSequence("Pin5",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
+  std::copy(fp5datain+68, fp5datain+85, p5->data());
+  fp->setChannel("Fx12", p5);
+  auto p6 = new ma::TimeSequence("Pin6",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
+  std::copy(fp5datain+85, fp5datain+102, p6->data());
+  fp->setChannel("Fx34", p6);
+  auto p7 = new ma::TimeSequence("Pin7",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
+  std::copy(fp5datain+102, fp5datain+119, p7->data());
+  fp->setChannel("Fy14", p7);
+  auto p8 = new ma::TimeSequence("Pin8",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
+  std::copy(fp5datain+119, fp5datain+136, p8->data());
+  fp->setChannel("Fy23", p8);
+  fp->setGeometry(fp5rso, fp5sc1, fp5sc2, fp5sc3, fp5sc4);
+  fp->setCalibrationMatrixData(fp5cal);
+};
+
 void forceplatetest_compare_sample10_wrench_at_origin(ma::instrument::ForcePlate* fp, const double* dataref)
 {
   auto w = fp->wrench(ma::instrument::Location::Origin,false);
@@ -89,6 +166,34 @@ void forceplatetest_compare_sample10_wrench_at_origin(ma::instrument::ForcePlate
     TSM_ASSERT_DELTA(s, w->data()[i+3*sample10_fpsamples], dataref[i+3*sample10_fpsamples], 1e-4);
     TSM_ASSERT_DELTA(s, w->data()[i+4*sample10_fpsamples], dataref[i+4*sample10_fpsamples], 1e-4);
     TSM_ASSERT_DELTA(s, w->data()[i+5*sample10_fpsamples], dataref[i+5*sample10_fpsamples], 1e-4);
+  }
+};
+
+void forceplatetest_compare_gait1_wrench_at_origin(ma::instrument::ForcePlate* fp)
+{
+  auto w = fp->wrench(ma::instrument::Location::Origin,false);
+  for (unsigned i = 0 ; i < gait1_fpsamples ; ++i)
+  {
+    const std::string s = std::to_string(i);
+    TSM_ASSERT_DELTA(s, w->data()[i],                          -fp5dataout[i],                   1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+  gait1_fpsamples],        -fp5dataout[i+  gait1_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+2*gait1_fpsamples],        -fp5dataout[i+2*gait1_fpsamples], 5e-4); // All differences are below 1-4 except for the sample #5 and #15.
+    TSM_ASSERT_DELTA(s, w->data()[i+3*gait1_fpsamples]/1000.0, -fp5dataout[i+3*gait1_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+4*gait1_fpsamples]/1000.0, -fp5dataout[i+4*gait1_fpsamples], 1e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+5*gait1_fpsamples]/1000.0, -fp5dataout[i+5*gait1_fpsamples], 1e-4);
+  }
+};
+
+void forceplatetest_compare_gait1_wrench_position_at_cop(ma::instrument::ForcePlate* fp)
+{
+  auto w = fp->wrench(ma::instrument::Location::CentreOfPressure,false);
+  for (unsigned i = 0 ; i < gait1_fpsamples ; ++i)
+  {
+    const std::string s = std::to_string(i);
+    // NOTE: Most of the differences are below 5e-4
+    TSM_ASSERT_DELTA(s, w->data()[i+6*gait1_fpsamples], fp5dataout[i+6*gait1_fpsamples], 7.5e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+7*gait1_fpsamples], fp5dataout[i+7*gait1_fpsamples], 7.5e-4);
+    TSM_ASSERT_DELTA(s, w->data()[i+8*gait1_fpsamples], fp5dataout[i+8*gait1_fpsamples], 7.5e-4);
   }
 };
 
