@@ -135,7 +135,6 @@ namespace internal
       const auto& r24 = v2.col(10);
       const auto& r34 = v2.col(11);
       // Computation
-      // result.resize(v1.rows(),Eigen::NoChange);
       result.col(0)  = l11 * r11 + l12 * r21 + l13 * r31;
       result.col(1)  = l21 * r11 + l22 * r21 + l23 * r31;
       result.col(2)  = l31 * r11 + l32 * r21 + l33 * r31;
@@ -148,6 +147,40 @@ namespace internal
       result.col(9)  = l11 * r14 + l12 * r24 + l13 * r34 + l14;
       result.col(10) = l21 * r14 + l22 * r24 + l23 * r34 + l24;
       result.col(11) = l31 * r14 + l32 * r24 + l33 * r34 + l34;
+    };
+    
+    template <typename R, typename U1, typename U2> static inline void evaluate_9x9(R& result, const U1& v1, const U2& v2)
+    {
+      // lhs
+      const auto& l11 = v1.col(0);
+      const auto& l21 = v1.col(1);
+      const auto& l31 = v1.col(2);
+      const auto& l12 = v1.col(3);
+      const auto& l22 = v1.col(4);
+      const auto& l32 = v1.col(5);
+      const auto& l13 = v1.col(6);
+      const auto& l23 = v1.col(7);
+      const auto& l33 = v1.col(8);
+      // rhs
+      const auto& r11 = v2.col(0);
+      const auto& r21 = v2.col(1);
+      const auto& r31 = v2.col(2);
+      const auto& r12 = v2.col(3);
+      const auto& r22 = v2.col(4);
+      const auto& r32 = v2.col(5);
+      const auto& r13 = v2.col(6);
+      const auto& r23 = v2.col(7);
+      const auto& r33 = v2.col(8);
+      // Computation
+      result.col(0)  = l11 * r11 + l12 * r21 + l13 * r31;
+      result.col(1)  = l21 * r11 + l22 * r21 + l23 * r31;
+      result.col(2)  = l31 * r11 + l32 * r21 + l33 * r31;
+      result.col(3)  = l11 * r12 + l12 * r22 + l13 * r32;
+      result.col(4)  = l21 * r12 + l22 * r22 + l23 * r32;
+      result.col(5)  = l31 * r12 + l32 * r22 + l33 * r32;
+      result.col(6)  = l11 * r13 + l12 * r23 + l13 * r33;
+      result.col(7)  = l21 * r13 + l22 * r23 + l23 * r33;
+      result.col(8)  = l31 * r13 + l32 * r23 + l33 * r33;
     };
     
     template <typename R, typename U1, typename U2> static inline void evaluate_12x3(R& result, const U1& v1, const U2& v2)
@@ -170,10 +203,31 @@ namespace internal
       const auto& py = v2.col(1);
       const auto& pz = v2.col(2);
       // Computation
-      // result.resize(v1.rows(),Eigen::NoChange);
       result.col(0)  = l11 * px + l12 * py + l13 * pz + l14;
       result.col(1)  = l21 * px + l22 * py + l23 * pz + l24;
       result.col(2)  = l31 * px + l32 * py + l33 * pz + l34;
+    };
+    
+    template <typename R, typename U1, typename U2> static inline void evaluate_9x3(R& result, const U1& v1, const U2& v2)
+    {
+      // lhs
+      const auto& l11 = v1.col(0);
+      const auto& l21 = v1.col(1);
+      const auto& l31 = v1.col(2);
+      const auto& l12 = v1.col(3);
+      const auto& l22 = v1.col(4);
+      const auto& l32 = v1.col(5);
+      const auto& l13 = v1.col(6);
+      const auto& l23 = v1.col(7);
+      const auto& l33 = v1.col(8);
+      // rhs
+      const auto& px = v2.col(0);
+      const auto& py = v2.col(1);
+      const auto& pz = v2.col(2);
+      // Computation
+      result.col(0)  = l11 * px + l12 * py + l13 * pz;
+      result.col(1)  = l21 * px + l22 * py + l23 * pz;
+      result.col(2)  = l31 * px + l32 * py + l33 * pz;
     };
     
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == 12>::type evaluate(R& result, const U1& v1, const U2& v2)
@@ -181,9 +235,19 @@ namespace internal
       TransformOpValues::evaluate_12x12(result,v1,v2);
     };
     
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == 9>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      TransformOpValues::evaluate_9x9(result,v1,v2);
+    };
+    
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == 3>::type evaluate(R& result, const U1& v1, const U2& v2)
     {
       TransformOpValues::evaluate_12x3(result,v1,v2);
+    };
+    
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == 3>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      TransformOpValues::evaluate_9x3(result,v1,v2);
     };
     
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == Dynamic>::type evaluate(R& result, const U1& v1, const U2& v2)
@@ -193,7 +257,17 @@ namespace internal
       else if (v2.cols() == 3)
         TransformOpValues::evaluate_12x3(result,v1,v2);
       else
-        result.setZero(); // Potentially crash the binary, but this should not happen.
+        result.setZero(); // Potentially crash the binary
+    };
+    
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == Dynamic>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      if (v2.cols() == 9)
+        TransformOpValues::evaluate_9x9(result,v1,v2);
+      else if (v2.cols() == 3)
+        TransformOpValues::evaluate_9x3(result,v1,v2);
+      else
+        result.setZero(); // Potentially crash the binary
     };
     
   public:
