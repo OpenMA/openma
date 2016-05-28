@@ -535,6 +535,118 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_EQUALS(M.values().coeff(1), 0.0);
     TS_ASSERT_EQUALS(M.values().coeff(2), 0.0);
   };
+  
+  CXXTEST_TEST(derivative)
+  {
+    ma::math::Position pos(10);
+    ma::math::Array<3> vel, acc;
+    double dt = 0.01;
+    
+    pos.values() << 678.95081, 516.88076, 129.51445,
+                    688.18839, 515.96872, 130.71146,
+                    697.74103, 515.51837, 132.09829,
+                    707.47815, 515.53659, 133.68383,
+                    717.27279, 516.00245, 135.47140,
+                    727.02881, 516.87295, 137.45421,
+                    736.70306, 518.08813, 139.61703,
+                    746.30301, 519.56851, 141.93875,
+                    755.84177, 521.20685, 144.39008,
+                    765.28085, 522.87353, 146.93189;
+    pos.residuals().setZero();
+    
+    // FIRST DERIVATE
+    
+    ma::math::Array<3>::Values vref(10,3);
+    vref << 908.005000, -114.288500, 110.210000,
+            939.511000,  -68.119500, 129.192000,
+            964.488000,  -21.606500, 148.618500,
+            976.588000,   24.204000, 168.655500,
+            977.533000,   66.818000, 188.519000,
+            971.513500,  104.284000, 207.281500,
+            963.710000,  134.778000, 224.227000,
+            956.935500,  155.936000, 238.652500,
+            948.892000,  165.251000, 249.657000,
+            938.924000,  168.085000, 258.705000;
+    ma::math::Array<3>::Residuals rref(10,1);
+    rref.setZero();
+           
+    vel = pos.derivative<1>(dt);
+    TS_ASSERT_EIGEN_DELTA(vel.values(), vref, 1e-5);
+    TS_ASSERT_EIGEN_DELTA(vel.residuals(), rref, 1e-15);
+    
+    // Occlusion for the first sample
+    pos.residuals().coeffRef(0) = -1.0;
+    vref.row(0).setZero();
+    rref.row(0).setConstant(-1.0);
+    vref.row(1) << 946.040000, -68.463500, 128.747500;
+    vel = pos.derivative<1>(dt);
+    TS_ASSERT_EIGEN_DELTA(vel.values(), vref, 1e-5);
+    TS_ASSERT_EIGEN_DELTA(vel.residuals(), rref, 1e-15);
+           
+    // Occlusion for the eighth sample
+    pos.residuals().coeffRef(7) = -1.0;
+    vref.bottomRows<3>().setZero();
+    rref.bottomRows<3>().setConstant(-1.0);
+    vref.row(6) << 963.336500, 138.752000, 225.282500;
+    vel = pos.derivative<1>(dt);
+    TS_ASSERT_EIGEN_DELTA(vel.values(), vref, 1e-5);
+    TS_ASSERT_EIGEN_DELTA(vel.residuals(), rref, 1e-15);
+    
+    // Occlusion on the whole signal
+    pos.residuals().setConstant(-1.0);
+    vref.setZero();
+    rref.setConstant(-1.0);
+    vel = pos.derivative<1>(dt);
+    TS_ASSERT_EIGEN_DELTA(vel.values(), vref, 1e-5);
+    TS_ASSERT_EIGEN_DELTA(vel.residuals(), rref, 1e-15);
+    
+    // DERIVATE OF DERIVATE
+    
+    ma::math::Array<3>::Values aref(10,3);
+    aref << 3477.050000, 4599.700000, 1875.975000,
+            2824.150000, 4634.100000, 1920.425000,
+            1853.850000, 4616.175000, 1973.175000,
+             652.250000, 4421.225000, 1995.025000,
+            -253.725000, 4004.000000, 1931.300000,
+            -691.150000, 3398.000000, 1785.400000,
+            -728.900000, 2582.600000, 1568.550000,
+            -740.900000, 1523.650000, 1271.500000,
+            -900.575000,  607.450000, 1002.625000,
+           -1093.025000,  -40.650000,  806.975000;
+    rref.setZero();
+    
+    pos.residuals().setZero();
+    acc = pos.derivative<1>(dt).derivative<1>(dt);
+    TS_ASSERT_EIGEN_DELTA(acc.values(), aref, 1e-5);
+    TS_ASSERT_EIGEN_DELTA(acc.residuals(), rref, 1e-15);
+    
+    // SECOND DERIVATE
+    
+    aref << 4456.400000,  4548.100000, 1809.300000,
+            3150.600000,  4616.900000, 1898.200000,
+            1844.800000,  4685.700000, 1987.100000,
+             575.200000,  4476.400000, 2020.300000,
+            -386.200000,  4046.400000, 1952.400000,
+            -817.700000,  3446.800000, 1800.100000,
+            -743.000000,  2652.000000, 1589.000000,
+            -611.900000,  1579.600000, 1296.100000,
+            -996.800000,   283.400000,  904.800000,
+           -1381.700000, -1012.800000,  513.500000;
+           
+   acc = pos.derivative<2>(dt);
+   TS_ASSERT_EIGEN_DELTA(acc.values(), aref, 1e-5);
+   TS_ASSERT_EIGEN_DELTA(acc.residuals(), rref, 1e-15);
+   
+   // Occlusion for the sixth sample
+   pos.residuals().coeffRef(5) = -1.0;
+   aref.row(5).setZero();
+   rref.row(5).setConstant(-1.0);
+   aref.row(4) << -694.400000, 4267.100000, 2053.500000;
+   aref.row(6) << -227.000000, 2875.800000, 1687.400000;
+   acc = pos.derivative<2>(dt);
+   TS_ASSERT_EIGEN_DELTA(acc.values(), aref, 1e-5);
+   TS_ASSERT_EIGEN_DELTA(acc.residuals(), rref, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -553,3 +665,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
 CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)
+CXXTEST_TEST_REGISTRATION(ArrayTest, derivative)

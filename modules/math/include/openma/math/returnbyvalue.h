@@ -38,6 +38,8 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <type_traits>
+#include <vector>
+#include <array>
 
 namespace Eigen
 {
@@ -372,7 +374,6 @@ namespace internal
     Index cols() const {return this->m_V.cols();};
   };
   
- 
   // ----------------------------------------------------------------------- //
   //                         EulerAnglesOp return value
   // ----------------------------------------------------------------------- //
@@ -487,6 +488,92 @@ namespace internal
     };
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
+  };
+  // ----------------------------------------------------------------------- //
+  //                        DerivativeOp return value
+  // ----------------------------------------------------------------------- //
+  
+  // NOTE: All finite difference coefficients came from Wikipedia: https://en.wikipedia.org/wiki/Finite_difference_coefficient
+  
+  template <unsigned Order>
+  struct FiniteDifferenceCoefficents
+  {};
+  
+  template <>
+  struct FiniteDifferenceCoefficents<1>
+  {
+    static _OPENMA_CONSTEXPR unsigned minimum_window_length() {return 3;};
+    static Eigen::Array<double,3,1> central_coefficients() {Eigen::Array<double,3,1> arr; arr << -1./2., 0., 1./2.; return arr;};
+    static Eigen::Array<double,3,1> forward_coefficients() {Eigen::Array<double,3,1> arr; arr << -3./2., 2., -1./2.; return arr;};
+    static Eigen::Array<double,3,1> backward_coefficients() {return -forward_coefficients().reverse();};
+    
+  };
+  
+  template <>
+  struct FiniteDifferenceCoefficents<2>
+  {
+    static _OPENMA_CONSTEXPR unsigned minimum_window_length() {return 4;};
+    static Eigen::Array<double,3,1> central_coefficients() {Eigen::Array<double,3,1> arr; arr << 1., -2., 1.; return arr;};
+    static Eigen::Array<double,4,1> forward_coefficients() {Eigen::Array<double,4,1> arr; arr << 2., -5., 4., -1.; return arr;};
+    static Eigen::Array<double,4,1> backward_coefficients() {return forward_coefficients().reverse();};
+  };
+  
+  template<typename V, unsigned O> struct DerivativeOpValues;
+
+  template<typename V, unsigned O>
+  struct traits<DerivativeOpValues<V,O>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+  
+  template<typename V, unsigned O>
+  struct DerivativeOpValues : public Eigen::ReturnByValue<DerivativeOpValues<V,O>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+    const std::vector<std::array<unsigned,2>>& m_W;
+    double m_H;
+    
+  public:
+    DerivativeOpValues(const V& v, const std::vector<std::array<unsigned,2>>& w, double h) : m_V(v), m_W(w), m_H(h) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      const auto& cc = FiniteDifferenceCoefficents<O>::central_coefficients();
+      const auto& fc = FiniteDifferenceCoefficents<O>::forward_coefficients();
+      const auto& bc = FiniteDifferenceCoefficents<O>::backward_coefficients();
+      using CC = typename std::decay<decltype(cc)>::type;
+      using FC = typename std::decay<decltype(fc)>::type;
+      using BC = typename std::decay<decltype(bc)>::type;
+      _OPENMA_CONSTEXPR unsigned chs = CC::RowsAtCompileTime / 2;
+      double ph = std::pow(this->m_H, O);
+      result.setZero();
+      for (const auto& window : this->m_W)
+      {
+        unsigned istart = window[0];
+        unsigned ilen = window[1];
+        
+        // Begin (forward difference)
+        for (unsigned i = istart, len = istart + chs; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<FC::RowsAtCompileTime>(i).colwise() * fc).colwise().sum() / ph;
+        }
+        
+        // Middle (central difference)
+        for (unsigned i = istart + chs, len = (istart + ilen - chs) ; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<CC::RowsAtCompileTime>(i-chs).colwise() * cc).colwise().sum() / ph;
+        }
+          
+        // End (backward difference)
+        for (unsigned i = (istart + ilen - chs), len = istart + ilen ; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<BC::RowsAtCompileTime>(i-BC::RowsAtCompileTime+1).colwise() * bc).colwise().sum() / ph;
+        }
+      }
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return this->m_V.cols();};
   };
 };
 };

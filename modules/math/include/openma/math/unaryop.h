@@ -782,6 +782,117 @@ namespace math
     return EulerAnglesOp<Derived>(*this,a0,a1,a2);
   };
 
+  // ----------------------------------------------------------------------- //
+  //                              DERIVATEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr, unsigned Order>
+  struct Traits<DerivativeOp<Xpr,Order>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class DerivativeOp openma/math/unaryop.h
+   * @brief Compute finite derivative
+   * @tparam Xpr Type of the expression to transform
+   * @tparam U order of the finite derivative
+   * Template expression to compute finite derivative of each column and the associated residuals.
+   *
+   * @ingroup openma_math
+   */
+  template <typename Xpr, unsigned Order>
+  class DerivativeOp : public UnaryOp<DerivativeOp<Xpr,Order>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<DerivativeOp<Xpr,Order>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    using Residuals = typename Traits<Array<DerivativeOp::ColsAtCompileTime>>::Residuals; ///< Type used to store the generated residuals  
+    
+    mutable std::vector<std::array<unsigned,2>> m_Windows;
+    mutable Residuals m_Residuals; ///< Store the residual generated for the derivate
+    double m_Spacing; ///< Scalar value used in the denominator of the different quotient.
+    
+    void prepareWindowProcessing(unsigned mwlen) const
+    {
+      if (this->m_Residuals.size() != 0)
+        return;
+      this->m_Residuals = this->m_Xpr.residuals();
+      unsigned istart = 0, len = this->rows();
+      while (istart < len)
+      {
+        // Beginning of the window
+        while ((istart < len) && (this->m_Residuals.coeff(istart) < 0.))
+          ++istart;
+        // End of the window
+        unsigned istop = istart;
+        while ((istop < len) && (this->m_Residuals.coeff(istop) >= 0.))
+          ++istop;
+        // Check the length of the window
+        unsigned ilen = istop - istart;
+        //  1. The whole signal is invalid
+        if (ilen == 0)
+        {
+          this->m_Residuals.setConstant(-1.0);
+        }
+        //  2. The window is not large enough to be processed
+        else if (ilen < mwlen)
+        {
+          this->m_Residuals.segment(istart,ilen).setConstant(-1.0);
+        }
+        //  3. The size of window is adapted and is registered
+        else
+        {
+          this->m_Windows.push_back({{istart,ilen}});
+          this->m_Residuals.segment(istart,ilen).setZero();
+        }
+        // Pass to the next window
+        istart = istop + 1;
+      }
+    };
+    
+  public:
+    /**
+     * Constructor
+     */
+    DerivativeOp(const XprBase<Xpr>& x, double h)
+    : UnaryOp<DerivativeOp<Xpr,Order>,Xpr>(x), m_Residuals(), m_Spacing(h)
+    {
+      assert(h > 0.0);
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::DerivativeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()),Order>
+    {
+      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::DerivativeOpValues<V,Order>(this->m_Xpr.values(), this->m_Windows, this->m_Spacing);
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    const Residuals& residuals() const _OPENMA_NOEXCEPT
+    {
+      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      return this->m_Residuals;
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  template <unsigned U>
+  inline const DerivativeOp<Derived,U> XprBase<Derived>::derivative(double h) const _OPENMA_NOEXCEPT
+  {
+    return DerivativeOp<Derived,U>(*this,h);
+  };
 };
 };
 

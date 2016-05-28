@@ -145,7 +145,15 @@ namespace math
      */
     template <typename OtherDerived> const TransformOp<Derived,OtherDerived> transform(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
     
-    // Next method is defined after the declaration of the class EulerAnglesOp
+    // Next method is defined after the declaration of the class DerivativeOp
+    
+    /**
+     * Returns an object representing the finite derivative of this template expression for the given order.
+     * Boundaries (begin and end of the signal, samples before and after an occlusion) use forward and backward finite difference methods.
+     * Other parts of the signal used the central difference method.
+     * @note To reduce the computational time, the order of accuracy used for each method is equal to 2.
+     */
+    template <unsigned U> const DerivativeOp<Derived,U> derivative(double h) const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class MinOp
    
@@ -160,12 +168,14 @@ namespace math
      * Returns an object representing the maximum on each column.
      */
     const MaxOp<Derived> max() const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class EulerAnglesOp
+  
     /**
      * Returns an object representing an euler angles operation using the given order @a a0, @a a1, @a a2 for the sequence order.
      */
     const EulerAnglesOp<Derived> eulerAngles(Index a0, Index a1, Index a2) const _OPENMA_NOEXCEPT;
   };
-  
   
   // ----------------------------------------------------------------------- //
   
@@ -194,7 +204,7 @@ namespace math
   {
     return DifferenceOp<XprOne,XprTwo>(x1,x2);
   };
-  
+
   /**
    * Convenient okys operator to compute the sum between two template expressions
    * @relates XprBase
