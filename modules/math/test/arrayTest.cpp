@@ -647,6 +647,22 @@ CXXTEST_SUITE(ArrayTest)
    TS_ASSERT_EIGEN_DELTA(acc.values(), aref, 1e-5);
    TS_ASSERT_EIGEN_DELTA(acc.residuals(), rref, 1e-15);
   };
+  
+  CXXTEST_TEST(skewRedux)
+  {
+    ma::math::Array<9> skew(3);
+    skew.values() << 0., 1., 2., -1., 0., 3., -2., -3., 0.,
+                     0., 4., 5., -4., 0., 6., -5., -6., 0.,
+                     0., 7., 8., -7., 0., 9., -8., -9., 0.;
+    ma::math::Array<1>::Values sx(3,1), sy(3,1), sz(3,1);
+    sx <<  3.,  6.,  9.;
+    sy << -2., -5., -8.;
+    sz <<  1.,  4.,  7.;
+    ma::math::Vector::Values redux = skew.skewRedux().values();
+    TS_ASSERT_EIGEN_DELTA(redux.col(0), sx, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(redux.col(1), sy, 1e-15);
+    TS_ASSERT_EIGEN_DELTA(redux.col(2), sz, 1e-15);
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -666,3 +682,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
 CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)
 CXXTEST_TEST_REGISTRATION(ArrayTest, derivative)
+CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
