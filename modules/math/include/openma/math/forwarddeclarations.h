@@ -65,6 +65,7 @@ namespace math
   template <typename Xpr> class InverseOp;
   template <typename Xpr> class EulerAnglesOp;
   template <typename Xpr, unsigned U> class DerivativeOp;
+  template <typename Xpr> class SkewReduxOp;
 };
 };
 

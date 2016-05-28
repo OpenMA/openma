@@ -489,6 +489,38 @@ namespace internal
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
   };
+  
+  // ----------------------------------------------------------------------- //
+  //                        SkewReduxOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct SkewReduxOpValues;
+
+  template<typename V>
+  struct traits<SkewReduxOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<3>>::Values;
+  };
+  
+  template<typename V>
+  struct SkewReduxOpValues : public Eigen::ReturnByValue<SkewReduxOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    using Scalar = typename InputType::Scalar;
+    typename InputType::Nested m_V;
+  public:
+    SkewReduxOpValues(const V& v) : m_V(v) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      result.col(0) = this->m_V.col(5);
+      result.col(1) = this->m_V.col(2) * -1.0;
+      result.col(2) = this->m_V.col(1);
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return 3;};
+  };
+  
   // ----------------------------------------------------------------------- //
   //                        DerivativeOp return value
   // ----------------------------------------------------------------------- //

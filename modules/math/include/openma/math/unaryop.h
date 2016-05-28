@@ -893,6 +893,83 @@ namespace math
   {
     return DerivativeOp<Derived,U>(*this,h);
   };
+  
+  // ----------------------------------------------------------------------- //
+  //                              SKEWREDUXOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<SkewReduxOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = ValuesOnly;
+  };
+  
+  template <typename Xpr>
+  struct Traits<UnaryOp<SkewReduxOp<Xpr>,Xpr>>
+  {
+    using Values = typename Traits<Xpr>::Values;
+    using Residuals = typename Traits<Xpr>::Residuals;
+    using Index = typename Values::Index;
+    static _OPENMA_CONSTEXPR int ColsAtCompileTime = 3;
+    static _OPENMA_CONSTEXPR int Processing = Traits<SkewReduxOp<Xpr>>::Processing;
+  }; 
+    
+  // ----------------------------------------------------------------------- //
+
+  /**
+   * @class SkewReduxOp openma/math/unaryop.h
+   * @brief Extract unique non-null elements of a skey symmetric matrix.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to extract the unique non-null elements of a skey symmetric matrix.
+   * 
+   * @note This operator is currently usable only with an array of 9 columns representing an orientation.
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class SkewReduxOp : public UnaryOp<SkewReduxOp<Xpr>,Xpr>
+  {
+    static_assert(Xpr::ColsAtCompileTime == 9, "The skew reduction is currently only available for array with 9 columns.");
+    
+    using Index = typename Traits<UnaryOp<SkewReduxOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor.
+     */
+    SkewReduxOp(const XprBase<Xpr>& x)
+    : UnaryOp<SkewReduxOp<Xpr>,Xpr>(x)
+    {};
+      
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+      
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::SkewReduxOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::SkewReduxOpValues<V>(this->m_Xpr.values());
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())
+    {
+      return this->m_Xpr.residuals();
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const SkewReduxOp<Derived> XprBase<Derived>::skewRedux() const _OPENMA_NOEXCEPT
+  {
+    return SkewReduxOp<Derived>(*this);
+  };
+
 };
 };
 

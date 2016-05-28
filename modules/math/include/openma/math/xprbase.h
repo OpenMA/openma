@@ -145,6 +145,12 @@ namespace math
      */
     template <typename OtherDerived> const TransformOp<Derived,OtherDerived> transform(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
     
+    // Next method is defined after the declaration of the class SkewReduxOp
+    
+    /**
+     * Returns an object representing the extraction of non null elements of a skew symmetric matrix.
+     */
+    const SkewReduxOp<Derived> skewRedux() const _OPENMA_NOEXCEPT;
     // Next method is defined after the declaration of the class DerivativeOp
     
     /**
