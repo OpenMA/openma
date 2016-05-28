@@ -200,9 +200,9 @@ namespace math
 
   /**
    * @class MeanOp openma/math/unaryop.h
-   * @brief Compute the average for each row
+   * @brief Compute the average for each column
    * @tparam Xpr Type of the expression to transform
-   * Template expression to compute the average for each row and the associated residuals.
+   * Template expression to compute the average for each column and the associated residuals.
    * @ingroup openma_math
    */
   template <typename Xpr>

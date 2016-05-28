@@ -222,7 +222,7 @@ namespace math
     const Eigen::Block<const Array<12>::Values> orientations() const _OPENMA_NOEXCEPT {return this->m_Values.topLeftCorner(this->rows(),Orientations::ColsAtCompileTime);};
     
     /**
-     * Returns the three last columns to access to the 3D orientation part.
+     * Returns the three last columns to access to the 3D position part.
      */
     const Eigen::Block<const Array<12>::Values> positions() const _OPENMA_NOEXCEPT {return this->m_Values.topRightCorner(this->rows(),Positions::ColsAtCompileTime);};
   };
@@ -242,9 +242,9 @@ namespace math
   {};
  
   /**
-   * Constructor from vectors (u,v,w,o).
+   * Constructor from vectors (@a u, @a v, @a w, @a o).
    * Internally, these vectors are joined into an array with 12 components. They represents a compact affine transformation.
-   * The storage order is the following u_x, u_y, u_z, v_x, v_x, v_y, v_z, w_x, w_y, w_z, o_x, o_y, o_z.
+   * The storage order is the following u_x, u_y, u_z, v_x, v_y, v_z, w_x, w_y, w_z, o_x, o_y, o_z.
    */
   template <typename U, typename V, typename W, typename O>
   inline Pose::Pose(const XprBase<U>& u, const XprBase<V>& v, const XprBase<W>& w, const XprBase<O>& o)
