@@ -221,7 +221,7 @@ namespace math
     /**
      * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
      */
-    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
 
     /**
      * Returns a template expression corresponding to the calculation of this operation.
