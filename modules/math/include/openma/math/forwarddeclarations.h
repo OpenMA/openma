@@ -57,6 +57,8 @@ namespace math
   template <typename XprOne, typename XprTwo> class DifferenceOp;
   template <typename XprOne, typename XprTwo> class SumOp;
   template <typename Xpr> class ScaleOp;
+  template <typename Xpr> class MinOp;
+  template <typename Xpr> class MaxOp;
   template <typename Xpr> class NormalizedOp;
   template <typename XprOne, typename XprTwo> class CrossOp;
   template <typename Xpr> class TransposeOp;
