@@ -108,33 +108,33 @@ namespace math
     /**
      * Returns a block expression from the expression's values.
      */
-    auto values() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type>
+    auto values() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type,Eigen::Dynamic,Cols>
     {
-      return this->mr_Xpr.derived().values().block(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
+      return this->mr_Xpr.derived().values().template block<Eigen::Dynamic,Cols>(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
     };
     
     /**
      * Returns a block expression from the expression's values.
      */
-    auto values() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type>
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type,Eigen::Dynamic,Cols>
     {
-      return this->mr_Xpr.derived().values().block(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
+      return this->mr_Xpr.derived().values().template block<Eigen::Dynamic,Cols>(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
     };
 
     /**
      * Returns a block expression from the expression's residuals.
      */
-    auto residuals() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type>
+    auto residuals() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type,Eigen::Dynamic,1>
     {
-      return this->mr_Xpr.derived().residuals().block(0,0,this->mr_Xpr.derived().residuals().rows(),1);
+      return this->mr_Xpr.derived().residuals().template block<Eigen::Dynamic,1>(0,0,this->mr_Xpr.derived().residuals().rows(),1);
     };
     
     /**
      * Returns a block expression from the expression's residuals.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type>
+    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type,Eigen::Dynamic,1>
     {
-      return this->mr_Xpr.derived().residuals().block(0,0,this->mr_Xpr.derived().residuals().rows(),1);
+      return this->mr_Xpr.derived().residuals().template block<Eigen::Dynamic,1>(0,0,this->mr_Xpr.derived().residuals().rows(),1);
     };
     
     /**
