@@ -464,7 +464,77 @@ CXXTEST_SUITE(ArrayTest)
     pos1 /= pos3.replicate(10) / 2.9;
     TS_ASSERT_EIGEN_DELTA(pos1.values(), (val1 * 2.9), 5e-14);
     TS_ASSERT_EIGEN_DELTA(pos1.residuals(), rref, 1e-15);
-  }
+  };
+  
+  CXXTEST_TEST(minmax)
+  {
+    ma::math::Vector foo(10);
+    foo.values() << 1., 2., 3.,
+                    4., 5.,-6.,
+                    0., 0., 0.,
+                    3., 2., 1.,
+                    6., 5., 4.,
+                    0., 0., 0.,
+                   -1.,-2.,-3.,
+                   -4., 5.,-6.,
+                   -7., 8., 9.,
+                    0., 0., 0.;
+    foo.residuals().setZero();
+    
+    ma::math::Vector m = foo.min();
+    TS_ASSERT_EQUALS(m.rows(), 1);
+    TS_ASSERT_EQUALS(m.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(m.values().coeff(0), -7.0);
+    TS_ASSERT_EQUALS(m.values().coeff(1), -2.0);
+    TS_ASSERT_EQUALS(m.values().coeff(2), -6.0);
+    ma::math::Vector M = foo.max();
+    TS_ASSERT_EQUALS(M.rows(), 1);
+    TS_ASSERT_EQUALS(M.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(M.values().coeff(0), 6.0);
+    TS_ASSERT_EQUALS(M.values().coeff(1), 8.0);
+    TS_ASSERT_EQUALS(M.values().coeff(2), 9.0);
+    
+    foo.residuals().coeffRef(8) = -1.0;
+    m = foo.min();
+    TS_ASSERT_EQUALS(m.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(m.values().coeff(0), -4.0);
+    TS_ASSERT_EQUALS(m.values().coeff(1), -2.0);
+    TS_ASSERT_EQUALS(m.values().coeff(2), -6.0);
+    M = foo.max();
+    TS_ASSERT_EQUALS(M.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(M.values().coeff(0), 6.0);
+    TS_ASSERT_EQUALS(M.values().coeff(1), 5.0);
+    TS_ASSERT_EQUALS(M.values().coeff(2), 4.0);
+    
+    foo.residuals().coeffRef(1) = -1.0;
+    foo.residuals().coeffRef(7) = -1.0;
+    m = foo.min();
+    TS_ASSERT_EQUALS(m.isOccluded(), false);
+    TS_ASSERT_EQUALS(m.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(m.values().coeff(0), -1.0);
+    TS_ASSERT_EQUALS(m.values().coeff(1), -2.0);
+    TS_ASSERT_EQUALS(m.values().coeff(2), -3.0);
+    M = foo.max();
+    TS_ASSERT_EQUALS(M.isOccluded(), false);
+    TS_ASSERT_EQUALS(M.residuals().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(M.values().coeff(0), 6.0);
+    TS_ASSERT_EQUALS(M.values().coeff(1), 5.0);
+    TS_ASSERT_EQUALS(M.values().coeff(2), 4.0);
+    
+    foo.residuals().setConstant(-1.0);
+    m = foo.min();
+    TS_ASSERT_EQUALS(m.isOccluded(), true);
+    TS_ASSERT_EQUALS(m.residuals().coeff(0), -1.0);
+    TS_ASSERT_EQUALS(m.values().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(m.values().coeff(1), 0.0);
+    TS_ASSERT_EQUALS(m.values().coeff(2), 0.0);
+    M = foo.max();
+    TS_ASSERT_EQUALS(M.isOccluded(), true);
+    TS_ASSERT_EQUALS(M.residuals().coeff(0), -1.0);
+    TS_ASSERT_EQUALS(M.values().coeff(0), 0.0);
+    TS_ASSERT_EQUALS(M.values().coeff(1), 0.0);
+    TS_ASSERT_EQUALS(M.values().coeff(2), 0.0);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -482,3 +552,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, transpose)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
+CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)

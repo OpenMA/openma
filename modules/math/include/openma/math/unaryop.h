@@ -571,6 +571,130 @@ namespace math
   };
   
   // ----------------------------------------------------------------------- //
+  //                                 MINOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<MinOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class MinOp openma/math/unaryop.h
+   * @brief Extract the minium value for each column.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to return a row vector with the minimum value found in each column.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class MinOp : public UnaryOp<MinOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<MinOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor
+     */
+    MinOp(const XprBase<Xpr>& x)
+    : UnaryOp<MinOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values(), std::numeric_limits<double>::infinity()).colwise().minCoeff())
+    {
+      return (this->m_Xpr.residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(this->m_Xpr.values(), std::numeric_limits<double>::infinity()).colwise().minCoeff();
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals
+    {
+      return Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const MinOp<Derived> XprBase<Derived>::min() const _OPENMA_NOEXCEPT
+  {
+    return MinOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                                 MAXOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<MaxOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class MaxOp openma/math/unaryop.h
+   * @brief Extract the maximum value for each column.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to return a row vector with the maximum value found in each column.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class MaxOp : public UnaryOp<MaxOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<MaxOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor
+     */
+    MaxOp(const XprBase<Xpr>& x)
+    : UnaryOp<MaxOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values(), -std::numeric_limits<double>::infinity()).colwise().maxCoeff())
+    {
+      return (this->m_Xpr.residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(this->m_Xpr.values(), -std::numeric_limits<double>::infinity()).colwise().maxCoeff();
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals
+    {
+      return Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const MaxOp<Derived> XprBase<Derived>::max() const _OPENMA_NOEXCEPT
+  {
+    return MaxOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
   //                              EULERANGLESOP
   // ----------------------------------------------------------------------- //
   

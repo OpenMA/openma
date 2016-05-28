@@ -147,6 +147,19 @@ namespace math
     
     // Next method is defined after the declaration of the class EulerAnglesOp
     
+    // Next method is defined after the declaration of the class MinOp
+   
+    /**
+     * Returns an object representing the minimum on each column.
+     */
+    const MinOp<Derived> min() const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class MaxOp
+   
+    /**
+     * Returns an object representing the maximum on each column.
+     */
+    const MaxOp<Derived> max() const _OPENMA_NOEXCEPT;
     /**
      * Returns an object representing an euler angles operation using the given order @a a0, @a a1, @a a2 for the sequence order.
      */
