@@ -13,7 +13,7 @@ CXXTEST_SUITE(C3DWriterTest)
     ma::io::HandlerWriter writer(nullptr,"org.c3d");
     TS_ASSERT_EQUALS(writer.canWrite(), false);
     ma::io::File file;
-    file.open(OPENMA_TDD_PATH_OUT("sample01_Eb015pi.c3d"), ma::io::Mode::Out);
+    file.open(OPENMA_TDD_PATH_OUT("c3d/sample01_Eb015pi.c3d"), ma::io::Mode::Out);
     writer.setDevice(&file);
     TS_ASSERT_EQUALS(writer.canWrite(), true);
     TS_ASSERT_EQUALS(writer.format(), "org.c3d");
@@ -94,6 +94,27 @@ CXXTEST_SUITE(C3DWriterTest)
   {
     c3dhandlertest_rewrite_sample01("PI", "sample01_Eb015pi.c3d", OPENMA_TDD_PATH_OUT("c3d/sample01_Eb015pi.c3d"), OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pi.c3d"));
   }
+  
+  CXXTEST_TEST(sample09Rewrited)
+  {
+    ma::Node rootIn("rootIn"), rootOut("rootOut");
+    if (!c3dhandlertest_read("", OPENMA_TDD_PATH_IN("c3d/standard/sample09/PlugInC3D.c3d"), &rootIn)) return;
+    ma::TimeSequence* ts = rootIn.findChild<ma::TimeSequence*>("LHipForce");
+    TS_ASSERT_EQUALS(ts->type(), ma::TimeSequence::Force);
+    TS_ASSERT_EQUALS(ts->unit(), "N");
+    if (!c3dhandlertest_write("", OPENMA_TDD_PATH_OUT("c3d/sample09_PlugInC3D.c3d"), &rootIn)) return;
+    if (!c3dhandlertest_read("", OPENMA_TDD_PATH_OUT("c3d/sample09_PlugInC3D.c3d"), &rootOut)) return;
+    ma::TimeSequence* ts2 = rootOut.findChild<ma::TimeSequence*>("LHipForce");
+    TS_ASSERT_EQUALS(ts2->type(), ma::TimeSequence::Force);
+    TS_ASSERT_EQUALS(ts2->unit(), "N");
+    // Compare time sequences together
+    TS_ASSERT_EQUALS(ts2->elements(), ts->elements());
+    TS_ASSERT_EQUALS(ts2->elements(), 281 * 4);
+    for (unsigned i = 0 ; i < ts->elements() ; ++i)
+    {
+      TS_ASSERT_DELTA(ts2->data()[i], ts->data()[i], 1e-5);
+    }
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(C3DWriterTest)
@@ -107,3 +128,4 @@ CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkOne)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkTwo)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkThree)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample01Rewrited)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample09Rewrited)
