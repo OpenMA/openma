@@ -662,7 +662,28 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_EIGEN_DELTA(redux.col(0), sx, 1e-15);
     TS_ASSERT_EIGEN_DELTA(redux.col(1), sy, 1e-15);
     TS_ASSERT_EIGEN_DELTA(redux.col(2), sz, 1e-15);
-  }
+  };
+  
+  CXXTEST_TEST(downsample)
+  {
+    ma::math::Array<3> d(30);
+    d.values().setRandom();
+    d.residuals().setRandom();
+    ma::math::Array<3> dds = d.downsample(3);
+    TS_ASSERT_EQUALS(dds.rows(), 10);
+    TS_ASSERT_EQUALS(dds.cols(), 3);
+    const auto& dv = d.values();
+    const auto& dr = d.residuals();
+    const auto& ddsv = dds.values();
+    const auto& ddsr = dds.residuals();
+    for (unsigned i = 0 ; i < 10 ; ++i)
+    {
+      TS_ASSERT_DELTA(ddsv.coeff(i,0), dv.coeff(i*3,0), 1e-15);
+      TS_ASSERT_DELTA(ddsv.coeff(i,1), dv.coeff(i*3,1), 1e-15);
+      TS_ASSERT_DELTA(ddsv.coeff(i,2), dv.coeff(i*3,2), 1e-15);
+      TS_ASSERT_DELTA(ddsr.coeff(i,0), dr.coeff(i*3,0), 1e-15);
+    }
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -683,3 +704,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
 CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)
 CXXTEST_TEST_REGISTRATION(ArrayTest, derivative)
 CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
+CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)

@@ -571,6 +571,77 @@ namespace math
   };
   
   // ----------------------------------------------------------------------- //
+  //                              DOWNSAMPLEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr, typename U>
+  struct Traits<DownsampleOp<Xpr,U>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = None; // No processing as this extracts only existing values
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class DownsampleOp openma/math/unaryop.h
+   * @brief Downsample the passed expression.
+   * @tparam Xpr Type of the expression to transform
+   * @tparam U Type used for the downsample factor
+   * Template expression to reduce each column independently.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr, typename U>
+  class DownsampleOp : public UnaryOp<DownsampleOp<Xpr,U>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<DownsampleOp<Xpr,U>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+    U m_Factor;
+    
+  public:
+    /**
+     * Constructor
+     */
+    DownsampleOp(const XprBase<Xpr>& x, U f)
+    : UnaryOp<DownsampleOp<Xpr,U>,Xpr>(x), m_Factor(f)
+    {
+      static_assert(std::is_integral<U>::value, "The downsample operator is currently limited to integer factor.");
+      assert(f > 0);
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::DownsampleOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::DownsampleOpValues<V>(this->m_Xpr.values(),this->m_Factor);
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::internal::DownsampleOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())>
+    {
+      using R = decltype(this->m_Xpr.residuals());
+      return Eigen::internal::DownsampleOpValues<R>(this->m_Xpr.residuals(),this->m_Factor);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  template <typename U>
+  inline const DownsampleOp<Derived,U> XprBase<Derived>::downsample(U f) const _OPENMA_NOEXCEPT
+  {
+    return DownsampleOp<Derived,U>(*this,f);
+  };
+  
+  // ----------------------------------------------------------------------- //
   //                                 MINOP
   // ----------------------------------------------------------------------- //
   

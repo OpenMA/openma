@@ -151,6 +151,18 @@ namespace math
      * Returns an object representing the extraction of non null elements of a skew symmetric matrix.
      */
     const SkewReduxOp<Derived> skewRedux() const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class DownsampleOp
+    
+    /**
+     * Returns an object representing a version of @a this object reduced (decimated) by the factor @a f.
+     * Each column of @a this object is treated independently. It is assumed that each column correspond to a discret uniformly spaced signal.
+     * The type used by @c U can be @c int, @c float, or @c double. Other type will throw a static assertion.
+     * If @a f is an integer factor (e.g. 8, 5.0f, or 10.0), only the @a f -th sample is kept.
+     * In case of a rational factor, a linear interpolation method is used to compute 
+     */
+    template <typename U> const DownsampleOp<Derived,U> downsample(U f) const _OPENMA_NOEXCEPT;
+    
     // Next method is defined after the declaration of the class DerivativeOp
     
     /**

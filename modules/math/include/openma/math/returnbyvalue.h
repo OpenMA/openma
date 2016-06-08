@@ -375,6 +375,36 @@ namespace internal
   };
   
   // ----------------------------------------------------------------------- //
+  //                          DownsampleOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct DownsampleOpValues;
+
+  template<typename V>
+  struct traits<DownsampleOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+
+  template<typename V>
+  struct DownsampleOpValues : public Eigen::ReturnByValue<DownsampleOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+    Index m_Factor;
+  public:
+    DownsampleOpValues(const V& v, Index ratio) : m_V(v), m_Factor(ratio) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      for (Index i = 0, len = this->rows() ; i < len ; ++i)
+        result.row(i) = this->m_V.row(i * this->m_Factor);
+    };
+    Index rows() const {return static_cast<Index>(this->m_V.rows() / this->m_Factor);};
+    Index cols() const {return this->m_V.cols();};
+  };
+  
+  // ----------------------------------------------------------------------- //
   //                         EulerAnglesOp return value
   // ----------------------------------------------------------------------- //
 
