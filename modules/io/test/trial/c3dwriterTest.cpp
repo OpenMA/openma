@@ -109,7 +109,7 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(ts2->unit(), "N");
     // Compare time sequences together
     TS_ASSERT_EQUALS(ts2->elements(), ts->elements());
-    TS_ASSERT_EQUALS(ts2->elements(), 281 * 4);
+    TS_ASSERT_EQUALS(ts2->elements(), size_t(281 * 4));
     for (unsigned i = 0 ; i < ts->elements() ; ++i)
     {
       TS_ASSERT_DELTA(ts2->data()[i], ts->data()[i], 1e-5);
