@@ -72,6 +72,8 @@ inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename
   TSM_ASSERT_DELTA(msgid, evts[1]->time(), 5.40, 1e-4);
   TSM_ASSERT_EQUALS(msgid, evts[2]->name(), "RTO");
   TSM_ASSERT_DELTA(msgid, evts[2]->time(), 7.32, 1e-4);
+  
+  TS_WARN("Add assertions regarding force plates extraction.");
 };
 
 inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename, const char* filepath)

@@ -47,6 +47,11 @@
 #include "openma/base/event.h"
 #include "openma/base/logger.h"
 
+#include "openma/instrument/forceplate.h"
+#include "openma/instrument/forceplatetype2.h"
+#include "openma/instrument/forceplatetype4.h"
+#include "openma/instrument/forceplatetype5.h"
+
 #include <string>
 #include <list>
 #include <vector>
@@ -107,6 +112,8 @@ namespace io
     
     template <typename T>
     static void createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const std::vector<T>& values, const std::vector<unsigned>& dims, size_t inc = 1);
+    
+    static void extractForcePlatformData(instrument::ForcePlate* fp, const std::vector<TimeSequence*>& analogs, double* origin, double* corners, int* channelIndices, size_t channelStep, double* calMatrix = nullptr, const unsigned* calMatrixSize = nullptr);
   };
   
   C3DHandlerPrivate::C3DHandlerPrivate()
@@ -202,6 +209,31 @@ namespace io
       auto str = (inc == 1 ? name : name+std::to_string(inc));
       props[name] = Any(values,dims);
     }
+  };
+  
+  void C3DHandlerPrivate::extractForcePlatformData(instrument::ForcePlate* fp, const std::vector<TimeSequence*>& analogs, double* origin, double* corners, int* channelIndices, size_t channelStep, double* calMatrix, const unsigned* calMatrixSize)
+  {
+    // TODO Debug assertions should be transformed in regular tests
+    // Analog channels
+    assert(fp->channelsNumberRequired() <= channelStep);
+    for (unsigned i = 0 ; i < fp->channelsNumberRequired() ; ++i)
+    {
+      assert((channelIndices[i] > 0) && (static_cast<unsigned>(channelIndices[i]) < analogs.size()));
+      fp->setChannel(i, analogs[channelIndices[i]-1]);
+    }
+    // Geometry
+    fp->setGeometry(origin, corners, corners+3, corners+6, corners+9);
+    // Calibration matrix (if any)
+    if (calMatrix != nullptr)
+    {
+      double* calVal = fp->calibrationMatrixData();
+      const unsigned* calDims = fp->calibrationMatrixDimensions();
+      assert((calDims[0] <= calMatrixSize[0]) && (calDims[1] <= calMatrixSize[1]));
+      for (unsigned j = 0 ; j < calDims[1] ; ++j)
+        for (unsigned i = 0 ; i < calDims[0] ; ++i)
+          calVal[i + j*calDims[1]] = calMatrix[i + j*calMatrixSize[1]];
+    }
+    // TODO Manage case where there are missing channels
   };
   
 };
@@ -847,9 +879,96 @@ namespace io
             ++inc;
           }
         }
+        // Finally, try to generate instrument nodes from trial's parameters
+        size_t numfps = trial->property("FORCE_PLATFORM:USED");
+        if (numfps > 0)
+        {
+          const Any& type = trial->property("FORCE_PLATFORM:TYPE");
+          const Any& corners = trial->property("FORCE_PLATFORM:CORNERS");
+          const Any& origin = trial->property("FORCE_PLATFORM:ORIGIN");
+          const Any& channel = trial->property("FORCE_PLATFORM:CHANNEL");
+          const Any& calmatrix = trial->property("FORCE_PLATFORM:CAL_MATRIX");
+          if (type.isValid() && corners.isValid() && origin.isValid() && channel.isValid())
+          {
+            // const auto& dimType = type.dimensions();
+            // const auto& dimCorners = corners.dimensions();
+            // const auto& dimOrigin = orgin.dimensions();
+            const auto& dimChannel = channel.dimensions();
+            const auto& dimCalMatrix = calmatrix.dimensions();
+            auto valType = type.cast<std::vector<int>>();
+            auto valCorners = corners.cast<std::vector<double>>();
+            auto valOrigin = origin.cast<std::vector<double>>();
+            auto valChannel = channel.cast<std::vector<int>>();
+            auto valCalMatrix = calmatrix.cast<std::vector<double>>();
+            if ((valType.size() >= numfps) && (valCorners.size() >= (12 * numfps)) && (valOrigin.size() == (3 * numfps)) && (dimChannel.size() >= 2) && (dimChannel[1] >= numfps))
+            {
+              int maxType = *std::max_element(valType.cbegin(), valType.cend());
+              instrument::ForcePlate* fp = nullptr;
+              if ((maxType <= 3) || ((maxType > 3) && calmatrix.isValid() && (dimCalMatrix.size() >= 3) && (dimCalMatrix[2] >= numfps)))
+              {
+                unsigned channelStep = dimChannel[0];
+                unsigned calMatrixStep = calmatrix.isValid() ? dimCalMatrix[0] * dimCalMatrix[1] : 0;
+                for (size_t i = 0 ; i < numfps ; ++i)
+                {
+                  double* o = valOrigin.data()+(i*3);
+                  double* c = valCorners.data()+(i*12);
+                  int* ch = valChannel.data()+(i*channelStep);
+                  double* cm = calmatrix.isValid() ? valCalMatrix.data()+(i*calMatrixStep) : nullptr;
+                  if (o[2] > 0.0)
+                  {
+                    warning("Origin parameter for the force platform #%i seems to locate the hardware origin from the center of the working surface. Data are set to the opposite to locate the center of the working surface from the hardware's origin.", i+1);
+                    o[0] *= -1.0; o[1] *= -1.0; o[2] *= -1.0;
+                  }
+                  switch(valType[i])
+                  {
+                  case 1:
+                    error("Force Platform type 1 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 2:
+                    fp = new instrument::ForcePlateType2("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 3:
+                    error("Force Platform type 3 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 4:
+                    fp = new instrument::ForcePlateType4("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 5:
+                    fp = new instrument::ForcePlateType5("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 6:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 7:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                  break;
+                  case 11:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                  break;
+                  case 12:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 21:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  default:
+                    error("Unsupported force platform type '%i'. Impossible to extract corresponding data", valType[i]);
+                    break;
+                  }
+                  C3DHandlerPrivate::extractForcePlatformData(fp, analogs, o, c, ch, channelStep, cm, dimCalMatrix.data());
+                }
+              }
+              else
+                warning("Corrupted parameter(s) - Missing or invalid calibration parameter. Impossible to generate force platform objects"); 
+            }
+            else
+              warning("Corrupted parameter(s) - Wrong dimensions. Impossible to generate force platform objects.");
+          }
+          else
+            warning("Missing parameter(s). Impossible to generate force platform objects.");
+        
+        }
       }
-    // Finally, try to generate hardware nodes from the trial's properties group/parameter
-      // NodeFactory::generateHardwareFromProperties(trial,trial->hardware());
     }
   };
   
