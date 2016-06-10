@@ -395,7 +395,6 @@ namespace instrument
     {
       Px = - My / Fz;
       Py =   Mx / Fz;
-      Pz.setZero();
     }
     else if (loc == Location::PointOfApplication)
     {
@@ -405,7 +404,6 @@ namespace instrument
       math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum().sqrt();
       Px = (Fy * Mz - Fz * My) / sNF - (Fx.square() * My - Fx * (Fy * Mx)) / (sNF * Fz);
       Py = (Fz * Mx - Fx * Mz) / sNF - (Fx * (Fy * My) - Fy.square() * Mx) / (sNF * Fz);
-      Pz.setZero();
     }
     if ((loc == Location::CentreOfPressure) || (loc == Location::PointOfApplication))
     {
