@@ -107,5 +107,18 @@ namespace body
       return it->second;
     return std::string{};
   };
+  
+  /**
+   * Return the external name found in the stored conversion table. If @a name (internal lavel) is not found, then a copy of itself is returned.
+   */
+  const std::string& LandmarksTranslator::convertReverse(const std::string& name) const _OPENMA_NOEXCEPT
+  {
+    using mvt = std::unordered_map<std::string,std::string>::value_type;
+    auto optr = this->pimpl();
+    auto it = std::find_if(optr->ConversionTable.begin(), optr->ConversionTable.end(), [&](const mvt& v){return v.second == name;});
+    if (it != optr->ConversionTable.end())
+      return it->first;
+    return name;
+  };
 };
 };

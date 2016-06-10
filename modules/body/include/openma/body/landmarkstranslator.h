@@ -65,6 +65,8 @@ namespace body
     const std::string& convert(const std::string& name) const _OPENMA_NOEXCEPT;
     std::string convertIfExists(const std::string& name) const _OPENMA_NOEXCEPT;
     
+    const std::string& convertReverse(const std::string& name) const _OPENMA_NOEXCEPT;
+    
   private:
     LandmarksTranslator(LandmarksTranslatorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
