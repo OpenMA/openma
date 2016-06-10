@@ -57,7 +57,7 @@ namespace instrument
     )
       
   public:
-    ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, int rows, int cols);
+    ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, unsigned rows, unsigned cols);
     ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels);
     ~ForcePlatePrivate() _OPENMA_NOEXCEPT;
     
@@ -65,7 +65,7 @@ namespace instrument
     double ReferenceFrame[12];
     double SurfaceCorners[12];
     double RelativeSurfaceOrigin[3];
-    int CalibrationMatrixDimensions[2];
+    unsigned CalibrationMatrixDimensions[2];
     double* CalibrationMatrixData;
   };
 };

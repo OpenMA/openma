@@ -90,7 +90,7 @@ namespace instrument
     const double* relativeSurfaceOrigin() const _OPENMA_NOEXCEPT;
     // void setRelativeSurfaceOrigin(double off[3]);
    
-    const int* calibrationMatrixDimensions() const _OPENMA_NOEXCEPT;
+    const unsigned* calibrationMatrixDimensions() const _OPENMA_NOEXCEPT;
     double* calibrationMatrixData() const _OPENMA_NOEXCEPT;
     void setCalibrationMatrixData(const double* data);
     

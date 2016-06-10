@@ -53,7 +53,7 @@ namespace ma
 {
 namespace instrument
 {
-  ForcePlatePrivate::ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, int rows, int cols)
+  ForcePlatePrivate::ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, unsigned rows, unsigned cols)
   : HardwarePrivate(pint, name, std::move(labels)),
     Type(type),
     ReferenceFrame{1.,0.,0.,0.,1.,0.,0.,0.,1.,0.,0.,0.},
@@ -214,7 +214,7 @@ namespace instrument
   /**
    * 
    */
-  const int* ForcePlate::calibrationMatrixDimensions() const _OPENMA_NOEXCEPT
+  const unsigned* ForcePlate::calibrationMatrixDimensions() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->CalibrationMatrixDimensions;
