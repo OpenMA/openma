@@ -42,9 +42,9 @@
 
 #include "openma/base/node_p.h"
 
-#include <unordered_map>
 #include <vector>
 #include <string>
+#include <utility> // std::pair
 
 namespace ma
 {
@@ -58,7 +58,7 @@ namespace ma
     HardwarePrivate(Hardware* pint, const std::string& name, std::vector<std::string>&& labels);
     ~HardwarePrivate() _OPENMA_NOEXCEPT;
     
-    std::unordered_map<std::string, TimeSequence*> MappedChannels;
+    std::vector<std::pair<std::string, TimeSequence*>> MappedChannels;
   };
 };
 

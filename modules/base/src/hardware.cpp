@@ -46,10 +46,10 @@
 namespace ma
 {
   HardwarePrivate::HardwarePrivate(Hardware* pint, const std::string& name, std::vector<std::string>&& labels)
-  : NodePrivate(pint,name), MappedChannels()
+  : NodePrivate(pint,name), MappedChannels(labels.size())
   {
-    for (const auto& label : labels)
-      this->MappedChannels.emplace(label, nullptr);
+    for (size_t i = 0, len = labels.size() ; i < len ; ++i)
+      this->MappedChannels[i] = std::make_pair(labels[i], nullptr);
   };
   
   HardwarePrivate::~HardwarePrivate() _OPENMA_NOEXCEPT = default;
@@ -86,32 +86,73 @@ namespace ma
   /**
    *
    */
-  TimeSequence* Hardware::channel(const std::string& label) const _OPENMA_NOEXCEPT
+  TimeSequence* Hardware::channel(unsigned idx) const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    const auto it = optr->MappedChannels.find(label);
+    if (idx >= optr->MappedChannels.size())
+      return nullptr;
+    return optr->MappedChannels[idx].second;
+  };
+  
+  /**
+   *
+   */
+  void Hardware::setChannel(unsigned idx, TimeSequence* sig)
+  {
+    auto optr = this->pimpl();
+    if (idx >= optr->MappedChannels.size())
+    {
+      error("Index out of range. Impossible to assign the signal '%s' in the hardware '%s'.", (sig != nullptr ? sig->name().c_str() : "NULL"), this->name().c_str());
+      return;
+    }
+    if (optr->MappedChannels[idx].second == sig)
+      return;
+    this->replaceChild(optr->MappedChannels[idx].second, sig);
+    optr->MappedChannels[idx].second = sig;
+    // this->modified(); // replaceChild calls modified
+  };
+  
+  /**
+   *
+   */
+  TimeSequence* Hardware::channel(const std::string& label) const _OPENMA_NOEXCEPT
+  {
+    using vvt = std::pair<std::string, TimeSequence*>;
+    auto optr = this->pimpl();
+    const auto it = std::find_if(optr->MappedChannels.cbegin(), optr->MappedChannels.cend(), [&](const vvt& v){return v.first == label;});
     if (it == optr->MappedChannels.cend())
       return nullptr;
     return it->second;
   };
   
   /**
-   * In case no mapped channel use the given @a label, and error is sent to the logger. Thus, the channel @a sig will be not assigned.
+   * In case no mapped channel use the given @a label, an error is sent to the logger. Thus, the channel @a sig will be not assigned.
    */
   void Hardware::setChannel(const std::string& label, TimeSequence* sig)
   {
+    using vvt = std::pair<std::string, TimeSequence*>;
     auto optr = this->pimpl();
-    auto it = optr->MappedChannels.find(label);
+    auto it = std::find_if(optr->MappedChannels.begin(), optr->MappedChannels.end(), [&](const vvt& v){return v.first == label;});
     if (it != optr->MappedChannels.end())
     {
       if (it->second == sig)
         return;
       this->replaceChild(it->second, sig);
       it->second = sig;
-      // this->modified(); // replaceChild call modified
+      // this->modified(); // replaceChild calls modified
     }
     else
       error("No mapped channel with the label: %s", label.c_str());
+  };
+  
+  /**
+   * Returns the number of channels required by this hardware.
+   * This number corresponds to the number of mapped channels configured by an inheriting class.
+   */
+  unsigned Hardware::channelsNumberRequired() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return static_cast<unsigned>(optr->MappedChannels.size());
   };
   
   /**
@@ -136,8 +177,12 @@ namespace ma
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->Node::copy(src);
-    for(const auto channel: optr_src->MappedChannels)
-      optr->MappedChannels[channel.first] = this->findChild<TimeSequence*>(channel.second->name());
+    optr->MappedChannels.resize(optr_src->MappedChannels.size());
+    for(size_t i = 0 ; i < optr_src->MappedChannels.size() ; ++i)
+    {  
+      const auto& ch = optr_src->MappedChannels[i];
+      optr->MappedChannels[i] = std::make_pair(ch.first, this->findChild<TimeSequence*>(ch.second->name()));
+    }
   };
   
   /**

@@ -51,8 +51,11 @@ namespace ma
     
   public:
     Node* channels();
+    TimeSequence* channel(unsigned idx) const _OPENMA_NOEXCEPT;
+    void setChannel(unsigned idx, TimeSequence* sig);
     TimeSequence* channel(const std::string& label) const _OPENMA_NOEXCEPT;
     void setChannel(const std::string& label, TimeSequence* sig);
+    unsigned channelsNumberRequired() const _OPENMA_NOEXCEPT;
     
     Node* outputs();
     
