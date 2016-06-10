@@ -87,7 +87,7 @@ namespace body
   /**
    * Return the mapped name found in the stored conversion table. If @a name is not found, then a copy of itself is returned.
    */
-  std::string LandmarksTranslator::convert(const std::string& name) const _OPENMA_NOEXCEPT
+  const std::string& LandmarksTranslator::convert(const std::string& name) const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     auto it = optr->ConversionTable.find(name);

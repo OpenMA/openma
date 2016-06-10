@@ -62,7 +62,7 @@ namespace body
     LandmarksTranslator& operator=(const LandmarksTranslator& ) = delete;
     LandmarksTranslator& operator=(LandmarksTranslator&& ) _OPENMA_NOEXCEPT = delete;
     
-    std::string convert(const std::string& name) const _OPENMA_NOEXCEPT;
+    const std::string& convert(const std::string& name) const _OPENMA_NOEXCEPT;
     std::string convertIfExists(const std::string& name) const _OPENMA_NOEXCEPT;
     
   private:
