@@ -108,6 +108,16 @@ namespace instrument
 #endif  
   
   /**
+   * @class ForcePlate
+   * @brief
+   *
+   * Wrench Option computation
+   *  - Treshold : 5 newtons by default
+   *
+   * @todo add a method to remove the baseline
+   */
+  
+  /**
    *
    */
   int ForcePlate::type() const _OPENMA_NOEXCEPT
@@ -255,7 +265,7 @@ namespace instrument
   /**
    *
    */
-  TimeSequence* ForcePlate::wrench(Location loc, bool global, double threshold)
+  TimeSequence* ForcePlate::wrench(Location loc, bool global, double threshold, double rate)
   {
     auto channels = this->retrieveChannels();
     if (channels.empty())
@@ -263,25 +273,36 @@ namespace instrument
       error("At least one channel for the force plate '%s' was not found. Impossible to do wrench computation.", this->name().c_str());
       return nullptr;
     }
-    double sampleRate = 0., startTime = 0.;
+    double sampleRate = 0., startTime = 0., factor = 1.;
     unsigned samples = 0;
     if (!compare_timesequences_properties(channels, sampleRate, startTime, samples))
     {
       error("At least one channel for the force plate '%s' does not have the same sample rate, start time, or number of samples than the other. Impossible to do wrench computation.", this->name().c_str());
       return nullptr;
     }
+    if (rate > 0.0)
+    {
+      if (modf(sampleRate / rate, &factor) > std::numeric_limits<float>::epsilon())
+      {
+        error("The current implementation does not support non integer factor to downsample forceplate signals");
+        return nullptr;
+      }
+    }
+    else
+      rate = sampleRate;
     std::string name = this->name() + ".Wrench." + (global ? "Global." : "Local.") + this->stringifyLocation(loc);
-    auto w = this->outputs()->findChild<TimeSequence*>(name,{{"type",ma::TimeSequence::Wrench},{"components",10}},false);
+    auto w = this->outputs()->findChild<TimeSequence*>(name,{{"type",ma::TimeSequence::Wrench},{"components",10},{"sampleRate",rate}},false);
     if (w == nullptr)
-      w = new TimeSequence(name, 10, samples, sampleRate, startTime, ma::TimeSequence::Wrench,"",this->outputs());
+      w = new TimeSequence(name, 10, samples, rate, startTime, ma::TimeSequence::Wrench,"",this->outputs());
     // Is it necessary to do the computation or the cache is still up to date?
     if (w->timestamp() < this->timestamp())
     {
       if (!this->computeWrenchAtOrigin(w)
+        || !this->resampleWrench(w, factor)
           || !this->computePosition(w, loc, threshold)
             || (global && !this->transformToGlobal(w)))
       {
-        // An error message should aready be displayed by the other methods
+        // An error message should aready be displayed by other used methods
         delete w;
         w = nullptr;
       }
@@ -356,6 +377,19 @@ namespace instrument
     return channels;
   };
   
+  bool ForcePlate::resampleWrench(TimeSequence* w, double factor)
+  {
+    if (factor > 1.0)
+    {
+      // Right now, only downsample integer factor is supported
+      math::Wrench dsw = math::to_wrench(w).downsample(static_cast<unsigned>(factor));
+      w->resize(dsw.rows());
+      std::copy_n(dsw.values().data(),    dsw.rows()*9, w->data());
+      std::copy_n(dsw.residuals().data(), dsw.rows(), w->data()+dsw.rows()*9);
+    }
+    return true;
+  }
+  
   bool ForcePlate::computePosition(TimeSequence* w, Location loc, double threshold)
   {
     auto W = math::to_wrench(w);
@@ -420,7 +454,7 @@ namespace instrument
   bool ForcePlate::transformToGlobal(TimeSequence* w)
   {
     auto W = math::to_wrench(w);
-    Eigen::Map<const Eigen::Matrix<double, 3, 3>> R(this->referenceFrame(),  3,3);
+    Eigen::Map<const Eigen::Matrix<double, 3, 3>> R(this->referenceFrame(), 3,3);
     Eigen::Map<const Eigen::Array<double, 1, 3>> t(this->referenceFrame()+9,1,3);
     // Forces rotation
     W.values().block(0,0,W.rows(),3).matrix() *= R.transpose();
