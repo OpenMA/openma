@@ -445,8 +445,9 @@ namespace instrument
       Mx += Fy * Pz - Py * Fz;
       My += Fz * Px - Pz * Fx;
       Mz += Fx * Py - Px * Fy;
-      // In case the threshold is activated, set the residuals in consequence
-      res = (Fz.abs() < threshold).select(-1.0, res);
+      // Set to 0, all frame where the vertical force is below the threshold
+      Eigen::Matrix<double,1,9> reset; reset << 0., 0., 0., 0., 0., 0., o[0], o[1], o[2];
+      W.values() = (Fz.abs() < threshold).replicate<1,9>().select(reset.replicate(W.rows(),1), W.values());
     }
     return true;
   };
