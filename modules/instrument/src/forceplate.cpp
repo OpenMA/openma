@@ -112,7 +112,7 @@ namespace instrument
    * @brief
    *
    * Wrench Option computation
-   *  - Treshold : 5 newtons by default
+   *  - Treshold : 10 newtons by default
    *
    * @todo add a method to remove the baseline
    */

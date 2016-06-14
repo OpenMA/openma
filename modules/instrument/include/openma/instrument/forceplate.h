@@ -94,7 +94,7 @@ namespace instrument
     double* calibrationMatrixData() const _OPENMA_NOEXCEPT;
     void setCalibrationMatrixData(const double* data);
     
-    TimeSequence* wrench(Location loc, bool global = true, double threshold = 5.0, double rate = -1.0);
+    TimeSequence* wrench(Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
     
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
