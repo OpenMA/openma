@@ -85,7 +85,7 @@ namespace body
       return false;
     }
     return helper->reconstruct(root, trials);
-  }
+  };
   
   /**
    * Similar to the other reconstruct method but the models are added to the returned node.
