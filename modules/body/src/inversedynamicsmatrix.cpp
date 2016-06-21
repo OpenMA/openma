@@ -235,7 +235,6 @@ namespace body
           // - Proximal joint (result)
           math::Vector Fp = Fdyn - Fwei - Fext;
           math::Vector Mp = Mdyn - Mwei - Mext;
-          math::to_timesequence(pp, jnt->name() + ".Centre", rate, start, TimeSequence::Marker, "mm", model->findChild<Trial*>({},{},false)->timeSequences());
           math::to_timesequence(Fp, jnt->name() + ".Force", rate, start, TimeSequence::Force, "N", jnt);
           math::to_timesequence(Mp, jnt->name() + ".Moment", rate, start, TimeSequence::Moment, "Nmm" , jnt);
           
