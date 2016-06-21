@@ -34,18 +34,22 @@
 
 #include "openma/body/plugingait.h"
 #include "openma/body/plugingait_p.h"
-#include "openma/body/eulerdescriptor_p.h"
-
+#include "openma/body/anchor.h"
+#include "openma/body/chain.h"
+#include "openma/body/dempstertable.h"
 #include "openma/body/enums.h"
+#include "openma/body/eulerdescriptor_p.h"
+#include "openma/body/simplegaitforceplatetofeetassigner.h"
 #include "openma/body/joint.h"
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/body/referenceframe.h"
 #include "openma/body/segment.h"
 #include "openma/body/utils.h"
+#include "openma/body/inversedynamicsmatrix.h"
+#include "openma/base/logger.h"
 #include "openma/base/subject.h"
 #include "openma/base/trial.h"
-#include "openma/base/logger.h"
 
 #include "Eigen_openma/Utils/sign.h"
 
@@ -1921,6 +1925,21 @@ namespace body
       },this);
     }
     return translator;
+  };
+  
+  InertialParametersEstimator* PluginGait::defaultInertialParametersEstimator()
+  {
+    return new DempsterTable(this);
+  };
+  
+  ExternalWrenchAssigner* PluginGait::defaultExternalWrenchAssigner()
+  {
+    return new SimpleGaitForcePlateToFeetAssigner(this);
+  };
+  
+  InverseDynamicProcessor* PluginGait::defaultInverseDynamicProcessor()
+  {
+    return new InverseDynamicMatrix(this);
   };
   
   /**

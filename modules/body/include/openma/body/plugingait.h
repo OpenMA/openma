@@ -103,6 +103,9 @@ namespace body
     
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;
+    virtual InertialParametersEstimator* defaultInertialParametersEstimator() override;
+    virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() override;
+    virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() override;
     
     virtual PluginGait* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
