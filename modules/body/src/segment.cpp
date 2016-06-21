@@ -34,6 +34,7 @@
 
 #include "openma/body/segment.h"
 #include "openma/body/segment_p.h"
+#include "openma/base/timesequence.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -128,6 +129,14 @@ namespace body
       return;
     optr->Side = value;
     this->modified();
+  };
+  
+  /**
+   *
+   */
+  TimeSequence* Segment::pose() const _OPENMA_NOEXCEPT
+  {
+    return this->findChild<TimeSequence*>({},{{"type",TimeSequence::Pose},{"components",13}},false);
   };
   
   /**
