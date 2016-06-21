@@ -36,6 +36,7 @@
 #include "openma/body/model_p.h"
 #include "openma/body/segment.h"
 #include "openma/body/joint.h"
+#include "openma/body/chain.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -152,7 +153,28 @@ namespace body
   Joint* Model::joint(unsigned idx) _OPENMA_NOEXCEPT
   {
     return this->joints()->child<Joint*>(idx);
- };
+  };
+  
+  /**
+   * Returns the subnode "Chains".
+   * If the subnode does not exist, this one is created.
+   */
+  Node* Model::chains()
+  {
+    auto pt = this->findChild("Chains",{},false);
+    if (pt == nullptr)
+      pt = new Node("Chains",this);
+    return pt;
+  };
+  
+  /**
+   * Returns the @a idx child of the subnode "Chains" and cast it as a Chain object.
+   * If @a idx is out of range or if the extracted node is not a Chain object, the method returns nullptr.
+   */
+  Chain* Model::chain(unsigned idx) _OPENMA_NOEXCEPT
+  {
+    return this->joints()->child<Chain*>(idx);
+  };
   
   
   /**

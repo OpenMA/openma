@@ -45,6 +45,7 @@ namespace body
 {
   class Segment;
   class Joint;
+  class Chain;
   
   class ModelPrivate;
   
@@ -70,6 +71,9 @@ namespace body
     
     Node* joints();
     Joint* joint(unsigned idx) _OPENMA_NOEXCEPT;
+    
+    Node* chains();
+    Chain* chain(unsigned idx) _OPENMA_NOEXCEPT;
     
     virtual Model* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
