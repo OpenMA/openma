@@ -121,7 +121,9 @@ namespace body
    */
   bool InverseDynamicMatrix::run(Node* inout)
   {
+#if !defined(_MSC_VER)
 #warning WE NEED TO MANAGE UNITS FOR FORCES AND MOMENTS
+#endif
     
     auto models = inout->findChildren<Model*>({},{},false);
     for (auto& model : models)

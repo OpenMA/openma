@@ -50,7 +50,7 @@ namespace ma
 {
   class TimeSequence;
   
-  class HardwarePrivate : public NodePrivate
+  class OPENMA_BASE_EXPORT HardwarePrivate : public NodePrivate
   {
     OPENMA_DECLARE_PINT_ACCESSOR(Hardware)
       

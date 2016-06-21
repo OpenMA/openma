@@ -40,7 +40,9 @@
 #include "openma/body/enums.h"
 #include "openma/base/logger.h"
 
+#if !defined(_MSC_VER)
 #warning VERIFY ORIGIN FOR UPPER BODY SEGMENTS
+#endif
 
 static _OPENMA_CONSTEXPR double _ma_body_dempster_table[9*3] = {
 //   mass      long.    gyration
@@ -151,7 +153,9 @@ namespace body
     for (auto& model : models)
     {
       const Any& weightProp = model->property("weight");
+#if !defined(_MSC_VER)
 #warning It might be better to use directly the mass. Or the norm of the gravity might need to be an input argument
+#endif
       if (!weightProp.isValid())
       {
         error("Missing weight information for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());

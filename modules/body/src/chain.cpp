@@ -152,7 +152,9 @@ namespace body
     // auto optr = this->pimpl();
     // auto optr_src = src->pimpl();
     this->Node::copy(src);
+#if !defined(_MSC_VER)
 #warning FINALIZE THE CHAIN::COPY METHOD. WHAT ABOUT SHARED CLONED CHILDREN?
+#endif
   };
 };
 };

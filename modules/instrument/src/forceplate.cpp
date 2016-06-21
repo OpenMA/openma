@@ -56,12 +56,45 @@ namespace instrument
   ForcePlatePrivate::ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, unsigned rows, unsigned cols)
   : HardwarePrivate(pint, name, std::move(labels)),
     Type(type),
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
     ReferenceFrame{1.,0.,0.,0.,1.,0.,0.,0.,1.,0.,0.,0.},
     SurfaceCorners{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},
     RelativeSurfaceOrigin{0.,0.,0.},
     CalibrationMatrixDimensions{rows,cols},
+#endif
     CalibrationMatrixData(nullptr)
   {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    this->ReferenceFrame[0] = 1.;
+    this->ReferenceFrame[1] = 0.;
+    this->ReferenceFrame[2] = 0.;
+    this->ReferenceFrame[3] = 0.;
+    this->ReferenceFrame[4] = 1.;
+    this->ReferenceFrame[5] = 0.;
+    this->ReferenceFrame[6] = 0.;
+    this->ReferenceFrame[7] = 0.;
+    this->ReferenceFrame[8] = 1.;
+    this->ReferenceFrame[9] = 0.;
+    this->ReferenceFrame[10] = 0.;
+    this->ReferenceFrame[11] = 0.;
+    this->SurfaceCorners[0] = 0.;
+    this->SurfaceCorners[1] = 0.;
+    this->SurfaceCorners[2] = 0.;
+    this->SurfaceCorners[3] = 0.;
+    this->SurfaceCorners[4] = 0.;
+    this->SurfaceCorners[5] = 0.;
+    this->SurfaceCorners[6] = 0.;
+    this->SurfaceCorners[7] = 0.;
+    this->SurfaceCorners[8] = 0.;
+    this->SurfaceCorners[9] = 0.;
+    this->SurfaceCorners[10] = 0.;
+    this->SurfaceCorners[11] = 0.;
+    this->RelativeSurfaceOrigin[0] = 0.;
+    this->RelativeSurfaceOrigin[1] = 0.;
+    this->RelativeSurfaceOrigin[2] = 0.;
+    this->CalibrationMatrixDimensions[0] = rows;
+    this->CalibrationMatrixDimensions[1] = cols;
+#endif
     if ((rows != 0) && (cols != 0))
     {
       size_t num = rows * cols;

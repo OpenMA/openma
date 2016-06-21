@@ -42,7 +42,7 @@ namespace ma
 {
 namespace instrument
 {
-  class ForcePlateType2 : public ForcePlate
+  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
   {
   public:
     ForcePlateType2(const std::string& name, Node* parent = nullptr);

@@ -55,7 +55,9 @@ namespace body
     OPENMA_DECLARE_NODEID(Model, Node)
     
   public:
+#if !defined(_MSC_VER)
 #warning A MODEL MUST HAVE UNITS
+#endif
     
     Model(const std::string& name, Node* parent = nullptr);
     ~Model() _OPENMA_NOEXCEPT;

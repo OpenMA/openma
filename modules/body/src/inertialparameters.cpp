@@ -48,8 +48,26 @@ namespace ma
 namespace body
 {
   InertialParametersPrivate::InertialParametersPrivate(InertialParameters* pint, const std::string& name)
-  : NodePrivate(pint,name), Mass(0.), CenterOfMass{0.,0.,0.}, Inertia{0.,0.,0.,0.,0.,0.,0.,0.,0.}
-  {};
+  : NodePrivate(pint,name), Mass(0.)
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
+  , CenterOfMass{0.,0.,0.}, Inertia{0.,0.,0.,0.,0.,0.,0.,0.,0.}
+#endif
+  {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    this->CenterOfMass[0] = 0.;
+    this->CenterOfMass[1] = 0.;
+    this->CenterOfMass[2] = 0.;
+    this->Inertia[0] = 0.;
+    this->Inertia[1] = 0.;
+    this->Inertia[2] = 0.;
+    this->Inertia[3] = 0.;
+    this->Inertia[4] = 0.;
+    this->Inertia[5] = 0.;
+    this->Inertia[6] = 0.;
+    this->Inertia[7] = 0.;
+    this->Inertia[8] = 0.;
+#endif
+  };
   
   InertialParametersPrivate::~InertialParametersPrivate() = default;
 };
