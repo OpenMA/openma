@@ -148,7 +148,13 @@ CXXTEST_SUITE(UtilsTest)
     TS_ASSERT_DELTA(_ice.values().coeff(2,10), 53.200000000000003, 1e-15);
     TS_ASSERT_DELTA(_ice.values().coeff(2,11), 115.189999999999998, 1e-15);
   };
+  
+  CXXTEST_TEST(transformInvalid)
+  {
+    TS_WARN("What about the transformation of a relative frame using an invalid pose and then extract the position?");
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(UtilsTest)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformRelative)
+CXXTEST_TEST_REGISTRATION(UtilsTest, transformInvalid)

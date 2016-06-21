@@ -19,8 +19,10 @@ CXXTEST_SUITE(ModelTest)
   CXXTEST_TEST(joint)
   {
     ma::body::Model model("model");
-    auto jnt1 = new ma::body::Joint("jnt1"); jnt1->addParent(model.joints());
-    auto jnt2 = new ma::body::Joint("jnt2"); jnt2->addParent(model.joints());
+    auto jnt1 = new ma::body::Joint("jnt1",nullptr,nullptr);
+    jnt1->addParent(model.joints());
+    auto jnt2 = new ma::body::Joint("jnt2",nullptr,nullptr);
+    jnt2->addParent(model.joints());
     TS_ASSERT_EQUALS(model.joint(0), jnt1);
     TS_ASSERT_EQUALS(model.joint(1), jnt2);
     TS_ASSERT_EQUALS(model.joint(2), nullptr);
@@ -78,6 +80,11 @@ CXXTEST_SUITE(ModelTest)
     TS_ASSERT_EQUALS(model2.children().size(), 0ul);
     TS_ASSERT_EQUALS(model2.name(), model1.name());
   };
+  
+  CXXTEST_TEST(modelJointSegmentAndClone)
+  {
+    TS_WARN("VERIFY THAT CLONED SEGMENT IN A JOINT ARE THE SAME THAN IN THE MODEL");
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(ModelTest)
@@ -87,3 +94,4 @@ CXXTEST_TEST_REGISTRATION(ModelTest, segments)
 CXXTEST_TEST_REGISTRATION(ModelTest, segment)
 CXXTEST_TEST_REGISTRATION(ModelTest, clone)
 CXXTEST_TEST_REGISTRATION(ModelTest, copy)
+CXXTEST_TEST_REGISTRATION(ModelTest, modelJointSegmentAndClone)
