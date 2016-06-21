@@ -1883,10 +1883,9 @@ namespace body
    */
   LandmarksTranslator* PluginGait::defaultLandmarksTranslator()
   {
-    auto translator = this->findChild<LandmarksTranslator*>("LandmarksTranslator",{},false);
-    if (translator == nullptr)
-    {  
-      translator = new LandmarksTranslator("LandmarksTranslator",{
+    return new LandmarksTranslator(
+      "LandmarksTranslator", 
+      {
         {"LFHD", "L.HF"},
         {"LBHD", "L.HB"},
         {"RFHD", "R.HF"},
@@ -1922,9 +1921,7 @@ namespace body
         {"RTOE", "R.MTH2"},
         {"LHEE", "L.HEE"},
         {"RHEE", "R.HEE"},
-      },this);
-    }
-    return translator;
+      }, this);
   };
   
   InertialParametersEstimator* PluginGait::defaultInertialParametersEstimator()
