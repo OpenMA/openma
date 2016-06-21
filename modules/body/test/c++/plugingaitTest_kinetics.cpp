@@ -82,7 +82,9 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
           ma::math::to_timesequence(M, joint->name() + ".Moment.Local.Distal", moment->sampleRate(), moment->startTime(), ma::TimeSequence::Moment, "Nmm", joint);
         }
       }
-      
+#if 1
+    }
+#else      
       std::cout << std::endl;
       std::string str;
 
@@ -131,7 +133,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     auto cop = model->findChild<ma::TimeSequence*>(str,{{"type",ma::TimeSequence::Wrench}});
     ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test.c3d");
-    
+#endif
   };
   
   CXXTEST_TEST(inverseDynamicsBothLowerBodyFullFramesHeadOffsetDisabled)
@@ -195,7 +197,9 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
           ma::math::to_timesequence(M, joint->name() + ".Moment.Local.Distal", moment->sampleRate(), moment->startTime(), ma::TimeSequence::Moment, "Nmm", joint);
         }
       }
-      
+#if 1
+    }
+#else
       std::cout << std::endl;
       std::string str;
 
@@ -244,10 +248,10 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     auto cop = model->findChild<ma::TimeSequence*>(str,{{"type",ma::TimeSequence::Wrench}});
     ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test2.c3d");
-    
+#endif
   };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitKineticsTest)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKineticsTest, inverseDynamicsBothLowerBodyOneFrame)
+CXXTEST_TEST_REGISTRATION(PluginGaitKineticsTest, inverseDynamicsBothLowerBodyOneFrame)
 CXXTEST_TEST_REGISTRATION(PluginGaitKineticsTest, inverseDynamicsBothLowerBodyFullFramesHeadOffsetDisabled)
