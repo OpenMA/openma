@@ -100,8 +100,9 @@ namespace body
   
   bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
   {
+    auto pptr = this->pint();
     std::string prefix;
-    double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0;
+    double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0, seglength = 0.0;
     double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr;
     bool footFlat = false;
     if (side == Side::Left)
@@ -142,6 +143,17 @@ namespace body
     }
     // Compute the knee joint centre (KJC)
     const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
+    // Set the segment length
+    seglength = static_cast<double>((KJC - *HJC).norm().mean());
+    pptr->setProperty(prefix+"Thigh.length", seglength);
+    // Set the body inertial coordinate system (relative to the SCS)
+    const double relOriBcsFromScs[9] = {
+      0., -1., 0., // BCS u axis has to point to the right. SCS v axis is along the ML axis but pointing to the left (LM)
+      1.,  0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
+      0.,  0., 1.  // BCS w axis has to point upward. SCS w axis is going updward too
+    };
+    double relPoseBcsFromScs[3] = {0.,0.,seglength};
+    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -155,7 +167,13 @@ namespace body
     }
     // Compute the ankle joint centre (AJC)
     const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
-    
+    // Set the segment length
+    seglength = static_cast<double>((AJC - KJC).norm().mean());
+    pptr->setProperty(prefix+"Shank.length", seglength);
+    // Set the body inertial coordinate system (relative to the SCS)
+    //  - Same relative orientation than for the thigh
+    relPoseBcsFromScs[2] = seglength;
+    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -167,26 +185,37 @@ namespace body
       error("PluginGait - Missing landmarks to define the foot. Calibration aborted.");
       return false;
     }
+    // Set the segment length
+    seglength = static_cast<double>((MTH2 - HEE).norm().mean());
+    pptr->setProperty(prefix+"Foot.length", seglength);
+    // Set the body inertial coordinate system (relative to the SCS)
+    //  - The BCS origin is the same than the SCS. That's why the relative posiiton is set to nullptr (which internaly is equal to 0,0,0)
+    const double relOriBcsFromScsFoot[9] = {
+      0., -1., 0., // BCS u axis (right) corresponds to SCS -v axis
+      0.,  0., 1., // BCS v axis (forward) corresponds to SCS w axis
+     -1.,  0., 0.  // BCS w axis (upward) corresponds to SCS -u axis
+    };
+    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScsFoot, nullptr, pptr);
+    // Compute foot offset angles
     if (footFlat)
     {
       // Copy the Z-coordinates of MTH2 into HEE
-      // FIXME: This assume that the vertical axis is always Z!
+      // FIXME: This assumes that the vertical axis is always Z!
       HEE.block<1>(2) = MTH2.block<1>(2);
     }
-    // Shank axes
+    // - Shank axes
     math::Vector w = (KJC - AJC).normalized();
     math::Vector u = s * (KJC - AJC).cross(LS - AJC).normalized();
     math::Vector v_shank = w.cross(u);
-    // Foot reference
+    // - Foot reference
     w = (MTH2 - HEE).normalized();
     u = v_shank.cross(w).normalized();
     math::Pose foot(u,w.cross(u),w,AJC);
-    // Uncorrected foot reference
+    // - Uncorrected foot reference
     w = (MTH2 - AJC).normalized();
     u = v_shank.cross(w).normalized();
     math::Pose uncorrected_foot(u,w.cross(u),w,AJC);
-
-    // Offset angles
+    // - Offset angles
     if (foot.isOccluded() || uncorrected_foot.isOccluded())
     {
       error("PluginGait - Impossible to find a least one valid frame for the foot motion. Calibration aborted.");
@@ -292,6 +321,7 @@ namespace body
   
   bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
+    auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
            staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0;
@@ -321,6 +351,7 @@ namespace body
     // Temporary variable use to construct segments' motion
     Segment* seg = nullptr;
     math::Vector u,v,w,o;
+    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -338,7 +369,8 @@ namespace body
     w = (*HJC - KJC).normalized();
     v = w.cross(u);
     math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -357,6 +389,8 @@ namespace body
     u = s * w.cross(LS - AJC).normalized();
     math::Vector v_shank = w.cross(u);
     math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -378,6 +412,8 @@ namespace body
     const math::Vector wr = u * cx*sy - v * sx + w * cx*cy;
     // FIXME: This is not the good origin. None anatomical meaning was discovered to explain this position...
     math::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
   
@@ -812,6 +848,7 @@ namespace body
     }
     Node* segments = model->segments();
     Node* joints = model->joints();
+    Node* chains = model->chains();
     Segment *torso = nullptr, *pelvis = nullptr,
             *progression = new Segment("Progression", Part::User, Side::Center, segments);
     Joint* jnt;
@@ -822,29 +859,39 @@ namespace body
       torso = new Segment("Torso", Part::Torso, Side::Center, segments);
       if (optr->Side & Side::Left)
       {
-        new Segment("L.Clavicle", Part::Clavicle, Side::Left, segments);
+        Segment* leftClavicle = new Segment("L.Clavicle", Part::Clavicle, Side::Left, segments);
         Segment* leftArm = new Segment("L.Arm", Part::Arm, Side::Left, segments);
         Segment* leftForearm = new Segment("L.Forearm", Part::Forearm, Side::Left, segments);
         Segment* leftHand = new Segment("L.Hand", Part::Hand, Side::Left, segments);
-        jnt = new Joint("L.Shoulder", torso, leftArm, joints);
+        std::vector<Joint*> leftUpperLimbJoints(3);
+        jnt = new Joint("L.Shoulder", torso, leftArm, Anchor::origin(leftClavicle), joints);
+        leftUpperLimbJoints[0] = jnt;
         new PluginGaitLeftShoulderDescriptor(jnt);
-        jnt = new Joint("L.Elbow", leftArm, leftForearm, joints);
+        jnt = new Joint("L.Elbow", leftArm, leftForearm, Anchor::origin(leftArm), joints);
+        leftUpperLimbJoints[1] = jnt;
         new EulerDescriptor("L.Elbow.Angle", EulerDescriptor::YXZ, jnt);
-        jnt = new Joint("L.Wrist", leftForearm, leftHand, joints);
+        jnt = new Joint("L.Wrist", leftForearm, leftHand, Anchor::origin(leftForearm), joints);
+        leftUpperLimbJoints[2] = jnt;
         new EulerDescriptor("L.Wrist.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
+        new Chain("L.UpperLimb", leftUpperLimbJoints, chains);
       }
       if (optr->Side & Side::Right)
       {
-        new Segment("R.Clavicle", Part::Clavicle, Side::Right, segments);
+        Segment* rightClavicle = new Segment("R.Clavicle", Part::Clavicle, Side::Right, segments);
         Segment* rightArm = new Segment("R.Arm", Part::Arm, Side::Right, segments);
         Segment* rightForearm = new Segment("R.Forearm", Part::Forearm, Side::Right, segments);
         Segment* rightHand = new Segment("R.Hand", Part::Hand, Side::Right, segments);
-        jnt = new Joint("R.Shoulder", torso, rightArm, joints);
+        std::vector<Joint*> rightUpperLimbJoints(3);
+        jnt = new Joint("R.Shoulder", torso, rightArm, Anchor::origin(rightClavicle), joints);
+        rightUpperLimbJoints[0] = jnt;
         new PluginGaitRightShoulderDescriptor(jnt);
-        jnt = new Joint("R.Elbow", rightArm, rightForearm, joints);
+        jnt = new Joint("R.Elbow", rightArm, rightForearm, Anchor::origin(rightArm), joints);
+        rightUpperLimbJoints[1] = jnt;
         new EulerDescriptor("R.Elbow.Angle", EulerDescriptor::YXZ, jnt);
-        jnt = new Joint("R.Wrist", rightForearm, rightHand, joints);
+        jnt = new Joint("R.Wrist", rightForearm, rightHand, Anchor::origin(rightForearm), joints);
+        rightUpperLimbJoints[2] = jnt;
         new EulerDescriptor("R.Wrist.Angle", EulerDescriptor::YXZ, jnt);
+        new Chain("R.UpperLimb", rightUpperLimbJoints, chains);
       }
       jnt = new Joint("Neck", head, torso, joints);
       new PluginGaitNeckDescriptor(jnt);
@@ -864,11 +911,15 @@ namespace body
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
         Segment* leftShank = new Segment("L.Shank", Part::Shank, Side::Left, segments);
         Segment* leftFoot = new Segment("L.Foot", Part::Foot, Side::Left, segments);
-        jnt = new Joint("L.Hip", pelvis, leftThigh, joints);
+        std::vector<Joint*> leftLowerLimbJoints(3);
+        jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
+        leftLowerLimbJoints[0] = jnt;
         new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, -1.0, jnt);
-        jnt = new Joint("L.Knee", leftThigh, leftShank, joints);
+        jnt = new Joint("L.Knee", leftThigh, leftShank, Anchor::origin(leftThigh), joints);
+        leftLowerLimbJoints[1] = jnt;
         new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
-        jnt = new Joint("L.Ankle", leftShank, leftFoot, joints);
+        jnt = new Joint("L.Ankle", leftShank, leftFoot, Anchor::origin(leftShank), joints);
+        leftLowerLimbJoints[2] = jnt;
         new PluginGaitLeftAnkleDescriptor(jnt);
         jnt = new Joint("L.Foot.Progress", progression, leftFoot, joints);
         jnt->setDescription("Left foot relative to progression frame");
@@ -879,15 +930,20 @@ namespace body
         Segment* rightThigh = new Segment("R.Thigh", Part::Thigh, Side::Right, segments);
         Segment* rightShank = new Segment("R.Shank", Part::Shank, Side::Right, segments);
         Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
-        jnt = new Joint("R.Hip", pelvis, rightThigh, joints);
+        std::vector<Joint*> rightLowerLimbJoints(3);
+        jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, Anchor::point("R.HJC", pelvis), joints);
+        rightLowerLimbJoints[0] = jnt;
         new EulerDescriptor("R.Hip.Angle", EulerDescriptor::YXZ, {{-1.0, 1.0, 1.0}}, jnt);
-        jnt = new Joint("R.Knee", rightThigh, rightShank, joints);
+        jnt = new Joint("R.Knee", rightThigh, rightShank, Anchor::origin(rightThigh), joints);
+        rightLowerLimbJoints[1] = jnt;
         new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
-        jnt = new Joint("R.Ankle", rightShank, rightFoot, joints);
+        jnt = new Joint("R.Ankle", rightShank, rightFoot, Anchor::origin(rightShank), joints);
+        rightLowerLimbJoints[2] = jnt;
         new PluginGaitRightAnkleDescriptor(jnt);
         jnt = new Joint("R.Foot.Progress", progression, rightFoot, joints);
         jnt->setDescription("Right foot relative to progression frame");
         new PluginGaitRightFootDescriptor(jnt);
+        new Chain("R.LowerLimb", rightLowerLimbJoints, chains);
       }
       jnt = new Joint("Pelvis.Progress", progression, pelvis, joints);
       new PluginGaitPelvisDescriptor(jnt);
@@ -1114,7 +1170,7 @@ namespace body
       error("PluginGait - Null trial passed. Movement reconstruction aborted.");
       return false;
     }
-    model->setName(model->name() + " - " + trial->name());
+    model->setName(model->name() + "_" + trial->name());
     double sampleRate = 0.0;
     double startTime = 0.0;
     bool ok = false;
@@ -1212,6 +1268,7 @@ namespace body
       const math::Vector v = (L_ASIS - R_ASIS).normalized();
       const math::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
       const math::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
+      math::to_timesequence(pelvis, seg->name()+".TCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       pelvisSCS = math::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
       // -----------------------------------------
       // Thigh, shank, foot
