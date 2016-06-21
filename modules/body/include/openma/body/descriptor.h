@@ -69,7 +69,7 @@ namespace body
     virtual bool process(const std::unordered_map<std::string, Any>& options) = 0;
     virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) = 0;
 
-    Descriptor(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+    Descriptor(DescriptorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
 };

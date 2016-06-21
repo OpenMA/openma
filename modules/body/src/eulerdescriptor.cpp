@@ -50,8 +50,6 @@ namespace ma
 {
 namespace body
 {
-  // Note: The member Proximal and Distal are used to simplify the mangement of the segment in case one of them is set to null (to represent the global frame).
-  
   EulerDescriptorPrivate::EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale)
   : DescriptorPrivate(pint,name), Sequence(sequence), Scale(scale), BufferData(), OutputData(), OutputSampleRate(0.0), OutputStartTime(0.0), OutputUnit()
   {};

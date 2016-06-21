@@ -80,9 +80,30 @@ CXXTEST_SUITE(MapTest)
     for (int i = 0 ; i < 10 ; ++i)
       TS_ASSERT_EQUALS(d.values()[i], h.values()[i]);
   };
+  
+  CXXTEST_TEST(downsample)
+  {
+    double dv[90], dr[30];
+    auto d = ma::math::Map<ma::math::Array<3>>(30,dv,dr);
+    d.values().setRandom();
+    d.residuals().setRandom();
+    ma::math::Array<3> dds = d.downsample(3);
+    TS_ASSERT_EQUALS(dds.rows(), 10);
+    TS_ASSERT_EQUALS(dds.cols(), 3);
+    const auto& ddsv = dds.values();
+    const auto& ddsr = dds.residuals();
+    for (unsigned i = 0 ; i < 10 ; ++i)
+    {
+      TS_ASSERT_DELTA(ddsv.coeff(i,0), dv[i*3],    1e-15);
+      TS_ASSERT_DELTA(ddsv.coeff(i,1), dv[i*3+30], 1e-15);
+      TS_ASSERT_DELTA(ddsv.coeff(i,2), dv[i*3+60], 1e-15);
+      TS_ASSERT_DELTA(ddsr.coeff(i,0), dr[i*3],    1e-15);
+    }
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(MapTest)
 CXXTEST_TEST_REGISTRATION(MapTest, scaledDifference)
 CXXTEST_TEST_REGISTRATION(MapTest, null)
 CXXTEST_TEST_REGISTRATION(MapTest, nonConstToConstAssignment)
+CXXTEST_TEST_REGISTRATION(MapTest, downsample)

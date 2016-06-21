@@ -77,7 +77,12 @@ namespace math
     using Index = typename Traits<ArrayBase<Derived>>::Index; ///< Type used to access elements in Values or Residuals.
     
     /**
-     * Default copy constructor
+     * Default constructor (deleted)
+     */
+    ArrayBase() = delete;
+    
+    /**
+     * Copy constructor (default)
      */
     ArrayBase(const ArrayBase& other) = default;
     
@@ -217,9 +222,47 @@ namespace math
      */
     const BlockOp<const ArrayBase<Derived>,3> o() const _OPENMA_NOEXCEPT;
     
-  protected:
-    ArrayBase() = delete;
+    /**
+     * Addition of the scalar @a other with the values of this object.
+     */
+    ArrayBase<Derived>& operator+=(double other) {this->values() += other; return *this;};
     
+    /**
+     * Substraction of the scalar @a other with the values of this object.
+     */
+    ArrayBase<Derived>& operator-=(double other) {this->values() -= other; return *this;};
+    
+    /**
+     * Multiply this object by the scalar @a other
+     */
+    ArrayBase<Derived>& operator*=(double other) {this->values() *= other; return *this;};
+    
+    /**
+     * Divide this object by the scalar @a other
+     */
+    ArrayBase<Derived>& operator/=(double other) {this->values() /= other; return *this;};
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> ArrayBase<Derived>& operator+=(const XprBase<OtherDerived>& other);
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> ArrayBase<Derived>& operator-=(const XprBase<OtherDerived>& other);
+   
+    /**
+     * Multiplication of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> ArrayBase<Derived>& operator*=(const XprBase<OtherDerived>& other);
+    
+    /**
+     * Division of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> ArrayBase<Derived>& operator/=(const XprBase<OtherDerived>& other);
+    
+  protected:
     /**
      * Constructor from data
      */
@@ -266,6 +309,54 @@ namespace math
   : m_Values(values), m_Residuals(residuals)
   {
     assert(values.rows() == residuals.rows());
+  };
+  
+  template <typename Derived>
+  template<typename OtherDerived>
+  inline ArrayBase<Derived>& ArrayBase<Derived>::operator+=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Traits<Derived>::ColsAtCompileTime == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() += otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Derived>
+  template<typename OtherDerived>
+  inline ArrayBase<Derived>& ArrayBase<Derived>::operator-=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Traits<Derived>::ColsAtCompileTime == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() -= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Derived>
+  template<typename OtherDerived>
+  inline ArrayBase<Derived>& ArrayBase<Derived>::operator*=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Traits<Derived>::ColsAtCompileTime == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() *= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Derived>
+  template<typename OtherDerived>
+  inline ArrayBase<Derived>& ArrayBase<Derived>::operator/=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Traits<Derived>::ColsAtCompileTime == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() /= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
   };
   
 };

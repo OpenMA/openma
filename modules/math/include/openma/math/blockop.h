@@ -108,33 +108,33 @@ namespace math
     /**
      * Returns a block expression from the expression's values.
      */
-    auto values() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type>
+    auto values() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type,Eigen::Dynamic,Cols>
     {
-      return this->mr_Xpr.derived().values().block(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
+      return this->mr_Xpr.derived().values().template block<Eigen::Dynamic,Cols>(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
     };
     
     /**
      * Returns a block expression from the expression's values.
      */
-    auto values() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type>
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().values())>::type,Eigen::Dynamic,Cols>
     {
-      return this->mr_Xpr.derived().values().block(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
+      return this->mr_Xpr.derived().values().template block<Eigen::Dynamic,Cols>(0,this->m_Index,this->mr_Xpr.derived().values().rows(),Cols);
     };
 
     /**
      * Returns a block expression from the expression's residuals.
      */
-    auto residuals() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type>
+    auto residuals() _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type,Eigen::Dynamic,1>
     {
-      return this->mr_Xpr.derived().residuals().block(0,0,this->mr_Xpr.derived().residuals().rows(),1);
+      return this->mr_Xpr.derived().residuals().template block<Eigen::Dynamic,1>(0,0,this->mr_Xpr.derived().residuals().rows(),1);
     };
     
     /**
      * Returns a block expression from the expression's residuals.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type>
+    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::Block<typename std::remove_reference<decltype(std::declval<Xpr>().derived().residuals())>::type,Eigen::Dynamic,1>
     {
-      return this->mr_Xpr.derived().residuals().block(0,0,this->mr_Xpr.derived().residuals().rows(),1);
+      return this->mr_Xpr.derived().residuals().template block<Eigen::Dynamic,1>(0,0,this->mr_Xpr.derived().residuals().rows(),1);
     };
     
     /**
@@ -157,6 +157,94 @@ namespace math
       this->residuals() = generate_residuals((this->residuals() >= 0.0) && (other.residuals() >= 0.0));
       return *this;
     };
+    
+    /**
+     * Addition of the scalar @a other with the values of this object.
+     */
+    BlockOp& operator+=(double other) {this->values() += other; return *this;};
+    
+    /**
+     * Substraction of the scalar @a other with the values of this object.
+     */
+    BlockOp& operator-=(double other) {this->values() -= other; return *this;};
+    
+    /**
+     * Multiply this object by the scalar @a other
+     */
+    BlockOp& operator*=(double other) {this->values() *= other; return *this;};
+    
+    /**
+     * Divide this object by the scalar @a other
+     */
+    BlockOp& operator/=(double other) {this->values() /= other; return *this;};
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> BlockOp& operator+=(const XprBase<OtherDerived>& other);
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> BlockOp& operator-=(const XprBase<OtherDerived>& other);
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> BlockOp& operator*=(const XprBase<OtherDerived>& other);
+    
+    /**
+     * Addition of the @a other template expression to this object.
+     */
+    template<typename OtherDerived> BlockOp& operator/=(const XprBase<OtherDerived>& other);
+  };
+  
+  template <typename Xpr, int Cols>
+  template<typename OtherDerived>
+  inline BlockOp<Xpr,Cols>& BlockOp<Xpr,Cols>::operator+=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Cols == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() += otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Xpr, int Cols>
+  template<typename OtherDerived>
+  inline BlockOp<Xpr,Cols>& BlockOp<Xpr,Cols>::operator-=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Cols == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() -= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Xpr, int Cols>
+  template<typename OtherDerived>
+  inline BlockOp<Xpr,Cols>& BlockOp<Xpr,Cols>::operator*=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Cols == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() *= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
+  };
+  
+  template <typename Xpr, int Cols>
+  template<typename OtherDerived>
+  inline BlockOp<Xpr,Cols>& BlockOp<Xpr,Cols>::operator/=(const XprBase<OtherDerived>& other)
+  {
+    static_assert(Cols == Traits<OtherDerived>::ColsAtCompileTime, "The number of columns is not the same.");
+    auto& otherderived = static_cast<const OtherDerived&>(other).derived();
+    assert(this->rows() == otherderived.rows());
+    this->values() /= otherderived.values();
+    this->residuals() = generate_residuals((this->residuals() >= 0.0) && (otherderived.residuals() >= 0.0));
+    return *this;
   };
 
   // ----------------------------------------------------------------------- //

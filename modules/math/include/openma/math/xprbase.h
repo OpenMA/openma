@@ -61,7 +61,6 @@ namespace math
     
     static _OPENMA_CONSTEXPR int Processing = Traits<DerivedType>::Processing; ///< Determine the type of processing realized by the derived template expression regarding the computation of the values and the associated residuals. @note This information is only for internal purpose.
     
-    
     /**
      * Returns a casted version of @a this object as a reference to a @a Derived type.
      */
@@ -77,16 +76,6 @@ namespace math
      * @warning No assertion is realized to know if the expression is empty or not.
      */
     operator double () const _OPENMA_NOEXCEPT {return (static_cast<const Derived&>(*this).derived().residuals().eval().coeff(0) >= 0.0) ? static_cast<const Derived&>(*this).derived().values().eval().coeff(0) : 0.0;};
-    
-    /**
-     * Multiply this object by the scalar @a other
-     */
-    Derived& operator*=(double other) {static_cast<Derived&>(*this).values() *= other; return *this;};
-    
-    /*
-     * Divide this object by the scalar @a other
-     */
-    Derived& operator/=(double other) {static_cast<Derived&>(*this).values() /= other; return *this;};
     
     // Next methods are defined after the declaration of the class BlockOp
     
@@ -126,7 +115,14 @@ namespace math
     /**
      * Returns an object representing a cross product operator between @a this object and the @a other object.
      */
-    template <typename U> const CrossOp<Derived, U> cross(const XprBase<U>& other) const _OPENMA_NOEXCEPT;
+    template <typename OtherDerived> const CrossOp<Derived, OtherDerived> cross(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
+    
+   // Next method is defined after the declaration of the class TransposeOp
+   
+   /**
+    * Returns an object representing this object but where column were transposed.
+    */
+   const TransposeOp<Derived> transpose() const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class InverseOp
     
@@ -147,16 +143,57 @@ namespace math
     /**
      * Returns an object representing a transformation between @a this object and the @a other object.
      */
-    template <typename U> const TransformOp<Derived,U> transform(const XprBase<U>& other) const _OPENMA_NOEXCEPT;    
+    template <typename OtherDerived> const TransformOp<Derived,OtherDerived> transform(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class SkewReduxOp
+    
+    /**
+     * Returns an object representing the extraction of non null elements of a skew symmetric matrix.
+     */
+    const SkewReduxOp<Derived> skewRedux() const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class DownsampleOp
+    
+    /**
+     * Returns an object representing a version of @a this object reduced (decimated) by the factor @a f.
+     * Each column of @a this object is treated independently. It is assumed that each column correspond to a discret uniformly spaced signal.
+     * The type used by @c U can be @c int, @c float, or @c double. Other type will throw a static assertion.
+     * If @a f is an integer factor (e.g. 8, 5.0f, or 10.0), only the @a f -th sample is kept.
+     * In case of a rational factor, a linear interpolation method is used to compute 
+     */
+    template <typename U> const DownsampleOp<Derived,U> downsample(U f) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class DerivativeOp
+    
+    /**
+     * Returns an object representing the finite derivative of this template expression for the given order.
+     * Boundaries (begin and end of the signal, samples before and after an occlusion) use forward and backward finite difference methods.
+     * Other parts of the signal used the central difference method.
+     * @note To reduce the computational time, the order of accuracy used for each method is equal to 2.
+     */
+    template <unsigned U> const DerivativeOp<Derived,U> derivative(double h) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class MinOp
+   
+    /**
+     * Returns an object representing the minimum on each column.
+     */
+    const MinOp<Derived> min() const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class MaxOp
+   
+    /**
+     * Returns an object representing the maximum on each column.
+     */
+    const MaxOp<Derived> max() const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class EulerAnglesOp
-    
+  
     /**
      * Returns an object representing an euler angles operation using the given order @a a0, @a a1, @a a2 for the sequence order.
      */
     const EulerAnglesOp<Derived> eulerAngles(Index a0, Index a1, Index a2) const _OPENMA_NOEXCEPT;
   };
-  
   
   // ----------------------------------------------------------------------- //
   
@@ -185,7 +222,7 @@ namespace math
   {
     return DifferenceOp<XprOne,XprTwo>(x1,x2);
   };
-  
+
   /**
    * Convenient okys operator to compute the sum between two template expressions
    * @relates XprBase

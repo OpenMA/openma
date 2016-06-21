@@ -38,6 +38,8 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <type_traits>
+#include <vector>
+#include <array>
 
 namespace Eigen
 {
@@ -135,7 +137,6 @@ namespace internal
       const auto& r24 = v2.col(10);
       const auto& r34 = v2.col(11);
       // Computation
-      // result.resize(v1.rows(),Eigen::NoChange);
       result.col(0)  = l11 * r11 + l12 * r21 + l13 * r31;
       result.col(1)  = l21 * r11 + l22 * r21 + l23 * r31;
       result.col(2)  = l31 * r11 + l32 * r21 + l33 * r31;
@@ -148,6 +149,40 @@ namespace internal
       result.col(9)  = l11 * r14 + l12 * r24 + l13 * r34 + l14;
       result.col(10) = l21 * r14 + l22 * r24 + l23 * r34 + l24;
       result.col(11) = l31 * r14 + l32 * r24 + l33 * r34 + l34;
+    };
+    
+    template <typename R, typename U1, typename U2> static inline void evaluate_9x9(R& result, const U1& v1, const U2& v2)
+    {
+      // lhs
+      const auto& l11 = v1.col(0);
+      const auto& l21 = v1.col(1);
+      const auto& l31 = v1.col(2);
+      const auto& l12 = v1.col(3);
+      const auto& l22 = v1.col(4);
+      const auto& l32 = v1.col(5);
+      const auto& l13 = v1.col(6);
+      const auto& l23 = v1.col(7);
+      const auto& l33 = v1.col(8);
+      // rhs
+      const auto& r11 = v2.col(0);
+      const auto& r21 = v2.col(1);
+      const auto& r31 = v2.col(2);
+      const auto& r12 = v2.col(3);
+      const auto& r22 = v2.col(4);
+      const auto& r32 = v2.col(5);
+      const auto& r13 = v2.col(6);
+      const auto& r23 = v2.col(7);
+      const auto& r33 = v2.col(8);
+      // Computation
+      result.col(0)  = l11 * r11 + l12 * r21 + l13 * r31;
+      result.col(1)  = l21 * r11 + l22 * r21 + l23 * r31;
+      result.col(2)  = l31 * r11 + l32 * r21 + l33 * r31;
+      result.col(3)  = l11 * r12 + l12 * r22 + l13 * r32;
+      result.col(4)  = l21 * r12 + l22 * r22 + l23 * r32;
+      result.col(5)  = l31 * r12 + l32 * r22 + l33 * r32;
+      result.col(6)  = l11 * r13 + l12 * r23 + l13 * r33;
+      result.col(7)  = l21 * r13 + l22 * r23 + l23 * r33;
+      result.col(8)  = l31 * r13 + l32 * r23 + l33 * r33;
     };
     
     template <typename R, typename U1, typename U2> static inline void evaluate_12x3(R& result, const U1& v1, const U2& v2)
@@ -170,10 +205,31 @@ namespace internal
       const auto& py = v2.col(1);
       const auto& pz = v2.col(2);
       // Computation
-      // result.resize(v1.rows(),Eigen::NoChange);
       result.col(0)  = l11 * px + l12 * py + l13 * pz + l14;
       result.col(1)  = l21 * px + l22 * py + l23 * pz + l24;
       result.col(2)  = l31 * px + l32 * py + l33 * pz + l34;
+    };
+    
+    template <typename R, typename U1, typename U2> static inline void evaluate_9x3(R& result, const U1& v1, const U2& v2)
+    {
+      // lhs
+      const auto& l11 = v1.col(0);
+      const auto& l21 = v1.col(1);
+      const auto& l31 = v1.col(2);
+      const auto& l12 = v1.col(3);
+      const auto& l22 = v1.col(4);
+      const auto& l32 = v1.col(5);
+      const auto& l13 = v1.col(6);
+      const auto& l23 = v1.col(7);
+      const auto& l33 = v1.col(8);
+      // rhs
+      const auto& px = v2.col(0);
+      const auto& py = v2.col(1);
+      const auto& pz = v2.col(2);
+      // Computation
+      result.col(0)  = l11 * px + l12 * py + l13 * pz;
+      result.col(1)  = l21 * px + l22 * py + l23 * pz;
+      result.col(2)  = l31 * px + l32 * py + l33 * pz;
     };
     
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == 12>::type evaluate(R& result, const U1& v1, const U2& v2)
@@ -181,9 +237,19 @@ namespace internal
       TransformOpValues::evaluate_12x12(result,v1,v2);
     };
     
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == 9>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      TransformOpValues::evaluate_9x9(result,v1,v2);
+    };
+    
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == 3>::type evaluate(R& result, const U1& v1, const U2& v2)
     {
       TransformOpValues::evaluate_12x3(result,v1,v2);
+    };
+    
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == 3>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      TransformOpValues::evaluate_9x3(result,v1,v2);
     };
     
     template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 12 && std::decay<U2>::type::ColsAtCompileTime == Dynamic>::type evaluate(R& result, const U1& v1, const U2& v2)
@@ -193,7 +259,17 @@ namespace internal
       else if (v2.cols() == 3)
         TransformOpValues::evaluate_12x3(result,v1,v2);
       else
-        result.setZero(); // Potentially crash the binary, but this should not happen.
+        result.setZero(); // Potentially crash the binary
+    };
+    
+    template <typename R, typename U1, typename U2> static inline typename std::enable_if<std::decay<U1>::type::ColsAtCompileTime == 9 && std::decay<U2>::type::ColsAtCompileTime == Dynamic>::type evaluate(R& result, const U1& v1, const U2& v2)
+    {
+      if (v2.cols() == 9)
+        TransformOpValues::evaluate_9x9(result,v1,v2);
+      else if (v2.cols() == 3)
+        TransformOpValues::evaluate_9x3(result,v1,v2);
+      else
+        result.setZero(); // Potentially crash the binary
     };
     
   public:
@@ -206,6 +282,42 @@ namespace internal
     
     Index rows() const {return this->m_V2.rows();};
     Index cols() const {return this->m_V2.cols();};
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                         TransposeOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct TransposeOpValues;
+
+  template<typename V>
+  struct traits<TransposeOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+  
+  template<typename V>
+  struct TransposeOpValues : public Eigen::ReturnByValue<TransposeOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+  public:
+    TransposeOpValues(const V& v) : m_V(v) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      result.col(0) = this->m_V.col(0);
+      result.col(1) = this->m_V.col(3);
+      result.col(2) = this->m_V.col(6);
+      result.col(3) = this->m_V.col(1);
+      result.col(4) = this->m_V.col(4);
+      result.col(5) = this->m_V.col(7);
+      result.col(6) = this->m_V.col(2);
+      result.col(7) = this->m_V.col(5);
+      result.col(8) = this->m_V.col(8);
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return this->m_V.cols();};
   };
  
   // ----------------------------------------------------------------------- //
@@ -262,7 +374,36 @@ namespace internal
     Index cols() const {return this->m_V.cols();};
   };
   
- 
+  // ----------------------------------------------------------------------- //
+  //                          DownsampleOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct DownsampleOpValues;
+
+  template<typename V>
+  struct traits<DownsampleOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+
+  template<typename V>
+  struct DownsampleOpValues : public Eigen::ReturnByValue<DownsampleOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+    Index m_Factor;
+  public:
+    DownsampleOpValues(const V& v, Index ratio) : m_V(v), m_Factor(ratio) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      for (Index i = 0, len = this->rows() ; i < len ; ++i)
+        result.row(i) = this->m_V.row(i * this->m_Factor);
+    };
+    Index rows() const {return static_cast<Index>(this->m_V.rows() / this->m_Factor);};
+    Index cols() const {return this->m_V.cols();};
+  };
+  
   // ----------------------------------------------------------------------- //
   //                         EulerAnglesOp return value
   // ----------------------------------------------------------------------- //
@@ -377,6 +518,123 @@ namespace internal
     };
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return 3;};
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                        SkewReduxOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V> struct SkewReduxOpValues;
+
+  template<typename V>
+  struct traits<SkewReduxOpValues<V>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<3>>::Values;
+  };
+  
+  template<typename V>
+  struct SkewReduxOpValues : public Eigen::ReturnByValue<SkewReduxOpValues<V>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    using Scalar = typename InputType::Scalar;
+    typename InputType::Nested m_V;
+  public:
+    SkewReduxOpValues(const V& v) : m_V(v) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      result.col(0) = this->m_V.col(5);
+      result.col(1) = this->m_V.col(2) * -1.0;
+      result.col(2) = this->m_V.col(1);
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return 3;};
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                        DerivativeOp return value
+  // ----------------------------------------------------------------------- //
+  
+  // NOTE: All finite difference coefficients came from Wikipedia: https://en.wikipedia.org/wiki/Finite_difference_coefficient
+  
+  template <unsigned Order>
+  struct FiniteDifferenceCoefficents
+  {};
+  
+  template <>
+  struct FiniteDifferenceCoefficents<1>
+  {
+    static _OPENMA_CONSTEXPR unsigned minimum_window_length() {return 3;};
+    static Eigen::Array<double,3,1> central_coefficients() {Eigen::Array<double,3,1> arr; arr << -1./2., 0., 1./2.; return arr;};
+    static Eigen::Array<double,3,1> forward_coefficients() {Eigen::Array<double,3,1> arr; arr << -3./2., 2., -1./2.; return arr;};
+    static Eigen::Array<double,3,1> backward_coefficients() {return -forward_coefficients().reverse();};
+  };
+  
+  template <>
+  struct FiniteDifferenceCoefficents<2>
+  {
+    static _OPENMA_CONSTEXPR unsigned minimum_window_length() {return 4;};
+    static Eigen::Array<double,3,1> central_coefficients() {Eigen::Array<double,3,1> arr; arr << 1., -2., 1.; return arr;};
+    static Eigen::Array<double,4,1> forward_coefficients() {Eigen::Array<double,4,1> arr; arr << 2., -5., 4., -1.; return arr;};
+    static Eigen::Array<double,4,1> backward_coefficients() {return forward_coefficients().reverse();};
+  };
+  
+  template<typename V, unsigned O> struct DerivativeOpValues;
+
+  template<typename V, unsigned O>
+  struct traits<DerivativeOpValues<V,O>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V>::type::ColsAtCompileTime>>::Values;
+  };
+  
+  template<typename V, unsigned O>
+  struct DerivativeOpValues : public Eigen::ReturnByValue<DerivativeOpValues<V,O>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    typename InputType::Nested m_V;
+    const std::vector<std::array<unsigned,2>>& m_W;
+    double m_H;
+    
+  public:
+    DerivativeOpValues(const V& v, const std::vector<std::array<unsigned,2>>& w, double h) : m_V(v), m_W(w), m_H(h) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      const auto& cc = FiniteDifferenceCoefficents<O>::central_coefficients();
+      const auto& fc = FiniteDifferenceCoefficents<O>::forward_coefficients();
+      const auto& bc = FiniteDifferenceCoefficents<O>::backward_coefficients();
+      using CC = typename std::decay<decltype(cc)>::type;
+      using FC = typename std::decay<decltype(fc)>::type;
+      using BC = typename std::decay<decltype(bc)>::type;
+      _OPENMA_CONSTEXPR unsigned chs = CC::RowsAtCompileTime / 2;
+      double ph = std::pow(this->m_H, O);
+      result.setZero();
+      for (const auto& window : this->m_W)
+      {
+        unsigned istart = window[0];
+        unsigned ilen = window[1];
+        
+        // Begin (forward difference)
+        for (unsigned i = istart, len = istart + chs; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<FC::RowsAtCompileTime>(i).colwise() * fc).colwise().sum() / ph;
+        }
+        
+        // Middle (central difference)
+        for (unsigned i = istart + chs, len = (istart + ilen - chs) ; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<CC::RowsAtCompileTime>(i-chs).colwise() * cc).colwise().sum() / ph;
+        }
+          
+        // End (backward difference)
+        for (unsigned i = (istart + ilen - chs), len = istart + ilen ; i < len ; ++i)
+        {
+          result.row(i) = (this->m_V.template middleRows<BC::RowsAtCompileTime>(i-BC::RowsAtCompileTime+1).colwise() * bc).colwise().sum() / ph;
+        }
+      }
+    };
+    Index rows() const {return this->m_V.rows();};
+    Index cols() const {return this->m_V.cols();};
   };
 };
 };

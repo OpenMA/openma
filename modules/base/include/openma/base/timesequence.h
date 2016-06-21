@@ -56,14 +56,15 @@ namespace ma
     typedef enum : int {
       Unknown = 0x00,
       Reconstructed = 0x01,
-      Marker = 0x02 | Reconstructed,
-      Angle  = 0x04 | Reconstructed,
-      Force  = 0x08 | Reconstructed,
-      Moment = 0x10 | Reconstructed,
-      Power  = 0x20 | Reconstructed,
-      Scalar = 0x40 | Reconstructed,
-      Pose   = 0x80 | Reconstructed,
-      Analog = 0x100,
+      Marker = 0x02  | Reconstructed,
+      Angle  = 0x04  | Reconstructed,
+      Force  = 0x08  | Reconstructed,
+      Moment = 0x10  | Reconstructed,
+      Power  = 0x20  | Reconstructed,
+      Scalar = 0x40  | Reconstructed,
+      Pose   = 0x80  | Reconstructed,
+      Wrench = 0x100 | Reconstructed,
+      Analog = 0x1000,
       Other  = 0x10000
     } Type;
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
@@ -126,6 +127,8 @@ namespace ma
     TimeSequence(const std::string& name, Node* parent = nullptr);
     double& data(unsigned sample, std::initializer_list<unsigned>&& indices) const _OPENMA_NOEXCEPT;
   };
+  
+  OPENMA_BASE_EXPORT bool compare_timesequences_properties(const std::vector<TimeSequence*>& tss, double& sampleRate, double& startTime, unsigned& samples);
 };
   
 OPENMA_EXPORT_STATIC_TYPEID(ma::TimeSequence, OPENMA_BASE_EXPORT);

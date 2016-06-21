@@ -200,9 +200,9 @@ namespace math
 
   /**
    * @class MeanOp openma/math/unaryop.h
-   * @brief Compute the average for each row
+   * @brief Compute the average for each column
    * @tparam Xpr Type of the expression to transform
-   * Template expression to compute the average for each row and the associated residuals.
+   * Template expression to compute the average for each column and the associated residuals.
    * @ingroup openma_math
    */
   template <typename Xpr>
@@ -221,7 +221,7 @@ namespace math
     /**
      * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
      */
-    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
 
     /**
      * Returns a template expression corresponding to the calculation of this operation.
@@ -442,6 +442,70 @@ namespace math
   };
   
   // ----------------------------------------------------------------------- //
+  //                                 TRANSPOSEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<TransposeOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = ValuesOnly;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class TransposeOp openma/math/unaryop.h
+   * @brief Compute the transpose
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to compute the transpose for each row and the associated residuals.
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class TransposeOp : public UnaryOp<TransposeOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<TransposeOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+    static_assert(Xpr::ColsAtCompileTime == 9, "The transpose operation is currently available only for array with 9 columns. Contact the developers to extend this feature.");
+    
+  public:
+    /**
+     * Constructor
+     */
+    TransposeOp(const XprBase<Xpr>& x)
+    : UnaryOp<TransposeOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype(Eigen::internal::TransposeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()))
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::TransposeOpValues<V>(this->m_Xpr.values());
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())
+    {
+      return this->m_Xpr.residuals();
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const TransposeOp<Derived> XprBase<Derived>::transpose() const _OPENMA_NOEXCEPT
+  {
+    return TransposeOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
   //                                 INVERSEOP
   // ----------------------------------------------------------------------- //
   
@@ -504,6 +568,201 @@ namespace math
   inline const InverseOp<Derived> XprBase<Derived>::inverse() const _OPENMA_NOEXCEPT
   {
     return InverseOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                              DOWNSAMPLEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr, typename U>
+  struct Traits<DownsampleOp<Xpr,U>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = None; // No processing as this extracts only existing values
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class DownsampleOp openma/math/unaryop.h
+   * @brief Downsample the passed expression.
+   * @tparam Xpr Type of the expression to transform
+   * @tparam U Type used for the downsample factor
+   * Template expression to reduce each column independently.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr, typename U>
+  class DownsampleOp : public UnaryOp<DownsampleOp<Xpr,U>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<DownsampleOp<Xpr,U>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+    U m_Factor;
+    
+  public:
+    /**
+     * Constructor
+     */
+    DownsampleOp(const XprBase<Xpr>& x, U f)
+    : UnaryOp<DownsampleOp<Xpr,U>,Xpr>(x), m_Factor(f)
+    {
+      static_assert(std::is_integral<U>::value, "The downsample operator is currently limited to integer factor.");
+      assert(f > 0);
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::DownsampleOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::DownsampleOpValues<V>(this->m_Xpr.values(),this->m_Factor);
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> Eigen::internal::DownsampleOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())>
+    {
+      using R = decltype(this->m_Xpr.residuals());
+      return Eigen::internal::DownsampleOpValues<R>(this->m_Xpr.residuals(),this->m_Factor);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  template <typename U>
+  inline const DownsampleOp<Derived,U> XprBase<Derived>::downsample(U f) const _OPENMA_NOEXCEPT
+  {
+    return DownsampleOp<Derived,U>(*this,f);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                                 MINOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<MinOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class MinOp openma/math/unaryop.h
+   * @brief Extract the minium value for each column.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to return a row vector with the minimum value found in each column.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class MinOp : public UnaryOp<MinOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<MinOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor
+     */
+    MinOp(const XprBase<Xpr>& x)
+    : UnaryOp<MinOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values(), std::numeric_limits<double>::infinity()).colwise().minCoeff())
+    {
+      return (this->m_Xpr.residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(this->m_Xpr.values(), std::numeric_limits<double>::infinity()).colwise().minCoeff();
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals
+    {
+      return Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const MinOp<Derived> XprBase<Derived>::min() const _OPENMA_NOEXCEPT
+  {
+    return MinOp<Derived>(*this);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                                 MAXOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<MaxOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class MaxOp openma/math/unaryop.h
+   * @brief Extract the maximum value for each column.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to return a row vector with the maximum value found in each column.
+   * 
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class MaxOp : public UnaryOp<MaxOp<Xpr>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<MaxOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor
+     */
+    MaxOp(const XprBase<Xpr>& x)
+    : UnaryOp<MaxOp<Xpr>,Xpr>(x)
+    {};
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return 1;};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> decltype((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values(), -std::numeric_limits<double>::infinity()).colwise().maxCoeff())
+    {
+      return (this->m_Xpr.residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(this->m_Xpr.values(), -std::numeric_limits<double>::infinity()).colwise().maxCoeff();
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals
+    {
+      return Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const MaxOp<Derived> XprBase<Derived>::max() const _OPENMA_NOEXCEPT
+  {
+    return MaxOp<Derived>(*this);
   };
   
   // ----------------------------------------------------------------------- //
@@ -592,6 +851,194 @@ namespace math
   inline const EulerAnglesOp<Derived> XprBase<Derived>::eulerAngles(Index a0, Index a1, Index a2) const _OPENMA_NOEXCEPT
   {
     return EulerAnglesOp<Derived>(*this,a0,a1,a2);
+  };
+
+  // ----------------------------------------------------------------------- //
+  //                              DERIVATEOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr, unsigned Order>
+  struct Traits<DerivativeOp<Xpr,Order>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class DerivativeOp openma/math/unaryop.h
+   * @brief Compute finite derivative
+   * @tparam Xpr Type of the expression to transform
+   * @tparam U order of the finite derivative
+   * Template expression to compute finite derivative of each column and the associated residuals.
+   *
+   * @ingroup openma_math
+   */
+  template <typename Xpr, unsigned Order>
+  class DerivativeOp : public UnaryOp<DerivativeOp<Xpr,Order>,Xpr>
+  {
+    using Index = typename Traits<UnaryOp<DerivativeOp<Xpr,Order>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    using Residuals = typename Traits<Array<DerivativeOp::ColsAtCompileTime>>::Residuals; ///< Type used to store the generated residuals  
+    
+    mutable std::vector<std::array<unsigned,2>> m_Windows;
+    mutable Residuals m_Residuals; ///< Store the residual generated for the derivate
+    double m_Spacing; ///< Scalar value used in the denominator of the different quotient.
+    
+    void prepareWindowProcessing(unsigned mwlen) const
+    {
+      if (this->m_Residuals.size() != 0)
+        return;
+      this->m_Residuals = this->m_Xpr.residuals();
+      unsigned istart = 0, len = this->rows();
+      while (istart < len)
+      {
+        // Beginning of the window
+        while ((istart < len) && (this->m_Residuals.coeff(istart) < 0.))
+          ++istart;
+        // End of the window
+        unsigned istop = istart;
+        while ((istop < len) && (this->m_Residuals.coeff(istop) >= 0.))
+          ++istop;
+        // Check the length of the window
+        unsigned ilen = istop - istart;
+        //  1. The whole signal is invalid
+        if (ilen == 0)
+        {
+          this->m_Residuals.setConstant(-1.0);
+        }
+        //  2. The window is not large enough to be processed
+        else if (ilen < mwlen)
+        {
+          this->m_Residuals.segment(istart,ilen).setConstant(-1.0);
+        }
+        //  3. The size of window is adapted and is registered
+        else
+        {
+          this->m_Windows.push_back({{istart,ilen}});
+          this->m_Residuals.segment(istart,ilen).setZero();
+        }
+        // Pass to the next window
+        istart = istop + 1;
+      }
+    };
+    
+  public:
+    /**
+     * Constructor
+     */
+    DerivativeOp(const XprBase<Xpr>& x, double h)
+    : UnaryOp<DerivativeOp<Xpr,Order>,Xpr>(x), m_Residuals(), m_Spacing(h)
+    {
+      assert(h > 0.0);
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::DerivativeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()),Order>
+    {
+      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::DerivativeOpValues<V,Order>(this->m_Xpr.values(), this->m_Windows, this->m_Spacing);
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    const Residuals& residuals() const _OPENMA_NOEXCEPT
+    {
+      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      return this->m_Residuals;
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  template <unsigned U>
+  inline const DerivativeOp<Derived,U> XprBase<Derived>::derivative(double h) const _OPENMA_NOEXCEPT
+  {
+    return DerivativeOp<Derived,U>(*this,h);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  //                              SKEWREDUXOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Xpr>
+  struct Traits<SkewReduxOp<Xpr>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = ValuesOnly;
+  };
+  
+  template <typename Xpr>
+  struct Traits<UnaryOp<SkewReduxOp<Xpr>,Xpr>>
+  {
+    using Values = typename Traits<Xpr>::Values;
+    using Residuals = typename Traits<Xpr>::Residuals;
+    using Index = typename Values::Index;
+    static _OPENMA_CONSTEXPR int ColsAtCompileTime = 3;
+    static _OPENMA_CONSTEXPR int Processing = Traits<SkewReduxOp<Xpr>>::Processing;
+  }; 
+    
+  // ----------------------------------------------------------------------- //
+
+  /**
+   * @class SkewReduxOp openma/math/unaryop.h
+   * @brief Extract unique non-null elements of a skey symmetric matrix.
+   * @tparam Xpr Type of the expression to transform
+   * Template expression to extract the unique non-null elements of a skey symmetric matrix.
+   * 
+   * @note This operator is currently usable only with an array of 9 columns representing an orientation.
+   * @ingroup openma_math
+   */
+  template <typename Xpr>
+  class SkewReduxOp : public UnaryOp<SkewReduxOp<Xpr>,Xpr>
+  {
+    static_assert(Xpr::ColsAtCompileTime == 9, "The skew reduction is currently only available for array with 9 columns.");
+    
+    using Index = typename Traits<UnaryOp<SkewReduxOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:
+    /**
+     * Constructor.
+     */
+    SkewReduxOp(const XprBase<Xpr>& x)
+    : UnaryOp<SkewReduxOp<Xpr>,Xpr>(x)
+    {};
+      
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the given expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr.rows();};
+      
+    /**
+     * Returns a template expression corresponding to the calculation of this operation.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::SkewReduxOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
+    {
+      using V = decltype(this->m_Xpr.values());
+      return Eigen::internal::SkewReduxOpValues<V>(this->m_Xpr.values());
+    };
+
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the input one.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())
+    {
+      return this->m_Xpr.residuals();
+    };
+  };
+  
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  inline const SkewReduxOp<Derived> XprBase<Derived>::skewRedux() const _OPENMA_NOEXCEPT
+  {
+    return SkewReduxOp<Derived>(*this);
   };
 
 };

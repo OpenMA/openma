@@ -131,6 +131,39 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_DELTA(eye.coeff(2, 9), 0.0, 1e-15);
     TS_ASSERT_DELTA(eye.coeff(2,10), 0.0, 1e-15);
     TS_ASSERT_DELTA(eye.coeff(2,11), 0.0, 1e-15);
+    
+    ma::math::Array<9>::Values eye2 = motion.block<9>(0).transform(motion.block<9>(0).transpose()).values();
+    
+    // Row #1
+    TS_ASSERT_DELTA(eye2.coeff(0, 0), 1.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 3), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 4), 1.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 5), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 6), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 7), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(0, 8), 1.0, 1e-15);
+    // Row #2
+    TS_ASSERT_DELTA(eye2.coeff(1, 0), 1.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 1), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 2), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 3), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 4), 1.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 5), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 6), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 7), 0.0, 1e-6);
+    TS_ASSERT_DELTA(eye2.coeff(1, 8), 1.0, 1e-6);
+    // Row #3
+    TS_ASSERT_DELTA(eye2.coeff(2, 0), 1.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 3), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 4), 1.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 5), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 6), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 7), 0.0, 1e-15);
+    TS_ASSERT_DELTA(eye2.coeff(2, 8), 1.0, 1e-15);
   };
   
   CXXTEST_TEST(transformPosition)
@@ -155,6 +188,20 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_DELTA(result.coeff(1, 0), -88.802402038427090, 4e-5);
     TS_ASSERT_DELTA(result.coeff(1, 1), -11.529404173918849, 4e-5);
     TS_ASSERT_DELTA(result.coeff(1, 2),  98.377264095895953, 4e-5);
+    // Row #3
+    TS_ASSERT_DELTA(result.coeff(2, 0), 66.0, 1e-15);
+    TS_ASSERT_DELTA(result.coeff(2, 1), 333.869, 1e-15);
+    TS_ASSERT_DELTA(result.coeff(2, 2), 4598.234, 1e-15);
+    
+    result = motion.block<9>(0).transform(traj).values();
+    // Row #1
+    TS_ASSERT_DELTA(result.coeff(0, 0),    13.56, 5e-15);
+    TS_ASSERT_DELTA(result.coeff(0, 1), -1034.12, 5e-15);
+    TS_ASSERT_DELTA(result.coeff(0, 2),    33.10, 5e-15);
+    // Row #2
+    TS_ASSERT_DELTA(result.coeff(1, 0), -98.802402038427090, 4e-5);
+    TS_ASSERT_DELTA(result.coeff(1, 1),  31.670595826081151, 4e-5);
+    TS_ASSERT_DELTA(result.coeff(1, 2),  -1.812735904104047, 4e-5);
     // Row #3
     TS_ASSERT_DELTA(result.coeff(2, 0), 66.0, 1e-15);
     TS_ASSERT_DELTA(result.coeff(2, 1), 333.869, 1e-15);

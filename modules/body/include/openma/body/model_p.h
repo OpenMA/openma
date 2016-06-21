@@ -55,6 +55,8 @@ namespace body
   public:
     ModelPrivate(Model* pint, const std::string& name);
     ~ModelPrivate();
+    
+    double Gravity[3];
   };
 };
 };

@@ -36,6 +36,7 @@
 #include "openma/body/model_p.h"
 #include "openma/body/segment.h"
 #include "openma/body/joint.h"
+#include "openma/body/chain.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -48,7 +49,7 @@ namespace ma
 namespace body
 {
   ModelPrivate::ModelPrivate(Model* pint, const std::string& name)
-  : NodePrivate(pint,name)
+  : NodePrivate(pint,name), Gravity{0.,0.,0.}
   {};
   
   ModelPrivate::~ModelPrivate() = default;
@@ -86,6 +87,31 @@ namespace body
    * Destructor (default)
    */
   Model::~Model() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Retuns an array of 3 elements representing the gravity along the axes of the Inertial Coordinate System (ICS, also known as the laboratory coordinate system)
+   * By default, the gravity is not set and correponds to a vector of zeros.
+   */
+  const double* Model::gravity() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->Gravity;
+  };
+  
+  /**
+   * Set the value for the gravity along the axes of the ICS.
+   * By default, the gravity is not set and correponds to a vector of zeros.
+   */
+  void Model::setGravity(const double value[3]) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if ((optr->Gravity[0] == value[0])
+      && (optr->Gravity[1] == value[1])
+        && (optr->Gravity[2] == value[2]))
+          return;
+    std::copy_n(value,3,optr->Gravity);
+    this->modified();
+  };
   
   /**
    * Returns the subnode "Segments".
@@ -127,7 +153,28 @@ namespace body
   Joint* Model::joint(unsigned idx) _OPENMA_NOEXCEPT
   {
     return this->joints()->child<Joint*>(idx);
- };
+  };
+  
+  /**
+   * Returns the subnode "Chains".
+   * If the subnode does not exist, this one is created.
+   */
+  Node* Model::chains()
+  {
+    auto pt = this->findChild("Chains",{},false);
+    if (pt == nullptr)
+      pt = new Node("Chains",this);
+    return pt;
+  };
+  
+  /**
+   * Returns the @a idx child of the subnode "Chains" and cast it as a Chain object.
+   * If @a idx is out of range or if the extracted node is not a Chain object, the method returns nullptr.
+   */
+  Chain* Model::chain(unsigned idx) _OPENMA_NOEXCEPT
+  {
+    return this->joints()->child<Chain*>(idx);
+  };
   
   
   /**
