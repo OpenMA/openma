@@ -193,7 +193,8 @@ void forceplatetest_compare_gait1_wrench_position_at_cop(ma::instrument::ForcePl
     // NOTE: Most of the differences are below 5e-4
     TSM_ASSERT_DELTA(s, w->data()[i+6*gait1_fpsamples], fp5dataout[i+6*gait1_fpsamples], 7.5e-4);
     TSM_ASSERT_DELTA(s, w->data()[i+7*gait1_fpsamples], fp5dataout[i+7*gait1_fpsamples], 7.5e-4);
-    TSM_ASSERT_DELTA(s, w->data()[i+8*gait1_fpsamples], fp5dataout[i+8*gait1_fpsamples], 7.5e-4);
+    // The next line is shifted because the original result were expressed against the surface origin while with OpenMA this is against the hardware origin.
+    TSM_ASSERT_DELTA(s, w->data()[i+8*gait1_fpsamples], fp5dataout[i+8*gait1_fpsamples]-16.33887, 7.5e-4);
   }
 };
 
