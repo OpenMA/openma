@@ -34,6 +34,7 @@
 
 #include "openma/body/skeletonhelper.h"
 #include "openma/body/skeletonhelper_p.h"
+#include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/base/trial.h"
 
@@ -138,6 +139,13 @@ namespace body
         delete model;
         continue;
       }
+      // Attach the landmarks translator to the model. It can be used later.
+      auto translator = this->findChild<LandmarksTranslator*>({},{},false);
+      if (translator != nullptr)
+        translator->addParent(model);
+      // Attach the trial to the model. It can be used later.
+      trial->addParent(model);
+      // Attach the model to the output
       model->addParent(output);
     }
     return true;
