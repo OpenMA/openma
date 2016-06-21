@@ -52,6 +52,9 @@ namespace ma
 namespace body
 {
   class LandmarksTranslator;
+  class InertialParametersEstimator;
+  class ExternalWrenchAssigner;
+  class InverseDynamicProcessor;
   class Model;
   
   class SkeletonHelperPrivate;
@@ -71,7 +74,11 @@ namespace body
     
     virtual bool calibrate(Node* trials, Subject* subject) = 0;
     bool reconstruct(Node* output, Node* trials);
+    
     virtual LandmarksTranslator* defaultLandmarksTranslator() = 0;
+    virtual InertialParametersEstimator* defaultInertialParametersEstimator() = 0;
+    virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() = 0;
+    virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() = 0;
         
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
