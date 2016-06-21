@@ -194,6 +194,28 @@ namespace math
   {
     return to_arraybase_derived<Map<const Pose>>(ts,12,0,TimeSequence::Pose);
   };
+ 
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * Specialized extraction method where the result is a Map<Wrench> object. The input must have 9 columns and the type must be set to TimeSequence::Wrench.
+   * @relates Wrench
+   * @ingroup openma_math
+   */
+  inline Map<Wrench> to_wrench(TimeSequence* ts)
+  {
+    return to_arraybase_derived<Map<Wrench>>(ts,9,0,TimeSequence::Wrench);
+  };
+  
+  /**
+   * Specialized extraction method where the result is a Map<const Wrench> object. The input must have 9 columns and the type must be set to TimeSequence::Wrench.
+   * @relates Wrench
+   * @ingroup openma_math
+   */
+  inline Map<const Wrench> to_wrench(const TimeSequence* ts)
+  {
+    return to_arraybase_derived<Map<const Wrench>>(ts,9,0,TimeSequence::Wrench);
+  };
   
   // ======================================================================= //
   //                        EXPORT TO TIMESEQUENCE
@@ -239,6 +261,27 @@ namespace math
     std::copy_n(w.values().data(), samples, ts->data() + 2 * samples);
     std::copy_n(o.values().data(), samples, ts->data() + 3 * samples);
     std::copy_n(residuals.data(), residuals.rows(), ts->data() + 4 * samples);
+    return ts;
+  };
+  
+  /**
+   * Convenient method to export the forces F, the moments M, and position P (aka the content of math::Wrench) to a TimeSequence object
+   */
+  template <typename F, typename M, typename P>
+  inline TimeSequence* to_timesequence(const ArrayBase<F>& f,const ArrayBase<M>& m, const ArrayBase<P>& p, const std::string& name, double rate, double start, Node* parent)
+  {
+    static_assert(F::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(M::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(P::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    assert(f.rows() == m.rows());
+    assert(m.rows() == p.rows());
+    auto ts = to_timesequence(10, f.rows(), nullptr, nullptr, name, rate, start, TimeSequence::Wrench, "", parent);
+    const Pose::Residuals residuals = generate_residuals((f.residuals() >= 0) && (m.residuals() >= 0) && (p.residuals() >= 0));
+    const unsigned samples = 3 * residuals.rows();
+    std::copy_n(f.values().data(), samples, ts->data());
+    std::copy_n(m.values().data(), samples, ts->data() + samples);
+    std::copy_n(p.values().data(), samples, ts->data() + 2 * samples);
+    std::copy_n(residuals.data(), residuals.rows(), ts->data() + 3 * samples);
     return ts;
   };
   
