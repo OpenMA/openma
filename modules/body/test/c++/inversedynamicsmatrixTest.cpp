@@ -211,11 +211,11 @@ CXXTEST_SUITE(InverseDynamicMatrixTest)
       6011.108421, -13589.78173, -33334.27609, -47294.13311, -58430.20955, -64573.19022, -64961.71659, -60906.75784, -53061.33456, -44895.1094
     };
     
-    auto f = model.joints()->findChild<const ma::TimeSequence*>("R.Ankle.Moment",{{"type",ma::TimeSequence::Moment},{"components",4}});
-    if (f == nullptr)
-      std::cout << "\nERROR" << std::endl;
-    else
-      std::cout << "\nDATA:\n" << ma::math::to_vector(f).values() << std::endl;
+    // auto f = model.joints()->findChild<const ma::TimeSequence*>("R.Ankle.Moment",{{"type",ma::TimeSequence::Moment},{"components",4}});
+    // if (f == nullptr)
+    //   std::cout << "\nERROR" << std::endl;
+    // else
+    //   std::cout << "\nDATA:\n" << ma::math::to_vector(f).values() << std::endl;
     
     TS_WARN("To finalize!");
     
