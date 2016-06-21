@@ -46,6 +46,7 @@ namespace math
   template <typename Derived> class ArrayBase;
   template <int Cols> class Array;
   class Pose;
+  class Wrench;
   template <typename Derived> class Map;
   
   template <typename Xpr, int Cols> class BlockOp;

@@ -568,7 +568,6 @@ namespace internal
     static Eigen::Array<double,3,1> central_coefficients() {Eigen::Array<double,3,1> arr; arr << -1./2., 0., 1./2.; return arr;};
     static Eigen::Array<double,3,1> forward_coefficients() {Eigen::Array<double,3,1> arr; arr << -3./2., 2., -1./2.; return arr;};
     static Eigen::Array<double,3,1> backward_coefficients() {return -forward_coefficients().reverse();};
-    
   };
   
   template <>
