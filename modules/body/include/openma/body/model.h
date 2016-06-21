@@ -62,6 +62,9 @@ namespace body
     Model& operator=(const Model& ) = delete;
     Model& operator=(Model&& ) _OPENMA_NOEXCEPT = delete;
     
+    const double* gravity() const _OPENMA_NOEXCEPT;
+    void setGravity(const double value[3]) _OPENMA_NOEXCEPT;
+    
     Node* segments();
     Segment* segment(unsigned idx) _OPENMA_NOEXCEPT;
     

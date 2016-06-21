@@ -48,7 +48,7 @@ namespace ma
 namespace body
 {
   ModelPrivate::ModelPrivate(Model* pint, const std::string& name)
-  : NodePrivate(pint,name)
+  : NodePrivate(pint,name), Gravity{0.,0.,0.}
   {};
   
   ModelPrivate::~ModelPrivate() = default;
@@ -86,6 +86,31 @@ namespace body
    * Destructor (default)
    */
   Model::~Model() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Retuns an array of 3 elements representing the gravity along the axes of the Inertial Coordinate System (ICS, also known as the laboratory coordinate system)
+   * By default, the gravity is not set and correponds to a vector of zeros.
+   */
+  const double* Model::gravity() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->Gravity;
+  };
+  
+  /**
+   * Set the value for the gravity along the axes of the ICS.
+   * By default, the gravity is not set and correponds to a vector of zeros.
+   */
+  void Model::setGravity(const double value[3]) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if ((optr->Gravity[0] == value[0])
+      && (optr->Gravity[1] == value[1])
+        && (optr->Gravity[2] == value[2]))
+          return;
+    std::copy_n(value,3,optr->Gravity);
+    this->modified();
+  };
   
   /**
    * Returns the subnode "Segments".
