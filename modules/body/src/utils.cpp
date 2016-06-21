@@ -37,6 +37,7 @@
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/point.h"
 #include "openma/body/referenceframe.h"
+#include "openma/body/inertialparameters.h"
 #include "openma/body/segment.h"
 #include "openma/body/skeletonhelper.h"
 #include "openma/base/trial.h"
@@ -136,7 +137,8 @@ namespace body
       return math::Pose();
     // Compute the pose
     const double res[1] = {0.};
-    math::Pose temp, mot(1); mot.residuals().setZero();
+    math::Pose temp, mot(1);
+    mot.residuals().setZero();
     std::copy_n(relframe->data(), 12, mot.values().data());
     for (size_t i = path.size()-2 ; i > 0 ; --i)
     {
@@ -165,7 +167,8 @@ namespace body
       return math::Position();
     // Compute the position
     const double res[1] = {0.};
-    math::Position temp, traj(1); traj.residuals().setZero();
+    math::Position temp, traj(1);
+    traj.residuals().setZero();
     std::copy_n(relpoint->data(), 3, traj.values().data());
     for (size_t i = path.size()-2 ; i > 0 ; --i)
     {
@@ -177,6 +180,18 @@ namespace body
     }
     temp = segpose.transform(traj.replicate(segpose.rows()));
     return temp;
+  };
+  
+  math::Array<9> transform_relative_inertia(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT
+  {
+    ReferenceFrame rInertia("rInertia", relbsip->inertia(), relbsip);
+    return transform_relative_frame(&rInertia, seg, pose).block<9>(0).transform(pose.block<9>(0).transpose());
+  };
+  
+  math::Position transform_relative_com(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT
+  {
+    Point rCoM("rCoM", relbsip->centerOfMass(), relbsip);
+    return transform_relative_point(&rCoM, seg, pose);
   };
 };
 };
