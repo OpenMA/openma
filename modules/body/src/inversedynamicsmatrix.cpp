@@ -194,9 +194,9 @@ namespace body
           // TODO Would it be possible to reduce the computation time by compute the angular velocity for the lower triangle only (same for the angular acceleration)
                     
           // - Angular velocity of the segment in the ICS
-          math::Array<3> omega = R.derivative<1>(dt).transform(R.transpose()).skewRedux();
+          math::Vector omega = R.derivative<1>(dt).transform(R.transpose()).skewRedux();
           // - Angular acceleration of the segment in the ICS
-          math::Array<3> alpha = R.derivative<2>(dt).transform(R.transpose()).skewRedux();
+          math::Vector alpha = R.derivative<2>(dt).transform(R.transpose()).skewRedux();
           // - Linear acceleration of the CoM in the ICS
           auto a = com.derivative<2>(dt);
           
