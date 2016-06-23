@@ -153,7 +153,7 @@ namespace body
         double dt = 1. / rate;
         double gres = 0.;
         math::Vector Fd, Md, pd;
-        auto g = math::Map<const math::Vector>(1, model->gravity(), &gres).replicate(samples);
+        math::Vector g = math::Map<const math::Vector>(1, model->gravity(), &gres).replicate(samples);
         // Iteration computation of joint kinetics
         for (auto itJ = joints.rbegin() ; itJ != joints.rend() ; ++itJ)
         {
