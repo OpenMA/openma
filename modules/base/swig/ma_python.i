@@ -46,6 +46,40 @@
   $result = to_list($1, $descriptor(ma::Node*));
 };
 
+// Convert MATLAB double matrix to std::vector<unsigned int>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE_ARRAY, noblock=1) const std::vector<unsigned int>&
+{
+  $1 = PyList_Check($input);
+  if ($1)
+  {
+    Py_ssize_t numelts = PyList_Size($input);
+    for (auto i = 0 ; i < numelts ; ++i)
+    {
+      auto value = PyList_GetItem($input,i);
+      if (PyInt_Check(value) == 0) && (PyLong_Check(value) == 0) && (PyFloat_Check(value) == 0))
+      {
+        $1 = 0;
+        break;
+      }
+    }
+  }
+};
+%typemap(in) const std::vector<unsigned int>& (std::vector<unsigned int> temp)
+{
+  $1 = &temp;
+  Py_ssize_t numelts = PyList_Size($input);
+  for (auto i = 0 ; i < numelts ; ++i)
+  {
+    double d = PyFloat_AsDouble(PyList_GetItem($input,i));
+    if (modf(d,&iptr) >= std::numeric_limits<double>::epsilon())
+    {
+      SWIG_exception_fail(SWIG_ValueError, "size inputs must be integers in 'const std::vector<unsigned int>&' typemap (in)"); 
+      break;
+    }
+    temp[i] = static_cast<unsigned>(d);
+  }
+};
+
 // Convert std::vector<unsigned> to Python list
 %typemap(out, noblock=1) std::vector<unsigned>
 {

@@ -43,6 +43,77 @@
   $result = to_list($1, $descriptor(ma::Node*));
 };
 
+// Convert MATLAB double matrix to std::vector<unsigned int>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE_ARRAY, noblock=1) const std::vector<unsigned int>&
+{
+  mxClassID id = mxGetClassID($input);
+  $1 = (id == mxDOUBLE_CLASS)
+    || (id == mxINT8_CLASS)
+    || (id == mxUINT8_CLASS)
+    || (id == mxINT16_CLASS)
+    || (id == mxUINT16_CLASS)
+    || (id == mxINT32_CLASS)
+    || (id == mxUINT32_CLASS)
+    || (id == mxINT64_CLASS)
+    || (id == mxUINT64_CLASS)
+    || (id == mxSINGLE_CLASS);
+};
+%typemap(in) const std::vector<unsigned int>& (std::vector<unsigned int> temp)
+{
+  $1 = &temp;  
+  auto numelts = mxGetNumberOfElements($input);
+  mxClassID id = mxGetClassID($input);
+  void* data = mxGetData($input);
+  temp.resize(numelts);
+  for (auto i = 0 ; i < numelts ; ++i)
+  {
+    double iptr = 0.;
+    double d = 0.;
+    switch(id)
+    {
+    case mxDOUBLE_CLASS:
+      d = static_cast<double*>(data)[i];
+      break;
+    case mxINT8_CLASS:
+      d = static_cast<double>(static_cast<int8_t*>(data)[i]);
+      break;
+    case mxUINT8_CLASS:
+      d = static_cast<double>(static_cast<uint8_t*>(data)[i]);
+      break;
+    case mxINT16_CLASS:
+      d = static_cast<double>(static_cast<int16_t*>(data)[i]);
+      break;
+    case mxUINT16_CLASS:
+      d = static_cast<double>(static_cast<uint16_t*>(data)[i]);
+      break;
+    case mxINT32_CLASS:
+      d = static_cast<double>(static_cast<int32_t*>(data)[i]);
+      break;
+    case mxUINT32_CLASS:
+      d = static_cast<double>(static_cast<uint32_t*>(data)[i]);
+      break;
+    case mxINT64_CLASS:
+      d = static_cast<double>(static_cast<int64_t*>(data)[i]);
+      break;
+    case mxUINT64_CLASS:
+      d = static_cast<double>(static_cast<uint64_t*>(data)[i]);
+      break;
+    case mxSINGLE_CLASS:
+      d = static_cast<double>(static_cast<float*>(data)[i]);
+      break;
+    default:
+      SWIG_exception_fail(SWIG_RuntimeError, "Unexpected class ID. Please, report this error");
+    }
+    
+    if (modf(d,&iptr) >= std::numeric_limits<double>::epsilon())
+    {
+      SWIG_exception_fail(SWIG_ValueError, "size inputs must be integers in 'const std::vector<unsigned int>&' typemap (in)"); 
+      break;
+    }
+    temp[i] = static_cast<unsigned>(d);
+  }
+};
+
 // Convert std::vector<unsigned> to MATLAB double matrix
 %typemap(out, fragment="OpenMA", noblock=1) std::vector<unsigned>
 {
