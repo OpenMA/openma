@@ -2,6 +2,7 @@ SET_SOURCE_FILES_PROPERTIES("ma.i" PROPERTIES CPLUSPLUS ON)
 SET(SWIG_MODULE_base_EXTRA_SRCS
   "base/any.i"
   "base/event.i"
+  "base/logger.i"
   "base/node.i"
   "base/object.i"
   "base/subject.i"
