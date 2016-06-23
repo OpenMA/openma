@@ -128,7 +128,6 @@ namespace body
     auto models = inout->findChildren<Model*>({},{},false);
     for (auto& model : models)
     {
-      math::Array<3> Fp, Md, pd;
       auto chains = model->chains()->findChildren<Chain*>({},{},false);
       for (auto& chain : chains)
       {
