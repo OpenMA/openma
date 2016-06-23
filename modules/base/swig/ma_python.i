@@ -143,13 +143,13 @@
 }
 
 // Convert std::unordered_map<std::string, ma::Any> to MATLAB cell
-%typemap(out, noblock=1) const std::unordered_map<std::string, ma::Any>&
+%typemap(out, noblock=1) std::unordered_map<std::string, ma::Any>
 {
-  $result = PyList_New($1->size());
+  $result = PyList_New($1.size());
   if ($result != nullptr)
   {
-    auto it = $1->cbegin();
-    for (size_t i = 0, len = $1->size() ; i < len ; ++i)
+    auto it = $1.cbegin();
+    for (size_t i = 0, len = $1.size() ; i < len ; ++i)
     {
       // Pair
       PyObject* pair = PyList_New(2);
