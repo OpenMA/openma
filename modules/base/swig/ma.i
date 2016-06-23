@@ -43,6 +43,11 @@
 #include "openma/bindings.h"
 %}
 
+%init %{
+  // Let's mute the logger by default
+  ma::Logger::mute(true);
+%}
+
 %include "macros.i"
 
 %include <std_string.i>
