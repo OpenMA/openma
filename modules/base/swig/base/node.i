@@ -51,14 +51,13 @@ namespace ma
     const std::string& description() const;
     void setDescription(const std::string& value);
     ma::Any property(const std::string& key) const;
-    void setProperty(const std::string& key, const ma::Any& value);
-    // TODO Extend setProperty to use directly the SWIGTYPE.
-    /*
+    
     %extend {
-      void setProperty(const std::string& key, const SWIGTYPE* value);
+      void setProperty(const std::string& key, const ma::Any& value);
+      // TODO Extend setProperty to use directly the SWIGTYPE.
+      /* void setProperty(const std::string& key, const SWIGTYPE* value);  */
+      std::unordered_map<std::string, Any> dynamicProperties() const;
     };
-    */
-    const std::unordered_map<std::string, Any>& dynamicProperties() const;
   /*
     template <typename U = Node*> U child(unsigned index) const;
   */
@@ -121,6 +120,19 @@ void ma_Node_removeParent(ma::Node* self, ma::Node* parent)
   self->removeParent(parent);
   if (num != self->parents().size())
     _ma_refcount_decr(self);
+};
+
+void ma_Node_setProperty(ma::Node* self, const std::string& key, const ma::Any& value)
+{
+  if (key.compare(_MA_REF_COUNTER) == 0) return;
+  self->setProperty(key, value);
+};
+
+std::unordered_map<std::string, ma::Any> ma_Node_dynamicProperties(const ma::Node* self)
+{
+  auto props = self->dynamicProperties();
+  props.erase(_MA_REF_COUNTER);
+  return props;
 };
 
 %}
