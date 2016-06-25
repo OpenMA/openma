@@ -61,11 +61,11 @@
 %typemap(in) const std::vector<unsigned int>& (std::vector<unsigned int> temp)
 {
   $1 = &temp;  
-  auto numelts = mxGetNumberOfElements($input);
+  mwSize numelts = mxGetNumberOfElements($input);
   mxClassID id = mxGetClassID($input);
   void* data = mxGetData($input);
   temp.resize(numelts);
-  for (auto i = 0 ; i < numelts ; ++i)
+  for (mwSize i = 0 ; i < numelts ; ++i)
   {
     double iptr = 0.;
     double d = 0.;

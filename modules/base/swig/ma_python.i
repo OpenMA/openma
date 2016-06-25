@@ -68,7 +68,7 @@
 {
   $1 = &temp;
   Py_ssize_t numelts = PyList_Size($input);
-  for (auto i = 0 ; i < numelts ; ++i)
+  for (Py_ssize_t i = 0 ; i < numelts ; ++i)
   {
     double d = PyFloat_AsDouble(PyList_GetItem($input,i));
     if (modf(d,&iptr) >= std::numeric_limits<double>::epsilon())
