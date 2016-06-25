@@ -114,12 +114,14 @@ void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* 
 void forceplatetest_fill_sample10_type2(ma::instrument::ForcePlate* fp)
 {
   forceplatetest_fill_sample10(fp, fp2data);
+  TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),6ul);
 }
 
 void forceplatetest_fill_sample10_type4(ma::instrument::ForcePlate* fp)
 {
   forceplatetest_fill_sample10(fp, fp4datain);
   fp->setCalibrationMatrixData(fp4cal);
+  TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),6ul);
 };
 
 void forceplatetest_fill_gait1_type5(ma::instrument::ForcePlate* fp)
@@ -152,6 +154,7 @@ void forceplatetest_fill_gait1_type5(ma::instrument::ForcePlate* fp)
   fp->setChannel("Fy23", p8);
   fp->setGeometry(fp5rso, fp5sc1, fp5sc2, fp5sc3, fp5sc4);
   fp->setCalibrationMatrixData(fp5cal);
+  TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),8ul);
 };
 
 void forceplatetest_compare_sample10_wrench_at_origin(ma::instrument::ForcePlate* fp, const double* dataref)

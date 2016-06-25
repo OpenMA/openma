@@ -105,11 +105,20 @@ namespace ma
       error("Index out of range. Impossible to assign the signal '%s' in the hardware '%s'.", (sig != nullptr ? sig->name().c_str() : "NULL"), this->name().c_str());
       return;
     }
-    if (optr->MappedChannels[idx].second == sig)
+    auto old = optr->MappedChannels[idx].second;
+    if (old == sig)
       return;
-    this->replaceChild(optr->MappedChannels[idx].second, sig);
+    auto parent = this->channels();
+    if (old != nullptr)
+    {
+      old->removeParent(parent);
+      if (!old->hasParents())
+        delete old;
+    }
+    if (sig != nullptr)
+      sig->addParent(parent);
     optr->MappedChannels[idx].second = sig;
-    // this->modified(); // replaceChild calls modified
+    // this->modified(); // removeParent and addParent calls modified
   };
   
   /**
@@ -135,11 +144,20 @@ namespace ma
     auto it = std::find_if(optr->MappedChannels.begin(), optr->MappedChannels.end(), [&](const vvt& v){return v.first == label;});
     if (it != optr->MappedChannels.end())
     {
-      if (it->second == sig)
+      auto old = it->second;
+      if (old == sig)
         return;
-      this->replaceChild(it->second, sig);
+      auto parent = this->channels();
+      if (old != nullptr)
+      {
+        old->removeParent(parent);
+        if (!old->hasParents())
+          delete old;
+      }
+      if (sig != nullptr)
+        sig->addParent(parent);
       it->second = sig;
-      // this->modified(); // replaceChild calls modified
+      // this->modified(); // removeParent and addParent calls modified
     }
     else
       error("No mapped channel with the label: %s", label.c_str());
