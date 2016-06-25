@@ -1,0 +1,2 @@
+function path = testDataPathIn(rel)
+    path = ['${OPENMA_TESTING_DATA_PATH}/input/' , rel];
