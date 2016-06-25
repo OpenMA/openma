@@ -1,0 +1,45 @@
+SET_SOURCE_FILES_PROPERTIES("instrument.i" PROPERTIES CPLUSPLUS ON)
+SET(SWIG_MODULE_instrument_EXTRA_SRCS 
+  "instrument/forceplate.i")
+SET(SWIG_MODULE_instrument_EXTRA_FLAGS
+  # "-debug-tmsearch"
+  "-I${PROJECT_SOURCE_DIR}/modules/base/swig"
+  "-I${PROJECT_SOURCE_DIR}/modules/bindings/swig"
+  "-I${SWIG_DIR}/Lib")
+
+IF(BUILD_MATLAB_BINDINGS)
+  SET(INSTRUMENT_MATLAB_SRCS
+    "instrument.i"
+    "../../bindings/include/openma/matlab/mexFunction.def")
+  SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma")
+  SET_SOURCE_FILES_PROPERTIES("instrument.i" PROPERTIES CPLUSPLUS ON)
+  SET(SWIG_MODULE_instrumentMEX_EXTRA_DEPS ${SWIG_MODULE_instrument_EXTRA_SRCS})
+  SET(SWIG_MODULE_instrumentMEX_EXTRA_FLAGS
+    "-module" "ma.instrument"
+    "-mexname" "instrumentMEX"
+    ${SWIG_MODULE_instrument_EXTRA_FLAGS}
+    "-I${SWIG_DIR}/Lib/matlab")
+  SWIG_ADD_MODULE(instrumentMEX matlab "${INSTRUMENT_MATLAB_SRCS}")
+  SWIG_LINK_LIBRARIES(instrumentMEX instrument bindings ${MATLAB_LIBRARIES})
+  TARGET_INCLUDE_DIRECTORIES(${SWIG_MODULE_instrumentMEX_REAL_NAME} PRIVATE "${MATLAB_INCLUDE_DIR}")
+  SET_TARGET_PROPERTIES(${SWIG_MODULE_instrumentMEX_REAL_NAME} PROPERTIES
+    COMPILE_DEFINITIONS "_SWIG_MATLAB"
+    LIBRARY_OUTPUT_DIRECTORY "${OPENMA_EXECUTABLE_PATH}/swig/matlab/openma"
+    PREFIX ""
+    SUFFIX ".${MATLAB_MEXFILE_EXT}")
+ENDIF()
+
+IF(BUILD_PYTHON_BINDINGS)
+  SET(BASE_PYTHON_SRCS
+    "instrument.i")
+  SET(CMAKE_SWIG_OUTDIR "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma")
+  SET(SWIG_MODULE_instrument_EXTRA_DEPS ${SWIG_MODULE_instrument_EXTRA_SRCS})
+  SET(SWIG_MODULE_instrument_EXTRA_FLAGS
+    ${SWIG_MODULE_instrument_EXTRA_FLAGS}
+    "-I${SWIG_DIR}/Lib/python")
+  SWIG_ADD_MODULE(instrument python "${BASE_PYTHON_SRCS}")
+  SWIG_LINK_LIBRARIES(instrument instrument bindings ${PYTHON_LIBRARY})
+  TARGET_INCLUDE_DIRECTORIES(${SWIG_MODULE_instrument_REAL_NAME} PRIVATE "${PYTHON_INCLUDE_DIR}")
+  SET_TARGET_PROPERTIES(${SWIG_MODULE_instrument_REAL_NAME} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma")
+ENDIF()
