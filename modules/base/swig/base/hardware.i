@@ -32,48 +32,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module ma
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-%}
-
-%init %{
-  // Let's mute the logger by default
-  ma::Logger::mute(true);
-%}
-
-%include "macros.i"
-
-%include <std_string.i>
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-// Use a single threaded reference counting mechanism to release the data
-%feature("ref", noblock=1) ma::Node {_ma_refcount_incr($this);};
-%feature("unref", noblock=1) ma::Node {_ma_refcount_decr($this);};
-
-#if defined(SWIGMATLAB)
-%include "ma_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "ma_python.i"
-#endif
-
-%include "../include/openma/base/enums.h"
-
-%include "base/any.i"
-%include "base/object.i"
-%include "base/node.i"
-%include "base/event.i"
-%include "base/subject.i"
-%include "base/timesequence.i"
-%include "base/trial.i"
-%include "base/logger.i"
-%include "base/hardware.i"
+namespace ma
+{
+  SWIG_TYPEMAP_NODE_OUT(ma, Hardware)
+  SWIG_CREATE_TEMPLATE_HELPER_1(ma, Hardware, SWIGTYPE)
+  
+  %nodefaultctor;
+  class Hardware : public Node
+  {
+  public:
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Hardware, SWIGTYPE)
+  
+    Node* channels();
+    /*
+    TimeSequence* channel(unsigned idx) const _OPENMA_NOEXCEPT;
+    void setChannel(unsigned idx, TimeSequence* sig);
+    TimeSequence* channel(const std::string& label) const _OPENMA_NOEXCEPT;
+    void setChannel(const std::string& label, TimeSequence* sig);
+    unsigned channelsNumberRequired() const _OPENMA_NOEXCEPT;
+    
+    Node* outputs();
+    
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    */
+  };
+  %clearnodefaultctor;
+};
