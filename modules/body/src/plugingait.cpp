@@ -987,27 +987,9 @@ namespace body
     // Copy the content of subject into the helper
     if (subject != nullptr)
     {
-      optr->MarkerDiameter = subject->property("markerDiameter");
-      optr->HeadOffsetEnabled = subject->property("headOffsetEnabled");
-      optr->RightShoulderOffset = subject->property("rightShoulderOffset");
-      optr->LeftShoulderOffset = subject->property("leftShoulderOffset");
-      optr->RightElbowWidth = subject->property("rightElbowWidth");
-      optr->LeftElbowWidth = subject->property("leftElbowWidth");
-      optr->RightWristWidth = subject->property("rightWristWidth");
-      optr->LeftWristWidth = subject->property("leftWristWidth");
-      optr->RightHandThickness = subject->property("rightHandThickness");
-      optr->LeftHandThickness = subject->property("leftHandThickness");
-      optr->InterAsisDistance = subject->property("interAsisDistance");
-      optr->RightLegLength = subject->property("rightLegLength");
-      optr->LeftLegLength = subject->property("leftLegLength");
-      optr->RightAsisTrochanterAPDistance = subject->property("rightAsisTrochanterAPDistance");
-      optr->LeftAsisTrochanterAPDistance = subject->property("leftAsisTrochanterAPDistance");
-      optr->RightKneeWidth = subject->property("rightKneeWidth");
-      optr->LeftKneeWidth = subject->property("leftKneeWidth");
-      optr->RightAnkleWidth = subject->property("rightAnkleWidth");
-      optr->LeftAnkleWidth = subject->property("leftAnkleWidth");
-      optr->RightFootFlatEnabled = subject->property("rightFootFlatEnabled");
-      optr->LeftFootFlatEnabled = subject->property("leftFootFlatEnabled");
+      const auto& props = subject->dynamicProperties();
+      for (const auto& prop : props)
+        this->setProperty(prop.first, prop.second);
     }
     
     // Calibrate the helper
