@@ -58,7 +58,7 @@ static _OPENMA_CONSTEXPR double _ma_body_dempster_table[9*3] = {
      4.65,     56.7,     30.2,    // 7. Shank: femoral condyles to lateral maleolus
      1.45,     50.0,     47.5, }; // 8. Foot: lateral malleolus to head metatarsal II
 
-void _ma_body_create_dempster_bsip(const std::string& name, double subjectMass, const ma::Any& segLengthProp, size_t segIdx, ma::Node* parent)
+void _ma_body_create_dempster_bsip(const std::string& name, double modelMass, const ma::Any& segLengthProp, size_t segIdx, ma::Node* parent)
 {
   if (!segLengthProp.isValid())
   {
@@ -68,7 +68,7 @@ void _ma_body_create_dempster_bsip(const std::string& name, double subjectMass, 
   double segLength = segLengthProp.cast<double>();
   enum { Mass = 0, CoM = 1, Radius = 2 };
   auto bsip = new ma::body::InertialParameters(name+".BSIP", parent);
-  bsip->setMass(subjectMass * _ma_body_dempster_table[segIdx*3+Mass] / 100.0);
+  bsip->setMass(modelMass * _ma_body_dempster_table[segIdx*3+Mass] / 100.0);
   double com[3] = {0.0, 0.0, -1.0 * segLength * _ma_body_dempster_table[segIdx*3+CoM] / 100.0};
   bsip->setCenterOfMass(com);
   double ml2 = bsip->mass() * segLength * segLength;
@@ -90,8 +90,8 @@ namespace body
    * The computation of the mass, center of mass, and inertia tensor is based on linear regression equations as provided in
    *  - David A. Winter. (2009). <em>Biomechanics and Motor Control of Human Movement</em>, Fourth Edition. Published by John Wiley & Sons, New York. ISBN 978-0-470-39818-0.
    *
-   * It is important to notice than:
-   *  - The weight of the subject is required.
+   * It is important to notice that:
+   *  - The mass of the subject is required.
    *  - The length of each segment is required.
    *  - This table uses the same parameters for male and female subjects. 
    *  - The segments are modelised as rods. Thus, the tensor of inertia has non-null values only for the elements Ixx and Iyy.
@@ -152,16 +152,16 @@ namespace body
     auto models = inout->findChildren<Model*>({},{},false);
     for (auto& model : models)
     {
-      const Any& weightProp = model->property("weight");
+      const Any& massProp = model->property("mass");
 #if !defined(_MSC_VER)
 #warning It might be better to use directly the mass. Or the norm of the gravity might need to be an input argument
 #endif
-      if (!weightProp.isValid())
+      if (!massProp.isValid())
       {
-        error("Missing weight information for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());
+        error("Missing mass information for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());
         continue;
       }
-      const double subjectMass = weightProp.cast<double>() / 9.81; // N -> kg
+      const double modelMass = massProp.cast<double>();
       auto segments = model->segments()->findChildren<Segment*>({},{},false);
       for (auto& seg : segments)
       {
@@ -169,23 +169,23 @@ namespace body
         if (parent == nullptr)
           parent = seg;
         if (seg->part() == Part::Head)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 0, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 0, parent);
         else if (seg->part() == Part::Torso)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 1, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 1, parent);
         else if (seg->part() == Part::Arm)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 3, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 3, parent);
         else if (seg->part() == Part::Forearm)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 4, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 4, parent);
         else if (seg->part() == Part::Hand)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 5, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 5, parent);
         else if (seg->part() == Part::Pelvis)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 2, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 2, parent);
         else if (seg->part() == Part::Thigh)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 6, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 6, parent);
         else if (seg->part() == Part::Shank)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 7, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 7, parent);
         else if (seg->part() == Part::Foot)
-          _ma_body_create_dempster_bsip(seg->name(), subjectMass, seg->property("length"), 8, parent);
+          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 8, parent);
       }
     }
     return true;
