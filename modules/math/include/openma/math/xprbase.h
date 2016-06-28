@@ -224,7 +224,7 @@ namespace math
   };
 
   /**
-   * Convenient okys operator to compute the sum between two template expressions
+   * Convenient plus operator to compute the sum between two template expressions
    * @relates XprBase
    * @relates ArrayBase
    */
