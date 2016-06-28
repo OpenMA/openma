@@ -58,6 +58,8 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
         c->setUnit("N");
       else if (c->type() == ma::TimeSequence::Moment)
         c->setUnit("Nmm");
+      else if (c->type() == ma::TimeSequence::Power)
+        c->setUnit("W");
     }
     ma::io::write(&rootDynamic, "test.c3d");
     
@@ -195,6 +197,8 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
         c->setUnit("N");
       else if (c->type() == ma::TimeSequence::Moment)
         c->setUnit("Nmm");
+      else if (c->type() == ma::TimeSequence::Power)
+        c->setUnit("W");
     }
     ma::io::write(&rootDynamic, "test2.c3d");
     
