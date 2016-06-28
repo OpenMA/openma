@@ -37,6 +37,7 @@
 #include "openma/body/anchor.h"
 #include "openma/body/chain.h"
 #include "openma/body/dempstertable.h"
+#include "openma/body/dynamicdescriptor.h"
 #include "openma/body/enums.h"
 #include "openma/body/eulerdescriptor_p.h"
 #include "openma/body/simplegaitforceplatetofeetassigner.h"
@@ -915,15 +916,19 @@ namespace body
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
         leftLowerLimbJoints[0] = jnt;
         new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, -1.0, jnt);
+        new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,1.,1.,1.,1.,1.,1.}}, jnt);
         jnt = new Joint("L.Knee", leftThigh, leftShank, Anchor::origin(leftThigh), joints);
         leftLowerLimbJoints[1] = jnt;
         new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
+        new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,1.,1.,1.,1.,1.}}, jnt);
         jnt = new Joint("L.Ankle", leftShank, leftFoot, Anchor::origin(leftShank), joints);
         leftLowerLimbJoints[2] = jnt;
         new PluginGaitLeftAnkleDescriptor(jnt);
+        new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,-1.,1.,1.,1.,1.}}, jnt);
         jnt = new Joint("L.Foot.Progress", progression, leftFoot, joints);
         jnt->setDescription("Left foot relative to progression frame");
         new PluginGaitLeftFootDescriptor(jnt);
+        new Chain("L.LowerLimb", leftLowerLimbJoints, chains);
       }
       if (optr->Side & Side::Right)
       {
@@ -934,12 +939,15 @@ namespace body
         jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, Anchor::point("R.HJC", pelvis), joints);
         rightLowerLimbJoints[0] = jnt;
         new EulerDescriptor("R.Hip.Angle", EulerDescriptor::YXZ, {{-1.0, 1.0, 1.0}}, jnt);
+        new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,1.,-1.,-1.,1.,1.,1.}}, jnt);
         jnt = new Joint("R.Knee", rightThigh, rightShank, Anchor::origin(rightThigh), joints);
         rightLowerLimbJoints[1] = jnt;
         new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
+        new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,-1.,-1.,1.,1.,1.}}, jnt);
         jnt = new Joint("R.Ankle", rightShank, rightFoot, Anchor::origin(rightShank), joints);
         rightLowerLimbJoints[2] = jnt;
         new PluginGaitRightAnkleDescriptor(jnt);
+        new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,1.,-1.,1.,1.,1.}}, jnt);
         jnt = new Joint("R.Foot.Progress", progression, rightFoot, joints);
         jnt->setDescription("Right foot relative to progression frame");
         new PluginGaitRightFootDescriptor(jnt);
