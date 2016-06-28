@@ -5,6 +5,8 @@
 #include "plugingaitTest_def.h"
 #include "test_file_path.h"
 
+#include <openma/body.h>
+
 #include <openma/body/externalwrenchassigner.h>
 #include <openma/body/inertialparametersestimator.h>
 #include <openma/body/inversedynamicsmatrix.h>
@@ -22,6 +24,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
   CXXTEST_TEST(inverseDynamicsBothLowerBodyOneFrame)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    helper.setGravity(std::array<double,3>{{0,0,-9.81}}); // m/s^2
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
@@ -31,14 +34,36 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     helper.setRightLegLength(940.0); // mm
     helper.setRightKneeWidth(120.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
+    double mass = 66.5; // kg
+    double height = 1790; // mm
+    helper.setProperty("mass", mass);
+    helper.setProperty("height", height);
     
-    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
+    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel"), kineticsanalyses("kineticsanalyses");
     generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
     generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinetics(&kineticsanalyses, &rootModel), true);
+    TS_ASSERT_EQUALS(kineticsanalyses.children().size(), 1u);
     
-    // Set the gravity
+    auto trial = rootDynamic.child<ma::Trial*>(0);
+    auto kinetic = kineticsanalyses.child(0);
+    
+    // Specific to the C3D file format that accepts only one unit by type
+    for (const auto& c : kinetic->findChildren<ma::TimeSequence*>())
+    {
+      c->addParent(trial->timeSequences());
+      if (c->type() == ma::TimeSequence::Force)
+        c->setUnit("N");
+      else if (c->type() == ma::TimeSequence::Moment)
+        c->setUnit("Nmm");
+    }
+    ma::io::write(&rootDynamic, "test.c3d");
+    
+    /*
+    
+    Set the gravity
     const double g[3] = {0.,0.,-9810.0};
     auto model = rootModel.child<ma::body::Model*>(0);
     model->setGravity(g);
@@ -134,11 +159,13 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test.c3d");
 #endif
+    */
   };
   
   CXXTEST_TEST(inverseDynamicsBothLowerBodyFullFramesHeadOffsetDisabled)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    helper.setGravity(std::array<double,3>{{0,0,-9.81}}); // m/s^2
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftLegLength(780.0); // mm
     helper.setLeftKneeWidth(90); // mm
@@ -146,21 +173,40 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     helper.setRightLegLength(780.0); // mm
     helper.setRightKneeWidth(95.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
+    helper.setProperty("mass",33.0); // kg
+    helper.setProperty("height", 1465.0); // mm
     
-    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
+    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel"), kineticsanalyses("kineticsanalyses");
     generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
     generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinetics(&kineticsanalyses, &rootModel), true);
+    TS_ASSERT_EQUALS(kineticsanalyses.children().size(), 1u);
     
+    auto trial = rootDynamic.child<ma::Trial*>(0);
+    auto kinetic = kineticsanalyses.child(0);
+    
+    for (const auto& c : kinetic->findChildren<ma::TimeSequence*>())
+    {
+      // Specific to the C3D file format that accepts only one unit by type
+      c->addParent(trial->timeSequences());
+      if (c->type() == ma::TimeSequence::Force)
+        c->setUnit("N");
+      else if (c->type() == ma::TimeSequence::Moment)
+        c->setUnit("Nmm");
+    }
+    ma::io::write(&rootDynamic, "test2.c3d");
+    
+    /*
     // Set the gravity
-    const double g[3] = {0.,0.,-9810.0};
-    auto model = rootModel.child<ma::body::Model*>(0);
-    model->setGravity(g);
-    double mass = 33; // kg
-    double height = 1465; // mm
-    model->setProperty("weight", mass * 9.81);
-    model->setProperty("height", height);
+    // const double g[3] = {0.,0.,-9810.0};
+    // auto model = rootModel.child<ma::body::Model*>(0);
+    // model->setGravity(g);
+    // double mass = 33; // kg
+    // double height = 1465; // mm
+    // model->setProperty("weight", mass * 9.81);
+    // model->setProperty("height", height);
     
     // Associate FP wrench to feet
     auto ewa = helper.defaultExternalWrenchAssigner();
@@ -249,6 +295,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test2.c3d");
 #endif
+    */
   };
 };
 
