@@ -170,7 +170,8 @@ namespace body
           // -----------------------
           
           // - Pose of the segment
-          auto pose = math::to_pose(seg->pose());
+          auto spts = seg->pose();
+          auto pose = math::to_pose(spts);
           // - Rotation component of the pose in the Inertial Coordinate System (ICS)
           auto R = pose.block<9>(0);
           // - Tensor of inertia expressed in the ICS
@@ -236,6 +237,7 @@ namespace body
           math::Vector Mp = Mdyn - Mwei - Mext;
           math::to_timesequence(Fp, jnt->name() + ".Force", rate, start, TimeSequence::Force, "N", jnt);
           math::to_timesequence(Mp, jnt->name() + ".Moment", rate, start, TimeSequence::Moment, "Nmm" , jnt);
+          math::to_timesequence(omega, spts->name() + ".Omega", rate, start, TimeSequence::Angle | TimeSequence::Velocity | TimeSequence::Reconstructed, "rad/s" , seg);
           
           // Set the next (reaction) distal joint variables
           Fd = Fp;
