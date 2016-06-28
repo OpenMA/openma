@@ -42,6 +42,8 @@
 
 #include "openma/base/node_p.h"
 
+#include <array>
+
 namespace ma
 {
 namespace body
@@ -51,13 +53,20 @@ namespace body
   class SkeletonHelperPrivate : public NodePrivate
   {
     OPENMA_DECLARE_PINT_ACCESSOR(SkeletonHelper)
-      
+    
+    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(SkeletonHelper, Node,
+      Property<SkeletonHelper, const std::array<double,3>&, &SkeletonHelper::gravity, &SkeletonHelper::setGravity>{"gravity"}
+    )
+    
   public:
     SkeletonHelperPrivate(SkeletonHelper* pint, const std::string& name, int region, int side);
     ~SkeletonHelperPrivate();
     
+    bool hasNonNullGravity() const _OPENMA_NOEXCEPT;
+    
     int Region;
     int Side;
+    std::array<double,3> Gravity;
   };
 };
 };

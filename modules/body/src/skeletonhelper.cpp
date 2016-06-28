@@ -49,10 +49,15 @@ namespace ma
 namespace body
 {
   SkeletonHelperPrivate::SkeletonHelperPrivate(SkeletonHelper* pint, const std::string& name, int region, int side)
-  : NodePrivate(pint,name), Region(region), Side(side)
+  : NodePrivate(pint,name), Region(region), Side(side), Gravity({0.,0.,0.})
   {};
   
   SkeletonHelperPrivate::~SkeletonHelperPrivate() = default;
+  
+  bool SkeletonHelperPrivate::hasNonNullGravity() const _OPENMA_NOEXCEPT
+  {
+    return (this->Gravity[0] != 0.) || (this->Gravity[1] != 0.) || (this->Gravity[2] != 0.);
+  };
 };
 };
 
@@ -75,6 +80,19 @@ namespace body
    * @todo Write a very detailed description for this class.
    * @ingroup openma_body
    */
+
+#ifdef DOXYGEN_SHOULD_TAKE_THIS
+  /** * @brief Fake structure to create node's properties */
+  struct SkeletonHelper::__Doxygen_Properties
+  {
+    /**
+     * This property holds the gravity direction and magnitude used by some calculation like the inverse dynamics. By default, this property contains a vector of zeros.
+     * The unit to use must be the metre by second squared (m/s^2). If the gravity is not set (or reset to 0.), the method reconstruct() will not compute the inverse dynamics. Only the geometry foir each model will be computed.
+     * @sa gravity() setGravity()
+     */
+    std::array<double,3> Gravity;
+  }
+#endif
   
   /**
    * Constructor. Store the @a region and @a side for later use. You can use the enum Region and Side to set these values.
@@ -94,6 +112,27 @@ namespace body
    * Destructor
    */
   SkeletonHelper::~SkeletonHelper() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Sets the internal parameter Gravity.
+   */
+  void SkeletonHelper::setGravity(const std::array<double,3>& g)
+  {
+    auto optr = this->pimpl();
+    if (optr->Gravity == g)
+      return;
+    optr->Gravity = g;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter Gravity.
+   */
+  const std::array<double,3>& SkeletonHelper::gravity() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->Gravity;
+  };
   
   /**
    * @fn virtual bool SkeletonHelper::calibrate(Node* trials, Subject* subject) _OPENMA_NOEXCEPT = 0;
@@ -183,6 +222,7 @@ namespace body
     this->Node::copy(src);
     optr->Region = optr_src->Region;
     optr->Side = optr_src->Side;
+    optr->Gravity = optr_src->Gravity;
   };
 };
 };

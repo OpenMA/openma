@@ -40,6 +40,7 @@
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 #include <string>
+#include <array>
 
 namespace ma
 {
@@ -71,6 +72,9 @@ namespace body
     SkeletonHelper(SkeletonHelper&& ) _OPENMA_NOEXCEPT = delete;
     SkeletonHelper& operator=(const SkeletonHelper& ) = delete;
     SkeletonHelper& operator=(SkeletonHelper&& ) _OPENMA_NOEXCEPT = delete;
+    
+    void setGravity(const std::array<double,3>& g);
+    const std::array<double,3>& gravity() const _OPENMA_NOEXCEPT;
     
     virtual bool calibrate(Node* trials, Subject* subject) = 0;
     bool reconstruct(Node* output, Node* trials);
