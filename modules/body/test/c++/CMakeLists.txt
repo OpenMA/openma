@@ -2,6 +2,7 @@ SET(_TEST_IO_CPP_DIR "${OPENMA_BINARY_DIR}/modules/io/test/c++")
 
 ADD_CXXTEST_TESTDRIVER(openma_body_anchor anchorTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_chain chainTest.cpp body)
+ADD_CXXTEST_TESTDRIVER(openma_body_dynamicdescriptor dynamicdescriptorTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_dempstertable dempstertableTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_eulerdescriptor eulerdescriptorTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_inertialparametersTest inertialparametersTest.cpp body)
@@ -17,4 +18,5 @@ ADD_CXXTEST_TESTDRIVER(openma_body_plugingait_kinetics plugingaitTest_kinetics.c
 ADD_CXXTEST_TESTDRIVER(openma_body_point pointTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_segment segmentTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_simplegaitforceplatetofeetassigner simplegaitforceplatetofeetassignerTest.cpp INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
+ADD_CXXTEST_TESTDRIVER(openma_body_skeletonhelper skeletonhelperTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_utils utilsTest.cpp body)
