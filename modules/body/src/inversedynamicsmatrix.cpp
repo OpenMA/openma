@@ -226,11 +226,11 @@ namespace body
             Mext -= Md + (pd - pp).cross(Fd);
           }
           // - Weight
-          auto Fwei = m * g / 1000.0;
-          auto Mwei = c.cross(m * g / 1000.0);
+          math::Vector Fwei = m * g / 1000.0;
+          auto Mwei = c.cross(Fwei);
           // - Dynamics
-          auto Fdyn = m * a / 1000.0;
-          auto Mdyn = (I.transform(alpha) + omega.cross(I.transform(omega))) / 1000.0 + c.cross(m * a / 1000.0);
+          math::Vector Fdyn = m * a / 1000.0;
+          auto Mdyn = (I.transform(alpha) + omega.cross(I.transform(omega))) / 1000.0 + c.cross(Fdyn);
           // - Proximal joint (result)
           math::Vector Fp = Fdyn - Fwei - Fext;
           math::Vector Mp = Mdyn - Mwei - Mext;
