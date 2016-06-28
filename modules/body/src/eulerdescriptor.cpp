@@ -163,7 +163,7 @@ namespace body
   /**
    * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to 1.0.
    * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
-   * @note In case you pass an sequence not available in the 12 possible sequences, no error are provided until you use the evaluate method.
+   * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
    */
   EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, Node* parent)
   : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,{{1.0,1.0,1.0}}), parent)
@@ -172,7 +172,7 @@ namespace body
   /**
    * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to @a scale.
    * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
-   * @note In case you pass an sequence not available in the 12 possible sequences, no error are provided until you use the evaluate method.
+   * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
    */
   EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, double scale, Node* parent)
   : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,{{scale,scale,scale}}), parent)
@@ -181,7 +181,7 @@ namespace body
   /**
    * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to @a scale.
    * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
-   * @note In case you pass an sequence not available in the 12 possible sequences, no error are provided until you use the evaluate method.
+   * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
    */
   EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, Node* parent)
   : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,scale), parent)
@@ -403,9 +403,9 @@ namespace body
     }
     // Let's compute the output
     optr->OutputData = optr->BufferData.eulerAngles(optr->Sequence[0], optr->Sequence[1], optr->Sequence[2]);
-    optr->OutputData.block<1>(0) *= scale[0];
-    optr->OutputData.block<1>(1) *= scale[1];
-    optr->OutputData.block<1>(2) *= scale[2];
+    optr->OutputData.values().col(0) *= scale[0];
+    optr->OutputData.values().col(1) *= scale[1];
+    optr->OutputData.values().col(2) *= scale[2];
     return true;
   };
   
