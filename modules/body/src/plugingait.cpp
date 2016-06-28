@@ -874,7 +874,7 @@ namespace body
         jnt = new Joint("L.Wrist", leftForearm, leftHand, Anchor::origin(leftForearm), joints);
         leftUpperLimbJoints[2] = jnt;
         new EulerDescriptor("L.Wrist.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
-        new Chain("L.UpperLimb", leftUpperLimbJoints, chains);
+        // new Chain("L.UpperLimb", leftUpperLimbJoints, chains);
       }
       if (optr->Side & Side::Right)
       {
@@ -892,7 +892,7 @@ namespace body
         jnt = new Joint("R.Wrist", rightForearm, rightHand, Anchor::origin(rightForearm), joints);
         rightUpperLimbJoints[2] = jnt;
         new EulerDescriptor("R.Wrist.Angle", EulerDescriptor::YXZ, jnt);
-        new Chain("R.UpperLimb", rightUpperLimbJoints, chains);
+        // new Chain("R.UpperLimb", rightUpperLimbJoints, chains);
       }
       jnt = new Joint("Neck", head, torso, joints);
       new PluginGaitNeckDescriptor(jnt);
