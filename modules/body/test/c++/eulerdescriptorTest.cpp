@@ -11,12 +11,12 @@ CXXTEST_SUITE(EulerDescriptorTest)
   
   CXXTEST_TEST(clone)
   {
-    TS_WARN("Implement the method ma::body::DempsterTable::clone()");
+    TS_WARN("Implement the method ma::body::EulerDescriptor::clone()");
   };
   
   CXXTEST_TEST(copy)
   {
-    TS_WARN("Implement the method ma::body::DempsterTable::copy()");
+    TS_WARN("Implement the method ma::body::EulerDescriptor::copy()");
   };
 };
 
