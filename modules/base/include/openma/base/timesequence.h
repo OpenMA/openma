@@ -64,6 +64,7 @@ namespace ma
       Scalar = 0x40  | Reconstructed,
       Pose   = 0x80  | Reconstructed,
       Wrench = 0x100 | Reconstructed,
+      Velocity = 0x200,
       Analog = 0x1000,
       Other  = 0x10000
     } Type;
