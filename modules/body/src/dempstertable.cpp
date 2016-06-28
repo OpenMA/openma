@@ -72,8 +72,8 @@ void _ma_body_create_dempster_bsip(const std::string& name, double subjectMass, 
   double com[3] = {0.0, 0.0, -1.0 * segLength * _ma_body_dempster_table[segIdx*3+CoM] / 100.0};
   bsip->setCenterOfMass(com);
   double ml2 = bsip->mass() * segLength * segLength;
-  // IMPORTANT: THE MOMENT OF INERTIA HAS TO BE COMPUTED AT THE PROXIMAL END
-  double I = ml2 * (_ma_body_dempster_table[segIdx*3+Radius] * _ma_body_dempster_table[segIdx*3+Radius] + _ma_body_dempster_table[segIdx*3+CoM] * _ma_body_dempster_table[segIdx*3+CoM]) / 10000.0;
+  // IMPORTANT: THE MOMENT OF INERTIA HAS TO BE COMPUTED AT THE CENTER OF MASS!
+  double I = ml2 * (_ma_body_dempster_table[segIdx*3+Radius] * _ma_body_dempster_table[segIdx*3+Radius]) / 10000.0;
   double inertia[9] = {I,0.,0.,0.,I,0.,0.,0.,0.};
   bsip->setInertia(inertia);
 }
