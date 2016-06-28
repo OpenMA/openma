@@ -34,6 +34,9 @@
 
 #include "openma/body/skeletonhelper.h"
 #include "openma/body/skeletonhelper_p.h"
+#include "openma/body/externalwrenchassigner.h"
+#include "openma/body/inversedynamicsprocessor.h"
+#include "openma/body/inertialparametersestimator.h"
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/base/trial.h"
@@ -145,6 +148,7 @@ namespace body
    */
   bool SkeletonHelper::reconstruct(Node* output, Node* trials)
   {
+    auto optr = this->pimpl();
     if (output == nullptr)
     {
       error("SkeletonHelper - Null output passed. Movement reconstruction aborted.");
@@ -178,14 +182,55 @@ namespace body
         delete model;
         continue;
       }
+      // Attach the model to the output
+      model->addParent(output);
+      // Copy the gravity
+      // FIXME WE MUST FIND A WAY TO NOT FORCE THE SETTING OF THE GRAVITY TO THE UNIT MM/S^2
+      const double g[3] = {optr->Gravity[0] * 1000., optr->Gravity[1] * 1000., optr->Gravity[2] * 1000.};
+      model->setGravity(g);
+      // Copy dynamic properties to the model. They can be used later.
+      const auto& props = this->dynamicProperties();
+      for (const auto& prop : props)
+        model->setProperty(prop.first, prop.second);
       // Attach the landmarks translator to the model. It can be used later.
       auto translator = this->findChild<LandmarksTranslator*>({},{},false);
       if (translator != nullptr)
         translator->addParent(model);
       // Attach the trial to the model. It can be used later.
       trial->addParent(model);
-      // Attach the model to the output
-      model->addParent(output);
+      // Computation of the inverse dynamics?
+      if (optr->hasNonNullGravity())
+      {
+        Node temp("_TRID");
+        model->addParent(&temp);
+        // Associate FP wrench to feet
+        ExternalWrenchAssigner* ewa = this->findChild<ExternalWrenchAssigner*>({},{},false);
+        if (ewa == nullptr)
+          ewa = this->defaultExternalWrenchAssigner();
+        if ((ewa != nullptr) && !ewa->run(&temp))
+        {
+          error("SkeletonHelper - Error during the setting of external wrenches. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+        // Compute BSIPs
+        InertialParametersEstimator* ipe = this->findChild<InertialParametersEstimator*>({},{},false);
+        if (ipe == nullptr)
+          ipe = this->defaultInertialParametersEstimator();
+        if ((ipe != nullptr) && !ipe->generate(&temp))
+        {
+          error("SkeletonHelper - Error during the estimation of the segment inertial parameters. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+        // Compute inverse dynamics in the global frame
+        InverseDynamicProcessor* idp = this->findChild<InverseDynamicProcessor*>({},{},false);
+        if (idp == nullptr)
+          idp = this->defaultInverseDynamicProcessor();
+        if ((idp != nullptr) && !idp->run(&temp))
+        {
+          error("SkeletonHelper - Error during the computation of the inverse dynamics. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+      }
     }
     return true;
   };
@@ -206,7 +251,7 @@ namespace body
    * @fn virtual LandmarksTranslator* SkeletonHelper::defaultLandmarksTranslator() = 0;
    * Create a LandmarksTranslator adapted to the marker set used by the helper.
    * Because a landmarks translator is used in the calibrate() and reconstruct() methods, this method could parent the created translator to the helper.
-   * Thus, it will be created only one time in calibrate () and found as a child in reconstruct().
+   * Thus, it will be created only one time in calibrate() and found as a child in reconstruct().
    */
   
   /**
