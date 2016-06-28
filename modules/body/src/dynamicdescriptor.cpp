@@ -58,6 +58,8 @@ namespace body
     DynamicDescriptorPrivate(DynamicDescriptor* pint, const std::string& name, const std::array<unsigned,9>& order, const std::array<double,9>& scale);
     ~DynamicDescriptorPrivate();
     
+    TimeSequence* extractSegmentAngularVelocity(Segment* seg, const std::string& referenceSuffix) const;
+    
     std::array<unsigned,9> Order;
     std::array<double,9> Scale;
     const TimeSequence* RepresentationFrameTimeSequence;
@@ -68,7 +70,8 @@ namespace body
     const TimeSequence* MomentTimeSequence;
     math::Vector OutputMomentData;
     std::string OutputMomentUnit;
-    const TimeSequence* PowerTimeSequence;
+    const TimeSequence* ProximalAngularVelocityTimeSequence;
+    const TimeSequence* DistalAngularVelocityTimeSequence;
     math::Vector OutputPowerData;
     std::string OutputPowerUnit;
   };
@@ -78,12 +81,34 @@ namespace body
     Order(order), Scale(scale),
     RepresentationFrameTimeSequence(nullptr),
     OutputSuffix(),
-    ForceTimeSequence(nullptr), OutputForceData(), OutputForceUnit(),
-    MomentTimeSequence(nullptr), OutputMomentData(), OutputMomentUnit(),
-    PowerTimeSequence(nullptr), OutputPowerData(), OutputPowerUnit()
+    ForceTimeSequence(nullptr), OutputForceData(), OutputForceUnit("N"),
+    MomentTimeSequence(nullptr), OutputMomentData(), OutputMomentUnit("Nmm"),
+    ProximalAngularVelocityTimeSequence(nullptr), DistalAngularVelocityTimeSequence(nullptr), OutputPowerData(), OutputPowerUnit("W")
   {};
   
   DynamicDescriptorPrivate::~DynamicDescriptorPrivate() = default;
+  
+  TimeSequence* DynamicDescriptorPrivate::extractSegmentAngularVelocity(Segment* seg, const std::string& referenceSuffix) const
+  {
+    auto w = seg->findChild<TimeSequence*>(seg->name()+referenceSuffix+".Omega", { {"type", TimeSequence::Angle | TimeSequence::Velocity | TimeSequence::Reconstructed}, {"components", 4} });
+    if (w == nullptr)
+    {
+      warning("Angular velocity for the segment '%s' not found. Trying to compute it...", seg->name().c_str());
+      auto ts = seg->findChild<const TimeSequence*>(seg->name()+referenceSuffix, { {"type", TimeSequence::Pose}, {"components", 13} });
+      if (ts == nullptr)
+        return nullptr;
+      assert(ts->sampleRate() > 0.);
+      double dt = 1. / ts->sampleRate();
+      auto pose = math::to_pose(ts);
+      auto R = pose.block<9>(0);
+#if !defined(_MSC_VER)
+#warning WHAT IS THE BEST PARENT FOR COMPUTED ANGULAR VELOCITY
+#endif
+      math::Vector omega = R.block<9>(0).derivative<1>(dt).transform(R.transpose()).skewRedux();
+      w = to_timesequence(omega, seg->name()+referenceSuffix+".Omega", ts->sampleRate(), ts->startTime(), TimeSequence::Angle | TimeSequence::Velocity | TimeSequence::Reconstructed, "rad/s" , seg);
+    }
+    return w;
+  };
 };
 };
 
@@ -222,8 +247,16 @@ namespace body
       }
       optr->ForceTimeSequence = joint->findChild<const TimeSequence*>({},{{"type",ma::TimeSequence::Force}},false);
       optr->MomentTimeSequence = joint->findChild<const TimeSequence*>({},{{"type",ma::TimeSequence::Moment}},false);
-      // optr->PowerTimeSequence = joint->findChild<const TimeSequence*>({},{{"type",ma::TimeSequence::Power}},false);
-      if ((optr->ForceTimeSequence == nullptr) || (optr->MomentTimeSequence == nullptr)) // || (optr->PowerTimeSequence == nullptr))
+      if ((joint->proximalSegment() != nullptr) && (joint->distalSegment() != nullptr))
+      {
+        optr->ProximalAngularVelocityTimeSequence = optr->extractSegmentAngularVelocity(joint->proximalSegment(), referenceSuffix);
+        optr->DistalAngularVelocityTimeSequence = optr->extractSegmentAngularVelocity(joint->distalSegment(), referenceSuffix);
+        if ((optr->ProximalAngularVelocityTimeSequence == nullptr) || (optr->DistalAngularVelocityTimeSequence == nullptr))
+          warning("Null proximal/distal angular velocity found for the joint '%s'. Impossible to compute the associated power.");
+      }
+      else
+        warning("Null proximal/distal segment found for the joint '%s'. Impossible to compute the associated power.");
+      if ((optr->ForceTimeSequence == nullptr) || (optr->MomentTimeSequence == nullptr))
       {
         error("Force or moment data was not found. Impossible to describe the dynamic of the joint %s", joint->name().c_str());
         return false;
@@ -279,7 +312,6 @@ namespace body
         optr->OutputMomentUnit += "/kg";
         optr->OutputPowerUnit += "/kg";
       }
-      
     }
     // Option enableScaleAdaptation activated?
     if (((it = options.find("enableScaleAdaptation")) != options.cend()) && (it->second.cast<bool>()))
@@ -295,43 +327,51 @@ namespace body
       scale[8] *= optr->Scale[8];
     }
     // Let's compute the output
+    // 1. Compute the power
+    if ((optr->ProximalAngularVelocityTimeSequence != nullptr) && (optr->DistalAngularVelocityTimeSequence != nullptr))
+    {
+      auto Mj = math::to_vector(optr->MomentTimeSequence);
+      auto wj = math::to_vector(optr->ProximalAngularVelocityTimeSequence) - math::to_vector(optr->DistalAngularVelocityTimeSequence);
+      optr->OutputPowerData.resize(Mj.rows());
+      optr->OutputPowerData.values().setZero();
+      optr->OutputPowerData.values().col(2) = (Mj.values() * wj.values()).rowwise().sum() / 1000.;
+      optr->OutputPowerData.residuals() = Mj.residuals();
+    }
+    // 2. Adapt forces and moments to be expressed in the representation frame
     if (optr->RepresentationFrameTimeSequence != nullptr)
     {
       math::Pose P = math::to_pose(optr->RepresentationFrameTimeSequence).inverse();
       math::Vector temp;
       // Force
-      temp = P.block<9>(0).transform(ma::math::to_vector(optr->ForceTimeSequence));
+      temp = P.block<9>(0).transform(math::to_vector(optr->ForceTimeSequence));
       optr->OutputForceData.resize(temp.rows());
       optr->OutputForceData.values().col(0) = temp.values().col(optr->Order[0]);
       optr->OutputForceData.values().col(1) = temp.values().col(optr->Order[1]);
       optr->OutputForceData.values().col(2) = temp.values().col(optr->Order[2]);
       optr->OutputForceData.residuals() = temp.residuals();
       // Moment
-      temp = P.block<9>(0).transform(ma::math::to_vector(optr->MomentTimeSequence));
+      temp = P.block<9>(0).transform(math::to_vector(optr->MomentTimeSequence));
       optr->OutputMomentData.resize(temp.rows());
       optr->OutputMomentData.values().col(0) = temp.values().col(optr->Order[3]);
       optr->OutputMomentData.values().col(1) = temp.values().col(optr->Order[4]);
       optr->OutputMomentData.values().col(2) = temp.values().col(optr->Order[5]);
       optr->OutputMomentData.residuals() = temp.residuals();
-      // optr->OutputPowerData = P.block<9>().transform(ma::math::to_vector(optr->PowerTimeSequence));
-      // optr->OutputPowerData =  ma::math::to_vector(optr->PowerTimeSequence);
-      
     }
     else
     {
-      optr->OutputForceData =  ma::math::to_vector(optr->ForceTimeSequence);
-      optr->OutputMomentData = ma::math::to_vector(optr->MomentTimeSequence);
-      // optr->OutputPowerData =  ma::math::to_vector(optr->PowerTimeSequence);
+      optr->OutputForceData =  math::to_vector(optr->ForceTimeSequence);
+      optr->OutputMomentData = math::to_vector(optr->MomentTimeSequence);
     }
+    // 3. Scale the data based on the options passed
     optr->OutputForceData.values().col(0) *= scale[0];
     optr->OutputForceData.values().col(1) *= scale[1];
     optr->OutputForceData.values().col(2) *= scale[2];
     optr->OutputMomentData.values().col(0) *= scale[3];
     optr->OutputMomentData.values().col(1) *= scale[4];
     optr->OutputMomentData.values().col(2) *= scale[5];
-    // optr->OutputPowerData.block<1>(0) *= scale[6];
-    // optr->OutputPowerData.block<1>(1) *= scale[7];
-    // optr->OutputPowerData.block<1>(2) *= scale[8];
+    optr->OutputPowerData.values().col(0) *= scale[6];
+    optr->OutputPowerData.values().col(1) *= scale[7];
+    optr->OutputPowerData.values().col(2) *= scale[8];
     return true;
   };
   
@@ -342,9 +382,9 @@ namespace body
   {
     OPENMA_UNUSED(options);
     auto optr = this->pimpl();
-    math::to_timesequence(optr->OutputForceData,  this->name()+".Force"+optr->OutputSuffix,  optr->ForceTimeSequence->sampleRate(), optr->ForceTimeSequence->startTime(), TimeSequence::Force,  optr->OutputForceUnit,  output);
+    math::to_timesequence(optr->OutputForceData,  this->name()+".Force"+optr->OutputSuffix,  optr->ForceTimeSequence->sampleRate(),  optr->ForceTimeSequence->startTime(),  TimeSequence::Force,  optr->OutputForceUnit,  output);
     math::to_timesequence(optr->OutputMomentData, this->name()+".Moment"+optr->OutputSuffix, optr->MomentTimeSequence->sampleRate(), optr->MomentTimeSequence->startTime(), TimeSequence::Moment, optr->OutputMomentUnit, output);
-    // math::to_timesequence(optr->OutputPowerData,  this->name()+".Power",                     optr->OutputSampleRate, optr->OutputStartTime, TimeSequence::Power,  optr->OutputPowerUnit,  output);
+    math::to_timesequence(optr->OutputPowerData,  this->name()+".Power",                     optr->MomentTimeSequence->sampleRate(), optr->MomentTimeSequence->startTime(), TimeSequence::Power,  optr->OutputPowerUnit,  output);
     return true;
   };
  };
