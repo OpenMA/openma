@@ -36,6 +36,7 @@
 #define __openma_body_h
 
 #include "openma/body/descriptor.h"
+#include "openma/body/dynamicdescriptor.h"
 #include "openma/body/enums.h"
 #include "openma/body/eulerdescriptor.h"
 #include "openma/body/joint.h"
@@ -151,6 +152,68 @@ namespace body
   {
     Node* root = new Node("root");
     if (!extract_joint_kinematics(root, input, sideAdaptation))
+    {
+      delete root;
+      root = nullptr;
+    }
+    return root;
+  };
+  
+  /**
+   * Convenient function to extract joint kinetics described by DynamicDescriptor objects found in Model objects passed as the children of the @a input.
+   * Internally, a node is added to the @a output. TimeSequence objects representing joint kinetics (force, moment, and power) are added to this node.
+   * Several options are passed to each descriptor found:
+   *  - enableScaleAdaptation is set to the value passed in @a sideAdaptation
+   *  - massNormalization is set to model's mass property if @a massNormalization is set to true
+   *  - representationFrame is set to the value passed in @a frame
+   *  - representationFrameSuffix is set to ".SCS"
+   * The default values passed to these options means that computed joint forces and moment are expressed int the reference frame associated with the distal segment and normalized by subject's mass. They are also adapted to interpret values for the left and right side.
+   */
+  inline bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal)
+  {
+    if (output == nullptr)
+    {
+      error("Invalid null output node. Joint kinetics computation aborted.");
+      return false;
+    }
+    auto models = input->findChildren<Model*>({},{},false);
+    std::unordered_map<std::string, Any> options{
+      {"representationFrame", frame},
+      {"representationFrameSuffix", ".SCS"},
+      {"enableScaleAdaptation", sideAdaptation}
+    };
+    for (auto& model: models)
+    {
+      if (massNormalization)
+      {
+        auto massProp = model->property("mass");
+        if (massProp.isValid() && (massProp.cast<double>() > 0.))
+          options["massNormalization"] = model->property("mass");
+        else
+          warning("The model '%s' has no property 'mass' or is set to a non positive value. It is not possible to normalize the data.", model->name().c_str());
+      }
+      auto analysis = new Node(model->name() + "_JointKinetics", output);
+      auto joints = model->joints()->findChildren<Joint*>({},{},false);
+      for (auto& joint: joints)
+      {
+        auto descriptors = joint->findChildren<DynamicDescriptor*>({},{},false);
+        for (auto& descriptor: descriptors)
+        {
+          descriptor->evaluate(analysis, joint, options);
+        }
+      }
+    }
+    return true;
+  };
+  
+  /**
+   * Similar to the other extract_joint_kinetics() method but the computed joint kinetics are added to a returned node.
+   * @important The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
+   */
+  inline Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal)
+  {
+    Node* root = new Node("root");
+    if (!extract_joint_kinetics(root, input, sideAdaptation, massNormalization, frame))
     {
       delete root;
       root = nullptr;
