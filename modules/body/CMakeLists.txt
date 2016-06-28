@@ -3,6 +3,7 @@ SET(OPENMA_BODY_SRCS
   src/chain.cpp
   src/dempstertable.cpp
   src/descriptor.cpp
+  src/dynamicdescriptor.cpp
   src/eulerdescriptor.cpp
   src/externalwrenchassigner.cpp
   src/simplegaitforceplatetofeetassigner.cpp
