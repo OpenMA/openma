@@ -102,6 +102,11 @@ namespace math
     Array(const Values& values, const Residuals& residuals);
     
     /**
+     * Resize the array by the given number of @a rows
+     */
+    void resize(Index rows);
+    
+    /**
      * Constructor from an XprBase object (generaly used to store the result of a computation).
      * @code{.unparsed}
      * // a and b are other Array object.
@@ -142,6 +147,13 @@ namespace math
   : Array()
   {
     Array::assign(*this, other);
+  };
+  
+  template <int Cols>
+  inline void Array<Cols>::resize(Index rows)
+  {
+    this->values().resize(rows, Values::ColsAtCompileTime);
+    this->residuals().resize(rows, Residuals::ColsAtCompileTime);
   };
   
   template <int Cols>

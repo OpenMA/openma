@@ -684,6 +684,11 @@ CXXTEST_SUITE(ArrayTest)
       TS_ASSERT_DELTA(ddsr.coeff(i,0), dr.coeff(i*3,0), 1e-15);
     }
   };
+  
+  CXXTEST_TEST(resize)
+  {
+    TS_WARN("TODO");
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -705,3 +710,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)
 CXXTEST_TEST_REGISTRATION(ArrayTest, derivative)
 CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
 CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)
+CXXTEST_TEST_REGISTRATION(ArrayTest, resize)
