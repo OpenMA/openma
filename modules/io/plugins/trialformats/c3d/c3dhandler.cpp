@@ -231,7 +231,7 @@ namespace io
       assert((calDims[0] <= calMatrixSize[0]) && (calDims[1] <= calMatrixSize[1]));
       for (unsigned j = 0 ; j < calDims[1] ; ++j)
         for (unsigned i = 0 ; i < calDims[0] ; ++i)
-          calVal[i + j*calDims[1]] = calMatrix[i + j*calMatrixSize[1]];
+          calVal[i*calDims[1] + j] = calMatrix[i*calMatrixSize[1] + j];
     }
     // TODO Manage case where there are missing channels
   };

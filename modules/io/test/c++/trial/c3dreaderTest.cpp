@@ -108,6 +108,13 @@ CXXTEST_SUITE(C3DReaderTest)
     c3dhandlertest_read_sample01("SR", "Eb015sr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015sr.c3d"));
     c3dhandlertest_read_sample01("VR", "Eb015vr.c3d", OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015vr.c3d"));
   };
+  
+  CXXTEST_TEST(gait1)
+  {
+    // Verify that force plate type with a calibration matrix are correctly loaded.
+    ma::Node root("root");
+    TS_ASSERT_EQUALS(c3dhandlertest_read("Gait 1", OPENMA_TDD_PATH_IN("c3d/other/Gait 1.c3d"), &root), true);
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(C3DReaderTest)
@@ -121,4 +128,5 @@ CXXTEST_TEST_REGISTRATION(C3DReaderTest, detectOk)
 CXXTEST_TEST_REGISTRATION(C3DReaderTest, queryOkOne)
 CXXTEST_TEST_REGISTRATION(C3DReaderTest, queryOkTwo)
 CXXTEST_TEST_REGISTRATION(C3DReaderTest, queryOkThree)
-CXXTEST_TEST_REGISTRATION(C3DReaderTest, sample01)  
+CXXTEST_TEST_REGISTRATION(C3DReaderTest, sample01)
+CXXTEST_TEST_REGISTRATION(C3DReaderTest, gait1)
