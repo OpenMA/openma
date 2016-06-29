@@ -115,6 +115,19 @@ CXXTEST_SUITE(C3DWriterTest)
       TS_ASSERT_DELTA(ts2->data()[i], ts->data()[i], 1e-5);
     }
   }
+  
+  CXXTEST_TEST(writePoint256)
+  {
+    // Verify that mutiple groups are create when the number of items is greater that 255.
+    
+    // Generate a new trial with more than 256 time sequences
+    // Export the trial to a C3D file
+    // Load the C3D file
+    // Check the properties for POINT:LABELS
+    // The number must be equal to 256
+    // Check the label of each time sequence
+    TS_WARN("TODO")
+  }  
 };
 
 CXXTEST_SUITE_REGISTRATION(C3DWriterTest)
@@ -129,3 +142,4 @@ CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkTwo)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkThree)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample01Rewrited)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample09Rewrited)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, writePoint256)

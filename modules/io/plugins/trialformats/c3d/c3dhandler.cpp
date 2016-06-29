@@ -183,7 +183,7 @@ namespace io
     else
     {
       auto str = (inc == 1 ? name : name+std::to_string(inc));
-      props[name] = values;
+      props[str] = values;
     }
   };
   
@@ -207,7 +207,7 @@ namespace io
     else
     {
       auto str = (inc == 1 ? name : name+std::to_string(inc));
-      props[name] = Any(values,dims);
+      props[str] = Any(values,dims);
     }
   };
   
