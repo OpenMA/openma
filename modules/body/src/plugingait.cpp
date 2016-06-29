@@ -109,7 +109,7 @@ namespace body
     if (side == Side::Left)
     {
       prefix = "L.";
-      s = 1.0;
+      s = -1.0;
       ankleWidth = this->LeftAnkleWidth;
       kneeWidth = this->LeftKneeWidth;
       footFlat = this->LeftFootFlatEnabled;
@@ -119,7 +119,7 @@ namespace body
     else if (side == Side::Right)
     {
       prefix = "R.";
-      s = -1.0;
+      s = 1.0;
       ankleWidth = this->RightAnkleWidth;
       kneeWidth = this->RightKneeWidth;
       footFlat = this->RightFootFlatEnabled;
@@ -206,14 +206,14 @@ namespace body
     }
     // - Shank axes
     math::Vector w = (KJC - AJC).normalized();
-    math::Vector u = s * (KJC - AJC).cross(LS - AJC).normalized();
+    math::Vector u = s * w.cross(LS - AJC).normalized();
     math::Vector v_shank = w.cross(u);
     // - Foot reference
-    w = (MTH2 - HEE).normalized();
+    w = (HEE - MTH2).normalized();
     u = v_shank.cross(w).normalized();
     math::Pose foot(u,w.cross(u),w,AJC);
     // - Uncorrected foot reference
-    w = (MTH2 - AJC).normalized();
+    w = (AJC - MTH2).normalized();
     u = v_shank.cross(w).normalized();
     math::Pose uncorrected_foot(u,w.cross(u),w,AJC);
     // - Offset angles
@@ -223,8 +223,8 @@ namespace body
       return false;
     }
     math::Vector::Values offsetAngles = uncorrected_foot.inverse().transform(foot).eulerAngles(1,0,2).mean().values();
-    *staticPlantarFlexionOffset = 1.0 * offsetAngles.coeff(0);
-    *staticRotationOffset = -1.0 * s * offsetAngles.coeff(1);
+    *staticPlantarFlexionOffset = -1.0 * offsetAngles.coeff(0);
+    *staticRotationOffset = s * offsetAngles.coeff(1);
     return true;
   };
   
@@ -403,7 +403,7 @@ namespace body
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
-    w = -1.0 * (MTH2 - AJC).normalized();
+    w = (AJC - MTH2).normalized();
     u = v_shank.cross(w).normalized();
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
