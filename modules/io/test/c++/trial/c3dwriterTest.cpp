@@ -126,7 +126,7 @@ CXXTEST_SUITE(C3DWriterTest)
     // Check the properties for POINT:LABELS
     // The number must be equal to 256
     // Check the label of each time sequence
-    TS_WARN("TODO")
+    TS_WARN("TODO");
   }  
 };
 
