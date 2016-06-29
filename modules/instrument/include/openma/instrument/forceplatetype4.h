@@ -46,6 +46,7 @@ namespace instrument
   {
   public:
     ForcePlateType4(const std::string& name, Node* parent = nullptr);
+    ~ForcePlateType4() _OPENMA_NOEXCEPT;
     
     virtual ForcePlateType4* clone(Node* parent = nullptr) const final;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT final;

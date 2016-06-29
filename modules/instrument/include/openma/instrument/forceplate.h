@@ -77,6 +77,8 @@ namespace instrument
       // AmtiStairway = Type21
     } Type;
     
+    ~ForcePlate() _OPENMA_NOEXCEPT;
+    
     int type() const _OPENMA_NOEXCEPT;
     
     void setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3]);

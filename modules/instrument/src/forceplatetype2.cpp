@@ -55,6 +55,11 @@ namespace instrument
   {};
   
   /**
+   * Destructor (default)
+   */
+  ForcePlateType2::~ForcePlateType2() _OPENMA_NOEXCEPT = default;
+  
+  /**
    *
    */
   ForcePlateType2* ForcePlateType2::clone(Node* parent) const

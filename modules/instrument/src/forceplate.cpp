@@ -150,6 +150,12 @@ namespace instrument
    * @todo add a method to remove the baseline
    */
   
+ 
+  /**
+   * Destructor (default)
+   */
+  ForcePlate::~ForcePlate() _OPENMA_NOEXCEPT = default;
+  
   /**
    *
    */
