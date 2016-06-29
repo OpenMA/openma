@@ -33,3 +33,4 @@
  */
 
 %rename(extractJointKinematics) extract_joint_kinematics;
+%rename(extractJointKinetics) extract_joint_kinetics;
