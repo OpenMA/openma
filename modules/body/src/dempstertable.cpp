@@ -40,42 +40,43 @@
 #include "openma/body/enums.h"
 #include "openma/base/logger.h"
 
-#if !defined(_MSC_VER)
-#warning VERIFY ORIGIN FOR UPPER BODY SEGMENTS
-#endif
+#include <utility> // std::swap
+#include <cmath> // std::nan
 
-static _OPENMA_CONSTEXPR double _ma_body_dempster_table[9*3] = {
+// NOTE: THE SIGN IS RELATED TO THE DIRECTION OF THE Body inertial Coordinate System (BCS)
+static const double _ma_body_dempster_table[9*3] = {
 //   mass      long.    gyration
 //            CoM pos  radius (Kcg)
 //    (%)      (%)        (%)  
-     8.10,     50.0,     49.5,    // 0. Head: C7-T1 to ear canal
-     13.9,     56.9,     31.0,    // 1. Abdomen: T12-L1 to L4-L5
-     14.2,     89.5,     31.0,    // 2. Pelvis: L4-L5 to trochanter
-     2.80,     43.6,     32.2,    // 3. Upper arm: glenohumeral joint to elbow axis
-     1.60,     43.0,     30.3,    // 4. Forearm: elbow axis to ulnar styloid
-     0.60,     50.6,     29.8,    // 5. Hand: wrist axis to knuckle II third finger
-     10.0,     56.7,     32.3,    // 6. Thigh: greater trochanter to femoral condyles
-     4.65,     56.7,     30.2,    // 7. Shank: femoral condyles to lateral maleolus
-     1.45,     50.0,     47.5, }; // 8. Foot: lateral malleolus to head metatarsal II
+     8.10,     50.0,     49.5,         // 0. Head: C7-T1 to ear canal (Rprox)
+     35.5,    -63.0,     std::nan(""), // 1. Thorax & abdomen: C7-T1 to T12-L1 (Rprox). NO GYRATION RADIUS!
+     14.2,     89.5,     31.0,         // 2. Pelvis: L4-L5 to trochanter (Rdist)
+     2.80,    -43.6,     32.2,         // 3. Upper arm: glenohumeral joint to elbow axis (Rprox)
+     1.60,    -43.0,     30.3,         // 4. Forearm: elbow axis to ulnar styloid (Rprox)
+     0.60,    -50.6,     29.8,         // 5. Hand: wrist axis to knuckle II third finger (Rprox)
+     10.0,    -43.3,     32.3,         // 6. Thigh: greater trochanter to femoral condyles (Rprox)
+     4.65,    -43.3,     30.2,         // 7. Shank: femoral condyles to lateral maleolus (Rprox)
+     1.45,     50.0,     47.5, };      // 8. Foot: lateral malleolus to head metatarsal II (Rprox)
 
-void _ma_body_create_dempster_bsip(const std::string& name, double modelMass, const ma::Any& segLengthProp, size_t segIdx, ma::Node* parent)
+ma::body::InertialParameters* _ma_body_create_dempster_bsip(const std::string& name, double modelMass, const ma::Any& segLengthProp, size_t segIdx, ma::Node* parent)
 {
   if (!segLengthProp.isValid())
   {
     ma::error("Missing segment length. Impossible to compute BSIP for the segment '%s'", name.c_str());
-    return;
+    return nullptr;
   }
   double segLength = segLengthProp.cast<double>();
   enum { Mass = 0, CoM = 1, Radius = 2 };
   auto bsip = new ma::body::InertialParameters(name+".BSIP", parent);
   bsip->setMass(modelMass * _ma_body_dempster_table[segIdx*3+Mass] / 100.0);
-  double com[3] = {0.0, 0.0, -1.0 * segLength * _ma_body_dempster_table[segIdx*3+CoM] / 100.0};
+  double com[3] = {0.0, 0.0, segLength * _ma_body_dempster_table[segIdx*3+CoM] / 100.0};
   bsip->setCenterOfMass(com);
   double ml2 = bsip->mass() * segLength * segLength;
   // IMPORTANT: THE MOMENT OF INERTIA HAS TO BE COMPUTED AT THE CENTER OF MASS!
   double I = ml2 * (_ma_body_dempster_table[segIdx*3+Radius] * _ma_body_dempster_table[segIdx*3+Radius]) / 10000.0;
   double inertia[9] = {I,0.,0.,0.,I,0.,0.,0.,0.};
   bsip->setInertia(inertia);
+  return bsip;
 }
 
 OPENMA_INSTANCE_STATIC_TYPEID(ma::body::DempsterTable);
@@ -99,23 +100,25 @@ namespace body
    *     - u: Pointing to the right direction (looking from the back)
    *     - v: Pointing forward
    *     - w: Pointing upward
-   *     - o: Proximal endpoint
+   *     - o: Selected endpoint as defined in the table below
    *
    * The following segments are defined in the table below. The length of each segment should be defined by the given endpoints.
-   * Segment | Endpoints
-   *         | Proximal | Distal
-   * --------| -------- | ------
-   * Head | C7-T1 | ear canal
-   * Torso (Abdomen) | T12-L1 | L4-L5
-   * Pelvis | L4-L5 | trochanter
-   * Arm (Upper arm) | glenohumeral joint | elbow axis
-   * Forearm | elbow axis | ulnar styloid
-   * Hand:| wrist axis | knuckle II third finger
-   * Thigh | greater trochanter | femoral condyles
-   * Shank | femoral condyles | lateral maleolus
-   * Foot | lateral malleolus | head metatarsal II
+   * Segment |      Endpoints    | Orgin 
+   *         | Proximal | Distal |
+   * --------| -------- | ------ | ----- 
+   * Head | C7-T1 | ear canal | C7-T1
+   * Torso (Thorax & abdomen) | C7-T1 | T12-L1 | C7-T1
+   * Pelvis | L4-L5 | trochanter | trochanter
+   * Arm (Upper arm) | glenohumeral joint | elbow axis | glenohumeral joint
+   * Forearm | elbow axis | ulnar styloid | elbow axis
+   * Hand:| wrist axis | knuckle II third finger | wrist axis
+   * Thigh | greater trochanter | femoral condyles | greater trochanter
+   * Shank | femoral condyles | lateral maleolus | femoral condyles
+   * Foot | lateral malleolus | head metatarsal II | lateral malleolus
    *
    * An error message will be displayed for any other segments
+   *
+   * @important There is no gyration radius for the segment "thorax & abdomen"!
    *
    * @note The values use comes from the following sources:
    *  1. http://health.uottawa.ca/biomech/csb/Archives/dempster.pdf
@@ -153,9 +156,6 @@ namespace body
     for (auto& model : models)
     {
       const Any& massProp = model->property("mass");
-#if !defined(_MSC_VER)
-#warning It might be better to use directly the mass. Or the norm of the gravity might need to be an input argument
-#endif
       if (!massProp.isValid())
       {
         error("Missing mass information for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());
@@ -185,7 +185,16 @@ namespace body
         else if (seg->part() == Part::Shank)
           _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 7, parent);
         else if (seg->part() == Part::Foot)
-          _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 8, parent);
+        {
+          // The CoM of the foot is along the forward BCS axis.
+          auto bsip = _ma_body_create_dempster_bsip(seg->name(), modelMass, seg->property("length"), 8, parent);
+          if (bsip != nullptr)
+          {  
+            const double* tmp = bsip->centerOfMass();
+            double com[3] = {tmp[0],tmp[2],tmp[1]};
+            bsip->setCenterOfMass(com);
+          }
+        }
       }
     }
     return true;
