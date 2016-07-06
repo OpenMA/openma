@@ -82,8 +82,8 @@ namespace body
 #endif
     
     EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, Node* parent = nullptr);
-    EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, double scale, Node* parent = nullptr);
     EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, Node* parent = nullptr);
+    EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, const std::array<double,3>& offset, Node* parent = nullptr);
     ~EulerDescriptor() _OPENMA_NOEXCEPT;
     
     EulerDescriptor(const EulerDescriptor& ) = delete;

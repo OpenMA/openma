@@ -50,8 +50,8 @@ namespace ma
 {
 namespace body
 {
-  EulerDescriptorPrivate::EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale)
-  : DescriptorPrivate(pint,name), Sequence(sequence), Scale(scale), BufferData(), OutputData(), OutputSampleRate(0.0), OutputStartTime(0.0), OutputUnit()
+  EulerDescriptorPrivate::EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, const std::array<double,3>& offset)
+  : DescriptorPrivate(pint,name), Sequence(sequence), Scale(scale), Offset(offset), BufferData(), OutputData(), OutputSampleRate(0.0), OutputStartTime(0.0), OutputUnit()
   {};
   
   EulerDescriptorPrivate::~EulerDescriptorPrivate() = default;
@@ -166,25 +166,25 @@ namespace body
    * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
    */
   EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, Node* parent)
-  : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,{{1.0,1.0,1.0}}), parent)
+  : EulerDescriptor(name, sequence, {{1.0,1.0,1.0}}, {{0.,0.,0.}}, parent)
   {};
   
   /**
-   * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to @a scale.
-   * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
-   * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
-   */
-  EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, double scale, Node* parent)
-  : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,{{scale,scale,scale}}), parent)
-  {};
-  
-  /**
-   * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to @a scale.
+   * Create an Euler descriptor with the given @a name and @a sequence. The scale coefficients possibly used in the process() method are set to @a scale. The offsets are set their default value: 0.
    * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
    * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
    */
   EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, Node* parent)
-  : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,scale), parent)
+  : EulerDescriptor(name, sequence, scale, {{0.,0.,0.}}, parent)
+  {};
+  
+  /**
+   * Create an Euler descriptor with the given @a name and @a sequence. The scale and offset coefficients possibly used in the process() method are set to @a scale and @a offset respectively.
+   * You can use the predefined arrays (XYZ, etc.) to simply the definition of the sequence.
+   * @note In case you pass an sequence not available in the 12 possible sequences, no error will be triggered until you use the evaluate() method.
+   */
+  EulerDescriptor::EulerDescriptor(const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, const std::array<double,3>& offset, Node* parent)
+  : Descriptor(*new EulerDescriptorPrivate(this,name,sequence,scale,offset),parent)
   {};
   
   /**
@@ -380,6 +380,7 @@ namespace body
     auto optr = this->pimpl();
     
     std::array<double,3> scale{{1.0,1.0,1.0}}; // unit conversion 
+    auto offset = optr->Offset;
     auto it = options.cend();
     // Option enableDegreeConversion activated?
     if (((it = options.find("enableDegreeConversion")) != options.cend()) && (it->second.cast<bool>()))
@@ -407,8 +408,11 @@ namespace body
     // Let's compute the output
     optr->OutputData = optr->BufferData.eulerAngles(optr->Sequence[0], optr->Sequence[1], optr->Sequence[2]);
     optr->OutputData.values().col(0) *= scale[0];
+    optr->OutputData.values().col(0) += offset[0];
     optr->OutputData.values().col(1) *= scale[1];
+    optr->OutputData.values().col(1) += offset[1];
     optr->OutputData.values().col(2) *= scale[2];
+    optr->OutputData.values().col(2) += offset[2];
     return true;
   };
   
