@@ -192,9 +192,9 @@ namespace body
     // Set the body inertial coordinate system (relative to the SCS)
     //  - The BCS origin is the same than the SCS. That's why the relative posiiton is set to nullptr (which internaly is equal to 0,0,0)
     const double relOriBcsFromScsFoot[9] = {
-      0., -1., 0., // BCS u axis (right) corresponds to SCS -v axis
-      0.,  0., 1., // BCS v axis (forward) corresponds to SCS w axis
-     -1.,  0., 0.  // BCS w axis (upward) corresponds to SCS -u axis
+      0., -1.,  0., // BCS u axis (right) corresponds to SCS -v axis
+      0.,  0., -1., // BCS v axis (forward) corresponds to SCS -w axis
+      1.,  0.,  0.  // BCS w axis (upward) corresponds to SCS -u axis
     };
     new ReferenceFrame(prefix+"Foot.BCS", relOriBcsFromScsFoot, nullptr, pptr);
     // Compute foot offset angles
