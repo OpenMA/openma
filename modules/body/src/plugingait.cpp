@@ -349,7 +349,7 @@ namespace body
       error("PluginGait - Unknown side for the lower limb. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
-    // Temporary variable use to construct segments' motion
+    // Temporary variables used to construct segments' motion
     Segment* seg = nullptr;
     math::Vector u,v,w,o;
     ReferenceFrame* bcs = nullptr;
@@ -1219,13 +1219,13 @@ namespace body
       //   - Left
       if ((leftHJCH = this->findChild<Point*>("L.HJC",{},false)) == nullptr)
       {
-        error("PluginGait - Left hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("PluginGait - Left relative hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       //   - Right
       if ((rightHJCH = this->findChild<Point*>("R.HJC",{},false)) == nullptr)
       {
-        error("PluginGait - Right hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("PluginGait - Right relative hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       // - Construct the relative segment coordinate systme for the pelvis
@@ -1915,6 +1915,7 @@ namespace body
    *  - RASI: R.ASIS (Right Anterior Superior Iliac Spine)
    *  - LPSI: L.PSIS (Left Posterior Superior Iliac Spine)
    *  - RPSI: R.PSIS (Right Posterior Superior Iliac Spine)
+   *  - SACR: SC     (Midpoint between Left and right PSIS)
    *  - LTHI: L.ITB  (Left Iliotibial Band)
    *  - RTHI: R.ITB  (Right Iliotibial Band)
    *  - LKNE: L.LFE  (Left lateral epicondyle of the femur)
