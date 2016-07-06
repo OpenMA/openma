@@ -956,7 +956,7 @@ namespace body
       jnt = new Joint("Pelvis.Progress", progression, pelvis, joints);
       new PluginGaitPelvisDescriptor(jnt);
     }
-    if ((optr->Region & Region::Full) == Region::Full)
+    if (optr->Region & Region::Full)
     {
       model->setName(this->name() + "_FullBody");
       jnt = new Joint("Spine", torso, pelvis, joints);
