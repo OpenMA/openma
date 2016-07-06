@@ -196,7 +196,7 @@ namespace body
       0.,  0., 1., // BCS v axis (forward) corresponds to SCS w axis
      -1.,  0., 0.  // BCS w axis (upward) corresponds to SCS -u axis
     };
-    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScsFoot, nullptr, pptr);
+    new ReferenceFrame(prefix+"Foot.BCS", relOriBcsFromScsFoot, nullptr, pptr);
     // Compute foot offset angles
     if (footFlat)
     {
