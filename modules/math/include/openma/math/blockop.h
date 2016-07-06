@@ -150,11 +150,12 @@ namespace math
      /**
       * Assignment operator from another block object. This will assign the content of @a other to the expression stored in this Block object.
       */
-    template <typename U, int V> BlockOp& operator= (const BlockOp<U,V>& other)
+    template <typename U> BlockOp& operator= (const XprBase<U>& other)
     {
-      static_assert(V == Cols, "The number of columns must be the same.");
-      this->values() = other.values();
-      this->residuals() = generate_residuals((this->residuals() >= 0.0) && (other.residuals() >= 0.0));
+      static_assert(U::ColsAtCompileTime == Cols, "The number of columns must be the same.");
+      auto o = static_cast<const typename XprBase<U>::DerivedType&>(other).derived();
+      this->values() = o.values();
+      this->residuals() = generate_residuals((this->residuals() >= 0.0) && (o.residuals() >= 0.0));
       return *this;
     };
     

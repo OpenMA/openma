@@ -29,7 +29,23 @@ CXXTEST_SUITE(BlockOpTest)
     b.values().setRandom();
     b.residuals() <<  0.5, 0.0, -1.0, 0.5, 0.5, 1.0, 0.65, 0.45, -1.0,  0.0;
     a.z() = b.z();
-    TS_ASSERT_EQUALS(((a.values().block(0,2,3,1) - b.values().block(0,2,3,1)).abs() < 1e-15).all(), true);
+    TS_ASSERT_EQUALS(((a.values().block(0,2,10,1) - b.values().block(0,2,10,1)).abs() < 1e-15).all(), true);
+    ma::math::Position::Residuals res(10);
+    res << -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, -1.0;
+    TS_ASSERT_EQUALS(((a.residuals() - res).abs() < 1e-15).all(), true);
+  };
+  
+  
+  CXXTEST_TEST(assignmentBis)
+  {
+    ma::math::Pose a(10);
+    ma::math::Position b(10);
+    a.values().setRandom();
+    a.residuals() << -1.0, 1.0, 0.5, 0.5, 1.0, 0.65, 0.45, 1.0, 0.0, -0.4;
+    b.values().setRandom();
+    b.residuals() <<  0.5, 0.0, -1.0, 0.5, 0.5, 1.0, 0.65, 0.45, -1.0,  0.0;
+    a.block<3>(9) = b;
+    TS_ASSERT_EQUALS(((a.values().block(0,9,10,3) - b.values()).abs() < 1e-15).all(), true);
     ma::math::Position::Residuals res(10);
     res << -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, -1.0;
     TS_ASSERT_EQUALS(((a.residuals() - res).abs() < 1e-15).all(), true);
@@ -88,4 +104,5 @@ CXXTEST_SUITE(BlockOpTest)
 CXXTEST_SUITE_REGISTRATION(BlockOpTest)
 CXXTEST_TEST_REGISTRATION(BlockOpTest, block)
 CXXTEST_TEST_REGISTRATION(BlockOpTest, assignment)
+CXXTEST_TEST_REGISTRATION(BlockOpTest, assignmentBis)
 CXXTEST_TEST_REGISTRATION(BlockOpTest, compoundAssignmentOperators)
