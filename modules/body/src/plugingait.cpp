@@ -153,8 +153,8 @@ namespace body
       1.,  0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
       0.,  0., 1.  // BCS w axis has to point upward. SCS w axis is going updward too
     };
-    double relPoseBcsFromScs[3] = {0.,0.,seglength};
-    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
+    double relPosBcsFromScs[3] = {0.,0.,seglength};
+    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, relPosBcsFromScs, pptr);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -173,8 +173,8 @@ namespace body
     pptr->setProperty(prefix+"Shank.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     //  - Same relative orientation than for the thigh
-    relPoseBcsFromScs[2] = seglength;
-    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
+    relPosBcsFromScs[2] = seglength;
+    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, relPosBcsFromScs, pptr);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -495,7 +495,7 @@ namespace body
   // ----------------------------------------------------------------------- //
 
   PluginGaitLeftAnkleDescriptor::PluginGaitLeftAnkleDescriptor(Node* parent)
-  : EulerDescriptor("L.Ankle.Angle", EulerDescriptor::YXZ, -1.0, parent)
+  : EulerDescriptor("L.Ankle.Angle", EulerDescriptor::YXZ, {{-1.,-1.,-1.}}, parent)
   {};
 
   bool PluginGaitLeftAnkleDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
@@ -915,7 +915,7 @@ namespace body
         std::vector<Joint*> leftLowerLimbJoints(3);
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
         leftLowerLimbJoints[0] = jnt;
-        new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, -1.0, jnt);
+        new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, {{-1.,-1.,-1.}}, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,1.,1.,1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("L.Knee", leftThigh, leftShank, Anchor::origin(leftThigh), joints);
         leftLowerLimbJoints[1] = jnt;
