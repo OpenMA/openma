@@ -78,7 +78,7 @@ namespace body
    *  - suffixProximal
    *  - suffixDistal
    *  - enableDegreeConversion
-   *  - enableScaleAdaptation
+   *  - adaptForInterpretation
    * 
    * @ingroup openma_body
    */
@@ -373,7 +373,7 @@ namespace body
    * Transform orientations into Euler angles. By default, the unit used is the radian and no adaptation scale is used.
    * To modify this behaviour, you can use the options:
    *  - enableDegreeConversion: boolean value
-   *  - enableScaleAdaptation: boolean value
+   *  - adaptForInterpretation: boolean value
    */
   bool EulerDescriptor::process(const std::unordered_map<std::string, Any>& options)
   {
@@ -388,14 +388,17 @@ namespace body
       scale[0] *= rad2deg;
       scale[1] *= rad2deg;
       scale[2] *= rad2deg;
+      offset[0] *= rad2deg;
+      offset[1] *= rad2deg;
+      offset[2] *= rad2deg;
       optr->OutputUnit = "deg";
     }
     else
     {
       optr->OutputUnit = "rad";
     }
-    // Option enableScaleAdaptation activated?
-    if (((it = options.find("enableScaleAdaptation")) != options.cend()) && (it->second.cast<bool>()))
+    // Option adaptForInterpretation activated?
+    if (((it = options.find("adaptForInterpretation")) != options.cend()) && (it->second.cast<bool>()))
     {
       scale[0] *= optr->Scale[0];
       scale[1] *= optr->Scale[1];

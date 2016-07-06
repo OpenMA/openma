@@ -132,7 +132,7 @@ namespace body
    *  - representationFrame (RepresentationFrame::Global by default)
    *  - representationFrameSuffix (empty by default)
    *  - massNormalization (false by default)
-   *  - enableScaleAdaptation (false by default)
+   *  - adaptForInterpretation (false by default)
    * 
    * @ingroup openma_body
    */
@@ -261,7 +261,7 @@ namespace body
         error("Force or moment data was not found. Impossible to describe the dynamic of the joint %s", joint->name().c_str());
         return false;
       }
-      if (((it = options.find("enableScaleAdaptation")) != options.cend()) && (it->second.cast<bool>()))
+      if (((it = options.find("adaptForInterpretation")) != options.cend()) && (it->second.cast<bool>()))
       {
         for (size_t i = 0 ; i < 9 ; ++i)
         {
@@ -285,7 +285,7 @@ namespace body
    * Transform orientations into Dynamic angles. By default, the unit used is the radian and no adaptation scale is used.
    * To modify this behaviour, you can use the options:
    *  - massNormalization: double value > 0
-   *  - enableScaleAdaptation: boolean value
+   *  - adaptForInterpretation: boolean value
    */
   bool DynamicDescriptor::process(const std::unordered_map<std::string, Any>& options)
   {
@@ -313,8 +313,8 @@ namespace body
         optr->OutputPowerUnit += "/kg";
       }
     }
-    // Option enableScaleAdaptation activated?
-    if (((it = options.find("enableScaleAdaptation")) != options.cend()) && (it->second.cast<bool>()))
+    // Option adaptForInterpretation activated?
+    if (((it = options.find("adaptForInterpretation")) != options.cend()) && (it->second.cast<bool>()))
     {
       scale[0] *= optr->Scale[0];
       scale[1] *= optr->Scale[1];
