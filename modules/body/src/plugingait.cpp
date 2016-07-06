@@ -145,7 +145,7 @@ namespace body
     // Compute the knee joint centre (KJC)
     const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     // Set the segment length
-    seglength = static_cast<double>((KJC - *HJC).norm().mean());
+    seglength = (KJC - *HJC).norm().mean();
     pptr->setProperty(prefix+"Thigh.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     const double relOriBcsFromScs[9] = {
@@ -169,7 +169,7 @@ namespace body
     // Compute the ankle joint centre (AJC)
     const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     // Set the segment length
-    seglength = static_cast<double>((AJC - KJC).norm().mean());
+    seglength = (AJC - KJC).norm().mean();
     pptr->setProperty(prefix+"Shank.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     //  - Same relative orientation than for the thigh
@@ -187,7 +187,7 @@ namespace body
       return false;
     }
     // Set the segment length
-    seglength = static_cast<double>((MTH2 - HEE).norm().mean());
+    seglength = (MTH2 - HEE).norm().mean();
     pptr->setProperty(prefix+"Foot.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     //  - The BCS origin is the same than the SCS. That's why the relative posiiton is set to nullptr (which internaly is equal to 0,0,0)
