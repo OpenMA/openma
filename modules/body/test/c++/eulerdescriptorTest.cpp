@@ -4,7 +4,17 @@
 
 CXXTEST_SUITE(EulerDescriptorTest)
 {
-  CXXTEST_TEST(process)
+  CXXTEST_TEST(processConstructorOne)
+  {
+    TS_WARN("TODO");
+  }
+  
+  CXXTEST_TEST(processConstructorTwo)
+  {
+    TS_WARN("TODO");
+  }
+  
+  CXXTEST_TEST(processConstructorThree)
   {
     TS_WARN("TODO");
   }
@@ -21,6 +31,8 @@ CXXTEST_SUITE(EulerDescriptorTest)
 };
 
 CXXTEST_SUITE_REGISTRATION(EulerDescriptorTest)
-CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, process)
+CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorOne)
+CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorTwo)
+CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorThree)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, clone)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, copy)

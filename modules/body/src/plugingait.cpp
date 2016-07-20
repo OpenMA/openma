@@ -145,7 +145,7 @@ namespace body
     // Compute the knee joint centre (KJC)
     const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     // Set the segment length
-    seglength = static_cast<double>((KJC - *HJC).norm().mean());
+    seglength = (KJC - *HJC).norm().mean();
     pptr->setProperty(prefix+"Thigh.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     const double relOriBcsFromScs[9] = {
@@ -153,8 +153,8 @@ namespace body
       1.,  0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
       0.,  0., 1.  // BCS w axis has to point upward. SCS w axis is going updward too
     };
-    double relPoseBcsFromScs[3] = {0.,0.,seglength};
-    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
+    double relPosBcsFromScs[3] = {0.,0.,seglength};
+    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, relPosBcsFromScs, pptr);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -169,12 +169,12 @@ namespace body
     // Compute the ankle joint centre (AJC)
     const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     // Set the segment length
-    seglength = static_cast<double>((AJC - KJC).norm().mean());
+    seglength = (AJC - KJC).norm().mean();
     pptr->setProperty(prefix+"Shank.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     //  - Same relative orientation than for the thigh
-    relPoseBcsFromScs[2] = seglength;
-    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, relPoseBcsFromScs, pptr);
+    relPosBcsFromScs[2] = seglength;
+    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, relPosBcsFromScs, pptr);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -187,16 +187,16 @@ namespace body
       return false;
     }
     // Set the segment length
-    seglength = static_cast<double>((MTH2 - HEE).norm().mean());
+    seglength = (MTH2 - HEE).norm().mean();
     pptr->setProperty(prefix+"Foot.length", seglength);
     // Set the body inertial coordinate system (relative to the SCS)
     //  - The BCS origin is the same than the SCS. That's why the relative posiiton is set to nullptr (which internaly is equal to 0,0,0)
     const double relOriBcsFromScsFoot[9] = {
-      0., -1., 0., // BCS u axis (right) corresponds to SCS -v axis
-      0.,  0., 1., // BCS v axis (forward) corresponds to SCS w axis
-     -1.,  0., 0.  // BCS w axis (upward) corresponds to SCS -u axis
+      0., -1.,  0., // BCS u axis (right) corresponds to SCS -v axis
+      0.,  0., -1., // BCS v axis (forward) corresponds to SCS -w axis
+      1.,  0.,  0.  // BCS w axis (upward) corresponds to SCS -u axis
     };
-    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScsFoot, nullptr, pptr);
+    new ReferenceFrame(prefix+"Foot.BCS", relOriBcsFromScsFoot, nullptr, pptr);
     // Compute foot offset angles
     if (footFlat)
     {
@@ -349,7 +349,7 @@ namespace body
       error("PluginGait - Unknown side for the lower limb. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
-    // Temporary variable use to construct segments' motion
+    // Temporary variables used to construct segments' motion
     Segment* seg = nullptr;
     math::Vector u,v,w,o;
     ReferenceFrame* bcs = nullptr;
@@ -495,7 +495,7 @@ namespace body
   // ----------------------------------------------------------------------- //
 
   PluginGaitLeftAnkleDescriptor::PluginGaitLeftAnkleDescriptor(Node* parent)
-  : EulerDescriptor("L.Ankle.Angle", EulerDescriptor::YXZ, -1.0, parent)
+  : EulerDescriptor("L.Ankle.Angle", EulerDescriptor::YXZ, {{-1.,-1.,-1.}}, parent)
   {};
 
   bool PluginGaitLeftAnkleDescriptor::finalize(Node* output, const std::unordered_map<std::string, Any>& options)
@@ -915,7 +915,7 @@ namespace body
         std::vector<Joint*> leftLowerLimbJoints(3);
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
         leftLowerLimbJoints[0] = jnt;
-        new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, -1.0, jnt);
+        new EulerDescriptor("L.Hip.Angle", EulerDescriptor::YXZ, {{-1.,-1.,-1.}}, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,1.,1.,1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("L.Knee", leftThigh, leftShank, Anchor::origin(leftThigh), joints);
         leftLowerLimbJoints[1] = jnt;
@@ -956,7 +956,7 @@ namespace body
       jnt = new Joint("Pelvis.Progress", progression, pelvis, joints);
       new PluginGaitPelvisDescriptor(jnt);
     }
-    if ((optr->Region & Region::Full) == Region::Full)
+    if (optr->Region & Region::Full)
     {
       model->setName(this->name() + "_FullBody");
       jnt = new Joint("Spine", torso, pelvis, joints);
@@ -1219,13 +1219,13 @@ namespace body
       //   - Left
       if ((leftHJCH = this->findChild<Point*>("L.HJC",{},false)) == nullptr)
       {
-        error("PluginGait - Left hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("PluginGait - Left relative hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       //   - Right
       if ((rightHJCH = this->findChild<Point*>("R.HJC",{},false)) == nullptr)
       {
-        error("PluginGait - Right hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("PluginGait - Right relative hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       // - Construct the relative segment coordinate systme for the pelvis
@@ -1915,6 +1915,7 @@ namespace body
    *  - RASI: R.ASIS (Right Anterior Superior Iliac Spine)
    *  - LPSI: L.PSIS (Left Posterior Superior Iliac Spine)
    *  - RPSI: R.PSIS (Right Posterior Superior Iliac Spine)
+   *  - SACR: SC     (Midpoint between Left and right PSIS)
    *  - LTHI: L.ITB  (Left Iliotibial Band)
    *  - RTHI: R.ITB  (Right Iliotibial Band)
    *  - LKNE: L.LFE  (Left lateral epicondyle of the femur)

@@ -58,11 +58,12 @@ namespace body
     OPENMA_DECLARE_PINT_ACCESSOR(EulerDescriptor)
       
   public:
-    EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale);
+    EulerDescriptorPrivate(EulerDescriptor* pint, const std::string& name, const std::array<int,3>& sequence, const std::array<double,3>& scale, const std::array<double,3>& offset);
     ~EulerDescriptorPrivate();
     
     std::array<int,3> Sequence;
     std::array<double,3> Scale;
+    std::array<double,3> Offset;
     math::Pose BufferData;
     math::Vector OutputData;
     double OutputSampleRate;
