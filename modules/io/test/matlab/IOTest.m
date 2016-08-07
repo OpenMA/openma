@@ -6,7 +6,7 @@ classdef IOTest < matlab.unittest.TestCase
         end
         
         function forcePlateExtraction(testCase)
-            root = ma.io.read(testDataPathIn('c3d/standard/sample01/Eb015vi.c3d'));
+            root = ma.io.read(OpenMATDDPathIn('c3d/standard/sample01/Eb015vi.c3d'));
             forceplates = root.findChildren(ma.instrument.T_ForcePlate);
             testCase.verifyEqual(length(forceplates),2);
             for i = 1:2
