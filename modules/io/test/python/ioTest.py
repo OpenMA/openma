@@ -24,3 +24,8 @@ class IOTest(unittest.TestCase):
             self.assertEqual(channels[3].name(), 'MX'+str(i+1))
             self.assertEqual(channels[4].name(), 'MY'+str(i+1))
             self.assertEqual(channels[5].name(), 'MZ'+str(i+1))
+        marker = root.findChild(ma.T_TimeSequence,'RTH4');
+        data = marker.data();
+        self.assertAlmostEqual(data[16,0], 285.0, 3)
+        self.assertAlmostEqual(data[16,1], 222.4166, 3)
+        self.assertAlmostEqual(data[16,2], 564.4166, 3)

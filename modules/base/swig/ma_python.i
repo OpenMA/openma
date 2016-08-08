@@ -539,9 +539,12 @@ PyObject* ma_TimeSequence_data(const ma::TimeSequence* self)
   PyObject* out = PyArray_SimpleNew(static_cast<int>(dims.size()), dims.data(), NPY_DOUBLE);
   if (out != NULL)
   {
-    // FIXME OpenMA uses the Fortran order while NumPy uses the C order
-    double* dataout = (double*)PyArray_DATA(out);
-    memcpy(dataout, self->data(), self->elements()*sizeof(double));
+    // NOTE: OpenMA uses the Fortran storage order while NumPy uses the C  order
+    const double* source = self->data();
+    double* dest = (double*)PyArray_DATA(out);
+    for (unsigned i = 0, cpts = self->components() ; i < cpts ; ++i)
+      for (unsigned j = 0, samples = self->samples() ; j < samples ; ++j)
+        dest[i+j*cpts] = source[j+i*samples];
   }
   else
     PyErr_SetString(PyExc_RuntimeError, "Impossible to create a multidimensional array. Please, report this error");
@@ -576,8 +579,12 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const PyObject* data)
       return;
     }
   }
-  // FIXME OpenMA uses the Fortran order while NumPy uses the C order
-  memcpy(self->data(), (double*)PyArray_DATA(data), self->elements()*sizeof(double));
+  // NOTE: OpenMA uses the Fortran storage order while NumPy uses the C  order
+  const double* source = (const double*)PyArray_DATA(data);
+  double* dest = self->data();
+  for (unsigned i = 0, cpts = self->components() ; i < cpts ; ++i)
+    for (unsigned j = 0, samples = self->samples() ; j < samples ; ++j)
+      dest[j+i*samples] = source[i+j*cpts];
   self->modified();
 };
   
