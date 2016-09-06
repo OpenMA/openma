@@ -83,7 +83,7 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(TimeSequence);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::TimeSequence);
 
 namespace ma
 {

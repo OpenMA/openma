@@ -79,7 +79,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::InertialParameters);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::InertialParameters);
 
 namespace ma
 {

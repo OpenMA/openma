@@ -70,7 +70,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::SkeletonHelper);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::SkeletonHelper);
 
 namespace ma
 {
@@ -94,7 +94,7 @@ namespace body
      * @sa gravity() setGravity()
      */
     std::array<double,3> Gravity;
-  }
+  };
 #endif
   
   /**

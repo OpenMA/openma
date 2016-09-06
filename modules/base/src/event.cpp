@@ -58,7 +58,7 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(Event);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Event);
 
 namespace ma
 {

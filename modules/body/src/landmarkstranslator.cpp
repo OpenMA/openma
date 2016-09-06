@@ -59,7 +59,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::LandmarksTranslator);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::LandmarksTranslator);
 
 namespace ma
 {

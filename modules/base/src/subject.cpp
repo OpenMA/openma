@@ -38,7 +38,7 @@
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(Subject);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Subject);
 
 namespace ma
 {

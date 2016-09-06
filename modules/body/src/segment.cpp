@@ -61,7 +61,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::Segment);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Segment);
 
 namespace ma
 {

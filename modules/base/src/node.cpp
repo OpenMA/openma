@@ -162,7 +162,7 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(Node);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Node);
 
 namespace ma
 {

@@ -71,7 +71,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::Model);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Model);
 
 namespace ma
 {

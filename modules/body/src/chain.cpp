@@ -63,7 +63,7 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::Chain);
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Chain);
 
 namespace ma
 {
