@@ -66,10 +66,10 @@ namespace ma
       };
     }
     // Deep child search
-    for (auto it = children.cbegin() ; it != children.cend() ; ++it)
+    for (const auto& child : children)
     {
       std::vector<const Node*> temp;
-      if (NodePrivate::retrievePath(temp,*it,stop))
+      if (NodePrivate::retrievePath(temp,child,stop))
       {
         path.push_back(current);
         path.insert(path.end(),temp.begin(),temp.end());
@@ -88,9 +88,9 @@ namespace ma
   {
     if (node == nullptr)
       return false;
-    for (auto it = this->Parents.cbegin() ; it != this->Parents.cend() ; ++it)
+    for (const auto& parent : this->Parents)
     {
-      if (*it == node)
+      if (parent == node)
       {
         warning("The parent '%s' was already attached to the node '%s'", node->name().c_str(), this->Name.c_str());
         return false;
@@ -128,9 +128,9 @@ namespace ma
   {
     if (node == nullptr)
       return false;
-    for (auto it = this->Children.cbegin() ; it != this->Children.cend() ; ++it)
+    for (const auto& child :this->Children)
     {
-      if (*it == node)
+      if (child == node)
         return false;
     }
     this->Children.push_back(node);
@@ -576,8 +576,8 @@ namespace ma
     optr->Name = optr_src->Name;
     optr->Description = optr_src->Description;
     optr->DynamicProperties = optr_src->DynamicProperties;
-    for (auto it = optr_src->Children.cbegin() ; it != optr_src->Children.cend() ; ++it)
-      (*it)->clone(this);
+    for (const auto& source_child : optr_src->Children)
+      source_child->clone(this);
   };
   
   /**
@@ -698,30 +698,29 @@ namespace ma
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *it;
-      if (node->isCastable(id) && (name.empty() || (node->name() == name)))
+      if (child->isCastable(id) && (name.empty() || (child->name() == name)))
       {
         bool found = true;
-        for (auto it2 = properties.cbegin() ; it2 != properties.cend() ; ++it2)
+        for (const auto& prop : properties)
         {
-          if (node->property(it2->first) != it2->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
         if (found)
-          return node;
+          return child;
       }
     }
     // In case no corresponding child was found and the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
+      for (const auto& child : optr->Children)
       {
-        Node* node = (*it)->findNode(id,name,std::move(properties),recursiveSearch);
+        Node* node = child->findNode(id,name,std::move(properties),recursiveSearch);
         if (node != nullptr)
           return node;
       }
@@ -736,29 +735,28 @@ namespace ma
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto itN = optr->Children.cbegin() ; itN != optr->Children.cend() ; ++itN)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *itN;
-      if (node->isCastable(id) && (name.empty() || (node->name() == name)))
+      if (child->isCastable(id) && (name.empty() || (child->name() == name)))
       {
         bool found = true;
-        for (auto itP = properties.cbegin() ; itP != properties.cend() ; ++itP)
+        for (const auto& prop : properties)
         {
-          if (node->property(itP->first) != itP->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
-        if (found) vector->emplace_back(node);
+        if (found) vector->emplace_back(child);
       }
         
     }
     // In case the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(vector,id,name,std::move(properties),recursiveSearch);
+      for (const auto& child : optr->Children)
+        child->findNodes(vector,id,name,std::move(properties),recursiveSearch);
     }
   };
   
@@ -769,28 +767,27 @@ namespace ma
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto itN = optr->Children.cbegin() ; itN != optr->Children.cend() ; ++itN)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *itN;
-      if (node->isCastable(id) && std::regex_match(node->name(),regexp))
+      if (child->isCastable(id) && std::regex_match(child->name(),regexp))
       {
         bool found = true;
-        for (auto itP = properties.cbegin() ; itP != properties.cend() ; ++itP)
+        for (const auto& prop : properties)
         {
-          if (node->property(itP->first) != itP->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
-        if (found) vector->emplace_back(node);
+        if (found) vector->emplace_back(child);
       }
     }
     // In case the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(vector,id,regexp,std::move(properties),recursiveSearch);
+      for (const auto& child : optr->Children)
+        child->findNodes(vector,id,regexp,std::move(properties),recursiveSearch);
     }
   };
   
