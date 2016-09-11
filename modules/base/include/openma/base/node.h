@@ -103,6 +103,11 @@ namespace ma
     
     void replaceChild(Node* current, Node* substitute);
     
+    virtual Node* allocateNew() const;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT;
+    Node* cloneContents(Node* parent, std::unordered_map<const Node*,Node*>& map) const;
+    void cloneChildren(Node* parent, std::unordered_map<const Node*,Node*>& map) const;
+    
   private:
     Node* findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
@@ -135,6 +140,20 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     return static_cast<U>(this->findNode(static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch));
   };
+  
+  template <typename U>
+  inline void remove_duplicates(std::vector<U>& children)
+  {
+    for (size_t i = 0 ; i < children.size() ; ++i)
+    {
+      children.erase(
+        std::remove_if(children.begin()+i+1, children.end(), 
+          [&children, &i](U& rhs) { return children[i] == rhs; }
+        ), 
+        children.end()
+      );
+    }
+  };
 
   template <typename U>
   std::vector<U> Node::findChildren(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
@@ -143,6 +162,7 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     std::vector<U> children;
     this->findNodes(reinterpret_cast<std::vector<void*>*>(&children),static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch);
+    remove_duplicates(children);
     return children;
   };
   
@@ -153,6 +173,7 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     std::vector<U> children;
     this->findNodes(reinterpret_cast<std::vector<void*>*>(&children), static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),regexp,std::move(properties),recursiveSearch);
+    remove_duplicates(children);
     return children;
   };
   

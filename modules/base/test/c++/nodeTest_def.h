@@ -21,7 +21,10 @@ public:
   int count() const;
   
   virtual TestNode* clone(Node* parent = nullptr) const override;
-  virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+
+protected:
+  virtual ma::Node* allocateNew() const override;
+  virtual void copyContents(const ma::Node* source) _OPENMA_NOEXCEPT override;
 };
 
 class TestNodePrivate : public ma::NodePrivate
@@ -71,18 +74,20 @@ int TestNode::count() const
 
 TestNode* TestNode::clone(Node* parent) const
 {
-  auto dest = new TestNode(this->name());
-  dest->copy(this);
-  dest->addParent(parent);
-  return dest;
+  return static_cast<TestNode*>(this->Node::clone(parent));
 };
 
-void TestNode::copy(const Node* source) _OPENMA_NOEXCEPT
+ma::Node* TestNode::allocateNew() const
+{
+  return new TestNode(this->name());
+};
+
+void TestNode::copyContents(const ma::Node* source) _OPENMA_NOEXCEPT
 {
   auto src = ma::node_cast<const TestNode*>(source);
   if (src == nullptr)
     return;
-  this->Node::copy(src);
+  this->Node::copyContents(src);
   auto optr = this->pimpl();
   auto optr_src = src->pimpl();
   optr->Version = optr_src->Version;

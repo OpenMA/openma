@@ -547,19 +547,16 @@ namespace ma
    */
   Node* Node::clone(Node* parent) const
   {
-    auto dest = new Node(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
+    auto map = std::unordered_map<const Node*,Node*>();
+    return this->cloneContents(parent, map);
   };
   
   /**
    * Do a deep copy of the the given @a source. The previous content is replaced.
-   * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards.
    * @code{.unparsed}
    * // Let's copy a node, and add a parent.
-   * auto node = Node("IAmNew");
+   * Node node("IAmNew");
    * node.copy(source); // 'source' is a pointer to a Node object
    * std::cout << node.hasParents() << std::endl; // The answer is 0
    * node.addParent(parent); // 'parent' is a pointer to a Node object
@@ -570,14 +567,9 @@ namespace ma
     if (source == nullptr)
       return;
     this->clear();
-    auto optr = this->pimpl();
-    auto optr_src = source->pimpl();
-    optr->Timestamp = optr_src->Timestamp;
-    optr->Name = optr_src->Name;
-    optr->Description = optr_src->Description;
-    optr->DynamicProperties = optr_src->DynamicProperties;
-    for (const auto& source_child : optr_src->Children)
-      source_child->clone(this);
+    this->copyContents(source);
+    auto map = std::unordered_map<const Node*,Node*>{{source, this}};
+    source->cloneChildren(this, map);
   };
   
   /**
@@ -689,6 +681,66 @@ namespace ma
     std::vector<const Node*> path;
     optr->retrievePath(path,this,node);
     return path;
+  };
+  
+  /**
+   * Retuns a new object allocated on the heap. The creation of the object can be done using a default constructor (if any).
+   * This method is used by cloneContents() method for the default cloned object.
+   * @note Each subclass must override this method to correctly create the correct object .
+   */
+  Node* Node::allocateNew() const
+  {
+    return new Node(this->name());
+  };
+  
+  
+  /**
+   * Internal method to copy private implementation member WITHOUT the children.
+   * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
+   */
+  void Node::copyContents(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    auto optr_src = source->pimpl();
+    optr->Timestamp = optr_src->Timestamp;
+    optr->Name = optr_src->Name;
+    optr->Description = optr_src->Description;
+    optr->DynamicProperties = optr_src->DynamicProperties;
+  };
+  
+  /**
+   * Internal method used to clone an object.
+   * This method clone an object using the following steps:
+   *  1. Allocate a new object on the heap using allocateNew()
+   *  2. Copy the member of the @c this object using copyContents()
+   *  3. Clone the children using cloneChildren()
+   *  4. Add @a parent to the cloned object as one parent.
+   * The use of @a map is necessary to determine children nodes shared inside the tree. 
+   */
+  Node* Node::cloneContents(Node* parent, std::unordered_map<const Node*,Node*>& map) const
+  {
+    auto dest = this->allocateNew();
+    dest->copyContents(this);
+    map.emplace(this,dest);
+    this->cloneChildren(dest, map);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Clone children by managing shared children in the tree
+   */
+  void Node::cloneChildren(Node* parent, std::unordered_map<const Node*,Node*>& map) const
+  {
+    auto optr = this->pimpl();
+    for (const auto& child : optr->Children)
+    {
+      auto it = map.find(child);
+      if (it == map.cend())
+        child->cloneContents(parent, map);
+      else
+        it->second->addParent(parent);
+    }
   };
   
   /**
