@@ -67,13 +67,16 @@ namespace ma
 {
   /**
    * @class Hardware openma/base/hardware.h
-   * @brief
+   * @brief Base class for acquisition systems
+   *
+   * An acquisition system is defined as node with a configuration and associated time sequences.
    *
    * @ingroup openma_base
    */
   
   /**
-   *
+   * Returns the node 'Channels'.
+   * If the subnode does not exist, this one is created. 
    */
   Node* Hardware::channels()
   {
@@ -84,7 +87,8 @@ namespace ma
   };
   
   /**
-   *
+   * Returns the @a idx mapped TimeSequence object.
+   * If @a idx is out of range, the method returns nullptr.
    */
   TimeSequence* Hardware::channel(unsigned idx) const _OPENMA_NOEXCEPT
   {
@@ -95,7 +99,8 @@ namespace ma
   };
   
   /**
-   *
+   * Associate the time sequence @a sig as the @a idx channel of this hardware.
+   * @note the Hardware object comes the parent of the set time sequence @a sig. In case @a sig replace an orphan node (i.e. the last parent was this hardware), this one is deleted.
    */
   void Hardware::setChannel(unsigned idx, TimeSequence* sig)
   {
@@ -122,7 +127,7 @@ namespace ma
   };
   
   /**
-   *
+   * Convenient method to look for a channel with the name @a label.
    */
   TimeSequence* Hardware::channel(const std::string& label) const _OPENMA_NOEXCEPT
   {
@@ -135,6 +140,7 @@ namespace ma
   };
   
   /**
+   * Set an exist channel with the name @a label with the time sequence @a sig.
    * In case no mapped channel use the given @a label, an error is sent to the logger. Thus, the channel @a sig will be not assigned.
    */
   void Hardware::setChannel(const std::string& label, TimeSequence* sig)
@@ -174,7 +180,8 @@ namespace ma
   };
   
   /**
-   *
+   * Returns the node 'Channels'.
+   * If the subnode does not exist, this one is created. 
    */
   Node* Hardware::outputs()
   {
@@ -185,16 +192,23 @@ namespace ma
   };
   
   /**
-   *
+   * Constructor to be used by inherited object which want to add informations (static properties, members, etc) to the private implementation.
    */
-  void Hardware::copy(const Node* source) _OPENMA_NOEXCEPT
+  Hardware::Hardware(HardwarePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
+  : Node(pimpl, parent)
+  {};
+  
+  /**
+   * Copy the content of the @a source
+   */
+  void Hardware::copyContents(const Node* source) _OPENMA_NOEXCEPT
   {
     auto src = node_cast<const Hardware*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
-    this->Node::copy(src);
+    this->Node::copyContents(src);
     optr->MappedChannels.resize(optr_src->MappedChannels.size());
     for(size_t i = 0 ; i < optr_src->MappedChannels.size() ; ++i)
     {  
@@ -202,12 +216,5 @@ namespace ma
       optr->MappedChannels[i] = std::make_pair(ch.first, this->findChild<TimeSequence*>(ch.second->name()));
     }
   };
-  
-  /**
-   *
-   */
-  Hardware::Hardware(HardwarePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
-  : Node(pimpl, parent)
-  {};
   
 };

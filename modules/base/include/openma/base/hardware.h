@@ -59,10 +59,10 @@ namespace ma
     
     Node* outputs();
     
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
-    
   protected:
     Hardware(HardwarePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+    
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };
 
