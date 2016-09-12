@@ -94,7 +94,7 @@ CXXTEST_SUITE(TimeSequenceTest)
       TS_ASSERT_EQUALS(barcloned->data()[i], bar.data()[i]);
     delete rootcloned; // This will delete also barcloned
     
-    barcloned = bar.clone(&root);
+    barcloned = static_cast<ma::TimeSequence*>(bar.clone(&root));
     TS_ASSERT_EQUALS(root.hasChildren(),true);
     TS_ASSERT_EQUALS(root.children().size(),2ul);
     auto child = root.child<ma::TimeSequence*>(1);
