@@ -217,30 +217,24 @@ namespace ma
   };
   
   /**
-   * Create a deep copy of the object and return it as another object.
-   * @note Each subclass must override this method to correctly do the deep copy.
+   * Create a new Event object on the heap
    */
-  Event* Event::clone(Node* parent) const
+  Node* Event::allocateNew() const
   {
-    auto dest = new Event(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
+    return new Event(this->name());
   };
- 
+  
   /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
-   * @note Each subclass must override this method to correctly do the deep copy.
-   * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards. See the example in the desctription of the Node::copy() method.
+   * Copy the content of the @a source
    */
-  void Event::copy(const Node* source) _OPENMA_NOEXCEPT
+  void Event::copyContents(const Node* source) _OPENMA_NOEXCEPT
   {
     auto src = node_cast<const Event*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
-    this->Node::copy(src);
+    this->Node::copyContents(src);
     optr->Time = optr_src->Time;
     optr->Context = optr_src->Context;
     optr->Subject = optr_src->Subject;

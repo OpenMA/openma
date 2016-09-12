@@ -64,9 +64,11 @@ namespace ma
     
     const std::string& subject() const _OPENMA_NOEXCEPT;
     void setSubject(const std::string& value) _OPENMA_NOEXCEPT;
+
+  protected:
+    virtual Node* allocateNew() const override;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
     
-    virtual Event* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };
 
