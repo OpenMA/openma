@@ -175,24 +175,10 @@ namespace ma
   };
   
   /**
-   * Create a deep copy of the object and return it as another object.
+   * Create a new Event object on the heap
    */
-  Trial* Trial::clone(Node* parent) const
+  Node* Trial::allocateNew() const
   {
-    auto dest = new Trial(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-  
-  /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
-   */
-  void Trial::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const Trial*>(source);
-    if (src == nullptr)
-      return;
-    this->Node::copy(src);
+    return new Trial(this->name());
   };
 };

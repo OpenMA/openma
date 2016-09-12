@@ -69,8 +69,8 @@ namespace ma
     Node* hardwares();
     Hardware* hardware(unsigned idx) _OPENMA_NOEXCEPT;
     
-    virtual Trial* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+  protected:
+    virtual Node* allocateNew() const override;
   };
 };
 
