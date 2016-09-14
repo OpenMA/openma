@@ -720,9 +720,9 @@ namespace ma
   Node* Node::cloneContents(Node* parent, std::unordered_map<const Node*,Node*>& map) const
   {
     auto dest = this->allocateNew();
-    dest->copyContents(this);
     map.emplace(this,dest);
     this->cloneChildren(dest, map);
+    dest->copyContents(this);
     dest->addParent(parent);
     return dest;
   };
