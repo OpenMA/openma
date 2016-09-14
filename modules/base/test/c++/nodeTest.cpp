@@ -330,6 +330,7 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_DIFFERS(leaf2_, nullptr);
     TS_ASSERT_EQUALS(leaf2_->name(), "leaf2");
     TS_ASSERT_EQUALS(leaf2_->parents().size(), 2u);
+    delete root_;
   };
   
   CXXTEST_TEST(cloneWithSharedChildrenBis)
@@ -357,6 +358,7 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_DIFFERS(leaf3_, nullptr);
     TS_ASSERT_EQUALS(leaf3_->name(), "leaf3");
     TS_ASSERT_EQUALS(leaf3_->parents().size(), 3u);
+    delete root_;
   };
   
   CXXTEST_TEST(cloneWithRoot)
