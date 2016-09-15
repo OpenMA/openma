@@ -48,11 +48,9 @@ namespace instrument
     ForcePlateType2(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType2() _OPENMA_NOEXCEPT;
     
-    virtual ForcePlateType2* clone(Node* parent = nullptr) const final;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT final;
-    
   protected:
     virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
+    virtual Node* allocateNew() const final;
   };
 };
 };

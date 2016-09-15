@@ -201,4 +201,100 @@ void forceplatetest_compare_gait1_wrench_position_at_cop(ma::instrument::ForcePl
   }
 };
 
+void forceplatetest_compare_fp_clone(ma::instrument::ForcePlate* ref, ma::instrument::ForcePlate* clone)
+{
+  auto arr1 = ref->referenceFrame();
+  auto arr2 = clone->referenceFrame();
+  for (int i = 1 ; i < 12 ; ++i)
+    TS_ASSERT_DELTA(arr1[i], arr2[i], 1e-5)
+  arr1 = ref->surfaceCorners();
+  arr2 = clone->surfaceCorners();
+  for (int i = 1 ; i < 12 ; ++i)
+    TS_ASSERT_DELTA(arr1[i], arr2[i], 1e-5)
+  arr1 = ref->relativeSurfaceOrigin();
+  arr2 = clone->relativeSurfaceOrigin();
+  for (int i = 1 ; i < 3 ; ++i)
+    TS_ASSERT_DELTA(arr1[i], arr2[i], 1e-5)
+  auto s1 = ref->calibrationMatrixDimensions()[0] * ref->calibrationMatrixDimensions()[1];
+  auto s2 = clone->calibrationMatrixDimensions()[0] * clone->calibrationMatrixDimensions()[1];
+  TS_ASSERT_EQUALS(s1,s2);
+  auto d1 = ref->calibrationMatrixData();
+  auto d2 = clone->calibrationMatrixData();
+  for (unsigned i = 1 ; i < s1 ; ++i)
+    TS_ASSERT_DELTA(d1[i], d2[i], 1e-5)
+};
+
+void forceplatetest_compare_fp2_clone(ma::instrument::ForcePlate* ref, ma::instrument::ForcePlate* clone)
+{
+  forceplatetest_compare_fp_clone(ref, clone);
+  TS_ASSERT_DIFFERS(ref->channels(), clone->channels());
+  TS_ASSERT_EQUALS(clone->channel("Fx"), clone->channels()->findChild("FX1"));
+  TS_ASSERT_EQUALS(clone->channel("Fy"), clone->channels()->findChild("FY1"));
+  TS_ASSERT_EQUALS(clone->channel("Fz"), clone->channels()->findChild("FZ1"));
+  TS_ASSERT_EQUALS(clone->channel("Mx"), clone->channels()->findChild("MX1"));
+  TS_ASSERT_EQUALS(clone->channel("My"), clone->channels()->findChild("MY1"));
+  TS_ASSERT_EQUALS(clone->channel("Mz"), clone->channels()->findChild("MZ1"));
+  TS_ASSERT_DIFFERS(clone->channel("Fx"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fy"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fz"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Mx"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("My"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Mz"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("FX1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("FY1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("FZ1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("MX1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("MY1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("MZ1"), nullptr);
+  TS_ASSERT_DIFFERS(ref->channel("Fx"), clone->channel("Fx"));
+  TS_ASSERT_DIFFERS(ref->channel("Fy"), clone->channel("Fy"));
+  TS_ASSERT_DIFFERS(ref->channel("Fz"), clone->channel("Fz"));
+  TS_ASSERT_DIFFERS(ref->channel("Mx"), clone->channel("Mx"));
+  TS_ASSERT_DIFFERS(ref->channel("My"), clone->channel("My"));
+  TS_ASSERT_DIFFERS(ref->channel("Mz"), clone->channel("Mz"));
+};
+
+void forceplatetest_compare_fp4_clone(ma::instrument::ForcePlate* ref, ma::instrument::ForcePlate* clone)
+{
+  forceplatetest_compare_fp2_clone(ref, clone);
+};
+
+void forceplatetest_compare_fp5_clone(ma::instrument::ForcePlate* ref, ma::instrument::ForcePlate* clone)
+{
+  forceplatetest_compare_fp_clone(ref, clone);
+  TS_ASSERT_DIFFERS(ref->channels(), clone->channels());
+  TS_ASSERT_EQUALS(clone->channel("Fz1"), clone->channels()->findChild("Pin1"));
+  TS_ASSERT_EQUALS(clone->channel("Fz2"), clone->channels()->findChild("Pin2"));
+  TS_ASSERT_EQUALS(clone->channel("Fz3"), clone->channels()->findChild("Pin3"));
+  TS_ASSERT_EQUALS(clone->channel("Fz4"), clone->channels()->findChild("Pin4"));
+  TS_ASSERT_EQUALS(clone->channel("Fx12"), clone->channels()->findChild("Pin5"));
+  TS_ASSERT_EQUALS(clone->channel("Fx34"), clone->channels()->findChild("Pin6"));
+  TS_ASSERT_EQUALS(clone->channel("Fy14"), clone->channels()->findChild("Pin7"));
+  TS_ASSERT_EQUALS(clone->channel("Fy23"), clone->channels()->findChild("Pin8"));
+  TS_ASSERT_DIFFERS(clone->channel("Fz1"),  nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fz2"),  nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fz3"),  nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fz4"),  nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fx12"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fx34"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fy14"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channel("Fy23"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin1"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin2"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin3"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin4"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin5"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin6"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin7"), nullptr);
+  TS_ASSERT_DIFFERS(clone->channels()->findChild("Pin8"), nullptr);
+  TS_ASSERT_DIFFERS(ref->channel("Fz1"), clone->channel("Fz1"));
+  TS_ASSERT_DIFFERS(ref->channel("Fz2"), clone->channel("Fz2"));
+  TS_ASSERT_DIFFERS(ref->channel("Fz3"), clone->channel("Fz3"));
+  TS_ASSERT_DIFFERS(ref->channel("Fz4"), clone->channel("Fz4"));
+  TS_ASSERT_DIFFERS(ref->channel("Fx12"), clone->channel("Fx12"));
+  TS_ASSERT_DIFFERS(ref->channel("Fx34"), clone->channel("Fx34"));
+  TS_ASSERT_DIFFERS(ref->channel("Fy14"), clone->channel("Fy14"));
+  TS_ASSERT_DIFFERS(ref->channel("Fy23"), clone->channel("Fy23"));
+};
+
 #endif // forceplateTest_def_h

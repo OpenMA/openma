@@ -98,8 +98,6 @@ namespace instrument
     
     TimeSequence* wrench(Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
     
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
-    
   protected:
     ForcePlate(ForcePlatePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     
@@ -109,6 +107,8 @@ namespace instrument
     bool resampleWrench(TimeSequence* w, double factor);
     bool computePosition(TimeSequence* w, Location loc, double threshold);
     bool transformToGlobal(TimeSequence* w);
+    
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
   };
 }
 };

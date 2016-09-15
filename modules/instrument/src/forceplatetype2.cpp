@@ -42,13 +42,13 @@ namespace instrument
 {
 
   /**
-   * @class
-   * 6 channels: Fx, Fy, Fz, Mx, My, Mz
-   *
+   * @class ForcePlateType2 "openma/instrument/forceplatetype2.h"
+   * Force platform with 6 channels: Fx, Fy, Fz, Mx, My, Mz
+   * A manufacturer known to use this force plate is AMTI, Inc.
    */
 
   /**
-   *
+   * Constructor
    */
   ForcePlateType2::ForcePlateType2(const std::string& name, Node* parent)
   : ForcePlate(*new ForcePlatePrivate(this, name, 2, {{"Fx","Fy","Fz","Mx","My","Mz"}}), parent)
@@ -60,29 +60,7 @@ namespace instrument
   ForcePlateType2::~ForcePlateType2() _OPENMA_NOEXCEPT = default;
   
   /**
-   *
-   */
-  ForcePlateType2* ForcePlateType2::clone(Node* parent) const
-  {
-    auto dest = new ForcePlateType2(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-
-  /**
-   *
-   */
-  void ForcePlateType2::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const ForcePlateType2*>(source);
-    if (src == nullptr)
-      return;
-    this->ForcePlate::copy(src);
-  };
-  
-  /**
-   *
+   * Compute forces and moments from analog channel data associated with this force plate.
    */
   bool ForcePlateType2::computeWrenchAtOrigin(TimeSequence* w)
   {
@@ -94,6 +72,14 @@ namespace instrument
     W.values().col(4) = math::Map<const math::Array<1>>::Values(this->channel("My")->data(), W.rows(), 1);
     W.values().col(5) = math::Map<const math::Array<1>>::Values(this->channel("Mz")->data(), W.rows(), 1);
     return true;
+  };
+  
+  /**
+   * Create a new ForcePlateType2 object on the heap
+   */
+  Node* ForcePlateType2::allocateNew() const
+  {
+    return new ForcePlateType2(this->name());
   };
 };
 };

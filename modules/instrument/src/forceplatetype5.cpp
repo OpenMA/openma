@@ -42,13 +42,13 @@ namespace instrument
 {
 
   /**
-   * @class
-   * 8 channels: Fz1, Fz2, Fz3, Fz4, Fx12, Fx34, Fy14, Fy23 + calibration matrix 6 (columns) by 8 (rows)
-   *
+   * @class ForcePlateType5 "openma/instrument/forceplatetype5.h"
+   * Force platform with 8 channels (Fz1, Fz2, Fz3, Fz4, Fx12, Fx34, Fy14, Fy23) and a calibration matrix 6 (columns) by 8 (rows)
+   * A manufacturer known to use this force plate is AMTI, Inc.
    */
 
   /**
-   *
+   * Constructor
    */
   ForcePlateType5::ForcePlateType5(const std::string& name, Node* parent)
   : ForcePlate(*new ForcePlatePrivate(this, name, 5, {{"Fz1","Fz2","Fz3","Fz4","Fx12","Fx34","Fy14","Fy23"}}, 6, 8), parent)
@@ -60,29 +60,7 @@ namespace instrument
   ForcePlateType5::~ForcePlateType5() _OPENMA_NOEXCEPT = default;
   
   /**
-   *
-   */
-  ForcePlateType5* ForcePlateType5::clone(Node* parent) const
-  {
-    auto dest = new ForcePlateType5(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-
-  /**
-   *
-   */
-  void ForcePlateType5::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const ForcePlateType5*>(source);
-    if (src == nullptr)
-      return;
-    this->ForcePlate::copy(src);
-  };
-  
-  /**
-   *
+   * Compute forces and moments from analog channel data associated with this force plate.
    */
   bool ForcePlateType5::computeWrenchAtOrigin(TimeSequence* w)
   {
@@ -111,6 +89,14 @@ namespace instrument
       W.values().block<1,6>(i,0) = X * c;
     }
     return true;
+  };
+  
+  /**
+   * Create a new ForcePlateType5 object on the heap
+   */
+  Node* ForcePlateType5::allocateNew() const
+  {
+    return new ForcePlateType5(this->name());
   };
 };
 };

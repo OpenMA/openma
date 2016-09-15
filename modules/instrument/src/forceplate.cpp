@@ -141,11 +141,16 @@ namespace instrument
 #endif  
   
   /**
-   * @class ForcePlate
-   * @brief
+   * @class ForcePlate "openma/instrument/forceplate.h"
+   * @brief Base class for all force platform intruments
    *
-   * Wrench Option computation
-   *  - Treshold : 10 newtons by default
+   * A force platform is represented by:
+   *  - a read-only integer representing a category of force plate
+   *  - an array (3x4), representing the orientation (3x3) and the position (1x3) of the force plate expressed in the laboratory frame
+   *  - an array (3x4), representing the coordinates of each corner expressed in the laboratoy frame
+   *  - a vector (1x3), representing the coordinates of the surface origin expressed in the force plate frame
+   *  - the dimensions (1x2) of the calibration matrix (optional)
+   *  - the data of the calibration matrix (optional)
    *
    * @todo add a method to remove the baseline
    */
@@ -157,7 +162,7 @@ namespace instrument
   ForcePlate::~ForcePlate() _OPENMA_NOEXCEPT = default;
   
   /**
-   *
+   * Returns the category 
    */
   int ForcePlate::type() const _OPENMA_NOEXCEPT
   {
@@ -166,14 +171,20 @@ namespace instrument
   };
   
   /**
-   *
+   * Set the geometry of the force plate using the following information:
+   *  - Relative surface origin (@a rso) expressed in the force plate frame
+   *  - Coordinates of the surface corner #1 (@a sc1) expressed the laboratory frame
+   *  - Coordinates of the surface corner #2 (@a sc2) expressed the laboratory frame
+   *  - Coordinates of the surface corner #3 (@a sc3) expressed the laboratory frame
+   *  - Coordinates of the surface corner #4 (@a sc4) expressed the laboratory frame
+   * Internally, the relativeSurfaceOrigin(), surfaceCorners() and referenceFrame() are adapted in consequence
    */
   void ForcePlate::setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3])
   {
     auto optr = this->pimpl();
-    // Copy directly the coordinates of the relative surface origin
+    // Copy directly the coordinates of the relative surface origin expressed in the force plate frame
     std::copy(rso, rso+3, optr->RelativeSurfaceOrigin);
-    // Copy directly the coordinates of the relative surface origin
+    // Copy directly the coordinates of the corners expressed in the laboratory frame
     std::copy(sc1, sc1+3, optr->SurfaceCorners);
     std::copy(sc2, sc2+3, optr->SurfaceCorners+3);
     std::copy(sc3, sc3+3, optr->SurfaceCorners+6);
@@ -191,7 +202,7 @@ namespace instrument
   
   
   /**
-   * @important Expressed in the PARENT reference frame (i.e. generally the reference frame associated with the laboratory - also knwon as the global frame)
+   * Returns a 3x4 array representing the orientation (3x3) and the position (1x3) of the force plate expressed in the laboratory frame.
    */
   const double* ForcePlate::referenceFrame() const _OPENMA_NOEXCEPT
   {
@@ -218,7 +229,7 @@ namespace instrument
   // };
   
   /**
-   * @important Expressed in the PARENT reference frame (i.e. generally the reference frame associated with the laboratory - also knwon as the global frame)
+   *  - Returns an array (3x4) representing the coordinates of each corner expressed in the laboratoy frame
    */
   const double* ForcePlate::surfaceCorners() const _OPENMA_NOEXCEPT
   {
@@ -244,7 +255,7 @@ namespace instrument
   // };
   
   /**
-   * @important Expressed in the LOCAL frame (i.e. the frame associated with the force plate)
+   * Returns a vector (1x3) representing the coordinates of the surface origin expressed in the force plate frame
    */
   const double* ForcePlate::relativeSurfaceOrigin() const _OPENMA_NOEXCEPT
   {
@@ -261,7 +272,7 @@ namespace instrument
   // };
   
   /**
-   * 
+   * Returns the dimensions of the calibration matrix associated with the force plate (if any)
    */
   const unsigned* ForcePlate::calibrationMatrixDimensions() const _OPENMA_NOEXCEPT
   {
@@ -270,7 +281,8 @@ namespace instrument
   };
   
   /**
-   *
+   * Returns the data of the calibration matrix associated with the force plate (if any)
+   * If the force plate has no calibration matrix, this method return a null pointer.
    */
   double* ForcePlate::calibrationMatrixData() const _OPENMA_NOEXCEPT
   {
@@ -279,7 +291,8 @@ namespace instrument
   };
   
   /**
-   *
+   * Set the calibration matrix data.
+   * @warning This method assumes that the number of element in data is at least equal to the number of required elements for the calibration matrix. The behaviour of this method is undefined in case this is not respected.
    */
   void ForcePlate::setCalibrationMatrixData(const double* data)
   {
@@ -302,7 +315,9 @@ namespace instrument
   };
   
   /**
-   *
+   * Compute the wrench associated with this force plate at the requested Location @a loc, expressed in the local or @a global frame.
+   * An optional @a threshold (10N by default) can be given to invalidate the computation (due to inaccuracy).
+   * You can also choose to downsample the computed wrench by specifying the @a rate.
    */
   TimeSequence* ForcePlate::wrench(Location loc, bool global, double threshold, double rate)
   {
@@ -348,34 +363,17 @@ namespace instrument
     }
     return w;
   };
-
-  /**
-   *
-   */
-  void ForcePlate::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const ForcePlate*>(source);
-    if (src == nullptr)
-      return;
-    auto optr = this->pimpl();
-    auto optr_src = src->pimpl();
-    assert(optr_src->CalibrationMatrixDimensions[0] == optr->CalibrationMatrixDimensions[0]);
-    assert(optr_src->CalibrationMatrixDimensions[1] == optr->CalibrationMatrixDimensions[1]);
-    assert(((optr_src->CalibrationMatrixData != nullptr) && (optr->CalibrationMatrixData != nullptr))
-        || ((optr_src->CalibrationMatrixData == nullptr) && (optr->CalibrationMatrixData == nullptr)));
-    this->Hardware::copy(src);
-    optr->Type = optr_src->Type;
-    std::copy(optr_src->ReferenceFrame, optr_src->ReferenceFrame+12, optr->ReferenceFrame);
-    std::copy(optr_src->SurfaceCorners, optr_src->SurfaceCorners+12, optr->SurfaceCorners);
-    std::copy(optr_src->RelativeSurfaceOrigin, optr_src->RelativeSurfaceOrigin+3, optr->RelativeSurfaceOrigin);
-    if (optr_src->CalibrationMatrixData != nullptr)
-      std::copy(optr_src->CalibrationMatrixData, optr_src->CalibrationMatrixData+(optr->CalibrationMatrixDimensions[0]*optr->CalibrationMatrixDimensions[1]), optr->CalibrationMatrixData);
-  };
   
+  /**
+   * Constructor to be used by inherited object which want to add informations (static properties, members, etc) to the private implementation.
+   */
   ForcePlate::ForcePlate(ForcePlatePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Hardware(pimpl, parent)
   {};
   
+  /**
+   * Stringify the enumeration values available in Location.
+   */
   std::string ForcePlate::stringifyLocation(Location loc) const _OPENMA_NOEXCEPT
   {
     std::string str;
@@ -399,6 +397,9 @@ namespace instrument
     return str;
   };
   
+  /**
+   * Returns a vector of channels based on the mapped channels stored internally.
+   */
   std::vector<TimeSequence*> ForcePlate::retrieveChannels() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
@@ -416,6 +417,10 @@ namespace instrument
     return channels;
   };
   
+  /**
+   * Resample the TimeSequence @a w based on the given @a factor
+   * @note This method accepts only @a factor greater than 1.0. Moreover, the scale factor is transformed internally as an integer.
+   */
   bool ForcePlate::resampleWrench(TimeSequence* w, double factor)
   {
     if (factor > 1.0)
@@ -429,6 +434,10 @@ namespace instrument
     return true;
   }
   
+  /**
+   * Compute the postion of the wrench based on the requested Location @a loc.
+   * The @a threshold is used to invalidate all the position where the associated absolute vertical force is below this value.
+   */
   bool ForcePlate::computePosition(TimeSequence* w, Location loc, double threshold)
   {
     auto W = math::to_wrench(w);
@@ -491,6 +500,9 @@ namespace instrument
     return true;
   };
   
+  /**
+   * Transform the given TimeSequence (@a w) representing a wrench to the laboratory frame.
+   */
   bool ForcePlate::transformToGlobal(TimeSequence* w)
   {
     auto W = math::to_wrench(w);
@@ -505,6 +517,30 @@ namespace instrument
     // Position translation
     W.values().block(0,6,W.rows(),3) += t.replicate(W.rows(),1);
     return true;
-  }
+  };
+  
+
+  /**
+   * Copy the content of the @a source
+   */
+  void ForcePlate::copyContents(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const ForcePlate*>(source);
+    if (src == nullptr)
+      return;
+    auto optr = this->pimpl();
+    auto optr_src = src->pimpl();
+    assert(optr_src->CalibrationMatrixDimensions[0] == optr->CalibrationMatrixDimensions[0]);
+    assert(optr_src->CalibrationMatrixDimensions[1] == optr->CalibrationMatrixDimensions[1]);
+    assert(((optr_src->CalibrationMatrixData != nullptr) && (optr->CalibrationMatrixData != nullptr))
+        || ((optr_src->CalibrationMatrixData == nullptr) && (optr->CalibrationMatrixData == nullptr)));
+    this->Hardware::copyContents(src);
+    optr->Type = optr_src->Type;
+    std::copy(optr_src->ReferenceFrame, optr_src->ReferenceFrame+12, optr->ReferenceFrame);
+    std::copy(optr_src->SurfaceCorners, optr_src->SurfaceCorners+12, optr->SurfaceCorners);
+    std::copy(optr_src->RelativeSurfaceOrigin, optr_src->RelativeSurfaceOrigin+3, optr->RelativeSurfaceOrigin);
+    if (optr_src->CalibrationMatrixData != nullptr)
+      std::copy(optr_src->CalibrationMatrixData, optr_src->CalibrationMatrixData+(optr->CalibrationMatrixDimensions[0]*optr->CalibrationMatrixDimensions[1]), optr->CalibrationMatrixData);
+  };
 };
 };

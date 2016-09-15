@@ -48,11 +48,9 @@ namespace instrument
     ForcePlateType5(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType5() _OPENMA_NOEXCEPT;
     
-    virtual ForcePlateType5* clone(Node* parent = nullptr) const final;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT final;
-    
   protected:
     virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
+    virtual Node* allocateNew() const final;
   };
 };
 };
