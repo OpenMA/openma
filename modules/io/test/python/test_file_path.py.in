@@ -1,0 +1,5 @@
+def openma_tdd_path_in(rel):
+    return '${OPENMA_TESTING_DATA_PATH}/input/' + rel
+    
+def openma_tdd_path_out(rel):
+    return '${PROJECT_BINARY_DIR}/test/data/output/' + rel

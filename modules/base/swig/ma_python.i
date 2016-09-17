@@ -40,6 +40,11 @@
 %include "openmapython.swg"
 %fragment("OpenMA_TemplateHelper");
 
+%init
+%{
+  import_array(); // Required by NumPy. Otherwise, functions like 'PyArray_Check' will crash the Python interpreter!
+%}
+
 // Convert std::vector<Node*> to Python list
 %typemap(out, fragment="OpenMA", noblock=1) const std::vector<ma::Node*>&
 {
@@ -56,7 +61,7 @@
     for (auto i = 0 ; i < numelts ; ++i)
     {
       auto value = PyList_GetItem($input,i);
-      if (PyInt_Check(value) == 0) && (PyLong_Check(value) == 0) && (PyFloat_Check(value) == 0))
+      if ((PyInt_Check(value) == 0) && (PyLong_Check(value) == 0) && (PyFloat_Check(value) == 0))
       {
         $1 = 0;
         break;
@@ -68,8 +73,10 @@
 {
   $1 = &temp;
   Py_ssize_t numelts = PyList_Size($input);
+  temp.resize(numelts);
   for (Py_ssize_t i = 0 ; i < numelts ; ++i)
   {
+    double iptr = 0.;
     double d = PyFloat_AsDouble(PyList_GetItem($input,i));
     if (modf(d,&iptr) >= std::numeric_limits<double>::epsilon())
     {
@@ -302,6 +309,7 @@ PyObject* ma_Any_cast(const ma::Any* self)
 %typemap(out, noblock=1) void ma::Any::assign
 {
   if (PyErr_Occurred()) SWIG_fail;
+  $result = SWIG_Py_Void();
 };
 
 %{
@@ -517,6 +525,7 @@ PyObject* ma_Node_findChildren(const ma::Node* self, const ma::bindings::Templat
 %typemap(out, noblock=1) void ma::TimeSequence::setData
 {
   if (PyErr_Occurred()) SWIG_fail;
+  $result = SWIG_Py_Void();
 };
 
 %{
@@ -530,9 +539,12 @@ PyObject* ma_TimeSequence_data(const ma::TimeSequence* self)
   PyObject* out = PyArray_SimpleNew(static_cast<int>(dims.size()), dims.data(), NPY_DOUBLE);
   if (out != NULL)
   {
-    // FIXME OpenMA uses the Fortran order while NumPy uses the C order
-    double* dataout = (double*)PyArray_DATA(out);
-    memcpy(dataout, self->data(), self->elements()*sizeof(double));
+    // NOTE: OpenMA uses the Fortran storage order while NumPy uses the C  order
+    const double* source = self->data();
+    double* dest = (double*)PyArray_DATA(out);
+    for (unsigned i = 0, cpts = self->components() ; i < cpts ; ++i)
+      for (unsigned j = 0, samples = self->samples() ; j < samples ; ++j)
+        dest[i+j*cpts] = source[j+i*samples];
   }
   else
     PyErr_SetString(PyExc_RuntimeError, "Impossible to create a multidimensional array. Please, report this error");
@@ -543,7 +555,7 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const PyObject* data)
 {
   if (!PyArray_Check(data) || (PyArray_TYPE(data) != NPY_DOUBLE))
   {
-    PyErr_SetString(PyExc_TypeError, "The given input is not an NumPy array composed of floating point elements");
+    PyErr_SetString(PyExc_TypeError, "The given input is not an array composed of floating point elements");
     return;
   }
   const int numdimsin = PyArray_NDIM(data)-1;
@@ -567,8 +579,12 @@ void ma_TimeSequence_setData(ma::TimeSequence* self, const PyObject* data)
       return;
     }
   }
-  // FIXME OpenMA uses the Fortran order while NumPy uses the C order
-  memcpy(self->data(), (double*)PyArray_DATA(data), self->elements()*sizeof(double));
+  // NOTE: OpenMA uses the Fortran storage order while NumPy uses the C  order
+  const double* source = (const double*)PyArray_DATA(data);
+  double* dest = self->data();
+  for (unsigned i = 0, cpts = self->components() ; i < cpts ; ++i)
+    for (unsigned j = 0, samples = self->samples() ; j < samples ; ++j)
+      dest[j+i*samples] = source[i+j*cpts];
   self->modified();
 };
   
