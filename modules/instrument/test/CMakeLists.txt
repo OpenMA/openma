@@ -1,3 +1,9 @@
-ADD_CXXTEST_TESTDRIVER(openma_instrument_forceplatetype2 forceplatetype2Test.cpp instrument)
-ADD_CXXTEST_TESTDRIVER(openma_instrument_forceplatetype4 forceplatetype4Test.cpp instrument)
-ADD_CXXTEST_TESTDRIVER(openma_instrument_forceplatetype5 forceplatetype5Test.cpp instrument)
+ADD_SUBDIRECTORY("c++")
+
+# IF(BUILD_MATLAB_BINDINGS)
+#   ADD_SUBDIRECTORY("matlab")
+# ENDIF()
+#
+# IF(BUILD_PYTHON_BINDINGS)
+#   ADD_SUBDIRECTORY("python")
+# ENDIF()
