@@ -678,7 +678,7 @@ namespace body
 {
   /**
    * @class PluginGait openma/body/plugingait.h
-   * @brief Helper class to create and reconstruct a model based on the Plug in Gait marker set.
+   * @brief Helper class to create and reconstruct a model based on the Plug-in Gait markers set.
    * 
    * @todo Add a detailed description on possible configurations, segments, joints, and coordinate systems definition. 
    * @todo Add the required and optional parameters used by this helper.
@@ -825,7 +825,7 @@ namespace body
 #endif
   
   /**
-   * Constructor. The name is set by to "PluginGait".
+   * Constructor. The name is set to "PluginGait".
    */
   PluginGait::PluginGait(int region, int side, Node* parent)
   : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side), parent)
@@ -967,7 +967,7 @@ namespace body
   };
 
   /**
-   * Calibrate this helper based on the first Trial object found in @a trials. If @a subject is not a null pointer, the required parameters are copied from subject's properties.
+   * Calibrate this helper based on the first Trial object found in @a trials. If @a subject is not a null pointer, its dynamic properties are copied to this object.
    * @todo Explain how to set custom hip joint centre
    */
   bool PluginGait::calibrate(Node* trials, Subject* subject)
@@ -1146,7 +1146,7 @@ namespace body
   /**
    * Reconstruct @a model segments' movement based on the content of the given @a trial.
    * @a todo Explain that exported segment frame corresponds to the segmental coordinate system (SCS).
-   * @a todo Explain thant hip joint centre stored in this helper are cloned in the model. Like that, the helper can modify theses HJC for different tests, while the model store date used for its reconstruction.
+   * @a todo Explain that hip joint centre stored in this helper are cloned in the model. Like that, the helper can modify theses HJC for different tests, while the model store data used for its reconstruction.
    */
   bool PluginGait::reconstructModel(Model* model, Trial* trial)
   {
