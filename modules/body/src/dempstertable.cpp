@@ -43,7 +43,7 @@
 #include <utility> // std::swap
 #include <cmath> // std::nan
 
-// NOTE: THE SIGN IS RELATED TO THE DIRECTION OF THE Body inertial Coordinate System (BCS)
+// NOTE: The sign is related to the direction of the Body inertial Coordinate System (BCS)
 static const double _ma_body_dempster_table[9*3] = {
 //   mass      long.    gyration
 //            CoM pos  radius (Kcg)
@@ -198,28 +198,6 @@ namespace body
       }
     }
     return true;
-  };
-  
-  /**
-   * Create a deep copy of the object and return it as another object.
-   */
-  DempsterTable* DempsterTable::clone(Node* parent) const
-  {
-    auto dest = new DempsterTable;
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-  
-  /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
-   */
-  void DempsterTable::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const DempsterTable*>(source);
-    if (src == nullptr)
-      return;
-    this->InertialParametersEstimator::copy(src);
   };
 };
 };

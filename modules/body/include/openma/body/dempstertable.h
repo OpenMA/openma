@@ -57,9 +57,6 @@ namespace body
     DempsterTable& operator=(DempsterTable&& ) _OPENMA_NOEXCEPT = delete;
     
     virtual bool generate(Node* inout) final;
-    
-    virtual DempsterTable* clone(Node* parent = nullptr) const final;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT final;
   };
 };
 };
