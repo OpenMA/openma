@@ -117,5 +117,13 @@ classdef NodeTest < matlab.unittest.TestCase
             testCase.verifyEqual(child1.hasParents, false);
         end
         
+        function setProperty(testCase)
+            root = ma.Node('root');
+            root.setProperty('foo',1)
+            testCase.verifyEqual(root.property('foo').cast(), 1)
+            root.setProperty('bar',ma.Any(10.0))
+            testCase.verifyEqual(root.property('bar').cast(), 10.0)
+        end
+        
     end
 end
