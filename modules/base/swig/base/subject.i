@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Subject, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, Subject)
     
     Subject(const std::string& name, std::unordered_map<std::string, Any>&& properties = std::unordered_map<std::string, Any>(), Node* parent = nullptr);
     ~Subject();

@@ -44,7 +44,6 @@ namespace body
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, PluginGait, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma::body, PluginGait)
 
     PluginGait(int region, int side, Node* parent = nullptr);
     ~PluginGait();

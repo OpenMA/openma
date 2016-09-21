@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Node, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, Node)
   
     Node(const std::string& name, Node* parent = nullptr);
     ~Node();
@@ -76,6 +75,8 @@ namespace ma
     %extend {
       void addParent(Node* node);
       void removeParent(Node* node);
+      void copy(Node* source);
+      ma::Node* clone(Node* parent = nullptr) const;
     }
   /*
     template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
@@ -133,6 +134,28 @@ std::unordered_map<std::string, ma::Any> ma_Node_dynamicProperties(const ma::Nod
   auto props = self->dynamicProperties();
   props.erase(_MA_REF_COUNTER);
   return props;
+};
+
+void ma_Node_copy(ma::Node* self, ma::Node* source)
+{
+  _ma_clear_node(self);
+  int count = _ma_refcount_get(source);
+  self->copy(source);
+  _ma_refcount_reset(self, count, false);
+  auto& children = self->children();
+  for (auto child : children)
+    _ma_refcount_reset(child, 0);
+};
+
+ma::Node* ma_Node_clone(const ma::Node* self, ma::Node* parent = nullptr)
+{
+  ma::Node* ptr = self->clone(parent);
+  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
+  if (parent != nullptr) _ma_refcount_incr(ptr);
+  auto& children = ptr->children();
+  for (auto child : children)
+    _ma_refcount_reset(child, 0);
+  return ptr;
 };
 
 %}

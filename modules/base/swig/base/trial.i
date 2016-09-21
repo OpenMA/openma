@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Trial, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, Trial)
 
     Trial(const std::string& name, Node* parent = nullptr);
     ~Trial();

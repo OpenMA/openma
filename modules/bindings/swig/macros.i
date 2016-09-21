@@ -93,28 +93,3 @@ cname(swigtype* other)
 };
 };
 %enddef 
-
-%define SWIG_EXTEND_DEEPCOPY(nspace, cname)
-%extend {
-void copy(ma::Node* source)
-{
-  _ma_clear_node($self);
-  int count = _ma_refcount_get(source);
-  $self->copy(source);
-  _ma_refcount_reset($self, count, false);
-  auto& children = $self->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-};
-nspace::## cname* clone(Node* parent = nullptr) const
-{
-  nspace::## cname* ptr = $self->clone(parent);
-  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
-  if (parent != nullptr) _ma_refcount_incr(ptr);
-  auto& children = ptr->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-  return ptr;
-};
-};
-%enddef 
