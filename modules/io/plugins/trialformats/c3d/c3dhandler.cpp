@@ -432,12 +432,14 @@ namespace io
               int8_t inc2 = 1 ; while (inc2 < numDims) rows *= dims[inc2++];
               prod = dims[0]; // reused
               std::vector<uint8_t>(dims.begin()+1, dims.end()).swap(dims); // Remove the first element
+              std::vector<std::string> p(dataSizeExceeded ? 0 : rows);
+              stream.readString(prod, p.size(), p.data());
+              value = Any(p, dims);
             }
             else
-              dims = std::vector<uint8_t>{1};
-            std::vector<std::string> p(dataSizeExceeded ? 0 : rows);
-            stream.readString(prod, p.size(), p.data());
-            value = Any(p, dims);
+            {
+              value = Any(stream.readString(dims[0]));
+            }
             break;
             }
           case 1: // Byte
@@ -1430,8 +1432,8 @@ namespace io
       // Verify the compatibility of the property (format, dimensions, etc.)
       const auto& data = std::get<2>(parameter);
       const auto& type = data.type();
-      bool single = (data.size() == 1);
       auto dimensions = data.dimensions();
+      bool single = (data.size() == 1) && dimensions.empty();
       int8_t format = 0;
       std::vector<std::string> temp;
       std::function<size_t()> writeValue;

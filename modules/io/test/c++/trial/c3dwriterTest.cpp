@@ -114,6 +114,10 @@ CXXTEST_SUITE(C3DWriterTest)
     {
       TS_ASSERT_DELTA(ts2->data()[i], ts->data()[i], 1e-5);
     }
+    TS_ASSERT_EQUALS(rootIn.child(0)->property("POINT:X_SCREEN").dimensions().size(), 0u);
+    TS_ASSERT_EQUALS(rootOut.child(0)->property("POINT:X_SCREEN").dimensions().size(), 0u);
+    TS_ASSERT_EQUALS(rootIn.child(0)->property("SUBJECTS:NAMES").dimensions().size(), 1u);
+    TS_ASSERT_EQUALS(rootOut.child(0)->property("SUBJECTS:NAMES").dimensions().size(), 1u);
   }
   
   CXXTEST_TEST(writePoint256)
