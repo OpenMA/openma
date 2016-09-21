@@ -51,7 +51,7 @@
   $result = to_list($1, $descriptor(ma::Node*));
 };
 
-// Convert MATLAB double matrix to std::vector<unsigned int>
+// Convert Python list to std::vector<unsigned int>
 %typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE_ARRAY, noblock=1) const std::vector<unsigned int>&
 {
   $1 = PyList_Check($input);
