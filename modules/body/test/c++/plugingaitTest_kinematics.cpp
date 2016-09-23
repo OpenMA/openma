@@ -32,7 +32,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -77,7 +77,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -124,7 +124,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -169,7 +169,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -226,7 +226,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -285,7 +285,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -329,7 +329,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF_N18.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -371,7 +371,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_noFF.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -422,7 +422,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction

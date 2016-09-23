@@ -51,7 +51,9 @@ namespace body
     OPENMA_DECLARE_NODEID(PluginGait, SkeletonHelper)
     
   public:
-    PluginGait(int region, int side, Node* parent = nullptr);
+    typedef enum {Basic = 0x00, KAD, KADMed} Variant;
+    
+    PluginGait(int region, int side, Variant variant, Node* parent = nullptr);
     
     double markerDiameter() const _OPENMA_NOEXCEPT;
     void setMarkerDiameter(double value) _OPENMA_NOEXCEPT;

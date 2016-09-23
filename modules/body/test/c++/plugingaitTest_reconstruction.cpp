@@ -9,7 +9,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
 {
   CXXTEST_TEST(reconstructBothLowerBodyOneFrame)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
@@ -39,7 +39,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstructBothUpperBodyOneFrame)
   {
-    ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
@@ -73,7 +73,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstructBothLowerBodyHoleFrames)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm
@@ -103,7 +103,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstructBothUpperBodyHoleFrames)
   {
-    ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
@@ -138,7 +138,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstructBothFullBodyFullFrames)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setHeadOffsetEnabled(true);
     helper.setLeftShoulderOffset(50.0); // mm
@@ -188,7 +188,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstruct3BothLowerBodyFF)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
@@ -218,7 +218,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstruct3BothLowerBodyFF_N18)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(920.0); // mm
@@ -248,7 +248,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstruct3BothLowerBodyNoFF)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftLegLength(920.0); // mm
     helper.setLeftKneeWidth(102.0); // mm
@@ -276,7 +276,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
   
   CXXTEST_TEST(reconstruct2BothUpperBodyHeadOffsetDisabled)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftShoulderOffset(50.0); // mm
     helper.setRightShoulderOffset(50.0); // mm

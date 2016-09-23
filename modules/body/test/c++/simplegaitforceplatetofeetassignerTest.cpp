@@ -13,7 +13,7 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
 {
   CXXTEST_TEST(TwoForplatesTwoFeet)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftLegLength(780.0); // mm
     helper.setLeftKneeWidth(90.0); // mm
@@ -42,7 +42,7 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
   
   CXXTEST_TEST(TwoForplatesTwoFeetBis)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(800.0); // mm
@@ -73,7 +73,7 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
   
   CXXTEST_TEST(TwoForplatesTwoFeetTer)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
     helper.setLeftLegLength(940.0); // mm

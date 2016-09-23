@@ -66,9 +66,10 @@ namespace ma
 {
 namespace body
 {
-  PluginGaitPrivate::PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side)
+  PluginGaitPrivate::PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side, int variant)
   : SkeletonHelperPrivate(pint,name,region,side),
     // All the options are null by default
+    Variant(variant),
     MarkerDiameter(0.0),
     HeadOffsetEnabled(false),
     RightShoulderOffset(0.0),
@@ -2207,7 +2208,7 @@ namespace body
    */
   PluginGait* PluginGait::clone(Node* parent) const
   {
-    auto dest = new PluginGait(0,0);
+    auto dest = new PluginGait(0,0,Basic);
     dest->copy(this);
     dest->addParent(parent);
     return dest;
@@ -2224,6 +2225,7 @@ namespace body
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->SkeletonHelper::copy(src);
+    optr->Variant = optr_src->Variant;
     optr->MarkerDiameter = optr_src->MarkerDiameter;
     optr->HeadOffsetEnabled = optr_src->HeadOffsetEnabled;
     optr->RightShoulderOffset = optr_src->RightShoulderOffset;

@@ -115,6 +115,8 @@ namespace body
     bool reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     bool reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     
+    int Variant;
+    
     double MarkerDiameter;
     
     bool HeadOffsetEnabled;

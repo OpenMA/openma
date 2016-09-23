@@ -44,8 +44,16 @@ namespace body
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, PluginGait, SWIGTYPE)
+    
+    %extend {
+    enum class Variant : int {
+      Basic = PluginGait::Basic,
+      KAD = PluginGait::KAD,
+      KADMed = PluginGait::KADMed
+    };
+    };
 
-    PluginGait(int region, int side, Node* parent = nullptr);
+    PluginGait(int region, int side, Variant variant, Node* parent = nullptr);
     ~PluginGait();
     
     double markerDiameter() const;
