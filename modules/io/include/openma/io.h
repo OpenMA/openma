@@ -98,11 +98,17 @@ namespace io
   inline bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string{})
   {
     File file;
+    bool isNew = File::exists(filepath.c_str());
     file.open(filepath.c_str(), Mode::Out);
     HandlerWriter writer(&file, format);
     bool result = writer.write(root);
+    file.close();
     if (!result && (writer.errorCode() != Error::None))
+    {
       error(writer.errorMessage().c_str());
+      if (isNew)
+        std::remove(filepath.c_str());
+    }
     return result;
   };
 }  
