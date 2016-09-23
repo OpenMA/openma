@@ -853,7 +853,7 @@ namespace body
     Segment *torso = nullptr, *pelvis = nullptr,
             *progression = new Segment("Progression", Part::User, Side::Center, segments);
     Joint* jnt;
-    if (optr->Region & Region::Upper)
+    if ((optr->Region & Region::Upper) == Region::Upper)
     {
       model->setName(this->name() + "_UpperLimb");
       Segment* head = new Segment("Head", Part::Head, Side::Center, segments);
@@ -903,7 +903,7 @@ namespace body
       jnt->setDescription("Head relative to progression frame");
       new PluginGaitHeadDescriptor(jnt);
     }
-    if (optr->Region & Region::Lower)
+    if ((optr->Region & Region::Lower) == Region::Lower)
     {
       model->setName(this->name() + "_LowerLimb");
       pelvis = new Segment("Pelvis", Part::Pelvis, Side::Center, segments);
@@ -956,7 +956,7 @@ namespace body
       jnt = new Joint("Pelvis.Progress", progression, pelvis, joints);
       new PluginGaitPelvisDescriptor(jnt);
     }
-    if (optr->Region & Region::Full)
+    if ((optr->Region & Region::Full) == Region::Full)
     {
       model->setName(this->name() + "_FullBody");
       jnt = new Joint("Spine", torso, pelvis, joints);
