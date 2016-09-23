@@ -218,7 +218,7 @@ namespace io
     assert(fp->channelsNumberRequired() <= channelStep);
     for (unsigned i = 0 ; i < fp->channelsNumberRequired() ; ++i)
     {
-      assert((channelIndices[i] > 0) && (static_cast<unsigned>(channelIndices[i]) < analogs.size()));
+      assert((channelIndices[i] > 0) && (static_cast<unsigned>(channelIndices[i]) <= analogs.size()));
       fp->setChannel(i, analogs[channelIndices[i]-1]);
     }
     // Geometry
