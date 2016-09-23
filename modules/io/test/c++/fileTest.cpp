@@ -504,6 +504,12 @@ CXXTEST_SUITE(FileTest)
     TS_ASSERT_EQUALS(file.hasError(), false);
     TS_ASSERT_EQUALS(file.hasFailure(), false);
   };
+  
+  CXXTEST_TEST(exists)
+  {
+    TS_ASSERT_EQUALS(ma::io::File::exists(OPENMA_TDD_PATH_IN("c3d/other/Gait.c3d")), true);
+    TS_ASSERT_EQUALS(ma::io::File::exists(OPENMA_TDD_PATH_IN("unknown")), false);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(FileTest)
@@ -533,3 +539,4 @@ CXXTEST_TEST_REGISTRATION(FileTest, readEOFException)
 CXXTEST_TEST_REGISTRATION(FileTest, write)
 CXXTEST_TEST_REGISTRATION(FileTest, seekWrite)
 CXXTEST_TEST_REGISTRATION(FileTest, superSeekWrite)
+CXXTEST_TEST_REGISTRATION(FileTest, exists)

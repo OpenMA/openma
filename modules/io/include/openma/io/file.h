@@ -49,6 +49,8 @@ namespace io
     OPENMA_DECLARE_PIMPL_ACCESSOR(File)
     
   public:
+    static bool exists(const char* filepath);
+    
     File();
     ~File() _OPENMA_NOEXCEPT;
     
