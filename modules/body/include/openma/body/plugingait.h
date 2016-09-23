@@ -83,6 +83,18 @@ namespace body
     void setRightAsisTrochanterAPDistance(double value) _OPENMA_NOEXCEPT;
     double leftAsisTrochanterAPDistance() const _OPENMA_NOEXCEPT;
     void setLeftAsisTrochanterAPDistance(double value) _OPENMA_NOEXCEPT;
+    double rightTibialTorsion() const _OPENMA_NOEXCEPT;
+    void setRightTibialTorsion(double value) _OPENMA_NOEXCEPT;
+    double leftTibialTorsion() const _OPENMA_NOEXCEPT;
+    void setLeftTibialTorsion(double value) _OPENMA_NOEXCEPT;
+    double rightThighRotationOffset() const _OPENMA_NOEXCEPT;
+    void setRightThighRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double leftThighRotationOffset() const _OPENMA_NOEXCEPT;
+    void setLeftThighRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double rightShankRotationOffset() const _OPENMA_NOEXCEPT;
+    void setRightShankRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double leftShankRotationOffset() const _OPENMA_NOEXCEPT;
+    void setLeftShankRotationOffset(double value) _OPENMA_NOEXCEPT;
     double rightKneeWidth() const _OPENMA_NOEXCEPT;
     void setRightKneeWidth(double value) _OPENMA_NOEXCEPT;
     double leftKneeWidth() const _OPENMA_NOEXCEPT;
@@ -100,6 +112,8 @@ namespace body
     double rightStaticRotationOffset() const _OPENMA_NOEXCEPT;
     double leftStaticPlantarFlexionOffset() const _OPENMA_NOEXCEPT;
     double leftStaticRotationOffset() const _OPENMA_NOEXCEPT;
+    double rightAnkleAbAdd() const _OPENMA_NOEXCEPT;
+    double leftAnkleAbAdd() const _OPENMA_NOEXCEPT;
     
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;

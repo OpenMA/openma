@@ -84,6 +84,12 @@ namespace body
     LeftLegLength(0.0),
     RightAsisTrochanterAPDistance(0.0),
     LeftAsisTrochanterAPDistance(0.0),
+    RightTibialTorsion(0.0),
+    LeftTibialTorsion(0.0),
+    RightThighRotationOffset(0.0),
+    LeftThighRotationOffset(0.0),
+    RightShankRotationOffset(0.0),
+    LeftShankRotationOffset(0.0),
     RightKneeWidth(0.0),
     LeftKneeWidth(0.0),
     RightAnkleWidth(0.0),
@@ -94,7 +100,9 @@ namespace body
     RightStaticPlantarFlexionOffset(0.0),
     RightStaticRotationOffset(0.0),
     LeftStaticPlantarFlexionOffset(0.0),
-    LeftStaticRotationOffset(0.0)
+    LeftStaticRotationOffset(0.0),
+    RightAnkleAbAdd(0.0),
+    LeftAnkleAbAdd(0.0)
   {};
     
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
@@ -771,6 +779,36 @@ namespace body
    */
   double LeftAsisTrochanterAPDistance;
   /**
+   * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa rightTibialTorsion() setRightTibialTorsion()
+   */
+  double RightTibialTorsion;
+  /**
+   * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa leftTibialTorsion() setLeftTibialTorsion()
+   */
+  double LeftTibialTorsion;
+  /**
+   * [Optional] This property holds the angle between projection of Thigh wand marker with the projection of the knee Flexion Axis (Y) onto the plane perpendicular to the longitudinal thigh axis. By default, this property contains the value 0.0.
+   * @sa rightThighRotationOffset() setRightThighRotationOffset()
+   */
+  double RightThighRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Thigh wand marker with the projection of the knee Flexion Axis (Y) onto the plane perpendicular to the longitudinal thigh axis. By default, this property contains the value 0.0.
+   * @sa leftThighRotationOffset() setLeftThighRotationOffset()
+   */
+  double LeftThighRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Shank wand marker with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa rightShankRotationOffset() setRightShankRotationOffset()
+   */
+  double RightShankRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Shank wand marker with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa leftShankRotationOffset() setLeftShankRotationOffset()
+   */
+  double LeftShankRotationOffset;
+  /**
    * [Required] This property holds the distance between femoral epycondyles. By default, this property contains the value 0.0.
    * @sa rightKneeWidth() setRightKneeWidth()
    */
@@ -825,14 +863,24 @@ namespace body
    * @sa leftStaticRotationOffset()
    */
   double LeftStaticRotationOffset;
+  /**
+   * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
+   * @sa rightAnkleAbAdd()
+   */
+  double RightAnkleAbAdd;
+  /**
+   * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
+   * @sa leftAnkleAbAdd()
+   */
+  double LeftAnkleAbAdd;
   };
 #endif
   
   /**
    * Constructor. The name is set to "PluginGait".
    */
-  PluginGait::PluginGait(int region, int side, Node* parent)
-  : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side), parent)
+  PluginGait::PluginGait(int region, int side, Variant variant, Node* parent)
+  : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side, variant), parent)
   {};
 
   /**
@@ -1749,9 +1797,135 @@ namespace body
     this->modified();
   };
   
- /**
+  /**
+   * Returns the internal parameter RightTibialTorsion.
+   */
+  double PluginGait::rightTibialTorsion() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightTibialTorsion;
+  };
+  
+  /**
+   * Sets the internal parameter RightTibialTorsion.
+   */
+  void PluginGait::setRightTibialTorsion(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightTibialTorsion) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightTibialTorsion = value;
+    this->modified();
+  };
+ 
+  /**
+   * Returns the internal parameter LeftTibialTorsion.
+   */
+  double PluginGait::leftTibialTorsion() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftTibialTorsion;
+  };
+  
+  /**
+   * Sets the internal parameter LeftTibialTorsion.
+   */
+  void PluginGait::setLeftTibialTorsion(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftTibialTorsion) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftTibialTorsion = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter RighThighRotation.
+   */
+  double PluginGait::rightThighRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightThighRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter RighThighRotation.
+   */ 
+  void PluginGait::setRightThighRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightThighRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightThighRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter LeftThighRotationOffset.
+   */
+  double PluginGait::leftThighRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftThighRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter LeftThighRotationOffset.
+   */
+  void PluginGait::setLeftThighRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftThighRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftThighRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter RighShankRotationOffset.
+   */
+  double PluginGait::rightShankRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightShankRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter RighShankRotationOffset.
+   */
+  void PluginGait::setRightShankRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightShankRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightShankRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter LeftShankRotationOffset.
+   */
+  double PluginGait::leftShankRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftShankRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter LeftShankRotationOffset.
+   */
+  void PluginGait::setLeftShankRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftShankRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftShankRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
    * Returns the internal parameter RightKneeWidth.
-  */
+   */
   double PluginGait::rightKneeWidth() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
@@ -1911,6 +2085,24 @@ namespace body
     return optr->LeftStaticRotationOffset;
   };
   
+  /**
+   * Returns the internal parameter RightAnkleAbAdd.
+   */
+  double PluginGait::rightAnkleAbAdd() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightAnkleAbAdd;
+  };
+  
+  /**
+   * Returns the internal parameter LeftAnkleAbAdd.
+   */
+  double PluginGait::leftAnkleAbAdd() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftAnkleAbAdd;
+  };
+  
   // ----------------------------------------------------------------------- //
   
   /*
@@ -2047,6 +2239,12 @@ namespace body
     optr->LeftLegLength = optr_src->LeftLegLength;
     optr->RightAsisTrochanterAPDistance = optr_src->RightAsisTrochanterAPDistance;
     optr->LeftAsisTrochanterAPDistance = optr_src->LeftAsisTrochanterAPDistance;
+    optr->RightTibialTorsion = optr_src->RightTibialTorsion;
+    optr->LeftTibialTorsion = optr_src->LeftTibialTorsion;
+    optr->RightThighRotationOffset = optr_src->RightThighRotationOffset;
+    optr->LeftThighRotationOffset = optr_src->LeftThighRotationOffset;
+    optr->RightShankRotationOffset = optr_src->RightShankRotationOffset;
+    optr->LeftShankRotationOffset = optr_src->LeftShankRotationOffset;
     optr->RightKneeWidth = optr_src->RightKneeWidth;
     optr->LeftKneeWidth = optr_src->LeftKneeWidth;
     optr->RightAnkleWidth = optr_src->RightAnkleWidth;
@@ -2058,6 +2256,8 @@ namespace body
     optr->RightStaticRotationOffset = optr_src->RightStaticRotationOffset;
     optr->LeftStaticPlantarFlexionOffset = optr_src->LeftStaticPlantarFlexionOffset;
     optr->LeftStaticRotationOffset = optr_src->LeftStaticRotationOffset;
+    optr->RightAnkleAbAdd = optr_src->RightAnkleAbAdd;
+    optr->LeftAnkleAbAdd = optr_src->LeftAnkleAbAdd;
   };
 };
 };

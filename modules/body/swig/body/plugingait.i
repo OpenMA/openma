@@ -76,6 +76,18 @@ namespace body
     void setRightAsisTrochanterAPDistance(double value);
     double leftAsisTrochanterAPDistance() const;
     void setLeftAsisTrochanterAPDistance(double value);
+    double rightTibialTorsion() const;
+    void setRightTibialTorsion(double value);
+    double leftTibialTorsion() const;
+    void setLeftTibialTorsion(double value);
+    double rightThighRotationOffset() const;
+    void setRightThighRotationOffset(double value);
+    double leftThighRotationOffset() const;
+    void setLeftThighRotationOffset(double value);
+    double rightShankRotationOffset() const;
+    void setRightShankRotationOffset(double value);
+    double leftShankRotationOffset() const;
+    void setLeftShankRotationOffset(double value);
     double rightKneeWidth() const;
     void setRightKneeWidth(double value);
     double leftKneeWidth() const;
@@ -93,6 +105,8 @@ namespace body
     double rightStaticRotationOffset() const;
     double leftStaticPlantarFlexionOffset() const;
     double leftStaticRotationOffset() const;
+    double rightAnkleAbAdd() const;
+    double leftAnkleAbAdd() const;
   };
   %clearnodefaultctor;
 };

@@ -84,6 +84,12 @@ namespace body
       Property<PluginGait, double, &PluginGait::leftLegLength,                   &PluginGait::setLeftLegLength>                 {"leftLegLength"},
       Property<PluginGait, double, &PluginGait::rightAsisTrochanterAPDistance,   &PluginGait::setRightAsisTrochanterAPDistance> {"rightAsisTrochanterAPDistance"},
       Property<PluginGait, double, &PluginGait::leftAsisTrochanterAPDistance,    &PluginGait::setLeftAsisTrochanterAPDistance>  {"leftAsisTrochanterAPDistance"},
+      Property<PluginGait, double, &PluginGait::rightTibialTorsion,              &PluginGait::setRightTibialTorsion>            {"rightTibialTorsion"},
+      Property<PluginGait, double, &PluginGait::leftTibialTorsion,               &PluginGait::setLeftTibialTorsion>             {"leftTibialTorsion"},
+      Property<PluginGait, double, &PluginGait::rightThighRotationOffset,        &PluginGait::setRightThighRotationOffset>      {"rightThighRotationOffset"},
+      Property<PluginGait, double, &PluginGait::leftThighRotationOffset,         &PluginGait::setLeftThighRotationOffset>       {"leftThighRotationOffset"},
+      Property<PluginGait, double, &PluginGait::rightShankRotationOffset,        &PluginGait::setRightShankRotationOffset>      {"rightShankRotationOffset"},
+      Property<PluginGait, double, &PluginGait::leftShankRotationOffset,         &PluginGait::setLeftShankRotationOffset>       {"leftShankRotationOffset"},
       Property<PluginGait, double, &PluginGait::rightKneeWidth,                  &PluginGait::setRightKneeWidth>                {"rightKneeWidth"},
       Property<PluginGait, double, &PluginGait::leftKneeWidth,                   &PluginGait::setLeftKneeWidth>                 {"leftKneeWidth"},
       Property<PluginGait, double, &PluginGait::rightAnkleWidth,                 &PluginGait::setRightAnkleWidth>               {"rightAnkleWidth"},
@@ -95,11 +101,13 @@ namespace body
       Property<PluginGait, double, &PluginGait::rightStaticPlantarFlexionOffset>                                                {"rightStaticPlantarFlexionOffset"},
       Property<PluginGait, double, &PluginGait::rightStaticRotationOffset>                                                      {"rightStaticRotationOffset"},
       Property<PluginGait, double, &PluginGait::leftStaticPlantarFlexionOffset>                                                 {"leftStaticPlantarFlexionOffset"},
-      Property<PluginGait, double, &PluginGait::leftStaticRotationOffset>                                                       {"leftStaticRotationOffset"}
+      Property<PluginGait, double, &PluginGait::leftStaticRotationOffset>                                                       {"leftStaticRotationOffset"},
+      Property<PluginGait, double, &PluginGait::rightAnkleAbAdd>                                                                {"rightAnkleAbAdd"},
+      Property<PluginGait, double, &PluginGait::leftAnkleAbAdd>                                                                 {"leftAnkleAbAdd"}
     )
     
   public:
-    PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side);
+    PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side, int variant);
     ~PluginGaitPrivate() _OPENMA_NOEXCEPT;
     
     void computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
@@ -125,6 +133,12 @@ namespace body
     double LeftLegLength;
     double RightAsisTrochanterAPDistance; 
     double LeftAsisTrochanterAPDistance;
+    double RightTibialTorsion;
+    double LeftTibialTorsion;
+    double RightThighRotationOffset;
+    double LeftThighRotationOffset;
+    double RightShankRotationOffset;
+    double LeftShankRotationOffset;
     double RightKneeWidth;
     double LeftKneeWidth;
     double RightAnkleWidth;
@@ -137,6 +151,8 @@ namespace body
     double RightStaticRotationOffset;
     double LeftStaticPlantarFlexionOffset;
     double LeftStaticRotationOffset;
+    double RightAnkleAbAdd;
+    double LeftAnkleAbAdd;
   };
   
   inline void PluginGaitPrivate::computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT
