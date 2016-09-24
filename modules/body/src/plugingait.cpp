@@ -2108,7 +2108,7 @@ namespace body
   
   /*
    * Generate a landmarks translator for the PiG model.
-   * The following list presents the label used in the PluginGait helper and its translation in OpenMA:
+   * The following list presents the label used in the PluginGait helper (Basic variant) and its translation in OpenMA:
    *  - LFHD: L.HF   (Left front head: approximately over the left)
    *  - LBHD: L.HB   (Left back head: on the back of the head)
    *  - RFHD: R.HF   (Right front head: approximately over the)
@@ -2144,12 +2144,25 @@ namespace body
    *  - RTOE: R.MTH2 (Head of the second metatarsal for the right)
    *  - LHEE: L.HEE  (Left heel marker)
    *  - RHEE: R.HEE  (Right heel marker)
+   *
+   * Supplementary markers are used in the KAD variant:
+   *  - LKAX: L.KAX  (Left knee axis)
+   *  - LKD1: L.KD1  (Left knee device 1)
+   *  - LKD2: L.KD2  (Left knee device 2)
+   *  - RKAX: R.KAX  (Right knee axis)
+   *  - RKD1: R.KD1  (Right knee device 1)
+   *  - RKD2: R.KD2  (Right knee device 2)
+   *
+   * The variant KADMed uses the markers of the Basic and KAD variants as well as two additional markers:
+   *  - RMED:  R.MTM (Right medial malleolus of the tibia)
+   *  - LMED:  L.MTM (Left medial malleolus of the tibia)
    */
   LandmarksTranslator* PluginGait::defaultLandmarksTranslator()
   {
     return new LandmarksTranslator(
       "LandmarksTranslator", 
       {
+        // Basic markers
         {"LFHD", "L.HF"},
         {"LBHD", "L.HB"},
         {"RFHD", "R.HF"},
@@ -2185,6 +2198,16 @@ namespace body
         {"RTOE", "R.MTH2"},
         {"LHEE", "L.HEE"},
         {"RHEE", "R.HEE"},
+        // KAD markers
+        {"LKAX", "L.KAX"},
+        {"LKD1", "L.KD1"},
+        {"LKD2", "L.KD2"},
+        {"RKAX", "R.KAX"},
+        {"RKD1", "R.KD1"},
+        {"RKD2", "R.KD2"},
+        // Medial markers for the knee and the shank
+        {"RMED", "R.MTM"},
+        {"LMED", "L.MTM"},
       }, this);
   };
   
