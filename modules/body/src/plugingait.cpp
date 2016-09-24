@@ -62,6 +62,72 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+bool _ma_plugingait_calibrate_hjc_basic(ma::math::Position* KJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double kneeWidth, const ma::math::Position* HJC)
+{
+  const auto& ITB = (*landmarks)[prefix+"ITB"];
+  const auto& LFE = (*landmarks)[prefix+"LFE"];
+  if (!ITB.isValid() || !LFE.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    return false;
+  }
+  // Compute the knee joint centre (KJC)
+  *KJC = ma::math::compute_chord((optr->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
+  return true;
+};
+
+bool _ma_plugingait_calibrate_hjc_kad(ma::math::Position* KJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double kneeWidth, const ma::math::Position* /* HJC */)
+{
+  // Required landmarks: *.ITB, *.LFE
+  const auto& KAX = (*landmarks)[prefix+"KAX"];
+  const auto& KD1 = (*landmarks)[prefix+"KD1"];
+  const auto& KD2 = (*landmarks)[prefix+"KD2"];
+  if (!KAX.isValid() || !KD1.isValid() || !KD2.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    return false;
+  }
+  // Compute the virtual lateral femoral epicondyle (VLFE)
+  double dist = ((KAX - KD1).norm() + (KAX - KD2).norm() + (KD1 - KD2).norm()) / sqrt(2.0) / 3.0;
+  auto n = (KD2 - KD1).cross(KAX - KD1).normalized();
+  auto I = (KD1 + KAX) / 2.;
+  auto PP1 = (2.0 /3.0 * (I - KD2)) + KD2;
+  ma::math::Position O = PP1 - (n * sqrt(3.0) * dist / 3.0);
+  auto uKAXO = (O-KAX).normalized();
+  const ma::math::Position& VLFE = O;
+  // Compute the knee joint centre (KJC)
+  *KJC = VLFE + uKAXO * (optr->MarkerDiameter + kneeWidth) / 2.0;
+  return true;
+};
+
+bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double ankleWidth, const ma::math::Position* KJC)
+{
+  const auto& LTM = (*landmarks)[prefix+"LTM"];
+  const auto& LS = (*landmarks)[prefix+"LS"];
+  if (!LTM.isValid() || !LS.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    return false;
+  }
+  // Compute the ankle joint centre (AJC)
+  *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, LS);
+  return true;
+};
+
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double ankleWidth, const ma::math::Position* KJC)
+{
+  const auto& LTM = (*landmarks)[prefix+"LTM"];
+  const auto& KAX = (*landmarks)[prefix+"KAX"];
+  if (!LTM.isValid() || !KAX.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    return false;
+  }
+  // Compute the ankle joint centre (AJC)
+  *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, KAX);
+  return true;
+};
+  
 namespace ma
 {
 namespace body
@@ -103,9 +169,11 @@ namespace body
     LeftStaticPlantarFlexionOffset(0.0),
     LeftStaticRotationOffset(0.0),
     RightAnkleAbAdd(0.0),
-    LeftAnkleAbAdd(0.0)
+    LeftAnkleAbAdd(0.0),
+    CalibrateKneeJointCentre(nullptr),
+    CalibrateAnkleJointCentre(nullptr)
   {};
-    
+  
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
   
   bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
@@ -143,16 +211,9 @@ namespace body
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
-    // Required landmarks: *.ITB, *.LFE
-    const auto& ITB = (*landmarks)[prefix+"ITB"];
-    const auto& LFE = (*landmarks)[prefix+"LFE"];
-    if (!ITB.isValid() || !LFE.isValid())
-    {
-      error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    math::Position KJC;
+    if (!this->CalibrateKneeJointCentre(&KJC, this, landmarks, prefix, kneeWidth, HJC))
       return false;
-    }
-    // Compute the knee joint centre (KJC)
-    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     // Set the segment length
     seglength = (KJC - *HJC).norm().mean();
     pptr->setProperty(prefix+"Thigh.length", seglength);
@@ -167,16 +228,9 @@ namespace body
     // -----------------------------------------
     // Shank
     // -----------------------------------------
-    // Required landmarks: *.LTM, *.LS
-    const auto& LTM = (*landmarks)[prefix+"LTM"];
-    const auto& LS = (*landmarks)[prefix+"LS"];
-    if (!LTM.isValid() || !LS.isValid())
-    {
-      error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    math::Position AJC;
+    if (!this->CalibrateAnkleJointCentre(&AJC, this, landmarks, prefix, ankleWidth, &KJC))
       return false;
-    }
-    // Compute the ankle joint centre (AJC)
-    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     // Set the segment length
     seglength = (AJC - KJC).norm().mean();
     pptr->setProperty(prefix+"Shank.length", seglength);
@@ -187,10 +241,11 @@ namespace body
     // -----------------------------------------
     // Foot
     // -----------------------------------------
-    // Required landmarks: *.MTH2, *.HEE
+    // Required landmarks: *.MTH2, *.HEE, *.LS
     const auto& MTH2 = (*landmarks)[prefix+"MTH2"];
     math::Position HEE = (*landmarks)[prefix+"HEE"]; // Copy instead of a map due to possible modification on its coordinates if the foot flat option is activated
-    if (!MTH2.isValid() || !HEE.isValid())
+    const auto& LS = (*landmarks)[prefix+"LS"];
+    if (!MTH2.isValid() || !HEE.isValid() || !LS.isValid())
     {
       error("PluginGait - Missing landmarks to define the foot. Calibration aborted.");
       return false;
@@ -882,7 +937,19 @@ namespace body
    */
   PluginGait::PluginGait(int region, int side, Variant variant, Node* parent)
   : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side, variant), parent)
-  {};
+  {
+    auto optr = this->pimpl();
+    if (variant == Basic)
+    {
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_hjc_basic;
+      optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_basic;
+    }
+    else
+    {
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_hjc_kad;
+      optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kad;
+    }
+  };
 
   /**
    * Create segments and joints according to the region and side given to the constructor.

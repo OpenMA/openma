@@ -155,6 +155,10 @@ namespace body
     double LeftStaticRotationOffset;
     double RightAnkleAbAdd;
     double LeftAnkleAbAdd;
+    
+    using CalibrateJointFuncPtr = bool (*)(math::Position* , PluginGaitPrivate* , ummp* , const std::string& , double , const math::Position* );
+    CalibrateJointFuncPtr CalibrateKneeJointCentre;
+    CalibrateJointFuncPtr CalibrateAnkleJointCentre;
   };
   
   inline void PluginGaitPrivate::computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT
