@@ -110,7 +110,7 @@ namespace body
     PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side, int variant);
     ~PluginGaitPrivate() _OPENMA_NOEXCEPT;
     
-    void computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
+    void computeHipJointCentre(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
     bool calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT;
     bool reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     bool reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
@@ -161,7 +161,7 @@ namespace body
     CalibrateJointFuncPtr CalibrateAnkleJointCentre;
   };
   
-  inline void PluginGaitPrivate::computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT
+  inline void PluginGaitPrivate::computeHipJointCentre(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT
   {
     //const double theta = 0.49567350756639; // 28.4 * M_PI / 180.0;
     //const double beta = 0.314159265358979; // 18.0 * M_PI / 180.0;

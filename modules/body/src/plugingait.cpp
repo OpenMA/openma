@@ -1173,7 +1173,7 @@ namespace body
       //   - Left
       if ((leftHJCH = this->findChild<Point*>("L.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCenter(_L_HJC.data(), -1.0,  leftLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_L_HJC.data(), -1.0,  leftLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
         new Point("L.HJC", _L_HJC.data(), this);
       }
       else
@@ -1181,7 +1181,7 @@ namespace body
       //   - Right
       if ((rightHJCH = this->findChild<Point*>("R.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCenter(_R_HJC.data(),  1.0, rightLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_R_HJC.data(),  1.0, rightLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
         new Point("R.HJC", _R_HJC.data(), this);
       }
       else
