@@ -52,12 +52,6 @@
 //                                INTERFACE
 // ========================================================================= //
 
-%typemap(out, noblock=1) ma::Node* ma::io::read
-{
-  if ($1 == nullptr) SWIG_exception_fail(SWIG_IOError, "An error occurred during the loading of a file");
-  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
-};
-
 namespace ma
 {
 namespace io

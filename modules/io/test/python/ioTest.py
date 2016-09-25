@@ -5,7 +5,7 @@ from test_file_path import openma_tdd_path_in
 
 class IOTest(unittest.TestCase):
     def test_wrong_path(self):
-        self.assertRaises(IOError, ma.io.read, 'IDoNotExist.abc')
+        self.assertRaises(RuntimeError, ma.io.read, 'IDoNotExist.abc')
     
     def test_force_plate_extraction(self):
         root = ma.io.read(openma_tdd_path_in('c3d/standard/sample01/Eb015vi.c3d'))

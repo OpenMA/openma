@@ -2,7 +2,7 @@ classdef IOTest < matlab.unittest.TestCase
     methods (Test)
     
         function wrongPath(testCase)
-            testCase.verifyError(@()ma.io.read('IDoNotExist.abc'), 'SWIG:IOError');
+            testCase.verifyError(@()ma.io.read('IDoNotExist.abc'), 'SWIG:RuntimeError');
         end
         
         function forcePlateExtraction(testCase)
