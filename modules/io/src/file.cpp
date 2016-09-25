@@ -49,7 +49,7 @@
   #include <fcntl.h> // open, Close
   #include <unistd.h> // ftruncate
 #else
-  #define stat _stat;
+  #define stat _stat
 #endif
 
 // -------------------------------------------------------------------------- //
