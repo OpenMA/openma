@@ -65,7 +65,7 @@ namespace ma
     };
     
     static void mute(bool active) _OPENMA_NOEXCEPT;
-    
+    static Device* device() _OPENMA_NOEXCEPT;
     static void setDevice(Device* output) _OPENMA_NOEXCEPT;
     
     static Logger& instance();

@@ -193,6 +193,14 @@ namespace ma
   };
   
   /**
+   * Returns the device which will write the log message
+   */
+  Logger::Device* Logger::device() _OPENMA_NOEXCEPT
+  {
+    return Logger::instance().mp_Pimpl->Output;
+  };
+  
+  /**
    * Set the device which will write the log messages. If a previous device was set,
    * it will be deleted. The logger takes the ownership of the device.
    */
