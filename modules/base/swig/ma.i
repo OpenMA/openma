@@ -44,13 +44,23 @@
 %}
 
 %init %{
-  // Let's mute the logger by default
-  ma::Logger::mute(true);
+  // Redirect OpenMA error message
+  ma::Logger::setDevice(new ma::bindings::LoggerDevice);
 %}
 
 %include "macros.i"
 
 %include <std_string.i>
+
+%exception {
+  auto logdev = static_cast<ma::bindings::LoggerDevice*>(ma::Logger::device());
+  logdev->clearError();
+  $action
+  if (logdev->errorFlag())
+  {
+    SWIG_exception_fail(SWIG_RuntimeError, logdev->errorMessage().c_str());
+  }
+}
 
 // ========================================================================= //
 //                                INTERFACE
