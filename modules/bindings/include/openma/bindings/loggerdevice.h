@@ -32,23 +32,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_bindings_h
-#define __openma_bindings_h
+#ifndef __openma_bindings_loggerdevice_h
+#define __openma_bindings_loggerdevice_h
 
-#include "openma/bindings_export.h"
-#include "openma/base/node.h"
+#include "openma/base/logger.h"
 
-#define _MA_REF_COUNTER "_MA_REF_COUNTER"
+#include <string>
 
-OPENMA_BINDINGS_EXPORT void _ma_clear_node(ma::Node* self);
+namespace ma
+{
+namespace bindings
+{
+  // Create a device to store error message
+  struct LoggerDevice : ma::Logger::Device
+  {
+    LoggerDevice();
+    ~LoggerDevice() = default;
+    void clearError();
+    bool errorFlag() const _OPENMA_NOEXCEPT;
+    const std::string& errorMessage() const _OPENMA_NOEXCEPT;
+    virtual void write(ma::Message category, const char* msg) _OPENMA_NOEXCEPT final;
+  private:
+    bool m_ErrorFlag;
+    std::string m_ErrorMessage;
+  };
+};
+};
 
-OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_get(ma::Node* node);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_set(ma::Node* node, const ma::Any& value);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);
-OPENMA_BINDINGS_EXPORT int _ma_refcount_decr(ma::Node* node);
-
-#include "openma/bindings/templatehelper.h"
-#include "openma/bindings/loggerdevice.h"
-
-#endif // __openma_bindings_h
+#endif // __openma_bindings_loggerdevice_h

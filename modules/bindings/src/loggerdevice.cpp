@@ -32,23 +32,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_bindings_h
-#define __openma_bindings_h
-
-#include "openma/bindings_export.h"
-#include "openma/base/node.h"
-
-#define _MA_REF_COUNTER "_MA_REF_COUNTER"
-
-OPENMA_BINDINGS_EXPORT void _ma_clear_node(ma::Node* self);
-
-OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_get(ma::Node* node);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_set(ma::Node* node, const ma::Any& value);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);
-OPENMA_BINDINGS_EXPORT int _ma_refcount_decr(ma::Node* node);
-
-#include "openma/bindings/templatehelper.h"
 #include "openma/bindings/loggerdevice.h"
 
-#endif // __openma_bindings_h
+namespace ma
+{
+namespace bindings
+{
+  LoggerDevice::LoggerDevice()
+  : m_ErrorFlag(false), m_ErrorMessage()
+  {};
+  
+  void LoggerDevice::clearError()
+  {
+    this->m_ErrorFlag = false;
+    this->m_ErrorMessage.clear();
+  };
+  
+  bool LoggerDevice::errorFlag() const _OPENMA_NOEXCEPT
+  {
+    return this->m_ErrorFlag;
+  };
+  
+  const std::string& LoggerDevice::errorMessage() const _OPENMA_NOEXCEPT
+  {
+    return this->m_ErrorMessage;
+  };
+  
+  void LoggerDevice::write(ma::Message category, const char* msg) _OPENMA_NOEXCEPT
+  {
+    if (category == ma::Message::Error)
+    {
+      this->m_ErrorFlag = true;
+      this->m_ErrorMessage.assign(msg);
+    }
+  };
+};
+};
