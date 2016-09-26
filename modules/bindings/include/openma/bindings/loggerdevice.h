@@ -36,6 +36,7 @@
 #define __openma_bindings_loggerdevice_h
 
 #include "openma/base/logger.h"
+#include "openma/bindings_export.h"
 
 #include <string>
 
@@ -44,7 +45,7 @@ namespace ma
 namespace bindings
 {
   // Create a device to store error message
-  struct LoggerDevice : ma::Logger::Device
+  struct OPENMA_BINDINGS_EXPORT LoggerDevice : ma::Logger::Device
   {
     LoggerDevice();
     ~LoggerDevice() = default;
