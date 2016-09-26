@@ -158,10 +158,10 @@
     std::string* key = nullptr;
     int sres1 = SWIG_AsPtr_std_string(PyList_GetItem(pair,0), &key);
     if (!SWIG_IsOK(sres1)) {
-      SWIG_exception_fail(SWIG_ArgError(sres1), "conversion failed for 'std::string' in 'std::unordered_map<std::string, ma::Any> const &' typemap (in)"); 
+      SWIG_exception_fail(SWIG_ArgError(sres1), "conversion failed for 'std::string' in 'std::unordered_map<std::string, ma::Any> &&' typemap (in)"); 
     }
     if (!key) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'std::string' in 'std::unordered_map<std::string, ma::Any> const &' typemap (in)"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'std::string' in 'std::unordered_map<std::string, ma::Any> &&' typemap (in)"); 
     }
     tkey = *key;
     if (SWIG_IsNewObj(sres1)) delete key;
@@ -170,7 +170,7 @@
     if (SWIG_IsOK(SWIG_ConvertPtr(PyList_GetItem(pair,1), &value, SWIGTYPE_p_ma__Any, 0)))
     {
       if (!value) {
-        SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::Any' in 'std::unordered_map<std::string, ma::Any> const &' typemap (in)"); 
+        SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::Any' in 'std::unordered_map<std::string, ma::Any> &&' typemap (in)"); 
       }
       $1->emplace(tkey, (ma::Any const &)*reinterpret_cast<ma::Any*>(value));
     }
@@ -183,7 +183,7 @@
   }
 }
 
-// Convert std::unordered_map<std::string, ma::Any> to MATLAB cell
+// Convert std::unordered_map<std::string, ma::Any> to Python cell
 %typemap(out, noblock=1) std::unordered_map<std::string, ma::Any>
 {
   $result = PyList_New($1.size());
