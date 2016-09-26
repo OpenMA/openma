@@ -31,3 +31,60 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+// Convert Python list to std::unordered_map<std::string, std::string>
+%typemap(typecheck, noblock=1) std::unordered_map<std::string, std::string> const &
+{
+  $1 = PyList_Check($input);
+  if ($1)
+  {
+    Py_ssize_t numelts = PyList_Size($input);
+    for (Py_ssize_t i = 0 ; i < numelts ; ++i)
+    {
+      auto list = PyList_GetItem($input,i);
+      if ((!PyList_Check(list))
+       || (PyList_Size(list) != Py_ssize_t(2))
+       || (PyString_Check(PyList_GetItem(list,0)) == 0)
+       || (PyString_Check(PyList_GetItem(list,1)) == 0)
+      )
+      {
+        $1 = 0;
+        break;
+      }
+    }
+  }
+}
+%typemap(in) std::unordered_map<std::string, std::string> const & (std::unordered_map<std::string, std::string> temp)
+{
+  $1 = &temp;
+  std::string tkey, tvalue;
+  Py_ssize_t numelts = PyList_Size($input);
+  for (Py_ssize_t i = 0 ; i < numelts ; ++i)
+  {
+    auto pair = PyList_GetItem($input,i);
+    // Key
+    std::string* key = nullptr;
+    int sres1 = SWIG_AsPtr_std_string(PyList_GetItem(pair,0), &key);
+    if (!SWIG_IsOK(sres1)) {
+      SWIG_exception_fail(SWIG_ArgError(sres1), "conversion failed for 'std::string' in 'std::unordered_map<std::string, std::string> const &' typemap (in)"); 
+    }
+    if (!key) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'std::string' in 'std::unordered_map<std::string, std::string> const &' typemap (in)"); 
+    }
+    tkey = *key;
+    if (SWIG_IsNewObj(sres1)) delete key;
+    // Value 
+    std::string* value = nullptr;
+    int sres2 = SWIG_AsPtr_std_string(PyList_GetItem(pair,1), &value);
+    if (!SWIG_IsOK(sres2)) {
+      SWIG_exception_fail(SWIG_ArgError(sres2), "conversion failed for 'std::string' in 'std::unordered_map<std::string, std::string> const &' typemap (in)"); 
+    }
+    if (!value) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'std::string' in 'std::unordered_map<std::string, std::string> const &' typemap (in)"); 
+    }
+    tvalue = *value;
+    if (SWIG_IsNewObj(sres2)) delete value;
+    // Assign
+    $1->emplace(tkey, tvalue);
+  }
+}

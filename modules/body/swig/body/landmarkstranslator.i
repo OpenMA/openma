@@ -32,44 +32,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module(package="ma.body") body
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/body.h"
-%}
-
-%include "macros.i"
-
-%import "ma.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-#if defined(SWIGMATLAB)
-%include "body_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "body_python.i"
-#endif
-
-%include "body/enums.i"
-%include "body/landmarkstranslator.i"
-%include "body/skeletonhelper.i"
-%include "body/plugingait.i"
-
 namespace ma
 {
 namespace body
 {
-  void calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, ma::body::RepresentationFrame frame = ma::body::RepresentationFrame::Distal);
+  SWIG_TYPEMAP_NODE_OUT(ma::body, LandmarksTranslator)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, LandmarksTranslator, SWIGTYPE)
+  
+  %nodefaultctor;
+  class LandmarksTranslator : public Node
+  {
+  public:
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, LandmarksTranslator, SWIGTYPE)
+    
+    LandmarksTranslator(const std::string& name, const std::unordered_map<std::string,std::string>& converstionTable, Node* parent = nullptr);
+    ~LandmarksTranslator();
+    
+    const std::string& convert(const std::string& name) const;
+    std::string convertIfExists(const std::string& name) const;
+    const std::string& convertReverse(const std::string& name) const;
+
+  };
+  %clearnodefaultctor;
 };
 };

@@ -1,5 +1,6 @@
 SET_SOURCE_FILES_PROPERTIES("body.i" PROPERTIES CPLUSPLUS ON)
 SET(SWIG_MODULE_body_EXTRA_SRCS
+  "body/landmarkstranslator.i"
   "body/plugingait.i"
   "body/skeletonhelper.i")
 SET(SWIG_MODULE_body_EXTRA_FLAGS
