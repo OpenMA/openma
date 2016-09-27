@@ -230,6 +230,7 @@ namespace body
   
   bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
+    auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, shoulderOffset = 0.0, elbowWidth = 0.0, wristWidth = 0.0, handThickness = 0.0;
     if (side == Side::Left)
@@ -292,6 +293,7 @@ namespace body
     v = (WJC - EJC).cross(w).normalized();
     u = v.cross(w);
     math::to_timesequence(u, v, w, EJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -299,6 +301,7 @@ namespace body
     w = (EJC - WJC).normalized();
     u = v.cross(w); // The 'v' axis is the same than the one defined for the arm
     math::to_timesequence(u, v, w, WJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -317,6 +320,7 @@ namespace body
     u = s * w.cross(US - RS).normalized();
     v = w.cross(u);
     math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     return true;
   };
   
@@ -1111,37 +1115,50 @@ namespace body
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
-    if ((optr->Region & Region::Upper) && optr->HeadOffsetEnabled)
+    if (optr->Region & Region::Upper)
     {
-      // -----------------------------------------
-      // Head
-      // -----------------------------------------
-      // Required landmarks: L.HF, L.HB, R.HF and R.HB
-      const auto& L_HF = landmarks["L.HF"];
-      const auto& L_HB = landmarks["L.HB"];
-      const auto& R_HF = landmarks["R.HF"];
-      const auto& R_HB = landmarks["R.HB"];
-      if (!L_HF.isValid() || !L_HB.isValid() || !R_HF.isValid() || !R_HB.isValid())
+#if !defined(_MSC_VER)
+#warning LENGTHS OF UPPERLIMB SEGMENTS ARE NULL
+#endif
+      this->setProperty("L.Arm.length", 0);
+      this->setProperty("L.Forearm.length", 0);
+      this->setProperty("L.Hand.length", 0);
+      this->setProperty("R.Arm.length", 0);
+      this->setProperty("R.Forearm.length", 0);
+      this->setProperty("R.Hand.length", 0);
+      this->setProperty("Torso.length", 0);
+      this->setProperty("Head.length", 0);
+      if (optr->HeadOffsetEnabled)
       {
-        error("PluginGait - Missing landmarks to define the head. Calibration aborted.");
-        return false;
+        // -----------------------------------------
+        // Head
+        // -----------------------------------------
+        // Required landmarks: L.HF, L.HB, R.HF and R.HB
+        const auto& L_HF = landmarks["L.HF"];
+        const auto& L_HB = landmarks["L.HB"];
+        const auto& R_HF = landmarks["R.HF"];
+        const auto& R_HB = landmarks["R.HB"];
+        if (!L_HF.isValid() || !L_HB.isValid() || !R_HF.isValid() || !R_HB.isValid())
+        {
+          error("PluginGait - Missing landmarks to define the head. Calibration aborted.");
+          return false;
+        }
+        // NOTE : The markers are first averaged before the computation of the offset!
+        const math::Position _L_HF = L_HF.mean();
+        const math::Position _L_HB = L_HB.mean();
+        const math::Position _R_HF = R_HF.mean();
+        const math::Position _R_HB = R_HB.mean();        
+        // WARNING: The origin (set to the middle of the four points) is not the same than Vicon!
+        const math::Vector u = ((_L_HF + _R_HF) / 2.0 - (_L_HB + _R_HB) / 2.0).normalized();
+        const math::Vector w = u.cross((_L_HF + _L_HB) / 2.0 - (_R_HF + _R_HB) / 2.0).normalized();
+        const math::Pose head(u, w.cross(u), w, (_L_HF + _R_HF + _L_HB + _R_HB) / 4.0);
+        if (head.isOccluded())
+        {
+          error("PluginGait - Impossible to find a least one valid frame for the head motion. Calibration aborted.");
+          return false;
+        }
+        optr->HeadOffset = -1.0 * head.eulerAngles(2,0,1).mean().values().z();
       }
-      // NOTE : The markers are first averaged before the computation of the offset!
-      const math::Position _L_HF = L_HF.mean();
-      const math::Position _L_HB = L_HB.mean();
-      const math::Position _R_HF = R_HF.mean();
-      const math::Position _R_HB = R_HB.mean();        
-      // WARNING: The origin (set to the middle of the four points) is not the same than Vicon!
-      const math::Vector u = ((_L_HF + _R_HF) / 2.0 - (_L_HB + _R_HB) / 2.0).normalized();
-      const math::Vector w = u.cross((_L_HF + _L_HB) / 2.0 - (_R_HF + _R_HB) / 2.0).normalized();
-      const math::Pose head(u, w.cross(u), w, (_L_HF + _R_HF + _L_HB + _R_HB) / 4.0);
-      if (head.isOccluded())
-      {
-        error("PluginGait - Impossible to find a least one valid frame for the head motion. Calibration aborted.");
-        return false;
-      }
-      optr->HeadOffset = -1.0 * head.eulerAngles(2,0,1).mean().values().z();
-      
     }
     return true;
   };
@@ -1200,6 +1217,7 @@ namespace body
       const math::Vector u = v.cross(w);
       const math::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
       torsoSCS = math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
+      seg->setProperty("length", this->property(seg->name()+".length"));
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -1400,6 +1418,7 @@ namespace body
       const math::Vector ur = u * cy - w * sy;
       const math::Vector wr = u * sy + w * cy;
       math::to_timesequence(ur, v, wr, o, seg->name()+".SCS", sampleRate, startTime, seg);
+      seg->setProperty("length", this->property(seg->name()+".length"));
     }
     return true;
   };
