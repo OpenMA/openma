@@ -63,7 +63,8 @@ namespace bindings
     if (category == ma::Message::Error)
     {
       this->m_ErrorFlag = true;
-      this->m_ErrorMessage.assign(msg);
+      this->m_ErrorMessage.append("\n");
+      this->m_ErrorMessage.append(msg);
     }
   };
 };
