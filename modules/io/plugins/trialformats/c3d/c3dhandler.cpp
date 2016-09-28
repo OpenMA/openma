@@ -213,6 +213,8 @@ namespace io
   
   void C3DHandlerPrivate::extractForcePlatformData(instrument::ForcePlate* fp, const std::vector<TimeSequence*>& analogs, double* origin, double* corners, int* channelIndices, size_t channelStep, double* calMatrix, const unsigned* calMatrixSize)
   {
+    if (fp == nullptr)
+      return;
     // TODO Debug assertions should be transformed in regular tests
     // Analog channels
     assert(fp->channelsNumberRequired() <= channelStep);
@@ -905,13 +907,13 @@ namespace io
             if ((valType.size() >= numfps) && (valCorners.size() >= (12 * numfps)) && (valOrigin.size() == (3 * numfps)) && (dimChannel.size() >= 2) && (dimChannel[1] >= numfps))
             {
               int maxType = *std::max_element(valType.cbegin(), valType.cend());
-              instrument::ForcePlate* fp = nullptr;
               if ((maxType <= 3) || ((maxType > 3) && calmatrix.isValid() && (dimCalMatrix.size() >= 3) && (dimCalMatrix[2] >= numfps)))
               {
                 unsigned channelStep = dimChannel[0];
                 unsigned calMatrixStep = calmatrix.isValid() ? dimCalMatrix[0] * dimCalMatrix[1] : 0;
                 for (size_t i = 0 ; i < numfps ; ++i)
                 {
+                  instrument::ForcePlate* fp = nullptr;
                   double* o = valOrigin.data()+(i*3);
                   double* c = valCorners.data()+(i*12);
                   int* ch = valChannel.data()+(i*channelStep);
@@ -921,6 +923,7 @@ namespace io
                     warning("Origin parameter for the force platform #%i seems to locate the hardware origin from the center of the working surface. Data are set to the opposite to locate the center of the working surface from the hardware's origin.", i+1);
                     o[0] *= -1.0; o[1] *= -1.0; o[2] *= -1.0;
                   }
+                  
                   switch(valType[i])
                   {
                   case 1:
