@@ -156,7 +156,7 @@ namespace body
     double RightAnkleAbAdd;
     double LeftAnkleAbAdd;
     
-    using CalibrateJointFuncPtr = bool (*)(math::Position* , PluginGaitPrivate* , ummp* , const std::string& , double , const math::Position* );
+    using CalibrateJointFuncPtr = bool (*)(math::Position* , std::vector<double*>& , PluginGaitPrivate* , ummp* , const std::string& , double , double , const math::Position* );
     CalibrateJointFuncPtr CalibrateKneeJointCentre;
     CalibrateJointFuncPtr CalibrateAnkleJointCentre;
   };

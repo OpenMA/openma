@@ -330,6 +330,34 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_EQUALS(helper.rightStaticPlantarFlexionOffset(), 0.0);
     TS_ASSERT_EQUALS(helper.rightStaticRotationOffset(), 0.0);
   };
+  
+  CXXTEST_TEST(calibrateFullBodyFrameBasicKAD)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
+    helper.setMarkerDiameter(14.0); // mm
+    helper.setLeftLegLength(860.0); // mm
+    helper.setLeftKneeWidth(102.0); // mm
+    helper.setLeftAnkleWidth(75.3); // mm
+    helper.setRightLegLength(865.0); // mm
+    helper.setRightKneeWidth(103.4); // mm
+    helper.setRightAnkleWidth(72.9); // mm
+    
+    ma::Node root("root");
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration_Basic.c3d"));
+    TS_ASSERT_EQUALS(root.children().size(),1u);
+    helper.calibrate(&root, nullptr);
+    
+    TS_ASSERT_DELTA(helper.interAsisDistance(), 211.162, 1e-3);
+    TS_ASSERT_DELTA(helper.leftAsisTrochanterAPDistance(), 62.208, 1e-3);
+    TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-3);
+    // TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset() * 180.0 / M_PI, 4.72487, 1e-3);
+    // TS_ASSERT_DELTA(helper.leftStaticRotationOffset() * 180.0 / M_PI, 0.233667, 1e-5);
+    TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
+    TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-3);
+    
+    // TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset() * 180.0 / M_PI, 3.88629, 1e-3);
+    // TS_ASSERT_DELTA(helper.rightStaticRotationOffset() * 180.0 / M_PI, 2.22081, 1e-3);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitCalibrationTest)  
@@ -345,3 +373,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKAD)

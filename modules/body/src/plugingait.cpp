@@ -62,7 +62,7 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-bool _ma_plugingait_calibrate_hjc_basic(ma::math::Position* KJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double kneeWidth, const ma::math::Position* HJC)
+bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double kneeWidth, const ma::math::Position* HJC)
 {
   const auto& ITB = (*landmarks)[prefix+"ITB"];
   const auto& LFE = (*landmarks)[prefix+"LFE"];
@@ -76,31 +76,101 @@ bool _ma_plugingait_calibrate_hjc_basic(ma::math::Position* KJC, ma::body::Plugi
   return true;
 };
 
-bool _ma_plugingait_calibrate_hjc_kad(ma::math::Position* KJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double kneeWidth, const ma::math::Position* /* HJC */)
+bool _ma_plugingait_calibrate_kjc_kad(ma::math::Position* KJC, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double kneeWidth, const ma::math::Position* HJC)
 {
   // Required landmarks: *.ITB, *.LFE
   const auto& KAX = (*landmarks)[prefix+"KAX"];
   const auto& KD1 = (*landmarks)[prefix+"KD1"];
   const auto& KD2 = (*landmarks)[prefix+"KD2"];
-  if (!KAX.isValid() || !KD1.isValid() || !KD2.isValid())
+  const auto& ITB = (*landmarks)[prefix+"ITB"];
+#if 1
+  if (!KAX.isValid() || !KD1.isValid() || !KD2.isValid() || !ITB.isValid())
   {
     ma::error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
     return false;
   }
   // Compute the virtual lateral femoral epicondyle (VLFE)
   double dist = ((KAX - KD1).norm() + (KAX - KD2).norm() + (KD1 - KD2).norm()) / sqrt(2.0) / 3.0;
-  auto n = (KD2 - KD1).cross(KAX - KD1).normalized();
+  auto n = -s * (KD2 - KD1).cross(KAX - KD1).normalized();
   auto I = (KD1 + KAX) / 2.;
   auto PP1 = (2.0 /3.0 * (I - KD2)) + KD2;
   ma::math::Position O = PP1 - (n * sqrt(3.0) * dist / 3.0);
-  auto uKAXO = (O-KAX).normalized();
+  // auto uKAXO = (O-KAX).normalized();
   const ma::math::Position& VLFE = O;
+  // std::cout << "\n" + prefix + "HJC:\n" << HJC->mean().values() << std::endl;
   // Compute the knee joint centre (KJC)
-  *KJC = VLFE + uKAXO * (optr->MarkerDiameter + kneeWidth) / 2.0;
+  *KJC = ma::math::compute_chord((optr->MarkerDiameter + kneeWidth) / 2.0, VLFE, *HJC, KAX);
+  // Compute the virtual lateral femoral epicondyle (VLFE)
+  // Compute the thigh marker rotation offset
+  ma::math::Vector w = (*HJC - *KJC).normalized();
+  ma::math::Vector ITB_proj_trans_unit = ((ITB - (ITB - *KJC).dot(w).replicate<3>() * w) - *KJC).normalized();
+  ma::math::Vector v = (VLFE - *KJC).normalized();
+  // ma::math::Vector v = w.cross(u);
+  // ma::math::Pose thigh(v.cross(w),v,w,*KJC);
+  // std::cout << "\n" + prefix + "Thigh AF:\n" << thigh.values() << std::endl;
+  // ma::math::Vector ITB_local_proj = thigh.inverse().transform(ITB);
+#else
+  ma::math::Position mKAX = KAX.mean();
+  ma::math::Position mKD1 = KD1.mean();
+  ma::math::Position mKD2 = KD2.mean();
+  ma::math::Position mHJC = HJC->mean();
+  double mdist = ((mKAX - mKD1).norm() + (mKAX - mKD2).norm() + (mKD1 - mKD2).norm()) / sqrt(2.0) / 3.0;
+  auto mn = -s * (mKD2 - mKD1).cross(mKAX - mKD1).normalized();
+  auto mI = (mKD1 + mKAX) / 2.;
+  auto mPP1 = (2.0 /3.0 * (mI - mKD2)) + mKD2;
+  ma::math::Position mO = mPP1 - (mn * sqrt(3.0) * mdist / 3.0);
+  // auto uKAXO = (O-KAX).normalized();
+  const ma::math::Position& mVLFE = mO;
+  ma::math::Position mKJC = ma::math::compute_chord((optr->MarkerDiameter + kneeWidth) / 2.0, mVLFE, mHJC, mKAX);
+  std::cout << "\n" + prefix + "mKAX:\n" << mKAX.values() << std::endl;
+  std::cout << "\n" + prefix + "mKD1:\n" << mKD1.values() << std::endl;
+  std::cout << "\n" + prefix + "mKD2:\n" << mKD2.values() << std::endl;
+  std::cout << "\n" + prefix + "mdist:\n" << mdist << std::endl;
+  std::cout << "\n" + prefix + "mn:\n" << mn.values() << std::endl;
+  std::cout << "\n" + prefix + "mI:\n" << mI.values() << std::endl;
+  std::cout << "\n" + prefix + "mPP1:\n" << mPP1.values() << std::endl;
+  std::cout << "\n" + prefix + "mO:\n" << mO.values() << std::endl;
+  std::cout << "\n" + prefix + "mHJC:\n" << mHJC.values() << std::endl;
+  std::cout << "\n" + prefix + "mKJC:\n" << mKJC.values() << std::endl;
+  // Compute the thigh marker rotation offset
+  ma::math::Vector w = (mHJC - mKJC).normalized();
+  // ma::math::Vector ITB_proj = ITB - (ITB - *KJC).dot(w).replicate<3>() * w;
+  // std::cout << "\n" + prefix + "ITB:\n" << ITB.values() << std::endl;
+  ma::math::Vector v = s * (mVLFE - mKJC).normalized();
+  // ma::math::Vector v = w.cross(u);
+  ma::math::Pose thigh(v.cross(w),v,w,mKJC);
+  std::cout << "\n" + prefix + "Thigh AF:\n" << thigh.values() << std::endl;
+  ma::math::Vector ITB_local_proj = thigh.inverse().transform(ITB.mean());
+#endif
+  // ITB_local_proj.values().col(2).setZero();
+  // std::cout << "\n" + prefix + "ITB_local_proj:\n" << ITB_local_proj.values() << std::endl;
+  // std::cout << "\n" << ITB_local_proj.values() << std::endl;
+  // ma::math::Vector y(ITB_local_proj.rows());
+  // y.values().setZero(); y.values().col(1).setConstant(s); y.residuals().setZero();
+  // ma::math::Scalar dot = ITB_local_proj.normalized().dot(y);
+  // ma::math::Scalar crossnorm = ITB_local_proj.normalized().cross(y).norm();
+  // ma::math::Scalar res(ITB_local_proj.rows());
+  // res.residuals().setZero();
+  // for (int i = 0 ; i < res.rows() ; ++i)
+  // {
+  //   res.values().coeffRef(i) = atan2(crossnorm.values().coeff(i), dot.values().coeff(i));
+  // }
+  // *offsets[0] = res.mean();
+  // *offsets[0] = (ITB_proj - *KJC).normalized().cross(v).norm().asin().mean();
+  ma::math::Scalar dot = ITB_proj_trans_unit.dot(v);
+  ma::math::Scalar crossnorm = ITB_proj_trans_unit.cross(v).norm();
+  // ma::math::Scalar res(ITB_proj_trans_unit.rows()); res.residuals().setZero();
+  // for (int i = 0 ; i < res.rows() ; ++i)
+  // {
+  //   res.values().coeffRef(i) = atan2(crossnorm.values().coeff(i), dot.values().coeff(i));
+  // }
+  // *offsets[0] = -s * res.mean() * 180. / M_PI;
+  *offsets[0] = -s * crossnorm.atan2(dot).mean();
+  // std::cout << "\n - " << prefix << "ThighRotationOffset: " << *offsets[0] * 180. / M_PI << std::endl;
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& LS = (*landmarks)[prefix+"LS"];
@@ -114,7 +184,7 @@ bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::body::Plugi
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& KAX = (*landmarks)[prefix+"KAX"];
@@ -181,7 +251,9 @@ namespace body
     auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0, seglength = 0.0;
-    double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr;
+    double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr,
+           *tibialTorsion = nullptr, *thighRotationOffset = nullptr,
+           *shankRotationOffset = nullptr, *ankleAbAdd = nullptr;
     bool footFlat = false;
     if (side == Side::Left)
     {
@@ -192,6 +264,10 @@ namespace body
       footFlat = this->LeftFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->LeftStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->LeftStaticRotationOffset);
+      tibialTorsion = &(this->LeftTibialTorsion);
+      thighRotationOffset = &(this->LeftThighRotationOffset);
+      shankRotationOffset = &(this->LeftShankRotationOffset);
+      ankleAbAdd = &(this->LeftAnkleAbAdd);
     }
     else if (side == Side::Right)
     {
@@ -202,17 +278,22 @@ namespace body
       footFlat = this->RightFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->RightStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->RightStaticRotationOffset);
+      tibialTorsion = &(this->RightTibialTorsion);
+      thighRotationOffset = &(this->RightThighRotationOffset);
+      shankRotationOffset = &(this->RightShankRotationOffset);
+      ankleAbAdd = &(this->RightAnkleAbAdd);
     }
     else
     {
       error("PluginGait - Unknown side for the lower limb. Calibration aborted.");
       return false;
     }
+    std::vector<double*> offsets{thighRotationOffset, shankRotationOffset, tibialTorsion, ankleAbAdd};
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
     math::Position KJC;
-    if (!this->CalibrateKneeJointCentre(&KJC, this, landmarks, prefix, kneeWidth, HJC))
+    if (!this->CalibrateKneeJointCentre(&KJC, offsets, this, landmarks, prefix, s, kneeWidth, HJC))
       return false;
     // Set the segment length
     seglength = (KJC - *HJC).norm().mean();
@@ -229,7 +310,7 @@ namespace body
     // Shank
     // -----------------------------------------
     math::Position AJC;
-    if (!this->CalibrateAnkleJointCentre(&AJC, this, landmarks, prefix, ankleWidth, &KJC))
+    if (!this->CalibrateAnkleJointCentre(&AJC, offsets, this, landmarks, prefix, s, ankleWidth, &KJC))
       return false;
     // Set the segment length
     seglength = (AJC - KJC).norm().mean();
@@ -941,12 +1022,12 @@ namespace body
     auto optr = this->pimpl();
     if (variant == Basic)
     {
-      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_hjc_basic;
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_basic;
       optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_basic;
     }
     else
     {
-      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_hjc_kad;
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_kad;
       optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kad;
     }
   };
@@ -1170,10 +1251,11 @@ namespace body
         optr->RightAsisTrochanterAPDistance = 0.1288 * rightLegLength - 48.56;
       // - hip joint centre
       Point *leftHJCH = nullptr, *rightHJCH = nullptr;
+      double meanLegLength = (leftLegLength + rightLegLength) / 2.0;
       //   - Left
       if ((leftHJCH = this->findChild<Point*>("L.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCentre(_L_HJC.data(), -1.0,  leftLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_L_HJC.data(), -1.0,  meanLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
         new Point("L.HJC", _L_HJC.data(), this);
       }
       else
@@ -1181,7 +1263,7 @@ namespace body
       //   - Right
       if ((rightHJCH = this->findChild<Point*>("R.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCentre(_R_HJC.data(),  1.0, rightLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_R_HJC.data(),  1.0, meanLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
         new Point("R.HJC", _R_HJC.data(), this);
       }
       else
@@ -1223,6 +1305,13 @@ namespace body
       }
       if ((optr->Side & Side::Right) == Side::Right)
       {
+        // const math::Position mSC = (L_PSIS.mean() + R_PSIS.mean()) / 2.0;
+        // const math::Vector mv = (L_ASIS.mean() - R_ASIS.mean()).normalized();
+        // const math::Vector mw = ((R_ASIS.mean() - mSC).cross(L_ASIS.mean() - mSC)).normalized();
+        // const math::Pose mpelvis(mv.cross(mw), mv, mw, (L_ASIS.mean() + R_ASIS.mean()) / 2.0);
+        // const math::Position mHJC = mpelvis.transform(R_HJC.replicate(mpelvis.rows()));
+        // if (!optr->calibrateLowerLimb(Side::Right, &mHJC, &landmarks))
+        //   return false;
         const math::Position HJC = pelvis.transform(R_HJC.replicate(pelvis.rows()));
         if (!optr->calibrateLowerLimb(Side::Right, &HJC, &landmarks))
           return false;
