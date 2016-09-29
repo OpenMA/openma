@@ -193,6 +193,13 @@ namespace math
      * Returns an object representing an euler angles operation using the given order @a a0, @a a1, @a a2 for the sequence order.
      */
     const EulerAnglesOp<Derived> eulerAngles(Index a0, Index a1, Index a2) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class DotOp
+    
+    /**
+     * Returns an object representing a dot product operator between @a this object and the @a other object.
+     */
+    template <typename OtherDerived> const DotOp<Derived,OtherDerived> dot(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
   };
   
   // ----------------------------------------------------------------------- //

@@ -786,7 +786,35 @@ CXXTEST_SUITE(ArrayTest)
   CXXTEST_TEST(resize)
   {
     TS_WARN("TODO");
-  }
+  };
+  
+  CXXTEST_TEST(dot)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero();
+    ma::math::Array<1> dd = d1.dot(d2);
+    const auto& ddv = dd.values();
+    ma::math::Array<1>::Values ref = d1.values().col(0) * d2.values().col(0) + d1.values().col(1) * d2.values().col(1) + d1.values().col(2) * d2.values().col(2);
+    for (unsigned i = 0 ; i < 10 ; ++i)
+      TS_ASSERT_DELTA(ddv.coeff(i), ref.coeff(i), 1e-15);
+  };
+  
+  CXXTEST_TEST(dotReplicate)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero();
+    ma::math::Array<3> dd = d1.dot(d2).replicate<3>();
+    const auto& ddv = dd.values();
+    ma::math::Array<1>::Values ref = d1.values().col(0) * d2.values().col(0) + d1.values().col(1) * d2.values().col(1) + d1.values().col(2) * d2.values().col(2);
+    for (unsigned i = 0 ; i < 10 ; ++i)
+    {
+      TS_ASSERT_DELTA(ddv.coeff(i,0), ref.coeff(i), 1e-15);
+      TS_ASSERT_DELTA(ddv.coeff(i,1), ref.coeff(i), 1e-15);
+      TS_ASSERT_DELTA(ddv.coeff(i,2), ref.coeff(i), 1e-15);
+    }
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -811,3 +839,5 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, derivativebis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
 CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)
 CXXTEST_TEST_REGISTRATION(ArrayTest, resize)
+CXXTEST_TEST_REGISTRATION(ArrayTest, dot)
+CXXTEST_TEST_REGISTRATION(ArrayTest, dotReplicate)
