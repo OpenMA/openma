@@ -64,7 +64,7 @@ namespace math
   template <typename XprOne, typename XprTwo> class CrossOp;
   template <typename Xpr> class TransposeOp;
   template <typename XprOne, typename XprTwo> class TransformOp;
-  template <typename Xpr> class ReplicateOp;
+  template <typename Xpr, int U> class ReplicateOp;
   template <typename Xpr> class InverseOp;
   template <typename Xpr, typename U> class DownsampleOp;
   template <typename Xpr> class EulerAnglesOp;

@@ -136,7 +136,7 @@ namespace math
     /**
      * Returns an object representing a replicated version of this @a rows time.
      */
-    const ReplicateOp<Derived> replicate(Index rows) const _OPENMA_NOEXCEPT;
+    template <int U = 1> const ReplicateOp<Derived,U> replicate(Index rows = 1) const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class TransformOp
     

@@ -341,6 +341,44 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_DELTA(br.coeff(5), 0.0, 1e-15);
   };
   
+  CXXTEST_TEST(replicateTer)
+  {
+    ma::math::Scalar::Values av(2,1);
+    av << -1.0, 1.0;
+           
+    ma::math::Position b = ma::math::Scalar(av,ma::math::Position::Residuals::Zero(av.rows())).replicate<3>(3);
+    const ma::math::Position::Values& bv = b.values();
+    const ma::math::Position::Residuals& br = b.residuals();
+    TS_ASSERT_EQUALS(b.rows(), 6);
+    TS_ASSERT_EQUALS(b.cols(), 3);
+    
+    TS_ASSERT_DELTA(bv.coeff(0,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(0,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(0,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,2),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,2),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,2),   1.0, 1e-15);
+    
+    TS_ASSERT_DELTA(br.coeff(0), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(3), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(4), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(5), 0.0, 1e-15);
+  };
+  
   CXXTEST_TEST(transpose)
   {
     ma::math::Array<9> O(2);
@@ -762,6 +800,7 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, crossBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, operatorDouble)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicate)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicateBis)
+CXXTEST_TEST_REGISTRATION(ArrayTest, replicateTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transpose)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
