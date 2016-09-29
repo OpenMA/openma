@@ -448,6 +448,66 @@ namespace math
   {
     return DotOp<Derived,U>(*this,other);
   };
+  
+  // ----------------------------------------------------------------------- //
+  //                           COEFFICIENTPRODUCTOP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename XprOne, typename XprTwo>
+  struct Traits<CoefficientProductOp<XprOne,XprTwo>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class CoefficientProductOp openma/math/binaryop.h
+   * @brief Compute the coefficient-wise product of two expressions
+   * @tparam XprOne type of the left hand side operation
+   * @tparam XprTwo type of the right hand side operation
+   * Template expression to compute a coefficient-wise product.
+   * @ingroup openma_math
+   */
+  template <typename XprOne, typename XprTwo>
+  class CoefficientProductOp : public BinaryOp<CoefficientProductOp<XprOne, XprTwo>, XprOne, XprTwo>
+  {
+    static_assert(XprOne::ColsAtCompileTime == XprTwo::ColsAtCompileTime, "The number of columns must be the same.");
+    
+    using Index = typename Traits<BinaryOp<DotOp<XprOne, XprTwo>, XprOne, XprTwo>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:    
+    /**
+     * Constructor
+     */
+    CoefficientProductOp(const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2)
+    : BinaryOp<CoefficientProductOp<XprOne, XprTwo>, XprOne, XprTwo>(x1,x2)
+    {
+      assert(this->m_Xpr1.rows() == this->m_Xpr2.rows());
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the first expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr1.rows();};
+
+    /**
+     * Returns the coefficient-wise product of the two expressions as a template expression.
+     */
+    auto values() const _OPENMA_NOEXCEPT ->  decltype(OPENMA_MATHS_DECLVAL_NESTED(XprOne).values() * OPENMA_MATHS_DECLVAL_NESTED(XprTwo).values())
+    {
+      return this->m_Xpr1.values() * this->m_Xpr2.values();
+    };
+  
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the ones of each input.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(generate_residuals((OPENMA_MATHS_DECLVAL_NESTED(XprOne).residuals() >= 0.0) && (OPENMA_MATHS_DECLVAL_NESTED(XprTwo).residuals() >= 0.0)))
+    {
+      return generate_residuals((this->m_Xpr1.residuals() >= 0.0) && (this->m_Xpr2.residuals() >= 0.0));
+    };
+  };
+  
 };
 };
 

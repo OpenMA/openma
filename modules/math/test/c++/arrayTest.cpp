@@ -815,6 +815,19 @@ CXXTEST_SUITE(ArrayTest)
       TS_ASSERT_DELTA(ddv.coeff(i,2), ref.coeff(i), 1e-15);
     }
   };
+  
+  CXXTEST_TEST(coefficientProduct)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero(); d2.residuals().coeffRef(9) = -1.;
+    ma::math::Array<3> dd = d1  * d2;
+    const auto& ddv = dd.values();
+    ma::math::Array<3>::Values ref = d1.values() * d2.values();
+    for (unsigned i = 0 ; i < 9 ; ++i)
+      TS_ASSERT_DELTA(ddv.coeff(i), ref.coeff(i), 1e-15);
+    TS_ASSERT_DELTA(ddv.coeff(9), 0.0, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -841,3 +854,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)
 CXXTEST_TEST_REGISTRATION(ArrayTest, resize)
 CXXTEST_TEST_REGISTRATION(ArrayTest, dot)
 CXXTEST_TEST_REGISTRATION(ArrayTest, dotReplicate)
+CXXTEST_TEST_REGISTRATION(ArrayTest, coefficientProduct)

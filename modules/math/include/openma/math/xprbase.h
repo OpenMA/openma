@@ -274,6 +274,17 @@ namespace math
     assert(fabs(x2) >= std::numeric_limits<double>::epsilon());
     return ScaleOp<Xpr>(1.0/x2,x1);
   };
+  
+  /**
+   * Convenient multiplication operator to create a coefficient-wise product of @a x1 and @a x2.
+   * @relates XprBase
+   * @relates ArrayBase
+   */
+  template <typename XprOne, typename XprTwo>
+  const CoefficientProductOp<XprOne,XprTwo> operator* (const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2)
+  {
+    return CoefficientProductOp<XprOne,XprTwo>(x1,x2);
+  };
 };
 };
 
