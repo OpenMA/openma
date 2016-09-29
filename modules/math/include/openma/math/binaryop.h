@@ -508,6 +508,86 @@ namespace math
     };
   };
   
+  // ----------------------------------------------------------------------- //
+  //                                   ARCTANGENT2OP
+  // ----------------------------------------------------------------------- //
+  
+  template <typename XprOne, typename XprTwo>
+  struct Traits<ArcTangent2Op<XprOne,XprTwo>>
+  {
+    static _OPENMA_CONSTEXPR int Processing = Full;
+  };
+  
+  template <typename XprOne, typename XprTwo>
+  struct Traits<BinaryOp<ArcTangent2Op<XprOne,XprTwo>,XprOne,XprTwo>>
+  {
+    using Values = typename Traits<XprOne>::Values;
+    using Residuals = typename Traits<XprOne>::Residuals;
+    using Index = typename Values::Index;
+    static _OPENMA_CONSTEXPR int ColsAtCompileTime = 1;
+    static _OPENMA_CONSTEXPR int Processing = Traits<ArcTangent2Op<XprOne,XprTwo>>::Processing;
+  }; 
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class ArcTangent2 openma/math/binaryop.h
+   * @brief Compute the arc tangent of two expressions
+   * @tparam XprOne type of the left hand side operation
+   * @tparam XprTwo type of the right hand side operation
+   * Template expression to compute arc tangent using internally the atan2 function.
+   * @ingroup openma_math
+   */
+  template <typename XprOne, typename XprTwo>
+  class ArcTangent2Op : public BinaryOp<ArcTangent2Op<XprOne, XprTwo>, XprOne, XprTwo>
+  {
+    static_assert(XprOne::ColsAtCompileTime == XprTwo::ColsAtCompileTime, "The number of columns must be the same.");
+    static_assert(XprOne::ColsAtCompileTime == 1 && XprTwo::ColsAtCompileTime == 1, "The atan2 operation is only available for array with 1 columns.");
+    
+    using Index = typename Traits<BinaryOp<ArcTangent2Op<XprOne, XprTwo>, XprOne, XprTwo>>::Index; ///< Type used to access elements in Values or Residuals.
+    
+  public:    
+    /**
+     * Constructor
+     */
+    ArcTangent2Op(const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2)
+    : BinaryOp<ArcTangent2Op<XprOne, XprTwo>, XprOne, XprTwo>(x1,x2)
+    {
+      assert(this->m_Xpr1.rows() == this->m_Xpr2.rows());
+    };
+    
+    /**
+     * Returns the number of rows that shall have the result of this operation. Internaly, this method relies on the number of rows of the first expresion.
+     */
+    Index rows() const _OPENMA_NOEXCEPT {return this->m_Xpr1.rows();};
+
+    /**
+     * Returns the arc tangent of the two expressions as a template expression.
+     */
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::ArcTangent2OpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(XprOne).values()),decltype(OPENMA_MATHS_DECLVAL_NESTED(XprTwo).values())>
+    {
+      using V1 = decltype(this->m_Xpr1.values());
+      using V2 = decltype(this->m_Xpr2.values()); 
+      return Eigen::internal::ArcTangent2OpValues<V1,V2>(this->m_Xpr1.values(), this->m_Xpr2.values());
+    };
+  
+    /**
+     * Returns the residuals associated with this operation. The residuals is generated based on the ones of each input.
+     */
+    auto residuals() const _OPENMA_NOEXCEPT -> decltype(generate_residuals((OPENMA_MATHS_DECLVAL_NESTED(XprOne).residuals() >= 0.0) && (OPENMA_MATHS_DECLVAL_NESTED(XprTwo).residuals() >= 0.0)))
+    {
+      return generate_residuals((this->m_Xpr1.residuals() >= 0.0) && (this->m_Xpr2.residuals() >= 0.0));
+    };
+  };
+
+  // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
+  template <typename Derived>
+  template <typename U>
+  inline const ArcTangent2Op<Derived,U> XprBase<Derived>::atan2(const XprBase<U>& other) const _OPENMA_NOEXCEPT
+  {
+    return ArcTangent2Op<Derived,U>(*this,other);
+  };
+
 };
 };
 

@@ -828,6 +828,27 @@ CXXTEST_SUITE(ArrayTest)
       TS_ASSERT_DELTA(ddv.coeff(i), ref.coeff(i), 1e-15);
     TS_ASSERT_DELTA(ddv.coeff(9), 0.0, 1e-15);
   };
+  
+  CXXTEST_TEST(atan2)
+  {
+    ma::math::Array<1> x(6), y(6);
+    x.residuals().setZero(); y.residuals().setZero(); y.residuals().coeffRef(0) = -1.;
+    x.values() << 0.12312, 0., -0., 0., -0., -0.;
+    y.values() << 0.24232, 0.,  0., 7.,  7., -7.;
+    ma::math::Array<1> arc = y.atan2(x);
+    TS_ASSERT_DELTA(arc.values().coeff(0), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.residuals().coeff(0), -1.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.residuals().coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(2), 3.14159, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(3), 1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(3), 0., 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(4), 1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(4), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(5), -1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(5), 0.0, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -855,3 +876,4 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, resize)
 CXXTEST_TEST_REGISTRATION(ArrayTest, dot)
 CXXTEST_TEST_REGISTRATION(ArrayTest, dotReplicate)
 CXXTEST_TEST_REGISTRATION(ArrayTest, coefficientProduct)
+CXXTEST_TEST_REGISTRATION(ArrayTest, atan2)

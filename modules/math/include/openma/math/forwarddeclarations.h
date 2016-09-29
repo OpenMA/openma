@@ -72,6 +72,7 @@ namespace math
   template <typename Xpr> class SkewReduxOp;
   template <typename XprOne, typename XprTwo> class DotOp;
   template <typename XprOne, typename XprTwo> class CoefficientProductOp;
+  template <typename XprOne, typename XprTwo> class ArcTangent2Op;
 };
 };
 

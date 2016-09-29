@@ -636,6 +636,38 @@ namespace internal
     Index rows() const {return this->m_V.rows();};
     Index cols() const {return this->m_V.cols();};
   };
+  
+  // ----------------------------------------------------------------------- //
+  //                         ArcTangent2Op return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V1, typename V2> struct ArcTangent2OpValues;
+
+  template<typename V1, typename V2>
+  struct traits<ArcTangent2OpValues<V1,V2>>
+  {
+    using ReturnType = typename ma::math::Traits<ma::math::Array<std::decay<V1>::type::ColsAtCompileTime>>::Values;
+  };
+  
+  template<typename V1, typename V2>
+  struct ArcTangent2OpValues : public Eigen::ReturnByValue<ArcTangent2OpValues<V1,V2>>
+  {
+    using InputType1 = typename std::decay<V1>::type;
+    using InputType2 = typename std::decay<V2>::type;
+    using Index = typename InputType1::Index;
+    typename InputType1::Nested m_V1;
+    typename InputType2::Nested m_V2;
+  public:
+    ArcTangent2OpValues(const V1& v1, const V2& v2) : m_V1(v1), m_V2(v2) {};
+    template <typename R> inline void evalTo(R& result) const
+    {
+      for (Index i = 0, len = this->m_V1.rows() ; i < len ; ++i)
+        result.coeffRef(i) = atan2(this->m_V1.coeff(i), this->m_V2.coeff(i));
+    };
+    Index rows() const {return this->m_V1.rows();};
+    Index cols() const {return 1;};
+  };
+
 };
 };
 
