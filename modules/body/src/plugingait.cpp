@@ -120,17 +120,25 @@ bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, std::vector<dou
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, std::vector<double*>&  offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double  /* s */, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& KAX = (*landmarks)[prefix+"KAX"];
-  if (!LTM.isValid() || !KAX.isValid())
+  const auto& LS = (*landmarks)[prefix+"LS"];
+  if (!LTM.isValid() || !KAX.isValid() || !LS.isValid())
   {
     ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
     return false;
   }
   // Compute the ankle joint centre (AJC)
   *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, KAX);
+  // Compute the shank marker rotation offset
+  ma::math::Vector w = (*KJC - *AJC).normalized();
+  ma::math::Vector LS_proj_trans_unit = ((LS - (LS - *AJC).dot(w).replicate<3>() * w) - *AJC).normalized();
+  ma::math::Vector v = (LTM - *AJC).normalized();
+  ma::math::Scalar dot = LS_proj_trans_unit.dot(v);
+  ma::math::Scalar crossnorm = LS_proj_trans_unit.cross(v).norm();
+  *offsets[1] = crossnorm.atan2(dot).mean();
   return true;
 };
   

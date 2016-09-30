@@ -350,11 +350,12 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.interAsisDistance(), 211.162, 1e-3);
     TS_ASSERT_DELTA(helper.leftAsisTrochanterAPDistance(), 62.208, 1e-3);
     TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-3);
+    TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 13.8726 * M_PI / 180.0, 1e-3);
     // TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset() * 180.0 / M_PI, 4.72487, 1e-3);
     // TS_ASSERT_DELTA(helper.leftStaticRotationOffset() * 180.0 / M_PI, 0.233667, 1e-5);
     TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
     TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-3);
-    
+    TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 15.3639 * M_PI / 180.0, 1e-3);
     // TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset() * 180.0 / M_PI, 3.88629, 1e-3);
     // TS_ASSERT_DELTA(helper.rightStaticRotationOffset() * 180.0 / M_PI, 2.22081, 1e-3);
   };
