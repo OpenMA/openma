@@ -41,6 +41,7 @@
  */
 
 #include "openma/base/node_p.h"
+#include "openma/math.h"
 
 #include <array>
 
@@ -49,6 +50,8 @@ namespace ma
 namespace body
 {
   class SkeletonHelper;
+  
+  using TaggedMappedPositions = std::unordered_map<std::string,math::Map<math::Position>>;
   
   class SkeletonHelperPrivate : public NodePrivate
   {

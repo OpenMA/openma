@@ -86,6 +86,12 @@ namespace ma
 namespace body
 {
   /**
+   * @typedef TaggedMappedPositions
+   * List of math::Map<math::Position> tagged with a name. This typedef is for example used to retrieve landmarks for a model.
+   * @sa extract_landmark_positions()
+   */
+  
+  /**
    * @class SkeletonHelper openma/body/skeletonhelper.h
    * @brief Helper class to create a multi-segment model and recontruct its motion.
    * This class is usefull for the implementation of a model in known protocols (e.g. with a specific marker set like PluginGait, HelenHayes, or ISB).
