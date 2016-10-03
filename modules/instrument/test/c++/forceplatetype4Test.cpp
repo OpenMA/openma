@@ -23,8 +23,16 @@ CXXTEST_SUITE(ForcePlateType4Test)
     forceplatetest_compare_sample10_wrench_at_origin(fp4_, fp4dataout);
     delete fp4_;
   };
+  
+  CXXTEST_TEST(nodeid)
+  {
+    ma::Node root("root");
+    ma::instrument::ForcePlateType4 fp("FP", &root);
+    TS_ASSERT_EQUALS(root.findChild<ma::instrument::ForcePlateType4*>(), &fp);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ForcePlateType4Test)
 CXXTEST_TEST_REGISTRATION(ForcePlateType4Test, wrench)
 CXXTEST_TEST_REGISTRATION(ForcePlateType4Test, clone)
+CXXTEST_TEST_REGISTRATION(ForcePlateType4Test, nodeid)

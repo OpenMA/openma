@@ -44,6 +44,8 @@ namespace instrument
 {
   class OPENMA_INSTRUMENT_EXPORT ForcePlateType4 : public ForcePlate
   {
+    OPENMA_DECLARE_NODEID(ForcePlateType4, ForcePlate)
+    
   public:
     ForcePlateType4(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType4() _OPENMA_NOEXCEPT;

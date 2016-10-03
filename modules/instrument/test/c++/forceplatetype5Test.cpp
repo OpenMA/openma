@@ -25,8 +25,17 @@ CXXTEST_SUITE(ForcePlateType5Test)
     forceplatetest_compare_gait1_wrench_position_at_cop(fp5_);
     delete fp5_;
   };
+  
+  
+  CXXTEST_TEST(nodeid)
+  {
+    ma::Node root("root");
+    ma::instrument::ForcePlateType5 fp("FP", &root);
+    TS_ASSERT_EQUALS(root.findChild<ma::instrument::ForcePlateType5*>(), &fp);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ForcePlateType5Test)
 CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, wrench)
 CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, clone)
+CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, nodeid)
