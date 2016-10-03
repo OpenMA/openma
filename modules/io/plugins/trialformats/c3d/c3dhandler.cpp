@@ -49,6 +49,7 @@
 
 #include "openma/instrument/forceplate.h"
 #include "openma/instrument/forceplatetype2.h"
+#include "openma/instrument/forceplatetype3.h"
 #include "openma/instrument/forceplatetype4.h"
 #include "openma/instrument/forceplatetype5.h"
 
@@ -933,7 +934,9 @@ namespace io
                     fp = new instrument::ForcePlateType2("FP"+std::to_string(i+1), trial->hardwares());
                     break;
                   case 3:
-                    error("Force Platform type 3 is not yet supported. Please, report this to the developers");
+                    fp = new instrument::ForcePlateType3("FP"+std::to_string(i+1), trial->hardwares());
+                    static_cast<instrument::ForcePlateType3*>(fp)->setSensorOffsets(o[0], o[1]);
+                    o[0] = 0.0; o[1] = 0.0;
                     break;
                   case 4:
                     fp = new instrument::ForcePlateType4("FP"+std::to_string(i+1), trial->hardwares());
