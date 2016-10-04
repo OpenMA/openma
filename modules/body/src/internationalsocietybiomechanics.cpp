@@ -485,6 +485,78 @@ namespace body
     math::Position LJC(1); // Joint center used by the lower and upper parts
     
     // --------------------------------------------------
+    // UPPER LIMB
+    // --------------------------------------------------
+    if ((optr->Region & Region::Upper) == Region::Upper)
+    {
+      // -----------------------------------------
+      // Torso
+      // -----------------------------------------
+      // Required landmarks: SS, C7, XP and T8
+      const auto& SS = landmarks["SS"];
+      const auto& C7 = landmarks["C7"];
+      const auto& XP = landmarks["XP"];
+      const auto& T8 = landmarks["T8"];
+      if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
+      {
+        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Calibration aborted.");
+        return false;
+      }
+      math::Vector u = (SS - C7).normalized();
+      math::Vector v;
+      math::Vector w = u.cross((SS + C7) / 2.0 - (XP + T8) / 2.0).normalized();
+      const math::Pose torso = math::Pose(u, w.cross(u), w, C7);
+      double depth = (SS - C7).norm();
+      double r, percent;
+      if (sex == Sex::Female)
+      {
+        r = 14.0 * M_PI / 180.0; 
+        percent = 0.53;
+      }
+      else
+      {
+        r = 8.0 * M_PI / 180.0;
+        percent = 0.55;
+      }
+      // The inverse of the matrix rot is known. Not necessary to compute it.
+      math::Pose rotInv(1); rotInv.residuals().setZero();
+      rotInv.values() << cos(r), sin(r), 0., -sin(r), cos(r), 0., 0., 0., 1., 0., 0., 0.;
+      math::Position lCJC(1); lCJC.residuals().setZero();
+      lCJC.values() << percent * depth, 0.0, 0.0;
+      math::Position CJC = torso.transform(rotInv.transform(lCJC));
+      v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
+      w = (SS - C7).cross(v).normalized();
+      math::Pose tcs_pose(v.cross(w),v,w,C7);
+      v = (CJC - (XP + T8) / 2.0).normalized();
+      w = (SS - C7).cross(v).normalized();
+      math::Pose scs_relpose = tcs_pose.inverse().transform(math::Pose(v.cross(w),v,w,CJC));
+      auto scs_node = this->findChild<ReferenceFrame*>("Torso.SCS",{},false);
+      if (scs_node == nullptr)
+        new ReferenceFrame("Torso.SCS", scs_relpose.values().data(), this);
+      else
+        scs_node->setData(scs_relpose.values().data());
+      double segLength = 0.0;
+      if (!LJC.isValid())
+        warning("The lumbar joint centre is not defined! Impossible to determine the length of the torso. Torso's length is set to 0.");
+      else
+        segLength = (CJC - LJC).norm();
+      this->setProperty("Torso.length", segLength);
+      this->setProperty("Torso.depth", depth);
+      // -----------------------------------------
+      // Other lower limbs
+      // -----------------------------------------
+      if ((optr->Side & Side::Left) == Side::Left)
+      {
+        if (!optr->calibrateUpperLimb(Side::Left, &torso, &landmarks))
+          return false;
+      }
+      if ((optr->Side & Side::Right) == Side::Right)
+      {
+        if (!optr->calibrateUpperLimb(Side::Right, &torso, &landmarks))
+          return false;
+       }
+    }
+    // --------------------------------------------------
     // LOWER LIMB
     // --------------------------------------------------
     if ((optr->Region & Region::Lower) == Region::Lower)
@@ -592,79 +664,6 @@ namespace body
           return false;
        }
     }
-    
-    // --------------------------------------------------
-    // UPPER LIMB
-    // --------------------------------------------------
-    if ((optr->Region & Region::Upper) == Region::Upper)
-    {
-      // -----------------------------------------
-      // Torso
-      // -----------------------------------------
-      // Required landmarks: SS, C7, XP and T8
-      const auto& SS = landmarks["SS"];
-      const auto& C7 = landmarks["C7"];
-      const auto& XP = landmarks["XP"];
-      const auto& T8 = landmarks["T8"];
-      if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
-      {
-        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Calibration aborted.");
-        return false;
-      }
-      math::Vector u = (SS - C7).normalized();
-      math::Vector v;
-      math::Vector w = u.cross((SS + C7) / 2.0 - (XP + T8) / 2.0).normalized();
-      const math::Pose torso = math::Pose(u, w.cross(u), w, C7);
-      double depth = (SS - C7).norm();
-      double r, percent;
-      if (sex == Sex::Female)
-      {
-        r = 14.0 * M_PI / 180.0; 
-        percent = 0.53;
-      }
-      else
-      {
-        r = 8.0 * M_PI / 180.0;
-        percent = 0.55;
-      }
-      // The inverse of the matrix rot is known. Not necessary to compute it.
-      math::Pose rotInv(1); rotInv.residuals().setZero();
-      rotInv.values() << cos(r), sin(r), 0., -sin(r), cos(r), 0., 0., 0., 1., 0., 0., 0.;
-      math::Position lCJC(1); lCJC.residuals().setZero();
-      lCJC.values() << percent * depth, 0.0, 0.0;
-      math::Position CJC = torso.transform(rotInv.transform(lCJC));
-      v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
-      w = (SS - C7).cross(v).normalized();
-      math::Pose tcs_pose(v.cross(w),v,w,C7);
-      v = (CJC - (XP + T8) / 2.0).normalized();
-      w = (SS - C7).cross(v).normalized();
-      math::Pose scs_relpose = tcs_pose.inverse().transform(math::Pose(v.cross(w),v,w,CJC));
-      auto scs_node = this->findChild<ReferenceFrame*>("Torso.SCS",{},false);
-      if (scs_node == nullptr)
-        new ReferenceFrame("Torso.SCS", scs_relpose.values().data(), this);
-      else
-        scs_node->setData(scs_relpose.values().data());
-      double segLength = 0.0;
-      if (!LJC.isValid())
-        warning("The lumbar joint centre is not defined! Impossible to determine the length of the torso. Torso's length is set to 0.");
-      else
-        segLength = (CJC - LJC).norm();
-      this->setProperty("Torso.length", segLength);
-      this->setProperty("Torso.depth", depth);
-      // -----------------------------------------
-      // Other lower limbs
-      // -----------------------------------------
-      if ((optr->Side & Side::Left) == Side::Left)
-      {
-        if (!optr->calibrateUpperLimb(Side::Left, &torso, &landmarks))
-          return false;
-      }
-      if ((optr->Side & Side::Right) == Side::Right)
-      {
-        if (!optr->calibrateUpperLimb(Side::Right, &torso, &landmarks))
-          return false;
-       }
-    }
     return true;
   };
   
@@ -715,18 +714,17 @@ namespace body
         error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
         return false;
       }
-      Point* LJCH = nullptr;
-      if ((LJCH = this->findChild<Point*>("LJC",{},false)) == nullptr)
+      ReferenceFrame* relframe = nullptr;
+      if ((relframe = this->findChild<ReferenceFrame*>(seg->name()+".SCS",{},false)) == nullptr)
       {
-        error("InternationalSocietyBiomechanics - Relative lumbar joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("InternationalSocietyBiomechanics - Relative torso segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
-      // - Construct the relative segment coordinate system for the torso
-      auto relframe = new ReferenceFrame("SCS", nullptr, LJCH->data(), seg);
+      relframe->addParent(seg);
       // - Construct the Torso.SCS time sequence
       const math::Vector v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
       const math::Vector w = (SS - C7).cross(v).normalized();
-      math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,C7)), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
+      math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,C7)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
       seg->setProperty("length", this->property(seg->name()+".length"));
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
@@ -772,7 +770,7 @@ namespace body
       const math::Vector w = (R_ASIS - L_ASIS).normalized();
       const math::Vector v = w.cross((R_ASIS + L_ASIS) / 2.0 - SC).normalized();
       const math::Pose pelvis(v.cross(w), v, w, SC);
-      math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,SC)), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
+      math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,SC)), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       seg->setProperty("length", this->property(seg->name()+".length"));
       // -----------------------------------------
       // Thigh, shank, foot

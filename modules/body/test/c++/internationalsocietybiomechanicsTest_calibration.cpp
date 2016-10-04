@@ -6,7 +6,6 @@
 #include "test_file_path.h"
 
 #include <openma/body/referenceframe.h>
-#include <openma/body/landmarkstranslator.h>
 #include <openma/base/enums.h>
 
 CXXTEST_SUITE(InternationalSocietyBiomechanicsCalibrationTest)
@@ -17,30 +16,7 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsCalibrationTest)
     generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/UpperLimbStatic.c3d"));
     ma::body::InternationalSocietyBiomechanics helper(ma::body::Region::Upper, ma::body::Side::Both);
     helper.setSex(ma::Sex::Male);
-    ma::body::LandmarksTranslator translator("LandmarksTranslator",{
-      {"C7"              , "C7"},
-      {"T8"              , "T8"},
-      {"IJ"              , "SS"},
-      {"PX"              , "XP"},
-      {"L.Acromion"      , "L.AC"},
-      {"L.AngulusAcromio", "L.AA"},
-      {"L.Biceps"        , "L.GH"},
-      {"L.Epi.Lat"       , "L.LHE"},
-      {"L.Epi.Med"       , "L.MHE"},
-      {"L.Wrist.Ulna"    , "L.US"},
-      {"L.Wrist.Rad"     , "L.RS"},
-      {"L.D5M1"          , "L.MH5"},
-      {"L.D2M1"          , "L.MH2"},
-      {"R.Acromion"      , "R.AC"},
-      {"R.AngulusAcromio", "R.AA"},
-      {"R.Biceps"        , "R.GH"},
-      {"R.Epi.Lat"       , "R.LHE"},
-      {"R.Epi.Med"       , "R.MHE"},
-      {"R.Wrist.Ulna"    , "R.US"},
-      {"R.Wrist.Rad"     , "R.RS"},
-      {"R.D5M1"          , "R.MH5"},
-      {"R.D2M1"          , "R.MH2"},
-    }, &helper);
+    set_isb_custom_landmarks_translator(&helper);
     helper.calibrate(&root, nullptr);
     auto torso_relscs_node = helper.findChild<const ma::body::ReferenceFrame*>("Torso.SCS");
     TS_ASSERT_DIFFERS(torso_relscs_node, nullptr);

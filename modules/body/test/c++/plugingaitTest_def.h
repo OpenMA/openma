@@ -103,7 +103,6 @@ void compare_joint_kinematics(ma::Node* kinematics, ma::Trial* trial, const std:
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 1st axis", d.block<1>(0).values(), a.block<1>(0).values(), precision[0]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 2nd axis", d.block<1>(1).values(), a.block<1>(1).values(), precision[1]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 3rd axis", d.block<1>(2).values(), a.block<1>(2).values(), precision[2]);
-  
 }
 
 #endif
