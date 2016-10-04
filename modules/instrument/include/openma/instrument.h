@@ -38,6 +38,7 @@
 #include "openma/instrument/enums.h"
 #include "openma/instrument/forceplate.h"
 #include "openma/instrument/forceplatetype2.h"
+#include "openma/instrument/forceplatetype3.h"
 #include "openma/instrument/forceplatetype4.h"
 #include "openma/instrument/forceplatetype5.h"
 
