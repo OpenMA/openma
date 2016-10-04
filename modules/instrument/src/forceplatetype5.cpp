@@ -36,6 +36,8 @@
 #include "openma/base/timesequence.h"
 #include "openma/math.h"
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::instrument::ForcePlateType5)
+
 namespace ma
 {
 namespace instrument

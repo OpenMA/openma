@@ -64,4 +64,6 @@ namespace instrument
 };
 };
 
+OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType3, OPENMA_INSTRUMENT_EXPORT);
+
 #endif

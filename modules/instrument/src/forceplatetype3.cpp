@@ -69,6 +69,8 @@ namespace instrument
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::instrument::ForcePlateType3)
+
 namespace ma
 {
 namespace instrument
