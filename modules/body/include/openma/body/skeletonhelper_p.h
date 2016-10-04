@@ -51,6 +51,7 @@ namespace body
 {
   class SkeletonHelper;
   
+  using TaggedPositions = std::unordered_map<std::string,math::Position>;
   using TaggedMappedPositions = std::unordered_map<std::string,math::Map<math::Position>>;
   
   class SkeletonHelperPrivate : public NodePrivate

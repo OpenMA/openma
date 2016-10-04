@@ -86,6 +86,18 @@ namespace ma
 namespace body
 {
   /**
+   * @typedef TaggedPositions
+   * List of math::Position tagged with a name. This typedef is for example used to represented landmarks averaged along the trial.
+   * A quick way to average a TaggedMappedPositions object is to use the following code:
+   * @code{.unparsed}
+   * // Object 'lmks' is an instance of the class TaggedMappedPositions.
+   * std::unordered_map<std::string,math::Vector> landmarks;
+   * for (const auto& pos : lmks)
+   *   landmarks.emplace(pos.first, pos.second.mean());
+   * @endcode
+   */
+  
+  /**
    * @typedef TaggedMappedPositions
    * List of math::Map<math::Position> tagged with a name. This typedef is for example used to retrieve landmarks for a model.
    * @sa extract_landmark_positions()
