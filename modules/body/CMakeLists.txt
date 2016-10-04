@@ -10,6 +10,7 @@ SET(OPENMA_BODY_SRCS
   src/simplegaitforceplatetofeetassigner.cpp
   src/inertialparameters.cpp
   src/inertialparametersestimator.cpp
+  src/internationalsocietybiomechanics.cpp
   src/inversedynamicsmatrix.cpp
   src/inversedynamicsprocessor.cpp
   src/joint.cpp
