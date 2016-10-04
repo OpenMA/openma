@@ -1,5 +1,27 @@
+#ifndef test_file_path_h
+#define test_file_path_h
+
+#include <openma/base/node.h>
+#include <openma/io/handlerreader.h>
+#include <openma/io/file.h>
+
+#include <cassert>
+
 #define OPENMA_TDD_PATH_IN(relpath) \
   "${OPENMA_TESTING_DATA_PATH}/input/" relpath
      
 #define OPENMA_TDD_PATH_OUT(relpath) \
   "${OPENMA_BINARY_DIR}/test/data/output/" relpath
+  
+void generate_trial_from_c3d_file(ma::Node* root, const char* filename)
+{
+  ma::io::File file;
+  file.open(filename, ma::io::Mode::In);
+  ma::io::HandlerReader reader(&file, "org.c3d");
+  TS_ASSERT_EQUALS(reader.read(root),true);
+  TS_ASSERT_EQUALS(reader.errorCode(), ma::io::Error::None);
+  TS_ASSERT_EQUALS(reader.errorMessage(), "");
+  assert(root->children().size() == 1u);
+};
+
+#endif // test_file_path_h

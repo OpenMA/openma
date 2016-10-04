@@ -40,9 +40,9 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     helper.setProperty("height", height);
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel"), kineticsanalyses("kineticsanalyses");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     TS_ASSERT_EQUALS(ma::body::extract_joint_kinetics(&kineticsanalyses, &rootModel), true);
     TS_ASSERT_EQUALS(kineticsanalyses.children().size(), 1u);
@@ -179,9 +179,9 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     helper.setProperty("height", 1465.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel"), kineticsanalyses("kineticsanalyses");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     TS_ASSERT_EQUALS(ma::body::extract_joint_kinetics(&kineticsanalyses, &rootModel), true);
     TS_ASSERT_EQUALS(kineticsanalyses.children().size(), 1u);

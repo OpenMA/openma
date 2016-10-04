@@ -21,9 +21,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -52,9 +52,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightHandThickness(30.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -85,9 +85,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -116,9 +116,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightHandThickness(30.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -159,9 +159,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(55.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -200,9 +200,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -230,9 +230,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF_N18.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF_N18.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF_N18.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF_N18.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -258,9 +258,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_noFF.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_noFF.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_noFF.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_noFF.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
 
     auto trial = rootDynamic.findChild<ma::Trial*>();
@@ -294,9 +294,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     
     auto trial = rootDynamic.findChild<ma::Trial*>();
