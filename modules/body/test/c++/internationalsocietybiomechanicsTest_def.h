@@ -46,7 +46,7 @@ void compare_segment_motion(ma::body::Model* model, const std::string& frame, in
 {
   const auto cptpose = ma::math::to_pose(model->segments()->findChild<const ma::TimeSequence*>(frame));
   for (unsigned i = 0 ; i < 9 ; ++i)
-    TS_ASSERT_DELTA(cptpose.values()(idx,i), refdata[i], 5e-8);
+    TS_ASSERT_DELTA(cptpose.values()(idx,i), refdata[i], 1e-7);
   for (unsigned i = 9 ; i < 12 ; ++i)
     TS_ASSERT_DELTA(cptpose.values()(idx,i), refdata[i], 5e-6);
 };

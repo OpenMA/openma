@@ -255,6 +255,73 @@ namespace body
   
   bool InternationalSocietyBiomechanicsPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
+    auto pptr = this->pint();
+    std::string prefix;
+    double s = 0.0;
+    if (side == Side::Left)
+    {
+      prefix = "L.";
+      s = -1.0;
+      
+    }
+    else if (side == Side::Right)
+    {
+      prefix = "R.";
+      s = 1.0;
+    }
+    // Temporary variable use to construct segments' motion
+    Segment* seg;
+    math::Vector u, v;
+    // -----------------------------------------
+    // Arm
+    // -----------------------------------------
+    // Required landmarks: *.GH, *.MHE, *.LHE
+    const auto& GH = (*landmarks)[prefix+"GH"];
+    const auto& MHE = (*landmarks)[prefix+"MHE"];
+    const auto& LHE = (*landmarks)[prefix+"LHE"];
+    if (!GH.isValid() || !MHE.isValid() || !LHE.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the arm. Calibration aborted.");
+      return false;
+    }
+    ReferenceFrame* relframe = nullptr;
+    if ((relframe = pptr->findChild<ReferenceFrame*>(prefix+"Arm.SCS",{},false)) == nullptr)
+    {
+      error("InternationalSocietyBiomechanics - Relative arm segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
+    relframe = relframe->clone(seg);
+    const math::Position EJC = (LHE + MHE) / 2.0;;
+    v = (GH - EJC).normalized();
+    u = v .cross(s * (LHE - MHE));
+    math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),GH)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
+    // -----------------------------------------
+    // Forearm
+    // -----------------------------------------
+    // Required landmarks: *.US, *.RS
+    const auto& US = (*landmarks)[prefix+"US"];
+    const auto& RS = (*landmarks)[prefix+"RS"];
+    if (!MHE.isValid() || !LHE.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the forearm. Calibration aborted.");
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Forearm}},false);
+    const math::Position WJC = (US + RS) / 2.0;
+    v = (EJC - WJC).normalized();
+    u = v.cross(s * (RS - US)).normalized();
+    math::to_timesequence(math::Pose(u,v,u.cross(v),EJC), prefix+"Forearm.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
+    // -----------------------------------------
+    // Hand
+    // -----------------------------------------
+    // Required landmarks: *.MH2, *.MH5
+    const auto& MH2 = (*landmarks)[prefix+"MH2"];
+    const auto& MH5 = (*landmarks)[prefix+"MH5"];
+    v = (WJC - (MH2 + MH5) / 2.0).normalized();
+    u = v.cross(s * (MH2 - MH5)).normalized();
+    math::to_timesequence(math::Pose(u,v,u.cross(v),WJC), prefix+"Hand.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
+    
     return true;
   };
   
@@ -720,7 +787,7 @@ namespace body
         error("InternationalSocietyBiomechanics - Relative torso segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
-      relframe->addParent(seg);
+      relframe = relframe->clone(seg);
       // - Construct the Torso.SCS time sequence
       const math::Vector v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
       const math::Vector w = (SS - C7).cross(v).normalized();
@@ -767,6 +834,7 @@ namespace body
         error("InternationalSocietyBiomechanics - Relative pelvis segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
+      relframe = relframe->clone(seg);
       const math::Vector w = (R_ASIS - L_ASIS).normalized();
       const math::Vector v = w.cross((R_ASIS + L_ASIS) / 2.0 - SC).normalized();
       const math::Pose pelvis(v.cross(w), v, w, SC);
