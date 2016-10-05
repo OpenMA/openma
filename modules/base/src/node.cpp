@@ -600,7 +600,7 @@ namespace ma
   };
   
   /**
-   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+   * @fn template <typename U = Node*> U Node::findChild(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
    * Returns the child with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * There are three ways to use this methods.
    *
@@ -642,7 +642,16 @@ namespace ma
    */
   
   /**
-   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT; 
+   * Overload to use a minimalist code to look for direct child without supplementary property.
+   * @code
+   * auto child = node.findChild(name,{},false);
+   *                                  ^^
+   * @endcode
+   */
+ 
+  /**
+   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Returns the children with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * As with the method findChild(), you can explicitely or implicitely give the type and/or the name of the children. For example:
    * @code{.unparsed}
@@ -664,12 +673,30 @@ namespace ma
    * events.findChildren<ma::Event*>({},{{"subject","JDoe"}}); // evtA, evtB, and evtC
    * @endcode
    */
+ 
+  /**
+   * @fn template <typename U = Node*> std::vector<U> Node::findChildren(const std::string& name = std::string{}, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+   * Overload to use a minimalist code to look for direct children without supplementary property.
+   * @code
+   * auto children = node.findChildren(name,{},false);
+   *                                        ^^
+   * @endcode
+   */
   
   /**
-   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Convenient method to find children using a regular expression.
    */
   
+  /**
+   * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * Overload to use a minimalist code to look for direct children without supplementary property.
+   * @code
+   * auto children = node.findChildren(regexp,{},false);
+   *                                          ^^
+   * @endcode
+   */
+ 
   /**
    * Retrieves the first path existing between the current node and the given @a node.
    * If no path exists between both, then an empty vector is returned, 

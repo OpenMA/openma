@@ -84,9 +84,12 @@ namespace ma
     void addParent(Node* node) _OPENMA_NOEXCEPT;
     void removeParent(Node* node) _OPENMA_NOEXCEPT;
     
-    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
-    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> U findChild(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> std::vector<U> findChildren(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
+    template <typename U = Node*, typename V, typename = typename std::enable_if<std::is_same<std::regex, V>::value>::type> std::vector<U> findChildren(const V& regexp, std::initializer_list<std::pair<const std::string,Any>>&& properties = std::initializer_list<std::pair<const std::string,Any>>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
     
     std::vector<const Node*> retrievePath(const Node* node) const _OPENMA_NOEXCEPT;
     
@@ -132,7 +135,15 @@ namespace ma
     }
     return nullptr;
   };
-
+  
+  template <typename U>
+  U Node::findChild(const std::string& name, std::initializer_list<std::pair<const std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  {
+    std::unordered_map<std::string,Any> props;
+    props.insert(properties);
+    return this->findChild<U>(name, std::move(props), recursiveSearch);
+  };
+  
   template <typename U>
   U Node::findChild(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
@@ -166,6 +177,14 @@ namespace ma
     return children;
   };
   
+  template <typename U>
+  std::vector<U> Node::findChildren(const std::string& name, std::initializer_list<std::pair<const std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  {
+    std::unordered_map<std::string,Any> props;
+    props.insert(properties);
+    return this->findChildren<U>(name, std::move(props), recursiveSearch);
+  };
+    
   template <typename U, typename V, typename>
   std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
@@ -175,6 +194,14 @@ namespace ma
     this->findNodes(reinterpret_cast<std::vector<void*>*>(&children), static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),regexp,std::move(properties),recursiveSearch);
     remove_duplicates(children);
     return children;
+  };
+  
+  template <typename U, typename V, typename>
+  std::vector<U> Node::findChildren(const V& regexp, std::initializer_list<std::pair<const std::string,Any>>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
+  {
+    std::unordered_map<std::string,Any> props;
+    props.insert(properties);
+    return this->findChildren<U>(regexp, std::move(props), recursiveSearch);
   };
   
   // ----------------------------------------------------------------------- //
