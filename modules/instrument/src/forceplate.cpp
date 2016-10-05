@@ -196,7 +196,7 @@ namespace instrument
     T.col(0) = (SC.col(0) - SC.col(1)).normalized();
     T.col(2) = T.col(0).cross(SC.col(0) - SC.col(3)).normalized();
     T.col(1) = T.col(2).cross(T.col(0));
-    Eigen::Matrix<double,3,1> so = (SC.col(0) + SC.col(2)) / 2.0;
+    Eigen::Matrix<double,3,1> so = SC.rowwise().mean();
     T.col(3) = T.bottomLeftCorner<3,3>() * -off + so;
   };
   
