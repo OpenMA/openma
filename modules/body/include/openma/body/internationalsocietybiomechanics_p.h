@@ -57,7 +57,7 @@ namespace body
     InternationalSocietyBiomechanicsPrivate(InternationalSocietyBiomechanics* pint, const std::string& name, int region, int side);
     ~InternationalSocietyBiomechanicsPrivate() _OPENMA_NOEXCEPT;
     
-    bool calibrateUpperLimb(int side, const math::Pose* torsoç, TaggedPositions* landmarks);
+    bool calibrateUpperLimb(int side, math::Pose* torso, TaggedPositions* landmarks);
     bool calibrateLowerLimb(int side, const math::Position* HJC, TaggedPositions* landmarks);
     
     bool reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;

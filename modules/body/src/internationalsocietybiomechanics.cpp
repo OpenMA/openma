@@ -75,7 +75,7 @@ namespace body
   InternationalSocietyBiomechanicsPrivate::~InternationalSocietyBiomechanicsPrivate() _OPENMA_NOEXCEPT = default;
   
   
-  bool InternationalSocietyBiomechanicsPrivate::calibrateUpperLimb(int side, const math::Pose* torso, TaggedPositions* landmarks)
+  bool InternationalSocietyBiomechanicsPrivate::calibrateUpperLimb(int side, math::Pose* torso, TaggedPositions* landmarks)
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -116,12 +116,12 @@ namespace body
       r = -11.0 * M_PI / 180.0;
       percent = 0.43;
     }
-    
+    std::copy_n(AC.values().data(), 3, torso->values().data()+9);
     //   - SJC
     Point* SJCH = nullptr;
     if ((SJCH = pptr->findChild<Point*>(prefix+"SJC",{},false)) == nullptr)
     {
-      double depth = pptr->property("torso.depth");
+      double depth = pptr->property("Torso.depth");
       math::Pose rotInv(1); rotInv.values().setZero(); rotInv.residuals().setZero();
       rotInv.values() << cos(r), sin(r), 0., -sin(r), cos(r), 0., 0., 0., 1., 0., 0., 0.;
       math::Position lSJC(1); lSJC.residuals().setZero();
@@ -239,10 +239,10 @@ namespace body
     // -----------------------------------------
     // Foot
     // -----------------------------------------
-    // Required landmarks: *.LTM, *.MTM, *.MTH1, *.MTH5, *.HEE
+    // Required landmarks: *.MTH1, *.MTH5, *.HEE
     const auto& MTH1 = (*landmarks)[prefix+"MTH1"];
     const auto& MTH5 = (*landmarks)[prefix+"MTH5"];
-    const auto& HEE = (*landmarks)[prefix+"HEE ="];
+    const auto& HEE = (*landmarks)[prefix+"HEE"];
     if (!MTH1.isValid() || !MTH5.isValid() || !HEE.isValid())
     {
       error("InternationalSocietyBiomechanics - Missing landmarks to define the foot. Calibration aborted.");
@@ -281,13 +281,13 @@ namespace body
     const auto& LHE = (*landmarks)[prefix+"LHE"];
     if (!GH.isValid() || !MHE.isValid() || !LHE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the arm. Calibration aborted.");
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the arm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     ReferenceFrame* relframe = nullptr;
     if ((relframe = pptr->findChild<ReferenceFrame*>(prefix+"Arm.SCS",{},false)) == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Relative arm segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+      error("InternationalSocietyBiomechanics - Relative arm segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
@@ -296,6 +296,7 @@ namespace body
     v = (GH - EJC).normalized();
     u = v .cross(s * (LHE - MHE));
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),GH)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -304,7 +305,7 @@ namespace body
     const auto& RS = (*landmarks)[prefix+"RS"];
     if (!MHE.isValid() || !LHE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the forearm. Calibration aborted.");
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the forearm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Forearm}},false);
@@ -312,21 +313,105 @@ namespace body
     v = (EJC - WJC).normalized();
     u = v.cross(s * (RS - US)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),EJC), prefix+"Forearm.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Hand
     // -----------------------------------------
     // Required landmarks: *.MH2, *.MH5
     const auto& MH2 = (*landmarks)[prefix+"MH2"];
     const auto& MH5 = (*landmarks)[prefix+"MH5"];
+    if (!MH2.isValid() || !MH5.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the hand. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Hand}},false);
     v = (WJC - (MH2 + MH5) / 2.0).normalized();
     u = v.cross(s * (MH2 - MH5)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),WJC), prefix+"Hand.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-    
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     return true;
   };
   
   bool InternationalSocietyBiomechanicsPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
+    auto pptr = this->pint();
+    std::string prefix;
+    double s = 0.0;
+    if (side == Side::Left)
+    {
+      prefix = "L.";
+      s = -1.0;
+      
+    }
+    else if (side == Side::Right)
+    {
+      prefix = "R.";
+      s = 1.0;
+    }
+    // Temporary variable use to construct segments' motion
+    Segment* seg;
+    math::Vector u, v;
+    // -----------------------------------------
+    // Thigh
+    // -----------------------------------------
+    // Required landmarks: *.GT, *.LFE and *.MFE
+    const auto& GT = (*landmarks)[prefix+"GT"];
+    const auto& LFE = (*landmarks)[prefix+"LFE"];
+    const auto& MFE = (*landmarks)[prefix+"MFE"];
+    if (!GT.isValid() || !LFE.isValid() || !MFE.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the thigh. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      return false;
+    }
+    ReferenceFrame* relframe = nullptr;
+    if ((relframe = pptr->findChild<ReferenceFrame*>(prefix+"Thigh.SCS",{},false)) == nullptr)
+    {
+      error("InternationalSocietyBiomechanics - Relative thigh segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
+    relframe = relframe->clone(seg);
+    v = (GT - LFE).normalized();
+    u = v.cross(s * (LFE - MFE)).normalized();
+    math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),LFE)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
+    // -----------------------------------------
+    // Shank
+    // -----------------------------------------
+    // Required landmarks: *.FH, *.LTM, *.MTM
+    const auto& FH = (*landmarks)[prefix+"FH"];
+    const auto& LTM = (*landmarks)[prefix+"LTM"];
+    const auto& MTM = (*landmarks)[prefix+"MTM"];
+    if (!FH.isValid() || !LTM.isValid() || !MTM.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
+    const math::Position KJC = (LFE + MFE) / 2.0;
+    const math::Position AJC = (LTM + MTM) / 2.0;
+    v = (KJC - AJC).normalized();
+    u = v.cross(s * (FH - AJC));
+    math::to_timesequence(math::Pose(u,v,u.cross(v),KJC), prefix+"Shank.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
+    // -----------------------------------------
+    // Foot
+    // -----------------------------------------
+    // Required landmarks: *.MTH1, *.MTH5, *.HEE
+    const auto& MTH1 = (*landmarks)[prefix+"MTH1"];
+    const auto& MTH5 = (*landmarks)[prefix+"MTH5"];
+    const auto& HEE = (*landmarks)[prefix+"HEE"];
+    if (!MTH1.isValid() || !MTH5.isValid() || !HEE.isValid())
+    {
+      error("InternationalSocietyBiomechanics - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      return false;
+    }
+    seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
+    u = ((MTH1 + MTH5) / 2.0 - HEE).normalized();
+    v = s * (MTH5 - HEE).cross(MTH1 - HEE).normalized();
+    math::to_timesequence(math::Pose(u,v,u.cross(v),AJC), prefix+"Foot.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
+    seg->setProperty("length", pptr->property(seg->name()+".length"));
     return true;
   };
 };
@@ -552,78 +637,6 @@ namespace body
     math::Position LJC(1); // Joint center used by the lower and upper parts
     
     // --------------------------------------------------
-    // UPPER LIMB
-    // --------------------------------------------------
-    if ((optr->Region & Region::Upper) == Region::Upper)
-    {
-      // -----------------------------------------
-      // Torso
-      // -----------------------------------------
-      // Required landmarks: SS, C7, XP and T8
-      const auto& SS = landmarks["SS"];
-      const auto& C7 = landmarks["C7"];
-      const auto& XP = landmarks["XP"];
-      const auto& T8 = landmarks["T8"];
-      if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
-      {
-        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Calibration aborted.");
-        return false;
-      }
-      math::Vector u = (SS - C7).normalized();
-      math::Vector v;
-      math::Vector w = u.cross((SS + C7) / 2.0 - (XP + T8) / 2.0).normalized();
-      const math::Pose torso = math::Pose(u, w.cross(u), w, C7);
-      double depth = (SS - C7).norm();
-      double r, percent;
-      if (sex == Sex::Female)
-      {
-        r = 14.0 * M_PI / 180.0; 
-        percent = 0.53;
-      }
-      else
-      {
-        r = 8.0 * M_PI / 180.0;
-        percent = 0.55;
-      }
-      // The inverse of the matrix rot is known. Not necessary to compute it.
-      math::Pose rotInv(1); rotInv.residuals().setZero();
-      rotInv.values() << cos(r), sin(r), 0., -sin(r), cos(r), 0., 0., 0., 1., 0., 0., 0.;
-      math::Position lCJC(1); lCJC.residuals().setZero();
-      lCJC.values() << percent * depth, 0.0, 0.0;
-      math::Position CJC = torso.transform(rotInv.transform(lCJC));
-      v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
-      w = (SS - C7).cross(v).normalized();
-      math::Pose tcs_pose(v.cross(w),v,w,C7);
-      v = (CJC - (XP + T8) / 2.0).normalized();
-      w = (SS - C7).cross(v).normalized();
-      math::Pose scs_relpose = tcs_pose.inverse().transform(math::Pose(v.cross(w),v,w,CJC));
-      auto scs_node = this->findChild<ReferenceFrame*>("Torso.SCS",{},false);
-      if (scs_node == nullptr)
-        new ReferenceFrame("Torso.SCS", scs_relpose.values().data(), this);
-      else
-        scs_node->setData(scs_relpose.values().data());
-      double segLength = 0.0;
-      if (!LJC.isValid())
-        warning("The lumbar joint centre is not defined! Impossible to determine the length of the torso. Torso's length is set to 0.");
-      else
-        segLength = (CJC - LJC).norm();
-      this->setProperty("Torso.length", segLength);
-      this->setProperty("Torso.depth", depth);
-      // -----------------------------------------
-      // Other lower limbs
-      // -----------------------------------------
-      if ((optr->Side & Side::Left) == Side::Left)
-      {
-        if (!optr->calibrateUpperLimb(Side::Left, &torso, &landmarks))
-          return false;
-      }
-      if ((optr->Side & Side::Right) == Side::Right)
-      {
-        if (!optr->calibrateUpperLimb(Side::Right, &torso, &landmarks))
-          return false;
-       }
-    }
-    // --------------------------------------------------
     // LOWER LIMB
     // --------------------------------------------------
     if ((optr->Region & Region::Lower) == Region::Lower)
@@ -715,6 +728,13 @@ namespace body
       }
       else
         std::copy_n(rightSJCH->data(), 3, R_HJC.values().data());
+      // Relative SCS for the pelvis
+      math::Position scs_relorigin = pelvis.inverse().transform(LJC);
+      auto scs_node = this->findChild<ReferenceFrame*>("Pelvis.SCS",{},false);
+      if (scs_node == nullptr)
+        new ReferenceFrame("Pelvis.SCS", nullptr, scs_relorigin.values().data(), this);
+      else
+        scs_node->setData(scs_relorigin.values().data()+9);
       // Set the segment length
       this->setProperty("Pelvis.length", static_cast<double>((LJC - (L_HJC + R_HJC)).norm()));
       // -----------------------------------------
@@ -728,6 +748,78 @@ namespace body
       if ((optr->Side & Side::Right) == Side::Right)
       {
         if (!optr->calibrateLowerLimb(Side::Right, &R_HJC, &landmarks))
+          return false;
+       }
+    }
+    // --------------------------------------------------
+    // UPPER LIMB
+    // --------------------------------------------------
+    if ((optr->Region & Region::Upper) == Region::Upper)
+    {
+      // -----------------------------------------
+      // Torso
+      // -----------------------------------------
+      // Required landmarks: SS, C7, XP and T8
+      const auto& SS = landmarks["SS"];
+      const auto& C7 = landmarks["C7"];
+      const auto& XP = landmarks["XP"];
+      const auto& T8 = landmarks["T8"];
+      if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
+      {
+        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Calibration aborted.");
+        return false;
+      }
+      math::Vector u = (SS - C7).normalized();
+      math::Vector v;
+      math::Vector w = u.cross((SS + C7) / 2.0 - (XP + T8) / 2.0).normalized();
+      math::Pose torso = math::Pose(u, w.cross(u), w, C7);
+      double depth = (SS - C7).norm();
+      double r, percent;
+      if (sex == Sex::Female)
+      {
+        r = 14.0 * M_PI / 180.0; 
+        percent = 0.53;
+      }
+      else
+      {
+        r = 8.0 * M_PI / 180.0;
+        percent = 0.55;
+      }
+      // The inverse of the matrix rot is known. Not necessary to compute it.
+      math::Pose rotInv(1); rotInv.residuals().setZero();
+      rotInv.values() << cos(r), sin(r), 0., -sin(r), cos(r), 0., 0., 0., 1., 0., 0., 0.;
+      math::Position lCJC(1); lCJC.residuals().setZero();
+      lCJC.values() << percent * depth, 0.0, 0.0;
+      math::Position CJC = torso.transform(rotInv.transform(lCJC));
+      v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
+      w = (SS - C7).cross(v).normalized();
+      math::Pose tcs_pose(v.cross(w),v,w,C7);
+      v = (CJC - (XP + T8) / 2.0).normalized();
+      w = (SS - C7).cross(v).normalized();
+      math::Pose scs_relpose = tcs_pose.inverse().transform(math::Pose(v.cross(w),v,w,CJC));
+      auto scs_node = this->findChild<ReferenceFrame*>("Torso.SCS",{},false);
+      if (scs_node == nullptr)
+        new ReferenceFrame("Torso.SCS", scs_relpose.values().data(), this);
+      else
+        scs_node->setData(scs_relpose.values().data());
+      double segLength = 0.0;
+      if (!LJC.isValid())
+        warning("The lumbar joint centre is not defined! Impossible to determine the length of the torso. Torso's length is set to 0.");
+      else
+        segLength = (CJC - LJC).norm();
+      this->setProperty("Torso.length", segLength);
+      this->setProperty("Torso.depth", depth);
+      // -----------------------------------------
+      // Other lower limbs
+      // -----------------------------------------
+      if ((optr->Side & Side::Left) == Side::Left)
+      {
+        if (!optr->calibrateUpperLimb(Side::Left, &torso, &landmarks))
+          return false;
+      }
+      if ((optr->Side & Side::Right) == Side::Right)
+      {
+        if (!optr->calibrateUpperLimb(Side::Right, &torso, &landmarks))
           return false;
        }
     }
