@@ -188,6 +188,22 @@ namespace body
   {};
   
   /**
+   * Configure the descriptor in case modifications have to be done since its construction.
+   */
+  void EulerDescriptor::configure(const std::array<int,3>& sequence, const std::array<double,3>& scale, const std::array<double,3>& offset) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if ((optr->Sequence == sequence)
+      && (optr->Scale == scale)
+      && (optr->Offset == offset))
+      return;
+    optr->Sequence = sequence;
+    optr->Scale = scale;
+    optr->Offset = offset;
+    this->modified();
+  };
+  
+  /**
    * Destructor
    */
   EulerDescriptor::~EulerDescriptor() _OPENMA_NOEXCEPT = default;

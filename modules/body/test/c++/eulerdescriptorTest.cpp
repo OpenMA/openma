@@ -19,6 +19,11 @@ CXXTEST_SUITE(EulerDescriptorTest)
     TS_WARN("TODO");
   }
   
+  CXXTEST_TEST(configure)
+  {
+    TS_WARN("TODO");
+  }
+  
   CXXTEST_TEST(clone)
   {
     TS_WARN("Implement the method ma::body::EulerDescriptor::clone()");
@@ -34,5 +39,6 @@ CXXTEST_SUITE_REGISTRATION(EulerDescriptorTest)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorOne)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorTwo)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, processConstructorThree)
+CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, configure)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, clone)
 CXXTEST_TEST_REGISTRATION(EulerDescriptorTest, copy)
