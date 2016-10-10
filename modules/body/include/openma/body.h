@@ -39,6 +39,7 @@
 #include "openma/body/dynamicdescriptor.h"
 #include "openma/body/enums.h"
 #include "openma/body/eulerdescriptor.h"
+#include "openma/body/internationalsocietybiomechanics.h"
 #include "openma/body/joint.h"
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
