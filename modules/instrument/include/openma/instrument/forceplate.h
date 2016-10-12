@@ -39,6 +39,7 @@
 #include "openma/instrument/enums.h"
 #include "openma/base/hardware.h"
 
+#include <array>
 #include <vector>
 
 namespace ma
@@ -81,20 +82,20 @@ namespace instrument
     
     int type() const _OPENMA_NOEXCEPT;
     
-    void setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3]);
+    void setGeometry(const std::array<double,3>& rso, const std::array<double,3>& sc1, const std::array<double,3>& sc2, const std::array<double,3>& sc3, const std::array<double,3>& sc4);
     
-    const double* referenceFrame() const _OPENMA_NOEXCEPT;
+    const std::array<double,12>& referenceFrame() const _OPENMA_NOEXCEPT;
     // void setReferenceFrame(double u[3], double v[3], double w[3], double o[3]);
     
-    const double* surfaceCorners() const _OPENMA_NOEXCEPT;
+    const std::array<double,12>& surfaceCorners() const _OPENMA_NOEXCEPT;
     // void setSurfaceCorners(double c1[3], double c2[3], double c3[3], double c4[3]);
     
-    const double* relativeSurfaceOrigin() const _OPENMA_NOEXCEPT;
+    const std::array<double,3>& relativeSurfaceOrigin() const _OPENMA_NOEXCEPT;
     // void setRelativeSurfaceOrigin(double off[3]);
    
-    const unsigned* calibrationMatrixDimensions() const _OPENMA_NOEXCEPT;
-    double* calibrationMatrixData() const _OPENMA_NOEXCEPT;
-    void setCalibrationMatrixData(const double* data);
+    const std::array<unsigned,2>& calibrationMatrixDimensions() const _OPENMA_NOEXCEPT;
+    const std::vector<double>& calibrationMatrixData() const _OPENMA_NOEXCEPT;
+    void setCalibrationMatrixData(const std::vector<double>& value);
     
     TimeSequence* wrench(Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
     

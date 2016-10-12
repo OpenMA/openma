@@ -74,15 +74,15 @@ const double fp5dataout[153] = {
   0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0
 };
 
-const double fp5rso[3] = { 0., 0., -16.33887 };
+const std::array<double,3> fp5rso{{ 0., 0., -16.33887 }};
 
-const double fp5sc1[3] = { -501.800001, 497.799993, 0.};
+const std::array<double,3> fp5sc1{{ -501.800001, 497.799993, 0. }};
 
-const double fp5sc2[3] = { -4.0, 497.799993, 0. };
+const std::array<double,3> fp5sc2{{ -4.0, 497.799993, 0. }};
 
-const double fp5sc3[3] = { -4.0, 0., 0. };
+const std::array<double,3> fp5sc3{{ -4.0, 0., 0. }};
 
-const double fp5sc4[3] = { -501.800001, 0., 0. };
+const std::array<double,3> fp5sc4{{ -501.800001, 0., 0. }};
 
 const double fp5cal[48] = {
   -1.6121, 0.976148, 105.019852, -19528.01563, -19094.32813, -158.667999,
@@ -132,17 +132,17 @@ const double fp3dataout_global[1792] = {
   0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 1.16314800, 1.15332800, 1.13556400, 1.121700, 1.08954500, 1.070430, 1.04889500, 1.02787100, 1.010500, 0.9980500, 0.9887900, 0.9788810, 0.9652530, 0.9518660, 0.9346510, 0.9175920, 0.9011320, 0.8789050, 0.8581180, 0.8348430, 0.8109600, 0.7905500, 0.7716220, 0.7561000, 0.7475370, 0.7360940, 0.7255210, 0.7216970, 0.7151760, 0.7113900, 0.7087860, 0.7057070, 0.7025250, 0.6974220, 0.6931790, 0.6863350, 0.6822700, 0.6761370, 0.6699510, 0.6664910, 0.6595930, 0.6552950, 0.6499940, 0.6464200, 0.6395920, 0.6375370, 0.6342800, 0.6331110, 0.6300200, 0.6161530, 0.5925530, 0.5264350, 0.4588270, 0.4166620, 0.3610420, 0.2023320, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740, 0.4335740
 };
 
-const double fp3rso[3] = {0., 0., -63.};
+const std::array<double,3> fp3rso{{0., 0., -63.}};
 
-const double fp3sc1[3] = {4.66908, 3.01687, 1.71506};
+const std::array<double,3> fp3sc1{{4.66908, 3.01687, 1.71506}};
 
-const double fp3sc2[3] = {3.84405, 394.878, 1.08413};
+const std::array<double,3> fp3sc2{{3.84405, 394.878, 1.08413}};
 
-const double fp3sc3[3] = {593.901992, 395.98, -0.707185};
+const std::array<double,3> fp3sc3{{593.901992, 395.98, -0.707185}};
 
-const double fp3sc4[3] = {594.332993, 2.39287, -0.357709};
+const std::array<double,3> fp3sc4{{594.332993, 2.39287, -0.357709}};
 
-const double fp3offsets[2] = {120., 200.};
+const std::array<double,2> fp3offsets{{120., 200.}};
 
 // COMPARISON FUNCTIONS
 
@@ -179,7 +179,8 @@ void forceplatetest_fill_sample10_type2(ma::instrument::ForcePlate* fp)
 void forceplatetest_fill_sample10_type4(ma::instrument::ForcePlate* fp)
 {
   forceplatetest_fill_sample10(fp, fp4datain);
-  fp->setCalibrationMatrixData(fp4cal);
+  auto fp4cal_ = std::vector<double>(fp4cal,fp4cal+36);
+  fp->setCalibrationMatrixData(fp4cal_);
   TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),6ul);
 };
 
@@ -212,7 +213,8 @@ void forceplatetest_fill_gait1_type5(ma::instrument::ForcePlate* fp)
   std::copy(fp5datain+119, fp5datain+136, p8->data());
   fp->setChannel("Fy23", p8);
   fp->setGeometry(fp5rso, fp5sc1, fp5sc2, fp5sc3, fp5sc4);
-  fp->setCalibrationMatrixData(fp5cal);
+  std::vector<double> fp5cal_(fp5cal, fp5cal+48);
+  fp->setCalibrationMatrixData(fp5cal_);
   TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),8ul);
 };
 
@@ -270,10 +272,10 @@ void forceplatetest_compare_fp_clone(ma::instrument::ForcePlate* ref, ma::instru
   arr2 = clone->surfaceCorners();
   for (int i = 1 ; i < 12 ; ++i)
     TS_ASSERT_DELTA(arr1[i], arr2[i], 1e-5)
-  arr1 = ref->relativeSurfaceOrigin();
-  arr2 = clone->relativeSurfaceOrigin();
+  auto arr3 = ref->relativeSurfaceOrigin();
+  auto arr4 = clone->relativeSurfaceOrigin();
   for (int i = 1 ; i < 3 ; ++i)
-    TS_ASSERT_DELTA(arr1[i], arr2[i], 1e-5)
+    TS_ASSERT_DELTA(arr3[i], arr4[i], 1e-5)
   auto s1 = ref->calibrationMatrixDimensions()[0] * ref->calibrationMatrixDimensions()[1];
   auto s2 = clone->calibrationMatrixDimensions()[0] * clone->calibrationMatrixDimensions()[1];
   TS_ASSERT_EQUALS(s1,s2);
@@ -385,7 +387,7 @@ void forceplatetest_fill_gaitfb1_type3(ma::instrument::ForcePlateType3* fp)
   std::copy_n(fp3datain+7*gaitfb1_fpsamples, gaitfb1_fpsamples, p8->data());
   fp->setChannel("Fz4", p8);
   fp->setGeometry(fp3rso, fp3sc1, fp3sc2, fp3sc3, fp3sc4);
-  fp->setSensorOffsets(fp3offsets[0],fp3offsets[1]);
+  fp->setSensorOffsets(fp3offsets);
   TS_ASSERT_EQUALS(fp->channels()->findChildren<ma::TimeSequence*>({},{},false).size(),8ul);
 };
 

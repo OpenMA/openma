@@ -74,7 +74,7 @@ namespace instrument
     auto cMy = this->channel("My")->data();
     auto cMz = this->channel("Mz")->data();
     auto W = math::to_wrench(w);
-    Eigen::Map<Eigen::Matrix<double,6,6>> X(this->calibrationMatrixData());
+    const Eigen::Map<const Eigen::Matrix<double,6,6>> X(this->calibrationMatrixData().data());
     Eigen::Matrix<double,6,1> c;
     for (unsigned i = 0 ; i < W.rows() ; ++i)
     {

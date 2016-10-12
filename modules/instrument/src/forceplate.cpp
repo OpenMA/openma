@@ -56,49 +56,16 @@ namespace instrument
   ForcePlatePrivate::ForcePlatePrivate(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels, unsigned rows, unsigned cols)
   : HardwarePrivate(pint, name, std::move(labels)),
     Type(type),
-#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
-    ReferenceFrame{1.,0.,0.,0.,1.,0.,0.,0.,1.,0.,0.,0.},
-    SurfaceCorners{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.},
-    RelativeSurfaceOrigin{0.,0.,0.},
-    CalibrationMatrixDimensions{rows,cols},
-#endif
-    CalibrationMatrixData(nullptr)
+    ReferenceFrame{{1.,0.,0.,0.,1.,0.,0.,0.,1.,0.,0.,0.}},
+    SurfaceCorners{{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}},
+    RelativeSurfaceOrigin{{0.,0.,0.}},
+    CalibrationMatrixDimensions{{rows,cols}},
+    CalibrationMatrixData()
   {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    this->ReferenceFrame[0] = 1.;
-    this->ReferenceFrame[1] = 0.;
-    this->ReferenceFrame[2] = 0.;
-    this->ReferenceFrame[3] = 0.;
-    this->ReferenceFrame[4] = 1.;
-    this->ReferenceFrame[5] = 0.;
-    this->ReferenceFrame[6] = 0.;
-    this->ReferenceFrame[7] = 0.;
-    this->ReferenceFrame[8] = 1.;
-    this->ReferenceFrame[9] = 0.;
-    this->ReferenceFrame[10] = 0.;
-    this->ReferenceFrame[11] = 0.;
-    this->SurfaceCorners[0] = 0.;
-    this->SurfaceCorners[1] = 0.;
-    this->SurfaceCorners[2] = 0.;
-    this->SurfaceCorners[3] = 0.;
-    this->SurfaceCorners[4] = 0.;
-    this->SurfaceCorners[5] = 0.;
-    this->SurfaceCorners[6] = 0.;
-    this->SurfaceCorners[7] = 0.;
-    this->SurfaceCorners[8] = 0.;
-    this->SurfaceCorners[9] = 0.;
-    this->SurfaceCorners[10] = 0.;
-    this->SurfaceCorners[11] = 0.;
-    this->RelativeSurfaceOrigin[0] = 0.;
-    this->RelativeSurfaceOrigin[1] = 0.;
-    this->RelativeSurfaceOrigin[2] = 0.;
-    this->CalibrationMatrixDimensions[0] = rows;
-    this->CalibrationMatrixDimensions[1] = cols;
-#endif
     if ((rows != 0) && (cols != 0))
     {
       size_t num = rows * cols;
-      this->CalibrationMatrixData = new double[num];
+      this->CalibrationMatrixData.resize(num);
       for (size_t i = 0 ; i < num ; ++i)
         this->CalibrationMatrixData[i] = 0.;
     }
@@ -109,9 +76,7 @@ namespace instrument
   {};
   
   ForcePlatePrivate::~ForcePlatePrivate() _OPENMA_NOEXCEPT
-  {
-    delete[] this->CalibrationMatrixData;
-  };
+  {};
 };
 };
 
@@ -179,20 +144,20 @@ namespace instrument
    *  - Coordinates of the surface corner #4 (@a sc4) expressed the laboratory frame
    * Internally, the relativeSurfaceOrigin(), surfaceCorners() and referenceFrame() are adapted in consequence
    */
-  void ForcePlate::setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3])
+  void ForcePlate::setGeometry(const std::array<double,3>& rso, const std::array<double,3>& sc1, const std::array<double,3>& sc2, const std::array<double,3>& sc3, const std::array<double,3>& sc4)
   {
     auto optr = this->pimpl();
     // Copy directly the coordinates of the relative surface origin expressed in the force plate frame
-    std::copy(rso, rso+3, optr->RelativeSurfaceOrigin);
+    optr->RelativeSurfaceOrigin = rso;
     // Copy directly the coordinates of the corners expressed in the laboratory frame
-    std::copy(sc1, sc1+3, optr->SurfaceCorners);
-    std::copy(sc2, sc2+3, optr->SurfaceCorners+3);
-    std::copy(sc3, sc3+3, optr->SurfaceCorners+6);
-    std::copy(sc4, sc4+3, optr->SurfaceCorners+9);
+    std::copy_n(sc1.data(), 3, optr->SurfaceCorners.data());
+    std::copy_n(sc2.data(), 3, optr->SurfaceCorners.data()+3);
+    std::copy_n(sc3.data(), 3, optr->SurfaceCorners.data()+6);
+    std::copy_n(sc4.data(), 3, optr->SurfaceCorners.data()+9);
     // Compute the reference frame based on given information
-    Eigen::Map<Eigen::Matrix<double,3,1>> off(optr->RelativeSurfaceOrigin);
-    Eigen::Map<Eigen::Matrix<double,3,4>> SC(optr->SurfaceCorners);
-    Eigen::Map<Eigen::Matrix<double,3,4>> T(optr->ReferenceFrame);
+    Eigen::Map<Eigen::Matrix<double,3,1>> off(optr->RelativeSurfaceOrigin.data());
+    Eigen::Map<Eigen::Matrix<double,3,4>> SC(optr->SurfaceCorners.data());
+    Eigen::Map<Eigen::Matrix<double,3,4>> T(optr->ReferenceFrame.data());
     T.col(0) = (SC.col(0) - SC.col(1)).normalized();
     T.col(2) = T.col(0).cross(SC.col(0) - SC.col(3)).normalized();
     T.col(1) = T.col(2).cross(T.col(0));
@@ -204,7 +169,7 @@ namespace instrument
   /**
    * Returns a 3x4 array representing the orientation (3x3) and the position (1x3) of the force plate expressed in the laboratory frame.
    */
-  const double* ForcePlate::referenceFrame() const _OPENMA_NOEXCEPT
+  const std::array<double,12>& ForcePlate::referenceFrame() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->ReferenceFrame;
@@ -231,7 +196,7 @@ namespace instrument
   /**
    *  - Returns an array (3x4) representing the coordinates of each corner expressed in the laboratoy frame
    */
-  const double* ForcePlate::surfaceCorners() const _OPENMA_NOEXCEPT
+  const std::array<double,12>& ForcePlate::surfaceCorners() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->SurfaceCorners;
@@ -257,7 +222,7 @@ namespace instrument
   /**
    * Returns a vector (1x3) representing the coordinates of the surface origin expressed in the force plate frame
    */
-  const double* ForcePlate::relativeSurfaceOrigin() const _OPENMA_NOEXCEPT
+  const std::array<double,3>& ForcePlate::relativeSurfaceOrigin() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->RelativeSurfaceOrigin;
@@ -274,7 +239,7 @@ namespace instrument
   /**
    * Returns the dimensions of the calibration matrix associated with the force plate (if any)
    */
-  const unsigned* ForcePlate::calibrationMatrixDimensions() const _OPENMA_NOEXCEPT
+  const std::array<unsigned,2>& ForcePlate::calibrationMatrixDimensions() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->CalibrationMatrixDimensions;
@@ -284,7 +249,7 @@ namespace instrument
    * Returns the data of the calibration matrix associated with the force plate (if any)
    * If the force plate has no calibration matrix, this method return a null pointer.
    */
-  double* ForcePlate::calibrationMatrixData() const _OPENMA_NOEXCEPT
+  const std::vector<double>& ForcePlate::calibrationMatrixData() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->CalibrationMatrixData;
@@ -294,14 +259,14 @@ namespace instrument
    * Set the calibration matrix data.
    * @warning This method assumes that the number of element in data is at least equal to the number of required elements for the calibration matrix. The behaviour of this method is undefined in case this is not respected.
    */
-  void ForcePlate::setCalibrationMatrixData(const double* data)
+  void ForcePlate::setCalibrationMatrixData(const std::vector<double>& value)
   {
     auto optr = this->pimpl();
     int num = optr->CalibrationMatrixDimensions[0] * optr->CalibrationMatrixDimensions[1];
     bool isEqual = true;
     for (int i = 0 ; i < num ; ++i)
     {
-      if (optr->CalibrationMatrixData[i] != data[i])
+      if (optr->CalibrationMatrixData[i] != value[i])
       {
         isEqual = false;
         break;
@@ -309,7 +274,7 @@ namespace instrument
     }
     if (!isEqual)
     {
-      std::copy(data, data+num, optr->CalibrationMatrixData);
+      optr->CalibrationMatrixData = value;
       this->modified();
     }
   };
@@ -506,8 +471,8 @@ namespace instrument
   bool ForcePlate::transformToGlobal(TimeSequence* w)
   {
     auto W = math::to_wrench(w);
-    Eigen::Map<const Eigen::Matrix<double, 3, 3>> R(this->referenceFrame(), 3,3);
-    Eigen::Map<const Eigen::Array<double, 1, 3>> t(this->referenceFrame()+9,1,3);
+    Eigen::Map<const Eigen::Matrix<double, 3, 3>> R(this->referenceFrame().data(), 3,3);
+    Eigen::Map<const Eigen::Array<double, 1, 3>> t(this->referenceFrame().data()+9,1,3);
     // Forces rotation
     W.values().block(0,0,W.rows(),3).matrix() *= R.transpose();
     // Moments rotation
@@ -532,15 +497,15 @@ namespace instrument
     auto optr_src = src->pimpl();
     assert(optr_src->CalibrationMatrixDimensions[0] == optr->CalibrationMatrixDimensions[0]);
     assert(optr_src->CalibrationMatrixDimensions[1] == optr->CalibrationMatrixDimensions[1]);
-    assert(((optr_src->CalibrationMatrixData != nullptr) && (optr->CalibrationMatrixData != nullptr))
-        || ((optr_src->CalibrationMatrixData == nullptr) && (optr->CalibrationMatrixData == nullptr)));
+    assert((!optr_src->CalibrationMatrixData.empty() && !optr->CalibrationMatrixData.empty())
+        || (optr_src->CalibrationMatrixData.empty() && optr->CalibrationMatrixData.empty()));
     this->Hardware::copyContents(src);
     optr->Type = optr_src->Type;
-    std::copy(optr_src->ReferenceFrame, optr_src->ReferenceFrame+12, optr->ReferenceFrame);
-    std::copy(optr_src->SurfaceCorners, optr_src->SurfaceCorners+12, optr->SurfaceCorners);
-    std::copy(optr_src->RelativeSurfaceOrigin, optr_src->RelativeSurfaceOrigin+3, optr->RelativeSurfaceOrigin);
-    if (optr_src->CalibrationMatrixData != nullptr)
-      std::copy(optr_src->CalibrationMatrixData, optr_src->CalibrationMatrixData+(optr->CalibrationMatrixDimensions[0]*optr->CalibrationMatrixDimensions[1]), optr->CalibrationMatrixData);
+    optr->ReferenceFrame = optr_src->ReferenceFrame;
+    optr->SurfaceCorners = optr_src->SurfaceCorners;
+    optr->RelativeSurfaceOrigin = optr_src->RelativeSurfaceOrigin;
+    optr->CalibrationMatrixData = optr_src->CalibrationMatrixData;
+    
   };
 };
 };

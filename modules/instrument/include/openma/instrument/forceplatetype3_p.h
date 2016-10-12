@@ -54,7 +54,7 @@ namespace instrument
     ForcePlateType3Private(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels);
     ~ForcePlateType3Private() _OPENMA_NOEXCEPT;
     
-    double SensorOffsets[2];
+    std::array<double,2> SensorOffsets;
   };
 };
 };

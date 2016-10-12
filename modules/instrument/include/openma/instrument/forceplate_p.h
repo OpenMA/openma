@@ -42,6 +42,9 @@
 
 #include "openma/base/hardware_p.h"
 
+#include <array>
+#include <vector>
+
 namespace ma
 {
 namespace instrument
@@ -62,11 +65,11 @@ namespace instrument
     ~ForcePlatePrivate() _OPENMA_NOEXCEPT;
     
     int Type;
-    double ReferenceFrame[12];
-    double SurfaceCorners[12];
-    double RelativeSurfaceOrigin[3];
-    unsigned CalibrationMatrixDimensions[2];
-    double* CalibrationMatrixData;
+    std::array<double,12> ReferenceFrame;
+    std::array<double,12> SurfaceCorners;
+    std::array<double,3> RelativeSurfaceOrigin;
+    std::array<unsigned,2> CalibrationMatrixDimensions;
+    std::vector<double> CalibrationMatrixData;
   };
 };
 };

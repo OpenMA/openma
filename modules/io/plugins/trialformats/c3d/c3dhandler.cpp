@@ -225,16 +225,21 @@ namespace io
       fp->setChannel(i, analogs[channelIndices[i]-1]);
     }
     // Geometry
-    fp->setGeometry(origin, corners, corners+3, corners+6, corners+9);
+    fp->setGeometry(std::array<double,3>{{origin[0],origin[1],origin[2]}},
+                    std::array<double,3>{{corners[0],corners[1],corners[2]}},
+                    std::array<double,3>{{corners[3],corners[4],corners[5]}},
+                    std::array<double,3>{{corners[6],corners[7],corners[8]}},
+                    std::array<double,3>{{corners[9],corners[10],corners[11]}});
     // Calibration matrix (if any)
     if (calMatrix != nullptr)
     {
-      double* calVal = fp->calibrationMatrixData();
-      const unsigned* calDims = fp->calibrationMatrixDimensions();
+      auto calVal = fp->calibrationMatrixData();
+      const auto& calDims = fp->calibrationMatrixDimensions();
       assert((calDims[0] <= calMatrixSize[0]) && (calDims[1] <= calMatrixSize[1]));
       for (unsigned j = 0 ; j < calDims[1] ; ++j)
         for (unsigned i = 0 ; i < calDims[0] ; ++i)
           calVal[i*calDims[1] + j] = calMatrix[i*calMatrixSize[1] + j];
+      fp->setCalibrationMatrixData(calVal);
     }
     // TODO Manage case where there are missing channels
   };
@@ -935,7 +940,7 @@ namespace io
                     break;
                   case 3:
                     fp = new instrument::ForcePlateType3("FP"+std::to_string(i+1), trial->hardwares());
-                    static_cast<instrument::ForcePlateType3*>(fp)->setSensorOffsets(o[0], o[1]);
+                    static_cast<instrument::ForcePlateType3*>(fp)->setSensorOffsets(std::array<double,2>{{o[0],o[1]}});
                     o[0] = 0.0; o[1] = 0.0;
                     break;
                   case 4:

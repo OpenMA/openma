@@ -48,16 +48,8 @@ namespace ma
 namespace instrument
 {
   ForcePlateType3Private::ForcePlateType3Private(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels)
-  : ForcePlatePrivate(pint, name, type, std::move(labels))
-#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
-    , SensorOffsets{0.,0}
-#endif
-  {
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    this->SensorOffsets[0] = 0.;
-    this->SensorOffsets[1] = 0.;
-#endif
-  };
+  : ForcePlatePrivate(pint, name, type, std::move(labels)), SensorOffsets{{0.,0}}
+  {};
   
   ForcePlateType3Private::~ForcePlateType3Private() _OPENMA_NOEXCEPT = default;
 };
@@ -99,24 +91,23 @@ namespace instrument
    * The first offset represents the distance between the transducer axes and the y-axis of the force plate.
    * The second offset represents the distance between the transducer axes and the x-axis of the force plate.
    */
-  const double* ForcePlateType3::sensorOffsets() const _OPENMA_NOEXCEPT
+  const std::array<double,2>& ForcePlateType3::sensorOffsets() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->SensorOffsets;
   };
   
   /**
-   * The input @a a represents the distance between the transducer axes and the y-axis of the force plate.
-   * The input @a b represents the distance between the transducer axes and the x-axis of the force plate.
+   * The input @a value[0] represents the distance between the transducer axes and the y-axis of the force plate.
+   * The input @a value[1] represents the distance between the transducer axes and the x-axis of the force plate.
    */
-  void ForcePlateType3::setSensorOffsets(double a, double b) _OPENMA_NOEXCEPT
+  void ForcePlateType3::setSensorOffsets(const std::array<double,2>& value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(optr->SensorOffsets[0] - a) < std::numeric_limits<double>::epsilon()
-      && std::fabs(optr->SensorOffsets[1] - b) < std::numeric_limits<double>::epsilon())
+    if (std::fabs(optr->SensorOffsets[0] - value[0]) < std::numeric_limits<double>::epsilon()
+      && std::fabs(optr->SensorOffsets[1] - value[1]) < std::numeric_limits<double>::epsilon())
       return;
-    optr->SensorOffsets[0] = a;
-    optr->SensorOffsets[1] = b;
+    optr->SensorOffsets = value;
     this->modified();
   };
   
@@ -126,7 +117,7 @@ namespace instrument
   bool ForcePlateType3::computeWrenchAtOrigin(TimeSequence* w)
   {
     auto optr = this->pimpl();
-    const auto offsets = optr->SensorOffsets;
+    const auto& offsets = optr->SensorOffsets;
     auto W = math::to_wrench(w);
     auto Fx12 = math::Map<const math::Array<1>>::Values(this->channel("Fx12")->data(), W.rows(), 1);
     auto Fx34 = math::Map<const math::Array<1>>::Values(this->channel("Fx34")->data(), W.rows(), 1);
@@ -164,8 +155,7 @@ namespace instrument
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->ForcePlate::copyContents(src);
-    optr->SensorOffsets[0] = optr_src->SensorOffsets[0];
-    optr->SensorOffsets[1] = optr_src->SensorOffsets[1];
+    optr->SensorOffsets = optr_src->SensorOffsets;
   };
 };
 };

@@ -53,8 +53,8 @@ namespace instrument
     ForcePlateType3(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType3() _OPENMA_NOEXCEPT;
     
-    const double* sensorOffsets() const _OPENMA_NOEXCEPT;
-    void setSensorOffsets(double a, double b) _OPENMA_NOEXCEPT;
+    const std::array<double,2>& sensorOffsets() const _OPENMA_NOEXCEPT;
+    void setSensorOffsets(const std::array<double,2>& value) _OPENMA_NOEXCEPT;
     
   protected:
     virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
