@@ -52,7 +52,7 @@ namespace ma
 namespace body
 {
   SkeletonHelperPrivate::SkeletonHelperPrivate(SkeletonHelper* pint, const std::string& name, int region, int side)
-  : NodePrivate(pint,name), Region(region), Side(side), Gravity({0.,0.,0.})
+  : NodePrivate(pint,name), Region(region), Side(side), Gravity{{0.,0.,0.}}
   {};
   
   SkeletonHelperPrivate::~SkeletonHelperPrivate() = default;
