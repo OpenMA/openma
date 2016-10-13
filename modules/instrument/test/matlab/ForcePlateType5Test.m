@@ -1,5 +1,3 @@
-
-
 classdef ForcePlateType5Test < matlab.unittest.TestCase
 
     properties (Constant)
@@ -86,7 +84,7 @@ classdef ForcePlateType5Test < matlab.unittest.TestCase
             testCase.verifyEqual(cmdim(2), 8);
             cmdata = fp5.calibrationMatrixData();
             for i = 1:48
-                testCase.verifyEqual(cmdata(i), cmdref(i), 'AbsTol', 1e-5);
+                testCase.verifyEqual(cmdata(i), ForcePlateType5Test.fp5_calib6x8(i), 'AbsTol', 1e-5);
             end
         end
         
@@ -107,14 +105,14 @@ classdef ForcePlateType5Test < matlab.unittest.TestCase
             p7 = ma.TimeSequence('Pin7',1,samples,rate,start,ma.TimeSequence.Type_Analog,'N');
             p8 = ma.TimeSequence('Pin8',1,samples,rate,start,ma.TimeSequence.Type_Analog,'N');
         
-            p1.setData(ForcePlateType5Test.fp5_datain(1+(0*samples:1*samples))');
-            p2.setData(ForcePlateType5Test.fp5_datain(1+(1*samples:2*samples))');
-            p3.setData(ForcePlateType5Test.fp5_datain(1+(2*samples:3*samples))');
-            p4.setData(ForcePlateType5Test.fp5_datain(1+(3*samples:4*samples))');
-            p5.setData(ForcePlateType5Test.fp5_datain(1+(4*samples:5*samples))');
-            p6.setData(ForcePlateType5Test.fp5_datain(1+(5*samples:6*samples))');
-            p7.setData(ForcePlateType5Test.fp5_datain(1+(6*samples:7*samples))');
-            p8.setData(ForcePlateType5Test.fp5_datain(1+(7*samples:8*samples))');
+            p1.setData(ForcePlateType5Test.fp5_datain((1+0*samples):1*samples)');
+            p2.setData(ForcePlateType5Test.fp5_datain((1+1*samples):2*samples)');
+            p3.setData(ForcePlateType5Test.fp5_datain((1+2*samples):3*samples)');
+            p4.setData(ForcePlateType5Test.fp5_datain((1+3*samples):4*samples)');
+            p5.setData(ForcePlateType5Test.fp5_datain((1+4*samples):5*samples)');
+            p6.setData(ForcePlateType5Test.fp5_datain((1+5*samples):6*samples)');
+            p7.setData(ForcePlateType5Test.fp5_datain((1+6*samples):7*samples)');
+            p8.setData(ForcePlateType5Test.fp5_datain((1+7*samples):8*samples)');
         
             fp5.setChannel('Fz1', p1)
             fp5.setChannel('Fz2', p2)
@@ -125,30 +123,30 @@ classdef ForcePlateType5Test < matlab.unittest.TestCase
             fp5.setChannel('Fy14', p7)
             fp5.setChannel('Fy23', p8)
 
-            testCase.verifyEqual(length(fp5.channels().findChildren(ma.T_TimeSequence,'.*',[['type',ma.TimeSequence.Type_Analog]])), 8)
-            testCase.verifyEqual(fp5.channel(1),p1)
-            testCase.verifyEqual(fp5.channel(2),p2)
-            testCase.verifyEqual(fp5.channel(3),p3)
-            testCase.verifyEqual(fp5.channel(4),p4)
-            testCase.verifyEqual(fp5.channel(5),p5)
-            testCase.verifyEqual(fp5.channel(6),p6)
-            testCase.verifyEqual(fp5.channel(7),p7)
-            testCase.verifyEqual(fp5.channel(8),p8)
+            testCase.verifyEqual(length(fp5.channels().findChildren(ma.T_TimeSequence,'.*',{{'type',ma.TimeSequence.Type_Analog}})), 8)
+            testCase.verifyEqual(fp5.channel(1).name(),p1.name())
+            testCase.verifyEqual(fp5.channel(2).name(),p2.name())
+            testCase.verifyEqual(fp5.channel(3).name(),p3.name())
+            testCase.verifyEqual(fp5.channel(4).name(),p4.name())
+            testCase.verifyEqual(fp5.channel(5).name(),p5.name())
+            testCase.verifyEqual(fp5.channel(6).name(),p6.name())
+            testCase.verifyEqual(fp5.channel(7).name(),p7.name())
+            testCase.verifyEqual(fp5.channel(8).name(),p8.name())
             
-            wlo = fp5.wrench(ma.instrument.Location_Origin, false).data()
+            wlo = fp5.wrench(ma.instrument.Location_Origin, false).data();
             for i = 1:samples
-                testCase.verifyEqual(wlo(i,1), -ForcePlateType5Test.fp5_dataout(i+0*samples), 1e-4)
-                testCase.verifyEqual(wlo(i,2), -ForcePlateType5Test.fp5_dataout(i+1*samples), 1e-4)
-                testCase.verifyEqual(wlo(i,3), -ForcePlateType5Test.fp5_dataout(i+2*samples), 1e-4) 
-                testCase.verifyEqual(wlo(i,4)/1000., -ForcePlateType5Test.fp5_dataout(i+3*samples), 1e-4)
-                testCase.verifyEqual(wlo(i,5)/1000., -ForcePlateType5Test.fp5_dataout(i+4*samples), 1e-4)
-                testCase.verifyEqual(wlo(i,6)/1000., -ForcePlateType5Test.fp5_dataout(i+5*samples), 1e-4)
+                testCase.verifyEqual(wlo(i,1), -ForcePlateType5Test.fp5_dataout(i+0*samples), 'AbsTol', 1e-3)
+                testCase.verifyEqual(wlo(i,2), -ForcePlateType5Test.fp5_dataout(i+1*samples), 'AbsTol', 1e-3)
+                testCase.verifyEqual(wlo(i,3), -ForcePlateType5Test.fp5_dataout(i+2*samples), 'AbsTol', 1e-3) 
+                testCase.verifyEqual(wlo(i,4)/1000., -ForcePlateType5Test.fp5_dataout(i+3*samples), 'AbsTol', 1e-3)
+                testCase.verifyEqual(wlo(i,5)/1000., -ForcePlateType5Test.fp5_dataout(i+4*samples), 'AbsTol', 1e-3)
+                testCase.verifyEqual(wlo(i,6)/1000., -ForcePlateType5Test.fp5_dataout(i+5*samples), 'AbsTol', 1e-3)
             end
-            wlc = fp5.wrench(ma.instrument.Location_CentreOfPressure, false).data()
+            wlc = fp5.wrench(ma.instrument.Location_CentreOfPressure, false).data();
             for i = 1:samples
-                testCase.verifyEqual(wlc(i,7), ForcePlateType5Test.fp5_dataout(i+6*samples), 1e-3);
-                testCase.verifyEqual(wlc(i,8), ForcePlateType5Test.fp5_dataout(i+7*samples), 1e-3);
-                testCase.verifyEqual(wlc(i,9), ForcePlateType5Test.fp5_dataout(i+8*samples)-16.33887, 1e-3);
+                testCase.verifyEqual(wlc(i,7), ForcePlateType5Test.fp5_dataout(i+6*samples), 'AbsTol', 1e-3);
+                testCase.verifyEqual(wlc(i,8), ForcePlateType5Test.fp5_dataout(i+7*samples), 'AbsTol', 1e-3);
+                testCase.verifyEqual(wlc(i,9), ForcePlateType5Test.fp5_dataout(i+8*samples)-16.33887, 'AbsTol', 1e-3);
             end
         end
         

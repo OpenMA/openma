@@ -119,14 +119,14 @@ class ForcePlateType5Test(unittest.TestCase):
         fp5.setChannel('Fy23', p8)
 
         self.assertEqual(len(fp5.channels().findChildren(ma.T_TimeSequence,'.*',[['type',ma.TimeSequence.Type_Analog]])), 8)
-        self.assertEqual(fp5.channel(0),p1)
-        self.assertEqual(fp5.channel(1),p2)
-        self.assertEqual(fp5.channel(2),p3)
-        self.assertEqual(fp5.channel(3),p4)
-        self.assertEqual(fp5.channel(4),p5)
-        self.assertEqual(fp5.channel(5),p6)
-        self.assertEqual(fp5.channel(6),p7)
-        self.assertEqual(fp5.channel(7),p8)
+        self.assertEqual(fp5.channel(0).name(),p1.name())
+        self.assertEqual(fp5.channel(1).name(),p2.name())
+        self.assertEqual(fp5.channel(2).name(),p3.name())
+        self.assertEqual(fp5.channel(3).name(),p4.name())
+        self.assertEqual(fp5.channel(4).name(),p5.name())
+        self.assertEqual(fp5.channel(5).name(),p6.name())
+        self.assertEqual(fp5.channel(6).name(),p7.name())
+        self.assertEqual(fp5.channel(7).name(),p8.name())
         
         # NOTE: Tolerance are higher than in the C++ due to the difference in the method to compare real numbers.
         wlo = fp5.wrench(ma.instrument.Location_Origin, False).data()
