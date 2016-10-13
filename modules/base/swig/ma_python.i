@@ -80,7 +80,7 @@
     double d = PyFloat_AsDouble(PyList_GetItem($input,i));
     if (modf(d,&iptr) >= std::numeric_limits<double>::epsilon())
     {
-      SWIG_exception_fail(SWIG_ValueError, "size inputs must be integers in 'const std::vector<unsigned int>&' typemap (in)"); 
+      SWIG_exception_fail(SWIG_ValueError, "input must be integers in 'const std::vector<unsigned int>&' typemap (in)"); 
       break;
     }
     temp[i] = static_cast<unsigned>(d);
