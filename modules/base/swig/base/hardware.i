@@ -44,17 +44,59 @@ namespace ma
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Hardware, SWIGTYPE)
   
     Node* channels();
-    /*
-    TimeSequence* channel(unsigned idx) const _OPENMA_NOEXCEPT;
-    void setChannel(unsigned idx, TimeSequence* sig);
-    TimeSequence* channel(const std::string& label) const _OPENMA_NOEXCEPT;
-    void setChannel(const std::string& label, TimeSequence* sig);
-    unsigned channelsNumberRequired() const _OPENMA_NOEXCEPT;
-    
+    TimeSequence* channel(const std::string& label) const;
+    unsigned channelsNumberRequired() const;
     Node* outputs();
     
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
-    */
+    %extend {
+      TimeSequence* channel(unsigned idx) const;
+      void setChannel(unsigned idx, TimeSequence* sig);
+      void setChannel(const std::string& label, TimeSequence* sig);
+    }
   };
   %clearnodefaultctor;
 };
+
+%{
+
+ma::TimeSequence* ma_Hardware_channel(const ma::Hardware* self, unsigned idx)
+{
+#if defined(SWIGMATLAB)
+  if ((idx > 0) && (idx <= self->channelsNumberRequired()))
+    return self->channel(idx-1);
+#else
+  if (idx < self->channelsNumberRequired())
+    return self->channel(idx);
+#endif
+  else
+  {
+    SWIG_SendError(SWIG_IndexError, "Index out of range");
+    return nullptr;
+  }
+};
+
+void ma_Hardware_setChannel(ma::Hardware* self, unsigned idx, ma::TimeSequence* sig)
+{
+  auto chan = ma_Hardware_channel(self, idx);
+  if (chan != nullptr)
+    ma_Node_removeParent(chan, self->channels());
+  if (sig != nullptr)
+    ma_Node_addParent(sig, self->channels());
+#if defined(SWIGMATLAB)
+  self->setChannel(idx-1, sig);
+#else
+  self->setChannel(idx, sig);
+#endif
+};
+
+void ma_Hardware_setChannel(ma::Hardware* self, const std::string& label, ma::TimeSequence* sig)
+{
+  auto chan = self->channel(label);
+  if (chan != nullptr)
+    ma_Node_removeParent(chan, self->channels());
+  if (sig != nullptr)
+    ma_Node_addParent(sig, self->channels());
+  self->setChannel(label, sig);
+};
+
+%}
