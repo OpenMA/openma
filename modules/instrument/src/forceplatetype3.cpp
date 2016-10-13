@@ -48,8 +48,16 @@ namespace ma
 namespace instrument
 {
   ForcePlateType3Private::ForcePlateType3Private(ForcePlate* pint, const std::string& name, int type, std::vector<std::string>&& labels)
-  : ForcePlatePrivate(pint, name, type, std::move(labels)), SensorOffsets{{0.,0}}
-  {};
+  : ForcePlatePrivate(pint, name, type, std::move(labels))
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
+    , SensorOffsets{{0.,0}}
+#endif
+  {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    this->SensorOffsets[0] = 0.;
+    this->SensorOffsets[1] = 0.;
+#endif
+  };
   
   ForcePlateType3Private::~ForcePlateType3Private() _OPENMA_NOEXCEPT = default;
 };
