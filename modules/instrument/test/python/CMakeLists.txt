@@ -3,3 +3,4 @@ SET(TESTS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(PTD_DIRS ${PACKAGE_DIRECTORY} ${TESTS_DIRECTORY})
 
 ADD_PYTHON_TESTDRIVER(python_instrument_forceplatetype5 forceplatetype5Test INCLUDES ${PTD_DIRS})
+ADD_PYTHON_TESTDRIVER(python_instrument_forceplatetype3 forceplatetype3Test INCLUDES ${PTD_DIRS})

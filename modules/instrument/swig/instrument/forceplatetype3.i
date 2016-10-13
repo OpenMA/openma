@@ -47,6 +47,9 @@ namespace instrument
     
     ForcePlateType3(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType3();
+    
+    const std::array<double,2>& sensorOffsets() const;
+    void setSensorOffsets(const std::array<double,2>& value);
   };
   %clearnodefaultctor;
 };
