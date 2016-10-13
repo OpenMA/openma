@@ -101,6 +101,7 @@ namespace ma
   protected:
     Node(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     
+    template<typename U = Node*> U findChild(Node* node) const _OPENMA_NOEXCEPT;
     void replaceChild(Node* current, Node* substitute);
     
     virtual Node* allocateNew() const;
@@ -110,6 +111,7 @@ namespace ma
     
   private:
     Node* findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    Node* findNode(typeid_t id, Node* node) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
   };
@@ -139,6 +141,14 @@ namespace ma
     static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     return static_cast<U>(this->findNode(static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch));
+  };
+  
+  template <typename U>
+  U Node::findChild(Node* node) const _OPENMA_NOEXCEPT
+  {
+    static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
+    static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
+    return static_cast<U>(this->findNode(static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),node));
   };
   
   template <typename U>

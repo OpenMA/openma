@@ -642,7 +642,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*> std::vector<U> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Returns the children with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * As with the method findChild(), you can explicitely or implicitely give the type and/or the name of the children. For example:
    * @code{.unparsed}
@@ -668,6 +668,12 @@ namespace ma
   /**
    * @fn template <typename U = Node*, typename V, typename > std::vector<U> Node::findChildren(const V& regexp, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Convenient method to find children using a regular expression.
+   */
+  
+  /**
+   * template <typename U> U Node::findChild(Node* node) const _OPENMA_NOEXCEPT
+   * Convenient method to find a child based on its node ID and its pointer address.
+   * This method is internally used for safeguard when an inheriting class store directly child adresses to quickly access to them (aka shortcuts). As a reminder, when a child is removed or replaced, the shorcut is not cleaned in consequence (there is no cleaning mechanisn propagation). Thus, the shortuct is invalid. The use of a safeguard is necessary to not return an invalid address.
    */
   
   /**
@@ -774,6 +780,30 @@ namespace ma
       {
         Node* node = child->findNode(id,name,std::move(properties),recursiveSearch);
         if (node != nullptr)
+          return node;
+      }
+    }
+    return nullptr;
+  };
+  
+  /*
+   * Find a children based on its pointer address.
+   */
+  Node* Node::findNode(typeid_t id, Node* node) const _OPENMA_NOEXCEPT
+  {
+    if (node != nullptr)
+    {
+      // Search in the direct children
+      auto optr = this->pimpl();
+      for (const auto& child : optr->Children)
+      {
+        if (child->isCastable(id) && (child == node))
+          return child;
+      }
+      // In case no corresponding child was found and the recursive search is actived, let's go deeper
+      for (const auto& child : optr->Children)
+      {
+        if (child->findNode(id,node) != nullptr)
           return node;
       }
     }

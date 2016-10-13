@@ -527,6 +527,49 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_EQUALS(temp2.version(),2);
     TS_ASSERT_EQUALS(foo.version(),99);
   };
+  
+  CXXTEST_TEST(shortcut)
+  {
+    TestNode3 foo("foo");
+    ma::Node* bar = new ma::Node("bar"); // MUST BE ALLOCATED ON THE HEAP
+    foo.setShortcut(bar);
+    TS_ASSERT_EQUALS(foo.hasChildren(),true);
+    TS_ASSERT_EQUALS(bar->hasParents(),true);
+    TS_ASSERT_EQUALS(foo.shortcut(),bar);
+    TS_ASSERT_EQUALS(foo.findChild("bar"),bar);
+    bar->removeParent(&foo);
+    TS_ASSERT_EQUALS(foo.hasChildren(),false);
+    TS_ASSERT_EQUALS(bar->hasParents(),false);
+    TS_ASSERT_EQUALS(foo.shortcut(),nullptr);
+    TS_ASSERT_EQUALS(foo.findChild("bar"),nullptr);
+    ma::Node* toto = new ma::Node("toto");
+    foo.setShortcut(toto);
+    TS_ASSERT_EQUALS(foo.hasChildren(),true);
+    TS_ASSERT_EQUALS(toto->hasParents(),true);
+    TS_ASSERT_EQUALS(bar->hasParents(),false);
+    TS_ASSERT_EQUALS(foo.shortcut(),toto);
+    TS_ASSERT_EQUALS(foo.findChild("toto"),toto);
+    delete bar;
+  };
+  
+  CXXTEST_TEST(shortcutClone)
+  {
+    TestNode3 foo("foo");
+    ma::Node* bar = new ma::Node("bar"); // MUST BE ALLOCATED ON THE HEAP
+    foo.setShortcut(bar);
+    auto foo_ = static_cast<TestNode3*>(foo.clone());
+    TS_ASSERT_EQUALS(foo_->hasChildren(),true);
+    TS_ASSERT_DIFFERS(foo_->shortcut(),bar);
+    TS_ASSERT_DIFFERS(foo_->findChild("bar"),bar);
+    TS_ASSERT_EQUALS(foo_->findChild("bar"),foo_->shortcut());
+    delete foo_;
+    delete bar;
+    foo_ = static_cast<TestNode3*>(foo.clone());
+    TS_ASSERT_EQUALS(foo_->hasChildren(),false);
+    TS_ASSERT_EQUALS(foo_->shortcut(),nullptr);
+    TS_ASSERT_EQUALS(foo_->findChild("bar"),nullptr);
+    delete foo_;
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(NodeTest)
@@ -550,3 +593,5 @@ CXXTEST_TEST_REGISTRATION(NodeTest, copyWithSharedChildren)
 CXXTEST_TEST_REGISTRATION(NodeTest, retrievePath)
 CXXTEST_TEST_REGISTRATION(NodeTest, isCastable)
 CXXTEST_TEST_REGISTRATION(NodeTest, externInheriting)
+CXXTEST_TEST_REGISTRATION(NodeTest, shortcut)
+CXXTEST_TEST_REGISTRATION(NodeTest, shortcutClone)

@@ -19,8 +19,6 @@ public:
   void setVersion(int value);
   
   int count() const;
-  
-  virtual TestNode* clone(Node* parent = nullptr) const override;
 
 protected:
   virtual ma::Node* allocateNew() const override;
@@ -72,11 +70,6 @@ int TestNode::count() const
   return num;
 };
 
-TestNode* TestNode::clone(Node* parent) const
-{
-  return static_cast<TestNode*>(this->Node::clone(parent));
-};
-
 ma::Node* TestNode::allocateNew() const
 {
   return new TestNode(this->name());
@@ -110,8 +103,9 @@ public:
   
   int count() const;
   
-  virtual TestNode2* clone(Node* parent = nullptr) const override;
-  virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+protected:
+  virtual ma::Node* allocateNew() const override;
+  virtual void copyContents(const ma::Node* source) _OPENMA_NOEXCEPT override;
   
 private:
   std::unique_ptr<TestNode2Private> mp_Pimpl;
@@ -163,23 +157,93 @@ int TestNode2::count() const
   return num;
 };
 
-TestNode2* TestNode2::clone(Node* parent) const
+ma::Node* TestNode2::allocateNew() const
 {
-  auto dest = new TestNode2(this->name());
-  dest->copy(this);
-  dest->addParent(parent);
-  return dest;
+  return new TestNode2(this->name());
 };
 
-void TestNode2::copy(const Node* source) _OPENMA_NOEXCEPT
+void TestNode2::copyContents(const ma::Node* source) _OPENMA_NOEXCEPT
 {
   auto src = ma::node_cast<const TestNode2*>(source);
   if (src == nullptr)
     return;
-  this->Node::copy(src);
+  this->Node::copyContents(src);
   auto optr = this->pimpl();
   auto optr_src = src->pimpl();
   optr->Version = optr_src->Version;
+};
+
+// ------------------------------------------------------------------------- //
+
+class TestNode3Private;
+
+class TestNode3 : public ma::Node
+{
+  OPENMA_DECLARE_PIMPL_ACCESSOR(TestNode3)
+  OPENMA_DECLARE_NODEID(TestNode3, ma::Node)
+  
+public:
+  TestNode3(const std::string& name, Node* parent = nullptr);
+  
+  Node* shortcut() const _OPENMA_NOEXCEPT;
+  void setShortcut(Node* value);
+
+protected:
+  virtual ma::Node* allocateNew() const override;
+  virtual void copyContents(const ma::Node* source) _OPENMA_NOEXCEPT override;
+};
+
+class TestNode3Private : public ma::NodePrivate
+{
+  OPENMA_DECLARE_PINT_ACCESSOR(TestNode3)
+  
+public:
+  TestNode3Private(TestNode3* pint, const std::string& name) :  ma::NodePrivate(pint,name), Shortcut(nullptr) {};
+  
+  ma::Node* Shortcut;
+};
+
+TestNode3::TestNode3(const std::string& name, Node* parent)
+: ma::Node(*new TestNode3Private(this,name), parent)
+{};
+
+ma::Node* TestNode3::shortcut() const _OPENMA_NOEXCEPT
+{
+  auto optr = this->pimpl();
+  return this->findChild(optr->Shortcut);
+};
+
+void TestNode3::setShortcut(Node* value)
+{
+  auto optr = this->pimpl();
+  if (value == optr->Shortcut)
+    return;
+  if (this->findChild(optr->Shortcut) != nullptr)
+  {
+    optr->Shortcut->removeParent(this);
+    if (!optr->Shortcut->hasParents())
+      delete optr->Shortcut;
+  }
+  if (value != nullptr)
+    value->addParent(this);
+  optr->Shortcut = value;
+};
+
+ma::Node* TestNode3::allocateNew() const
+{
+  return new TestNode3(this->name());
+};
+
+void TestNode3::copyContents(const ma::Node* source) _OPENMA_NOEXCEPT
+{
+  auto src = ma::node_cast<const TestNode3*>(source);
+  if (src == nullptr)
+    return;
+  this->Node::copyContents(src);
+  auto optr = this->pimpl();
+  auto optr_src = src->pimpl();
+  if (src->findChild(optr_src->Shortcut) != nullptr)
+    optr->Shortcut = this->findChild(optr_src->Shortcut->name());
 };
 
 #endif // nodeTest_def_h
