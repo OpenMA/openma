@@ -74,21 +74,16 @@ namespace instrument
     ~ForcePlate();
     
     int type() const;
-    /*
-    void setGeometry(const double rso[3], const double sc1[3], const double sc2[3], const double sc3[3], const double sc4[3]);
-    
-    const double* referenceFrame() const;
-    
-    const double* surfaceCorners() const;
-    
-    const double* relativeSurfaceOrigin() const;
-   
-    const unsigned* calibrationMatrixDimensions() const;
-    double* calibrationMatrixData() const;
-    void setCalibrationMatrixData(const double* data);
+    void setGeometry(const std::array<double,3>& rso, const std::array<double,3>& sc1, const std::array<double,3>& sc2, const std::array<double,3>& sc3, const std::array<double,3>& sc4);
+    const std::array<double,12>& referenceFrame() const;
+    const std::array<double,12>& surfaceCorners() const;
+    const std::array<double,3>& relativeSurfaceOrigin() const;
+    const std::array<unsigned,2>& calibrationMatrixDimensions() const;
+    const std::vector<double>& calibrationMatrixData() const;
+    void setCalibrationMatrixData(const std::vector<double>& value);
     
     TimeSequence* wrench(ma::instrument::Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
-    */
+
   };
   %clearnodefaultctor;
 };

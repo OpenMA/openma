@@ -32,36 +32,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module(package="ma.instrument") instrument
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/instrument.h"
-%}
-
-%include "macros.i"
-
-%import "ma.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-#if defined(SWIGMATLAB)
-%include "instrument_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "instrument_python.i"
-#endif
-
-%include "../include/openma/instrument/enums.h"
-
-%include "instrument/forceplate.i"
-%include "instrument/forceplatetype2.i"
-%include "instrument/forceplatetype3.i"
-%include "instrument/forceplatetype4.i"
-%include "instrument/forceplatetype5.i"
+namespace ma
+{
+namespace instrument
+{
+  SWIG_TYPEMAP_NODE_OUT(ma::instrument, ForcePlateType2)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, instrument, ForcePlateType2, SWIGTYPE)
+  
+  %nodefaultctor;
+  class ForcePlateType2 : public ForcePlate
+  {
+  public:
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::instrument, ForcePlateType2, SWIGTYPE)
+    
+    ForcePlateType2(const std::string& name, Node* parent = nullptr);
+    ~ForcePlateType2();
+  };
+  %clearnodefaultctor;
+};
+};
