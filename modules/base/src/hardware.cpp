@@ -95,7 +95,7 @@ namespace ma
     auto optr = this->pimpl();
     if (idx >= optr->MappedChannels.size())
       return nullptr;
-    return optr->MappedChannels[idx].second;
+    return this->findChild<TimeSequence*>(optr->MappedChannels[idx].second);
   };
   
   /**
@@ -114,7 +114,7 @@ namespace ma
     if (old == sig)
       return;
     auto parent = this->channels();
-    if (old != nullptr)
+    if (this->findChild(old) != nullptr)
     {
       old->removeParent(parent);
       if (!old->hasParents())
@@ -136,7 +136,7 @@ namespace ma
     const auto it = std::find_if(optr->MappedChannels.cbegin(), optr->MappedChannels.cend(), [&](const vvt& v){return v.first == label;});
     if (it == optr->MappedChannels.cend())
       return nullptr;
-    return it->second;
+    return this->findChild<TimeSequence*>(it->second);
   };
   
   /**
@@ -154,7 +154,7 @@ namespace ma
       if (old == sig)
         return;
       auto parent = this->channels();
-      if (old != nullptr)
+      if (this->findChild(old) != nullptr)
       {
         old->removeParent(parent);
         if (!old->hasParents())
