@@ -1,7 +1,7 @@
 import ma.body
 import unittest
 
-class NodeTest(unittest.TestCase):
+class LandmarksTranslatorTest(unittest.TestCase):
   def test_convert(self):
     translator = ma.body.LandmarksTranslator('LandmarksTranslator',[
       ['LFHD', 'L.HF'],
