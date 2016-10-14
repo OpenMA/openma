@@ -52,8 +52,17 @@ namespace ma
 namespace body
 {
   SkeletonHelperPrivate::SkeletonHelperPrivate(SkeletonHelper* pint, const std::string& name, int region, int side)
-  : NodePrivate(pint,name), Region(region), Side(side), Gravity{{0.,0.,0.}}
-  {};
+  : NodePrivate(pint,name), Region(region), Side(side)
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
+    , Gravity{{0.,0.,0.}}
+#endif
+  {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    this->Gravity[0] = 0.;
+    this->Gravity[1] = 0.;
+    this->Gravity[2] = 0.;
+#endif
+  };
   
   SkeletonHelperPrivate::~SkeletonHelperPrivate() = default;
   
