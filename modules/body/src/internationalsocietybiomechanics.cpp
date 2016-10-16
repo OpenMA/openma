@@ -144,6 +144,13 @@ namespace body
       scs_node->setData(scs_relpose.values().data());
     segLength = (SJC - EJC).norm();
     pptr->setProperty(prefix+"Arm.length", segLength);
+    // Set the body inertial coordinate system (relative to the SCS)
+    const double relOriBcsFromScs[9] = {
+      0., 0., 1., // BCS u axis has to point to the right. SCS w axis is pointing right too
+      1., 0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
+      0., 1., 0.  // BCS w axis has to point upward. SCS v axis is going updward too
+    };
+    new ReferenceFrame(prefix+"Arm.BCS", relOriBcsFromScs, nullptr, pptr);
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -158,6 +165,7 @@ namespace body
     math::Position WJC = (US + RS) / 2.0;
     segLength = (EJC - WJC).norm();
     pptr->setProperty(prefix+"Forearm.length", segLength);
+    new ReferenceFrame(prefix+"Forearm.BCS", relOriBcsFromScs, nullptr, pptr);
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -172,6 +180,7 @@ namespace body
     math::Position MH = (MH2 + MH5) / 2.0;
     segLength = (WJC - MH).norm();
     pptr->setProperty(prefix+"Hand.length", segLength);
+    new ReferenceFrame(prefix+"Hand.BCS", relOriBcsFromScs, nullptr, pptr);
     return true;
   };
   
@@ -222,6 +231,13 @@ namespace body
       scs_node->setData(scs_relpose.values().data());
     segLength = (*HJC - KJC).norm();
     pptr->setProperty(prefix+"Thigh.length", segLength);
+    // Set the body inertial coordinate system (relative to the SCS)
+    const double relOriBcsFromScs[9] = {
+      0., 0., 1., // BCS u axis has to point to the right. SCS w axis is pointing right too
+      1., 0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
+      0., 1., 0.  // BCS w axis has to point upward. SCS v axis is going updward too
+    };
+    new ReferenceFrame(prefix+"Thigh.BCS", relOriBcsFromScs, nullptr, pptr);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -236,6 +252,7 @@ namespace body
     math::Position AJC = (LTM + MTM) / 2.0;
     segLength = (KJC - AJC).norm();
     pptr->setProperty(prefix+"Shank.length", segLength);
+    new ReferenceFrame(prefix+"Shank.BCS", relOriBcsFromScs, nullptr, pptr);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -250,6 +267,7 @@ namespace body
     }
     segLength = (((MTH1 + MTH5) / 2.0) - HEE).norm();
     pptr->setProperty(prefix+"Foot.length", segLength);
+    new ReferenceFrame(prefix+"Foot.BCS", relOriBcsFromScs, nullptr, pptr);
     return true;
   };
   
@@ -272,6 +290,7 @@ namespace body
     // Temporary variable use to construct segments' motion
     Segment* seg;
     math::Vector u, v;
+    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Arm
     // -----------------------------------------
@@ -297,6 +316,7 @@ namespace body
     u = v .cross(s * (LHE - MHE));
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),GH)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -314,6 +334,7 @@ namespace body
     u = v.cross(s * (RS - US)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),EJC), prefix+"Forearm.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -330,6 +351,7 @@ namespace body
     u = v.cross(s * (MH2 - MH5)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),WJC), prefix+"Hand.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
   
@@ -352,6 +374,7 @@ namespace body
     // Temporary variable use to construct segments' motion
     Segment* seg;
     math::Vector u, v;
+    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -376,6 +399,7 @@ namespace body
     u = v.cross(s * (LFE - MFE)).normalized();
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),LFE)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -395,6 +419,7 @@ namespace body
     u = v.cross(s * (FH - AJC));
     math::to_timesequence(math::Pose(u,v,u.cross(v),KJC), prefix+"Shank.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -412,6 +437,7 @@ namespace body
     v = s * (MTH5 - HEE).cross(MTH1 - HEE).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),AJC), prefix+"Foot.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
+    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
 };
@@ -737,6 +763,13 @@ namespace body
         scs_node->setData(scs_relorigin.values().data()+9);
       // Set the segment length
       this->setProperty("Pelvis.length", static_cast<double>((LJC - (L_HJC + R_HJC)).norm()));
+      // Set the segment body coordinate system
+      const double relOriBcsFromScs[9] = {
+        0., 0., 1., // BCS u axis has to point to the right. SCS w axis is pointing right too
+        1., 0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
+        0., 1., 0.  // BCS w axis has to point upward. SCS v axis is going updward too
+      };
+      new ReferenceFrame("Pelvis.BCS", relOriBcsFromScs, nullptr, this);
       // -----------------------------------------
       // Other lower limbs
       // -----------------------------------------
@@ -809,8 +842,15 @@ namespace body
         segLength = (CJC - LJC).norm();
       this->setProperty("Torso.length", segLength);
       this->setProperty("Torso.depth", depth);
+      // Set the segment body coordinate system
+      const double relOriBcsFromScs[9] = {
+        0., 0., 1., // BCS u axis has to point to the right. SCS w axis is pointing right too
+        1., 0., 0., // BCS v axis has to point forward. SCS u axis is pointing forward too
+        0., 1., 0.  // BCS w axis has to point upward. SCS v axis is going updward too
+      };
+      new ReferenceFrame("Torso.BCS", relOriBcsFromScs, nullptr, this);
       // -----------------------------------------
-      // Other lower limbs
+      // Other upper limbs
       // -----------------------------------------
       if ((optr->Side & Side::Left) == Side::Left)
       {
@@ -854,6 +894,7 @@ namespace body
     }
     auto optr = this->pimpl();
     Segment* seg = nullptr;
+    ReferenceFrame* bcs = nullptr;
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
@@ -885,6 +926,7 @@ namespace body
       const math::Vector w = (SS - C7).cross(v).normalized();
       math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,C7)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
       seg->setProperty("length", this->property(seg->name()+".length"));
+      if ((bcs = this->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -932,6 +974,7 @@ namespace body
       const math::Pose pelvis(v.cross(w), v, w, SC);
       math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,SC)), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       seg->setProperty("length", this->property(seg->name()+".length"));
+      if ((bcs = this->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------
