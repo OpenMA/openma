@@ -32,45 +32,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module(package="ma.body") body
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/body.h"
-%}
-
-%include "macros.i"
-
-%import "ma.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-#if defined(SWIGMATLAB)
-%include "body_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "body_python.i"
-#endif
-
-%include "body/enums.i"
-%include "body/landmarkstranslator.i"
-%include "body/skeletonhelper.i"
-%include "body/plugingait.i"
-%include "body/internationalsocietybiomechanics.i"
-
 namespace ma
 {
 namespace body
-{
-  void calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, ma::body::RepresentationFrame frame = ma::body::RepresentationFrame::Distal);
+{ 
+  SWIG_TYPEMAP_NODE_OUT(ma::body, InternationalSocietyBiomechanics)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, InternationalSocietyBiomechanics, SWIGTYPE)
+  
+  %nodefaultctor;
+  class InternationalSocietyBiomechanics : public SkeletonHelper
+  {
+  public:
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, InternationalSocietyBiomechanics, SWIGTYPE)
+
+    InternationalSocietyBiomechanics(int region, int side, Node* parent = nullptr);
+    ~InternationalSocietyBiomechanics();
+    
+    Sex sex() const;
+    void setSex(Sex value);
+  };
+  %clearnodefaultctor;
 };
 };
