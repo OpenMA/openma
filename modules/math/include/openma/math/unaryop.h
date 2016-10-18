@@ -888,31 +888,26 @@ namespace math
     {
       if (this->m_Residuals.size() != 0)
         return;
-      this->m_Residuals = this->m_Xpr.residuals();
+      Residuals xprres = this->m_Xpr.residuals();
+      this->m_Residuals = xprres;
+      this->m_Residuals.setConstant(-1.0);
       unsigned istart = 0, len = this->rows();
-      while (istart < len)
+      while (1)
       {
         // Beginning of the window
-        while ((istart < len) && (this->m_Residuals.coeff(istart) < 0.))
+        while ((istart < len) && (xprres.coeff(istart) < 0.))
           ++istart;
+        // Check if the beginning of the window is valid
+        if (istart >= len)
+          break;
         // End of the window
         unsigned istop = istart;
-        while ((istop < len) && (this->m_Residuals.coeff(istop) >= 0.))
+        while ((istop < len) && (xprres.coeff(istop) >= 0.))
           ++istop;
-        // Check the length of the window
+        // Compute the length of the window
         unsigned ilen = istop - istart;
-        //  1. The whole signal is invalid
-        if (ilen == 0)
-        {
-          this->m_Residuals.setConstant(-1.0);
-        }
-        //  2. The window is not large enough to be processed
-        else if (ilen < mwlen)
-        {
-          this->m_Residuals.segment(istart,ilen).setConstant(-1.0);
-        }
-        //  3. The size of window is adapted and is registered
-        else
+        // If the window is large enough to be processed, register it
+        if (ilen >= mwlen)
         {
           this->m_Windows.push_back({{istart,ilen}});
           this->m_Residuals.segment(istart,ilen).setZero();
