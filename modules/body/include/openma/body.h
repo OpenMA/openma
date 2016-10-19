@@ -187,10 +187,11 @@ namespace body
       if (massNormalization)
       {
         auto massProp = model->property("mass");
-        if (massProp.isValid() && (massProp.cast<double>() > 0.))
+        auto massVal = massProp.cast<double>();
+        if (massProp.isValid() && (massVal > 0.) && !isnan(massVal))
           options["massNormalization"] = model->property("mass");
         else
-          warning("The model '%s' has no property 'mass' or is set to a non positive value. It is not possible to normalize the data.", model->name().c_str());
+          warning("The model '%s' has no property 'mass' or is set to a non positive value or a not a number (NaN). It is not possible to normalize the data.", model->name().c_str());
       }
       auto analysis = new Node(model->name() + "_JointKinetics", output);
       auto joints = model->joints()->findChildren<Joint*>({},{},false);
