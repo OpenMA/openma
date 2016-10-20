@@ -26,3 +26,11 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(root.property('foo').cast('int'), 1)
         root.setProperty('bar',ma.Any(10.0))
         self.assertEqual(root.property('bar').cast('float'), 10.0)
+        
+    def test_several_children(self):
+        root = ma.Node('root');
+        child1 = ma.Node('child1', root);
+        child2 = ma.Node('child2', root);
+        self.assertEqual(root.property('_MA_REF_COUNTER').cast('int'), 0)
+        self.assertEqual(child1.property('_MA_REF_COUNTER').cast('int'), 1)
+        self.assertEqual(child2.property('_MA_REF_COUNTER').cast('int'), 1)
