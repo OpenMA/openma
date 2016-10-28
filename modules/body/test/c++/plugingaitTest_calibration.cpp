@@ -359,6 +359,38 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 3.88629 * M_PI / 180.0, 1e-3);
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 2.22081 * M_PI / 180.0, 1e-3);
   };
+  
+  CXXTEST_TEST(calibrateFullBodyFrameFootFlatKAD)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
+    helper.setMarkerDiameter(14.0); // mm
+    helper.setLeftLegLength(860.0); // mm
+    helper.setLeftKneeWidth(102.0); // mm
+    helper.setLeftAnkleWidth(75.3); // mm
+    helper.setLeftFootFlatEnabled(true);
+    helper.setRightLegLength(865.0); // mm
+    helper.setRightKneeWidth(103.4); // mm
+    helper.setRightAnkleWidth(72.9); // mm
+    helper.setRightFootFlatEnabled(true);
+    
+    
+    ma::Node root("root");
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration_FootFlat.c3d"));
+    TS_ASSERT_EQUALS(root.children().size(),1u);
+    helper.calibrate(&root, nullptr);
+    
+    TS_ASSERT_DELTA(helper.interAsisDistance(), 211.162, 1e-3);
+    TS_ASSERT_DELTA(helper.leftAsisTrochanterAPDistance(), 62.208, 1e-3);
+    TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 0.156355, 1e-5);
+    TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 0.242123, 1e-5);
+    TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 0.0629524, 1e-5);
+    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), 0.00504156, 1e-4);
+    TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
+    TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -0.175377, 1e-5);
+    TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 0.268151, 1e-5);
+    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 0.12429, 1e-3);
+    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 2e-3);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitCalibrationTest)  
@@ -375,3 +407,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF_N
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameFootFlatKAD)
