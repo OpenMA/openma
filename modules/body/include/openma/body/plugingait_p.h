@@ -47,6 +47,9 @@
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR
 #include "openma/math.h"
 
+#include <Eigen/Geometry>
+#include <Eigen_openma/Utils/sign.h>
+
 #include <unordered_map>
 
 namespace ma
@@ -366,10 +369,11 @@ namespace math
     typename Nested<XprTwo>::type m_Xpr2;
     typename Nested<XprThree>::type m_Xpr3;
     double Offset;
+    double Beta;
     
   public:
-    ChordOp(double offset, const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2, const XprBase<XprThree>& x3)
-    : m_Xpr1(x1), m_Xpr2(x2), m_Xpr3(x3), Offset(offset)
+    ChordOp(double offset, const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2, const XprBase<XprThree>& x3, double beta)
+    : m_Xpr1(x1), m_Xpr2(x2), m_Xpr3(x3), Offset(offset), Beta(beta)
     {
       assert(this->m_Xpr1.rows() == this->m_Xpr2.rows());
       assert(this->m_Xpr2.rows() == this->m_Xpr3.rows());
@@ -392,7 +396,7 @@ namespace math
       const Vector u = v.cross(K - I).normalized();
       const Pose local(u, v, u.cross(v), (J + I) / 2.0);
       // Compute the angle to project I along v
-      const auto d = (I - J).norm();
+      const Scalar d = (I - J).norm();
       const auto theta = (d.residuals() >= 0).select((this->Offset / d.values()).asin()*2.0, 0.0);
       // Do this projection in the local frame
       Vector t = local.inverse().transform(I);
@@ -402,7 +406,73 @@ namespace math
       t.values().middleCols<1>(1) = _tempX * theta.cos() - _tempY * theta.sin() ;
       t.values().rightCols<1>() = _tempX * theta.sin() + _tempY * theta.cos() ;
       // Transform back the projected point and return the result
-      return Eigen::internal::ChordOpValues(local.transform(t).values());
+      Vector P = local.transform(t);
+      // Is there a second condition that the projected point need to meet?
+      // In case the beta angle is not null, an iterative solution is used to
+      // Find the best projected point with the specified offset and the angle.
+      // NOTE: THE PART BELOW IS AN ADAPTION OF THE CODE PROPOSED IN THE PYCGA PROJECT WHICH TAKES IT FROM MORGAN SANGEUX
+      if (fabs(this->Beta) > std::numeric_limits<double>::epsilon())
+      {
+        
+        // Next part is iterative and realized for each sample
+        const double eps = 1e-5;
+        for (Index i = 0, len = P.rows() ; i < len ; ++i)
+        {
+          if (P.residuals().coeff(i) < 0.0)
+            continue;
+          int count = 0;
+          double sAlpha = 0, iAlpha = this->Beta, dBeta = fabs(this->Beta);
+          // Angle 
+          double ca = cos(theta.coeff(i) / 2.0);
+          // Distance where should be the new project point
+          double r = this->Offset * ca;
+          // Compute the projection of K on IJ using the Pythagorean theorem
+          const Eigen::Matrix<double,1,3> O = J.values().row(i) - v.values().row(i) * sqrt(d.values().coeff(i) * d.values().coeff(i) - this->Offset * this->Offset * (1 + ca * ca));
+          // Compute the local frame used to find the new projected point satisfaying an angle close to beta
+          Eigen::Matrix<double,1,3> Pi = P.values().row(i);
+          const Eigen::Matrix<double,1,3> w2 = v.values().row(i);
+          const Eigen::Matrix<double,1,3> v2 = w2.cross(Pi-O).normalized();
+          const Eigen::Matrix<double,1,3> u2 = v2.cross(w2).normalized();
+          // const Pose local2(v,v2,v2.cross(v).normalized(),O);
+          while ((dBeta > eps) && (count < 1000))
+          {
+            sAlpha += iAlpha;
+            // Compute the new projected point
+            double c = r * cos(sAlpha);
+            double s = r * sin(sAlpha);
+            P.values().coeffRef(i,0) = u2.coeff(0) * c + v2.coeff(0) * s + O.coeff(0);
+            P.values().coeffRef(i,1) = u2.coeff(1) * c + v2.coeff(1) * s + O.coeff(1);
+            P.values().coeffRef(i,2) = u2.coeff(2) * c + v2.coeff(2) * s + O.coeff(2);
+            // Verify if the new point projected on the plane corresponds to the angle beta
+            Pi = P.values().row(i);
+            const Eigen::Matrix<double,1,3> Ii = I.values().row(i);
+            const Eigen::Matrix<double,1,3> Ji = J.values().row(i);
+            const Eigen::Matrix<double,1,3> Ki = K.values().row(i);
+            Eigen::Matrix<double,1,3> nBone = Ji - Pi;
+            Eigen::Matrix<double,1,3> projK = nBone.cross((Ki - Pi).cross(nBone));
+            Eigen::Matrix<double,1,3> projI = nBone.cross((Ii - Pi).cross(nBone));
+            double iBeta = sign((projK.cross(projI) * nBone.transpose()).coeff(0)) * acos((projK * projI.transpose() / projK.norm() / projI.norm()).coeff(0));
+            double odBeta = dBeta;
+            dBeta = fabs(this->Beta - iBeta);
+            // Look for the direction and magnitude used by the next iteration
+            if ((dBeta - odBeta) > 0.0)
+            {
+              if (count == 0)
+              {
+                sAlpha -= iAlpha;
+                iAlpha *= -1.0;
+              }
+              else
+              {
+                iAlpha /= -2.0; 
+              }
+            }
+            ++count;
+          }
+        }
+      }
+      // Pass the result to be assigned in the result of the operation chord.
+      return Eigen::internal::ChordOpValues(P.values());
     };
   
     auto residuals() const _OPENMA_NOEXCEPT -> decltype(generate_residuals((OPENMA_MATHS_DECLVAL_NESTED(XprOne).residuals() >= 0.0) && (OPENMA_MATHS_DECLVAL_NESTED(XprTwo).residuals() >= 0.0) && (OPENMA_MATHS_DECLVAL_NESTED(XprThree).residuals() >= 0.0)))
@@ -412,9 +482,9 @@ namespace math
   };
   
   template <typename XprOne, typename XprTwo, typename XprThree>
-  static inline ChordOp<XprOne,XprTwo,XprThree> compute_chord(double offset, const XprBase<XprOne>& I, const XprBase<XprTwo>& J, const XprBase<XprThree>& K)
+  static inline ChordOp<XprOne,XprTwo,XprThree> compute_chord(double offset, const XprBase<XprOne>& I, const XprBase<XprTwo>& J, const XprBase<XprThree>& K, double beta = 0.0)
   {
-    return ChordOp<XprOne,XprTwo,XprThree>(offset,I,J,K);
+    return ChordOp<XprOne,XprTwo,XprThree>(offset,I,J,K,beta);
   };
 };
 };
