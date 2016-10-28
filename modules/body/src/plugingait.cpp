@@ -418,6 +418,7 @@ namespace body
     auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
+           thighRotationOffset = 0.0, shankRotationOffset = 0.0,
            staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0;
     if (side == Side::Left)
     {
@@ -425,6 +426,8 @@ namespace body
       s = -1.0;
       ankleWidth = this->LeftAnkleWidth;
       kneeWidth = this->LeftKneeWidth;
+      thighRotationOffset = -this->LeftThighRotationOffset;
+      shankRotationOffset = -this->LeftShankRotationOffset;
       staticPlantarFlexionOffset = -this->LeftStaticPlantarFlexionOffset;
       staticRotationOffset = -this->LeftStaticRotationOffset;
     }
@@ -434,6 +437,8 @@ namespace body
       s = 1.0;
       ankleWidth = this->RightAnkleWidth;
       kneeWidth = this->RightKneeWidth;
+      thighRotationOffset = this->RightThighRotationOffset;
+      shankRotationOffset = this->RightShankRotationOffset;
       staticPlantarFlexionOffset = -this->RightStaticPlantarFlexionOffset;
       staticRotationOffset = this->RightStaticRotationOffset;
     }
@@ -458,10 +463,18 @@ namespace body
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
-    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
-    u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
+    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB, thighRotationOffset);
     w = (*HJC - KJC).normalized();
-    v = w.cross(u);
+    if (this->Variant == PluginGait::Basic)
+    {
+      u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
+      v = w.cross(u);
+    }
+    else
+    {
+      v = -s * (LFE - KJC).normalized();
+      u = v.cross(w);
+    }
     math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -478,10 +491,19 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
     // Compute the ankle joint centre (AJC)
-    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
+    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS, shankRotationOffset);
     w = (KJC - AJC).normalized();
-    u = s * w.cross(LS - AJC).normalized();
-    math::Vector v_shank = w.cross(u);
+    math::Vector v_shank;
+    if (this->Variant == PluginGait::Basic)
+    {
+      u = s * w.cross(LS - AJC).normalized();
+      v_shank = w.cross(u);
+    }
+    else
+    {
+      v_shank = -s * (LTM - AJC).normalized();
+      u = v_shank.cross(w);
+    }
     math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
