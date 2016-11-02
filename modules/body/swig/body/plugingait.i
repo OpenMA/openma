@@ -84,10 +84,10 @@ namespace body
     void setRightAsisTrochanterAPDistance(double value);
     double leftAsisTrochanterAPDistance() const;
     void setLeftAsisTrochanterAPDistance(double value);
-    double rightTibialTorsion() const;
-    void setRightTibialTorsion(double value);
-    double leftTibialTorsion() const;
-    void setLeftTibialTorsion(double value);
+    double rightTibialTorsionOffset() const;
+    void setRightTibialTorsionOffset(double value);
+    double leftTibialTorsionOffset() const;
+    void setLeftTibialTorsionOffset(double value);
     double rightThighRotationOffset() const;
     void setRightThighRotationOffset(double value);
     double leftThighRotationOffset() const;
@@ -113,8 +113,8 @@ namespace body
     double rightStaticRotationOffset() const;
     double leftStaticPlantarFlexionOffset() const;
     double leftStaticRotationOffset() const;
-    double rightAnkleAbAdd() const;
-    double leftAnkleAbAdd() const;
+    double rightAnkleAbAddOffset() const;
+    double leftAnkleAbAddOffset() const;
   };
   %clearnodefaultctor;
 };

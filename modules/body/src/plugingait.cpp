@@ -165,8 +165,8 @@ namespace body
     LeftLegLength(0.0),
     RightAsisTrochanterAPDistance(0.0),
     LeftAsisTrochanterAPDistance(0.0),
-    RightTibialTorsion(0.0),
-    LeftTibialTorsion(0.0),
+    RightTibialTorsionOffset(0.0),
+    LeftTibialTorsionOffset(0.0),
     RightThighRotationOffset(0.0),
     LeftThighRotationOffset(0.0),
     RightShankRotationOffset(0.0),
@@ -182,8 +182,8 @@ namespace body
     RightStaticRotationOffset(0.0),
     LeftStaticPlantarFlexionOffset(0.0),
     LeftStaticRotationOffset(0.0),
-    RightAnkleAbAdd(0.0),
-    LeftAnkleAbAdd(0.0),
+    RightAnkleAbAddOffset(0.0),
+    LeftAnkleAbAddOffset(0.0),
     CalibrateKneeJointCentre(nullptr),
     CalibrateAnkleJointCentre(nullptr)
   {};
@@ -208,10 +208,10 @@ namespace body
       footFlat = this->LeftFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->LeftStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->LeftStaticRotationOffset);
-      tibialTorsion = &(this->LeftTibialTorsion);
+      tibialTorsionOffset = &(this->LeftTibialTorsionOffset);
       thighRotationOffset = &(this->LeftThighRotationOffset);
       shankRotationOffset = &(this->LeftShankRotationOffset);
-      ankleAbAdd = &(this->LeftAnkleAbAdd);
+      ankleAbAddOffset = &(this->LeftAnkleAbAddOffset);
     }
     else if (side == Side::Right)
     {
@@ -222,17 +222,17 @@ namespace body
       footFlat = this->RightFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->RightStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->RightStaticRotationOffset);
-      tibialTorsion = &(this->RightTibialTorsion);
+      tibialTorsionOffset = &(this->RightTibialTorsionOffset);
       thighRotationOffset = &(this->RightThighRotationOffset);
       shankRotationOffset = &(this->RightShankRotationOffset);
-      ankleAbAdd = &(this->RightAnkleAbAdd);
+      ankleAbAddOffset = &(this->RightAnkleAbAddOffset);
     }
     else
     {
       error("PluginGait - Unknown side for the lower limb. Calibration aborted.");
       return false;
     }
-    std::vector<double*> offsets{thighRotationOffset, shankRotationOffset, tibialTorsion, ankleAbAdd};
+    std::vector<double*> offsets{thighRotationOffset, shankRotationOffset, tibialTorsionOffset, ankleAbAddOffset};
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -883,14 +883,14 @@ namespace body
   double LeftAsisTrochanterAPDistance;
   /**
    * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
-   * @sa rightTibialTorsion() setRightTibialTorsion()
+   * @sa rightTibialTorsionOffset() setRightTibialTorsionOffset()
    */
-  double RightTibialTorsion;
+  double RightTibialTorsionOffset;
   /**
    * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
-   * @sa leftTibialTorsion() setLeftTibialTorsion()
+   * @sa leftTibialTorsionOffset() setLeftTibialTorsionOffset()
    */
-  double LeftTibialTorsion;
+  double LeftTibialTorsionOffset;
   /**
    * [Optional] This property holds the angle between projection of Thigh wand marker with the projection of the knee Flexion Axis (Y) onto the plane perpendicular to the longitudinal thigh axis. By default, this property contains the value 0.0.
    * @sa rightThighRotationOffset() setRightThighRotationOffset()
@@ -968,14 +968,14 @@ namespace body
   double LeftStaticRotationOffset;
   /**
    * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
-   * @sa rightAnkleAbAdd()
+   * @sa rightAnkleAbAddOffset()
    */
-  double RightAnkleAbAdd;
+  double RightAnkleAbAddOffset;
   /**
    * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
-   * @sa leftAnkleAbAdd()
+   * @sa leftAnkleAbAddOffset()
    */
-  double LeftAnkleAbAdd;
+  double LeftAnkleAbAddOffset;
   };
 #endif
   
@@ -1914,44 +1914,44 @@ namespace body
   };
   
   /**
-   * Returns the internal parameter RightTibialTorsion.
+   * Returns the internal parameter RightTibialTorsionOffset.
    */
-  double PluginGait::rightTibialTorsion() const _OPENMA_NOEXCEPT
+  double PluginGait::rightTibialTorsionOffset() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->RightTibialTorsion;
+    return optr->RightTibialTorsionOffset;
   };
   
   /**
    * Sets the internal parameter RightTibialTorsion.
    */
-  void PluginGait::setRightTibialTorsion(double value) _OPENMA_NOEXCEPT
+  void PluginGait::setRightTibialTorsionOffset(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (fabs(value - optr->RightTibialTorsion) < std::numeric_limits<double>::epsilon())
+    if (fabs(value - optr->RightTibialTorsionOffset) < std::numeric_limits<double>::epsilon())
       return;
-    optr->RightTibialTorsion = value;
+    optr->RightTibialTorsionOffset = value;
     this->modified();
   };
  
   /**
-   * Returns the internal parameter LeftTibialTorsion.
+   * Returns the internal parameter LeftTibialTorsionOffset.
    */
-  double PluginGait::leftTibialTorsion() const _OPENMA_NOEXCEPT
+  double PluginGait::leftTibialTorsionOffset() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->LeftTibialTorsion;
+    return optr->LeftTibialTorsionOffset;
   };
   
   /**
-   * Sets the internal parameter LeftTibialTorsion.
+   * Sets the internal parameter LeftTibialTorsionOffset.
    */
-  void PluginGait::setLeftTibialTorsion(double value) _OPENMA_NOEXCEPT
+  void PluginGait::setLeftTibialTorsionOffset(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (fabs(value - optr->LeftTibialTorsion) < std::numeric_limits<double>::epsilon())
+    if (fabs(value - optr->LeftTibialTorsionOffset) < std::numeric_limits<double>::epsilon())
       return;
-    optr->LeftTibialTorsion = value;
+    optr->LeftTibialTorsionOffset = value;
     this->modified();
   };
   
@@ -2202,21 +2202,21 @@ namespace body
   };
   
   /**
-   * Returns the internal parameter RightAnkleAbAdd.
+   * Returns the internal parameter RightAnkleAbAddOffset.
    */
-  double PluginGait::rightAnkleAbAdd() const _OPENMA_NOEXCEPT
+  double PluginGait::rightAnkleAbAddOffset() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->RightAnkleAbAdd;
+    return optr->RightAnkleAbAddOffset;
   };
   
   /**
-   * Returns the internal parameter LeftAnkleAbAdd.
+   * Returns the internal parameter LeftAnkleAbAddOffset.
    */
-  double PluginGait::leftAnkleAbAdd() const _OPENMA_NOEXCEPT
+  double PluginGait::leftAnkleAbAddOffset() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->LeftAnkleAbAdd;
+    return optr->LeftAnkleAbAddOffset;
   };
   
   // ----------------------------------------------------------------------- //
@@ -2379,8 +2379,8 @@ namespace body
     optr->LeftLegLength = optr_src->LeftLegLength;
     optr->RightAsisTrochanterAPDistance = optr_src->RightAsisTrochanterAPDistance;
     optr->LeftAsisTrochanterAPDistance = optr_src->LeftAsisTrochanterAPDistance;
-    optr->RightTibialTorsion = optr_src->RightTibialTorsion;
-    optr->LeftTibialTorsion = optr_src->LeftTibialTorsion;
+    optr->RightTibialTorsionOffset = optr_src->RightTibialTorsionOffset;
+    optr->LeftTibialTorsionOffset = optr_src->LeftTibialTorsionOffset;
     optr->RightThighRotationOffset = optr_src->RightThighRotationOffset;
     optr->LeftThighRotationOffset = optr_src->LeftThighRotationOffset;
     optr->RightShankRotationOffset = optr_src->RightShankRotationOffset;
@@ -2396,8 +2396,8 @@ namespace body
     optr->RightStaticRotationOffset = optr_src->RightStaticRotationOffset;
     optr->LeftStaticPlantarFlexionOffset = optr_src->LeftStaticPlantarFlexionOffset;
     optr->LeftStaticRotationOffset = optr_src->LeftStaticRotationOffset;
-    optr->RightAnkleAbAdd = optr_src->RightAnkleAbAdd;
-    optr->LeftAnkleAbAdd = optr_src->LeftAnkleAbAdd;
+    optr->RightAnkleAbAddOffset = optr_src->RightAnkleAbAddOffset;
+    optr->LeftAnkleAbAddOffset = optr_src->LeftAnkleAbAddOffset;
   };
 };
 };

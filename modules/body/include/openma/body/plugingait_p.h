@@ -87,8 +87,8 @@ namespace body
       Property<PluginGait, double, &PluginGait::leftLegLength,                   &PluginGait::setLeftLegLength>                 {"leftLegLength"},
       Property<PluginGait, double, &PluginGait::rightAsisTrochanterAPDistance,   &PluginGait::setRightAsisTrochanterAPDistance> {"rightAsisTrochanterAPDistance"},
       Property<PluginGait, double, &PluginGait::leftAsisTrochanterAPDistance,    &PluginGait::setLeftAsisTrochanterAPDistance>  {"leftAsisTrochanterAPDistance"},
-      Property<PluginGait, double, &PluginGait::rightTibialTorsion,              &PluginGait::setRightTibialTorsion>            {"rightTibialTorsion"},
-      Property<PluginGait, double, &PluginGait::leftTibialTorsion,               &PluginGait::setLeftTibialTorsion>             {"leftTibialTorsion"},
+      Property<PluginGait, double, &PluginGait::rightTibialTorsionOffset,        &PluginGait::setRightTibialTorsionOffset>      {"rightTibialTorsionOffset"},
+      Property<PluginGait, double, &PluginGait::leftTibialTorsionOffset,         &PluginGait::setLeftTibialTorsionOffset>       {"leftTibialTorsionOffset"},
       Property<PluginGait, double, &PluginGait::rightThighRotationOffset,        &PluginGait::setRightThighRotationOffset>      {"rightThighRotationOffset"},
       Property<PluginGait, double, &PluginGait::leftThighRotationOffset,         &PluginGait::setLeftThighRotationOffset>       {"leftThighRotationOffset"},
       Property<PluginGait, double, &PluginGait::rightShankRotationOffset,        &PluginGait::setRightShankRotationOffset>      {"rightShankRotationOffset"},
@@ -105,8 +105,8 @@ namespace body
       Property<PluginGait, double, &PluginGait::rightStaticRotationOffset>                                                      {"rightStaticRotationOffset"},
       Property<PluginGait, double, &PluginGait::leftStaticPlantarFlexionOffset>                                                 {"leftStaticPlantarFlexionOffset"},
       Property<PluginGait, double, &PluginGait::leftStaticRotationOffset>                                                       {"leftStaticRotationOffset"},
-      Property<PluginGait, double, &PluginGait::rightAnkleAbAdd>                                                                {"rightAnkleAbAdd"},
-      Property<PluginGait, double, &PluginGait::leftAnkleAbAdd>                                                                 {"leftAnkleAbAdd"}
+      Property<PluginGait, double, &PluginGait::rightAnkleAbAddOffset>                                                          {"rightAnkleAbAddOffset"},
+      Property<PluginGait, double, &PluginGait::leftAnkleAbAddOffset>                                                           {"leftAnkleAbAddOffset"}
     )
     
   public:
@@ -138,8 +138,8 @@ namespace body
     double LeftLegLength;
     double RightAsisTrochanterAPDistance; 
     double LeftAsisTrochanterAPDistance;
-    double RightTibialTorsion;
-    double LeftTibialTorsion;
+    double RightTibialTorsionOffset;
+    double LeftTibialTorsionOffset;
     double RightThighRotationOffset;
     double LeftThighRotationOffset;
     double RightShankRotationOffset;
@@ -156,8 +156,8 @@ namespace body
     double RightStaticRotationOffset;
     double LeftStaticPlantarFlexionOffset;
     double LeftStaticRotationOffset;
-    double RightAnkleAbAdd;
-    double LeftAnkleAbAdd;
+    double RightAnkleAbAddOffset;
+    double LeftAnkleAbAddOffset;
     
     using CalibrateJointFuncPtr = bool (*)(math::Position* , std::vector<double*>& , PluginGaitPrivate* , ummp* , const std::string& , double , double , const math::Position* );
     CalibrateJointFuncPtr CalibrateKneeJointCentre;
