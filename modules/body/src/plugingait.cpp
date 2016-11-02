@@ -62,7 +62,7 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double kneeWidth, const ma::math::Position* HJC)
+bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double kneeWidth, const ma::math::Position* HJC)
 {
   const auto& ITB = (*landmarks)[prefix+"ITB"];
   const auto& LFE = (*landmarks)[prefix+"LFE"];
@@ -106,7 +106,7 @@ bool _ma_plugingait_calibrate_kjc_kad(ma::math::Position* KJC, std::vector<doubl
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, std::vector<double*>& /* offsets */, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /* s */, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& LS = (*landmarks)[prefix+"LS"];
