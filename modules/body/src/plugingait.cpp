@@ -295,11 +295,12 @@ namespace body
     // -----------------------------------------
     // Foot
     // -----------------------------------------
-    // Required landmarks: *.MTH2, *.HEE, *.LS
+    // Required landmarks: *.MTH2, *.HEE, *.LS, *.LTM
     const auto& MTH2 = (*landmarks)[prefix+"MTH2"];
     math::Position HEE = (*landmarks)[prefix+"HEE"]; // Copy instead of a map due to possible modification on its coordinates if the foot flat option is activated
     const auto& LS = (*landmarks)[prefix+"LS"];
-    if (!MTH2.isValid() || !HEE.isValid() || !LS.isValid())
+    const auto& LTM = (*landmarks)[prefix+"LTM"];
+    if (!MTH2.isValid() || !HEE.isValid() || !LS.isValid() || !LTM.isValid())
     {
       error("PluginGait - Missing landmarks to define the foot. Calibration aborted.");
       return false;
@@ -323,9 +324,8 @@ namespace body
       HEE.block<1>(2) = MTH2.block<1>(2);
     }
     // - Shank axes
-    math::Vector w = (KJC - AJC).normalized();
-    math::Vector u = s * w.cross(LS - AJC).normalized();
-    math::Vector v_shank = w.cross(u);
+    math::Vector u, v_shank, w;
+    this->ConstructShankPose(&u, &v_shank, &w, &LS, &LTM, &KJC, &AJC, s);
     // - Foot reference
     w = (HEE - MTH2).normalized();
     u = v_shank.cross(w).normalized();

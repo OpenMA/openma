@@ -349,15 +349,15 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     
     TS_ASSERT_DELTA(helper.interAsisDistance(), 211.162, 1e-3);
     TS_ASSERT_DELTA(helper.leftAsisTrochanterAPDistance(), 62.208, 1e-3);
-    TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 13.8726 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 4.72487 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), 0.233667 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 13.8726 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 4.72487 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), 0.233667 * M_PI / 180.0, 1e-5);
     TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
-    TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 15.3639 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 3.88629 * M_PI / 180.0, 1e-3);
-    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 2.22081 * M_PI / 180.0, 1e-3);
+    TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 15.3639 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 3.88629 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 2.22081 * M_PI / 180.0, 1e-5);
   };
   
   CXXTEST_TEST(calibrateFullBodyFrameFootFlatKAD)
@@ -384,12 +384,12 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 0.156355, 1e-5);
     TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 0.242123, 1e-5);
     TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 0.0629524, 1e-5);
-    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), 0.00504156, 1e-4);
-    TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
+    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), 0.00504156, 1e-5);
+    TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-5);
     TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -0.175377, 1e-5);
     TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 0.268151, 1e-5);
-    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 0.12429, 1e-3);
-    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 2e-3);
+    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 0.12429, 1e-5);
+    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 1e-5);
   };
 };
 

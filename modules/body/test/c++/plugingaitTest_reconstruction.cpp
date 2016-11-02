@@ -366,8 +366,8 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1.1e-3,2e-5,2e-5});
     compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7.5e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {8.5e-4,2e-5,2e-5});
-    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4,1e-3,1e-3,1e-3}); 
-    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4,1e-3,1e-3,1e-3});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); 
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
   };
   
   CXXTEST_TEST(reconstructFullBodyFrameFootFlatKAD)
@@ -397,8 +397,8 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1.1e-3,2e-5,2e-5});
     compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7.5e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {8.5e-4,2e-5,2e-5});
-    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4,1e-3,2e-3,2e-3}); 
-    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4,1e-3,1e-3,1e-3});
+    compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); 
+    compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
   };
 };
 

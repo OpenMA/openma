@@ -495,14 +495,14 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   
     compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.5e-4,1e-4,1.1e-3}});
     compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{3.5e-4,8e-4,1.2e-3}});
-    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{3e-3,1e-4,2.2e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles",{{1.9e-4,1e-4,1.2e-3}});
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{3e-4,5.5e-4,1.1e-3}});
-    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles", {{3.5e-2,1.5e-2,5.4e-2}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{1.6e-4,1e-4,8e-4}});
     compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
     compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
-    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles", {{3.2e-2,1e-2,6e-2}});
-    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles", {{2.7e-4,3.5e-4,1.75e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1e-4,3.1e-4,1.1e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.5e-4}});
   };
   
   CXXTEST_TEST(kinematicsFullBodyFrameFootFlatKAD)
@@ -541,14 +541,14 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
   
     compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.6e-4,1e-4,1.1e-3}});
     compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{3.5e-4,8.8e-4,1.2e-3}});
-    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{3e-3,1e-4,2.2e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{2.1e-4,1e-4,1.1e-3}});
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{3e-4,6e-4,1.11e-3}});
-    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles", {{3.51e-2,1.5e-2,9.7e-2}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{1.6e-4,1e-4,7.7e-4}});
     compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
     compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
-    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles", {{3.2e-2,1e-2,1.1e-1}});
-    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles", {{2.7e-4,3.5e-4,1.75e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1.1e-4,2.5e-4,1.3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.4e-4}});
   };
 };
 
