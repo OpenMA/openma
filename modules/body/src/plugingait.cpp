@@ -225,8 +225,8 @@ namespace body
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0, seglength = 0.0;
     double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr,
-           *tibialTorsion = nullptr, *thighRotationOffset = nullptr,
-           *shankRotationOffset = nullptr, *ankleAbAdd = nullptr;
+           *tibialTorsionOffset = nullptr, *thighRotationOffset = nullptr,
+           *shankRotationOffset = nullptr, *ankleAbAddOffset = nullptr;
     bool footFlat = false;
     if (side == Side::Left)
     {
