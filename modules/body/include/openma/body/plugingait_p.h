@@ -162,6 +162,10 @@ namespace body
     using CalibrateJointFuncPtr = bool (*)(math::Position* , std::vector<double*>& , PluginGaitPrivate* , ummp* , const std::string& , double , double , const math::Position* );
     CalibrateJointFuncPtr CalibrateKneeJointCentre;
     CalibrateJointFuncPtr CalibrateAnkleJointCentre;
+    
+    using ConstructSegmentPosePtr = void (*)(math::Vector* , math::Vector* , math::Vector* , const math::Map<math::Position>* , const math::Map<math::Position>* , const math::Position* , const math::Position* , double );
+    ConstructSegmentPosePtr ConstructThighPose;
+    ConstructSegmentPosePtr ConstructShankPose;
   };
   
   inline void PluginGaitPrivate::computeHipJointCentre(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT

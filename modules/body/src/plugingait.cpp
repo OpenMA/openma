@@ -141,6 +141,33 @@ bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, std::vector<doubl
   *offsets[1] = crossnorm.atan2(dot).mean();
   return true;
 };
+void _ma_plugingait_construct_thigh_pose_basic(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* ITB, const ma::math::Map<ma::math::Position>* LFE, const ma::math::Position* HJC, const ma::math::Position* KJC, double s)
+{
+  *w = (*HJC - *KJC).normalized();
+  *u = s * (*HJC - *LFE).cross(*ITB - *LFE).normalized();
+  *v = w->cross(*u);
+};
+
+void _ma_plugingait_construct_thigh_pose_kad(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* /*ITB*/, const ma::math::Map<ma::math::Position>* LFE, const ma::math::Position* HJC, const ma::math::Position* KJC, double s)
+{
+  *w = (*HJC - *KJC).normalized();
+  *v = -s * (*LFE - *KJC).normalized();
+  *u = v->cross(*w);
+}
+
+void _ma_plugingait_construct_shank_pose_basic(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* /*LTM*/, const ma::math::Position* KJC, const ma::math::Position* AJC, double s)
+{
+  *w = (*KJC - *AJC).normalized();
+  *u = s * w->cross(*LS - *AJC).normalized();
+  *v = w->cross(*u);
+};
+  
+void _ma_plugingait_construct_shank_pose_kad(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* /*LS*/, const ma::math::Map<ma::math::Position>* LTM, const ma::math::Position* KJC, const ma::math::Position* AJC, double s)
+{
+  *w = (*KJC - *AJC).normalized();
+  *v = -s * (*LTM - *AJC).normalized();
+  *u = v->cross(*w);
+};
   
 namespace ma
 {
@@ -185,7 +212,9 @@ namespace body
     RightAnkleAbAddOffset(0.0),
     LeftAnkleAbAddOffset(0.0),
     CalibrateKneeJointCentre(nullptr),
-    CalibrateAnkleJointCentre(nullptr)
+    CalibrateAnkleJointCentre(nullptr),
+    ConstructThighPose(nullptr),
+    ConstructShankPose(nullptr)
   {};
   
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
@@ -464,17 +493,7 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
     const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB, thighRotationOffset);
-    w = (*HJC - KJC).normalized();
-    if (this->Variant == PluginGait::Basic)
-    {
-      u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
-      v = w.cross(u);
-    }
-    else
-    {
-      v = -s * (LFE - KJC).normalized();
-      u = v.cross(w);
-    }
+    this->ConstructThighPose(&u, &v, &w, &ITB, &LFE, HJC, &KJC, s);
     math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -494,16 +513,7 @@ namespace body
     const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS, shankRotationOffset);
     w = (KJC - AJC).normalized();
     math::Vector v_shank;
-    if (this->Variant == PluginGait::Basic)
-    {
-      u = s * w.cross(LS - AJC).normalized();
-      v_shank = w.cross(u);
-    }
-    else
-    {
-      v_shank = -s * (LTM - AJC).normalized();
-      u = v_shank.cross(w);
-    }
+    this->ConstructShankPose(&u, &v_shank, &w, &LS, &LTM, &KJC, &AJC, s);
     math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -990,11 +1000,15 @@ namespace body
     {
       optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_basic;
       optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_basic;
+      optr->ConstructThighPose = &_ma_plugingait_construct_thigh_pose_basic;
+      optr->ConstructShankPose = &_ma_plugingait_construct_shank_pose_basic;
     }
     else
     {
       optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_kad;
       optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kad;
+      optr->ConstructThighPose = &_ma_plugingait_construct_thigh_pose_kad;
+      optr->ConstructShankPose = &_ma_plugingait_construct_shank_pose_kad;
     }
   };
 
