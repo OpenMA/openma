@@ -194,10 +194,13 @@ bool _ma_plugingait_calibrate_ajc_kadmed(ma::math::Position* AJC, ma::math::Posi
   // 5. Compute the angle between v_shank and the projected v_thigh_local_shank
   //    NOTE: v_shank is equal to [0 1 0]. The dot product and crossnorm are  simplified
   *offsets[2] = s * v_thigh_local_shank.x().atan2(v_thigh_local_shank.y()).mean();
+  // Compute the adduction / abduction ankle joint offset
+  temp = -s * (LTM - * AJC).normalized();
+  ma::math::Scalar dot = v.dot(temp);
+  ma::math::Scalar crossnorm = v.cross(temp).norm();
+  *offsets[3] = crossnorm.atan2(dot).mean();
   return true;
 };
-
-
   
 namespace ma
 {

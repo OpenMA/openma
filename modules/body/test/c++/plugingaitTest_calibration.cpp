@@ -414,16 +414,16 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-4);
     // TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 3.89674 * M_PI / 180.0, 1e-5);
     TS_ASSERT_DELTA(helper.leftTibialTorsionOffset(), -12.0031 * M_PI / 180.0, 1e-4);
-    // TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 9.75336 * M_PI / 180.0, 1e-5);
-    // TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), -0.406183 * M_PI / 180.0, 1e-5);
-    // TS_ASSERT_DELTA(helper.leftAnkleAbAddOffset(), 11.5186 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 9.75336 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), -0.406183 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftAnkleAbAddOffset(), 11.5186 * M_PI / 180.0, 1e-4);
     TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
-    // TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-5);
     // TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 0.5526 * M_PI / 180.0 , 1e-4);
     TS_ASSERT_DELTA(helper.rightTibialTorsionOffset(), -17.7351 * M_PI / 180.0, 1e-4);
-    // TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 7.86442 * M_PI / 180.0, 1e-5);
-    // TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 3.1846 * M_PI / 180.0, 1e-4);
-    // TS_ASSERT_DELTA(helper.rightAnkleAbAddOffset(), 8.70843 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 7.86442 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 3.1846 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.rightAnkleAbAddOffset(), 8.70843 * M_PI / 180.0, 1e-5);
   };
 };
 
