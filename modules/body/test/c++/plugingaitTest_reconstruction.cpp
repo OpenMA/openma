@@ -362,9 +362,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     auto trial = rootDynamic.findChild<ma::Trial*>();
     auto model = rootModel.findChild<ma::body::Model*>();
     compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {1e-3,2e-5,2e-5});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {8.1e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1.1e-3,2e-5,2e-5});
-    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7.5e-4,2e-5,2e-5});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {8.5e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); 
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
@@ -393,9 +393,9 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     auto trial = rootDynamic.findChild<ma::Trial*>();
     auto model = rootModel.findChild<ma::body::Model*>();
     compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
-    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {1e-3,2e-5,2e-5});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {8.1e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1.1e-3,2e-5,2e-5});
-    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7.5e-4,2e-5,2e-5});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {7e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {8.5e-4,2e-5,2e-5});
     compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4}); 
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
@@ -413,4 +413,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBod
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyNoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct2BothUpperBodyHeadOffsetDisabled)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameBasicKAD)
-CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameFootFlatKAD)  
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameFootFlatKAD)

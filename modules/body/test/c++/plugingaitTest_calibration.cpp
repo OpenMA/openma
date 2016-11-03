@@ -391,6 +391,40 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 0.12429, 1e-5);
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 1e-5);
   };
+  
+  CXXTEST_TEST(calibrateFullBodyFrameBasicKADMed)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    helper.setMarkerDiameter(14.0); // mm
+    helper.setLeftLegLength(860.0); // mm
+    helper.setLeftKneeWidth(102.0); // mm
+    helper.setLeftAnkleWidth(75.3); // mm
+    helper.setRightLegLength(865.0); // mm
+    helper.setRightKneeWidth(103.4); // mm
+    helper.setRightAnkleWidth(72.9); // mm
+    
+    
+    ma::Node root("root");
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration_Basic.c3d"));
+    TS_ASSERT_EQUALS(root.children().size(),1u);
+    helper.calibrate(&root, nullptr);
+    
+    TS_ASSERT_DELTA(helper.interAsisDistance(), 211.162, 1e-3);
+    TS_ASSERT_DELTA(helper.leftAsisTrochanterAPDistance(), 62.208, 1e-3);
+    TS_ASSERT_DELTA(helper.leftThighRotationOffset(), 8.9585 * M_PI / 180.0, 1e-4);
+    // TS_ASSERT_DELTA(helper.leftShankRotationOffset(), 3.89674 * M_PI / 180.0, 1e-5);
+    TS_ASSERT_DELTA(helper.leftTibialTorsionOffset(), -12.0031 * M_PI / 180.0, 1e-4);
+    // TS_ASSERT_DELTA(helper.leftStaticPlantarFlexionOffset(), 9.75336 * M_PI / 180.0, 1e-5);
+    // TS_ASSERT_DELTA(helper.leftStaticRotationOffset(), -0.406183 * M_PI / 180.0, 1e-5);
+    // TS_ASSERT_DELTA(helper.leftAnkleAbAddOffset(), 11.5186 * M_PI / 180.0, 1e-4);
+    TS_ASSERT_DELTA(helper.rightAsisTrochanterAPDistance(), 62.852, 1e-3);
+    // TS_ASSERT_DELTA(helper.rightThighRotationOffset(), -10.0483 * M_PI / 180.0, 1e-4);
+    // TS_ASSERT_DELTA(helper.rightShankRotationOffset(), 0.5526 * M_PI / 180.0 , 1e-4);
+    TS_ASSERT_DELTA(helper.rightTibialTorsionOffset(), -17.7351 * M_PI / 180.0, 1e-4);
+    // TS_ASSERT_DELTA(helper.rightStaticPlantarFlexionOffset(), 7.86442 * M_PI / 180.0, 1e-5);
+    // TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 3.1846 * M_PI / 180.0, 1e-4);
+    // TS_ASSERT_DELTA(helper.rightAnkleAbAddOffset(), 8.70843 * M_PI / 180.0, 1e-4);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitCalibrationTest)  
@@ -408,3 +442,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKAD)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameFootFlatKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKADMed)
