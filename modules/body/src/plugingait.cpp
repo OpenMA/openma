@@ -62,16 +62,6 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-void _ma_plugingait_compute_shank_rotation_offset(double* offset, const ma::math::Position* AJC, const ma::math::Position* KJC, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* LTM)
-{
-  ma::math::Vector w = (*KJC - *AJC).normalized();
-  ma::math::Vector LS_proj_trans_unit = ((*LS - (*LS - *AJC).dot(w).replicate<3>() * w) - *AJC).normalized();
-  ma::math::Vector v = (*LTM - *AJC).normalized();
-  ma::math::Scalar dot = LS_proj_trans_unit.dot(v);
-  ma::math::Scalar crossnorm = LS_proj_trans_unit.cross(v).norm();
-  *offset = crossnorm.atan2(dot).mean();
-}
-
 void _ma_plugingait_construct_thigh_pose(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* LFE, const ma::math::Position* HJC, const ma::math::Position* KJC, double s)
 {
   *w = (*HJC - *KJC).normalized();
@@ -84,6 +74,16 @@ void _ma_plugingait_construct_shank_pose(ma::math::Vector* u, ma::math::Vector* 
   *w = (*KJC - *AJC).normalized();
   *u = s * w->cross(*LTM - *AJC).normalized();
   *v = w->cross(*u);
+};
+
+void _ma_plugingait_compute_shank_rotation_offset(double* offset, const ma::math::Position* AJC, const ma::math::Position* KJC, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* LTM)
+{
+  ma::math::Vector u, v, w;
+  _ma_plugingait_construct_shank_pose(&u, &v, &w, LTM, KJC, AJC, -1.0);
+  ma::math::Vector LS_proj_trans_unit = ((*LS - (*LS - *AJC).dot(w).replicate<3>() * w) - *AJC).normalized();
+  ma::math::Scalar dot = LS_proj_trans_unit.dot(v);
+  ma::math::Scalar crossnorm = LS_proj_trans_unit.cross(v).norm();
+  *offset = crossnorm.atan2(dot).mean();
 };
 
 bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, ma::math::Position* /**/, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double kneeWidth, const ma::math::Position* HJC)
@@ -144,7 +144,7 @@ bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::math::Posit
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double  /*s*/, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& KAX = (*landmarks)[prefix+"KAX"];
@@ -161,7 +161,7 @@ bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Positio
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_kadmed(ma::math::Position* AJC, ma::math::Position* VLFE, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double  s, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_kadmed(ma::math::Position* AJC, ma::math::Position* VLFE, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& MTM = (*landmarks)[prefix+"MTM"];
