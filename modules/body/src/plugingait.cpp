@@ -481,8 +481,10 @@ namespace body
     auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
-           thighRotationOffset = 0.0, shankRotationOffset = 0.0,
-           staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0;
+           thighRotationOffset = 0.0, 
+           shankRotationOffset = 0.0, tibialTorsionOffset = 0.0,
+           staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0,
+           ankleAbAddOffset = 0.0;
     if (side == Side::Left)
     {
       prefix = "L.";
@@ -491,8 +493,10 @@ namespace body
       kneeWidth = this->LeftKneeWidth;
       thighRotationOffset = -this->LeftThighRotationOffset;
       shankRotationOffset = -this->LeftShankRotationOffset;
+      tibialTorsionOffset = -this->LeftTibialTorsionOffset;
       staticPlantarFlexionOffset = -this->LeftStaticPlantarFlexionOffset;
       staticRotationOffset = -this->LeftStaticRotationOffset;
+      ankleAbAddOffset = this->LeftAnkleAbAddOffset;
     }
     else if (side == Side::Right)
     {
@@ -502,8 +506,10 @@ namespace body
       kneeWidth = this->RightKneeWidth;
       thighRotationOffset = this->RightThighRotationOffset;
       shankRotationOffset = this->RightShankRotationOffset;
+      tibialTorsionOffset = this->RightTibialTorsionOffset;
       staticPlantarFlexionOffset = -this->RightStaticPlantarFlexionOffset;
       staticRotationOffset = this->RightStaticRotationOffset;
+      ankleAbAddOffset = -this->RightAnkleAbAddOffset;
     }
     else
     {
@@ -544,11 +550,31 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
     // Compute the ankle joint centre (AJC)
-    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS, shankRotationOffset);
-    w = (KJC - AJC).normalized();
-    math::Vector v_shank;
-    _ma_plugingait_construct_shank_pose(&u, &v_shank, &w, &LTM, &KJC, &AJC, s);
-    math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::Position AJC_ = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS, shankRotationOffset);
+    _ma_plugingait_construct_shank_pose(&u, &v, &w, &LTM, &KJC, &AJC_, s);
+    math::Position ajc_trans = AJC_ - LTM;
+    math::Position tmp(AJC_.rows());
+    tmp.residuals().setZero();
+    tmp.x() = u.dot(ajc_trans);
+    math::Scalar y = v.dot(ajc_trans);
+    math::Scalar z = w.dot(ajc_trans);
+    const double co = cos(ankleAbAddOffset);
+    const double so = sin(ankleAbAddOffset);
+    tmp.y() =  co * y + so * z;
+    tmp.z() = -so * y + co * z;
+    math::Position AJC(AJC_.rows());
+    AJC.residuals().setZero();
+    AJC.x() = u.x() * tmp.x() + v.x() * tmp.y() + w.x() * tmp.z();
+    AJC.y() = u.y() * tmp.x() + v.y() * tmp.y() + w.y() * tmp.z();
+    AJC.z() = u.z() * tmp.x() + v.z() * tmp.y() + w.z() * tmp.z();
+    AJC += LTM;
+    math::Vector v_tibia_tortioned;
+    _ma_plugingait_construct_shank_pose(&u, &v_tibia_tortioned, &w, &LTM, &KJC, &AJC, s);
+    const double ct = cos(tibialTorsionOffset);
+    const double st = sin(tibialTorsionOffset);
+    math::Vector u_shank = ct * u - st * v_tibia_tortioned;
+    math::Vector v_shank = st * u + ct * v_tibia_tortioned;
+    math::to_timesequence(u_shank, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
@@ -563,7 +589,8 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
     w = (AJC - MTH2).normalized();
-    u = v_shank.cross(w).normalized();
+    // NOTE: IT WAS DISCOVERED THAT THE ORIGINAL PLUGIN GAIT CODE USES THE WRONG ML AXIS. INDEED, THE FOOT OFFSETS ARE DEFINED BASED ON THE TORSIONED SHANK BUT, THE ORIGINAL MODEL USES THE UNTORTIONED SHANK FOR THE RECONSTRUCTION
+    u = v_tibia_tortioned.cross(w).normalized();
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
                  cy = cos(staticPlantarFlexionOffset), sy = sin(staticPlantarFlexionOffset);

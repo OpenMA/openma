@@ -331,7 +331,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_EQUALS(helper.rightStaticRotationOffset(), 0.0);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameBasicKAD)
+  CXXTEST_TEST(calibrateFullBodyFrameKAD)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -343,7 +343,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(72.9); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration_Basic.c3d"));
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -360,7 +360,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 2.22081 * M_PI / 180.0, 1e-5);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameFootFlatKAD)
+  CXXTEST_TEST(calibrateFullBodyFrameKADFF)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -392,7 +392,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 1e-5);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameBasicKADMed)
+  CXXTEST_TEST(calibrateFullBodyFrameKADMed)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
     helper.setMarkerDiameter(14.0); // mm
@@ -405,7 +405,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration_Basic.c3d"));
+    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -440,6 +440,6 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKAD)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameFootFlatKAD)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameBasicKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKADMed)
