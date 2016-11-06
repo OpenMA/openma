@@ -419,7 +419,7 @@ void _ma_Any_assign<std::string>(ma::Any* out, const mxArray* in)
     delete[] buffer;
     mexErrMsgIdAndTxt("SWIG:Any:assign","Internal error during string extraction");
   }
-  std::string dataout(buffer, num);
+  std::string dataout(buffer, num-1);
   delete[] buffer;
   out->assign(dataout);
 };
