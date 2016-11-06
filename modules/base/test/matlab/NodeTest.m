@@ -119,10 +119,38 @@ classdef NodeTest < matlab.unittest.TestCase
         
         function setProperty(testCase)
             root = ma.Node('root');
-            root.setProperty('foo',1)
-            testCase.verifyEqual(root.property('foo').cast(), 1)
-            root.setProperty('bar',ma.Any(10.0))
-            testCase.verifyEqual(root.property('bar').cast(), 10.0)
+            testCase.verifyEqual(root.property('name').cast('char'), 'root')
+            root.setProperty('foo',1);
+            testCase.verifyEqual(root.property('foo').cast(), 1);
+            root.setProperty('bar',ma.Any(10.0));
+            testCase.verifyEqual(root.property('bar').cast(), 10.0);
+        end
+            
+        function copyVariableInCell(testCase)
+            nodes = cell(1,3);
+            for i = 1:3
+                node = ma.Node(['Node',num2str(i)]);
+                nodes{i} = node;
+            end
+            testCase.verifyEqual(nodes{1}.name, 'Node1');
+            testCase.verifyEqual(nodes{2}.name, 'Node2');
+            testCase.verifyEqual(nodes{3}.name, 'Node3');
+        end
+        
+        function findChildren(testCase)
+            root = ma.Node('root');
+            node = ma.Node('node',root);
+            node.setProperty('foo','bar');
+            node.setProperty('hello',true);
+            children = root.findChildren(ma.T_Node,'.*',{{'name','node'}});
+            testCase.verifyEqual(length(children),1);
+            testCase.verifyEqual(children{1}.name,'node');
+            children = root.findChildren(ma.T_Node,'.*',{{'foo','bar'}});
+            testCase.verifyEqual(length(children),1);
+            testCase.verifyEqual(children{1}.name,'node');
+            children = root.findChildren(ma.T_Node,'.*',{{'hello',true}});
+            testCase.verifyEqual(length(children),1);
+            testCase.verifyEqual(children{1}.name,'node');
         end
         
     end
