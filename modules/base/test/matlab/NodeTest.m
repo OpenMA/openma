@@ -153,5 +153,25 @@ classdef NodeTest < matlab.unittest.TestCase
             testCase.verifyEqual(children{1}.name,'node');
         end
         
+        function findChild(testCase)
+            root = ma.Node('root');
+            node = ma.Node('node',root);
+            node.setProperty('foo','bar');
+            node.setProperty('hello',true);
+            child = root.findChild(ma.T_Node,'node');
+            testCase.verifyEqual(isempty(child), false);
+            testCase.verifyEqual(child.name,'node');
+            child = root.findChild(ma.T_Node,'anything');
+            testCase.verifyEqual(isempty(child), true);
+            child = root.findChild(ma.T_Node,'node',{{'foo','bar'}});
+            testCase.verifyEqual(isempty(child), false);
+            testCase.verifyEqual(child.name,'node');
+            child = root.findChild(ma.T_Node,'node',{{'hello',false}});
+            testCase.verifyEqual(isempty(child), true);
+            child = root.findChild(ma.T_Node,'',{{'foo','bar'}});
+            testCase.verifyEqual(isempty(child), false);
+            testCase.verifyEqual(child.name,'node');
+        end
+        
     end
 end

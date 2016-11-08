@@ -32,6 +32,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%{
+  SWIGTYPE* SWIG_NewNullObj()
+  {
+#if defined(SWIGMATLAB)
+    return mxCreateDoubleMatrix(0,0,mxREAL);
+#elif defined(SWIGPYTHON)
+    SWIGTYPE* retval = Py_None;
+    Py_INCREF(retval);
+    return retval;
+#endif
+  }
+%}
+
 %define SWIG_SetType(swigtype)
   #define SWIGTYPE swigtype
   %begin %{ #define SWIGTYPE swigtype %}

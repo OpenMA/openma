@@ -51,3 +51,22 @@ class NodeTest(unittest.TestCase):
         children = root.findChildren(ma.T_Node,'.*',[['hello',True]]);
         self.assertEqual(len(children),1);
         self.assertEqual(children[0].name(),'node');
+        
+    def test_find_child(self):
+        root = ma.Node('root');
+        node = ma.Node('node',root);
+        node.setProperty('foo','bar');
+        node.setProperty('hello',True);
+        child = root.findChild(ma.T_Node,'node');
+        self.assertEqual(child == None, False);
+        self.assertEqual(child.name(), 'node');
+        child = root.findChild(ma.T_Node,'anything');
+        self.assertEqual(child == None, True);
+        child = root.findChild(ma.T_Node,'node',[['foo','bar']]);
+        self.assertEqual(child == None, False);
+        self.assertEqual(child.name(),'node');
+        child = root.findChild(ma.T_Node,'node',[['hello',False]]);
+        self.assertEqual(child == None, True);
+        child = root.findChild(ma.T_Node,'',[['foo','bar']]);
+        self.assertEqual(child == None, False);
+        self.assertEqual(child.name(),'node');

@@ -131,7 +131,7 @@ SWIGTYPE* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHe
   SWIGTYPE* out = nullptr;
   id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
   if (out == nullptr)
-    SWIG_SendError(SWIG_RuntimeError, "No child found");
+    return SWIG_NewNullObj();
   return out;
 };
 
