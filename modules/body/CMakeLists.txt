@@ -14,6 +14,7 @@ SET(OPENMA_BODY_SRCS
   src/inversedynamicsmatrix.cpp
   src/inversedynamicsprocessor.cpp
   src/joint.cpp
+  src/landmarksregistrar.cpp
   src/landmarkstranslator.cpp
   src/model.cpp
   src/plugingait.cpp
