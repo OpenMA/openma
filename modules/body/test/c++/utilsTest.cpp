@@ -1,5 +1,6 @@
 #include <cxxtest/TestDrive.h>
 
+#include <openma/body/landmarkstranslator.h>
 #include <openma/body/referenceframe.h>
 #include <openma/body/point.h>
 #include <openma/body/segment.h>
@@ -152,9 +153,38 @@ CXXTEST_SUITE(UtilsTest)
   CXXTEST_TEST(transformInvalid)
   {
     TS_WARN("What about the transformation of a relative frame using an invalid pose and then extract the position?");
-  }
+  };
+  
+  CXXTEST_TEST(extractLandmarkPositions)
+  {
+    double rate = 0., start = 0.;
+    bool ok = false;
+    ma::body::LandmarksTranslator lt("lt",{
+      {"uname*1", "pt1"},
+      {"uname*2", "pt2"},
+      {"uname*3", "pt3"},
+      {"C7"     , "C7" },
+      {"uname*4", "pt4"}
+    });
+    ma::Node root("root");
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,1,100.0,0.0,ma::TimeSequence::Marker,"mm",&root);
+    auto lmks = ma::body::extract_landmark_positions(&lt, tss, &rate, &start, &ok);
+    TS_ASSERT_EQUALS(rate,100.0);
+    TS_ASSERT_EQUALS(start,0.0);
+    TS_ASSERT_EQUALS(ok,true);
+    TS_ASSERT_EQUALS(lmks.size(),4u);
+    lmks["pt1"].values().setRandom();
+    lmks["pt2"].values().setRandom();
+    lmks["pt3"].values().setRandom();
+    lmks["pt4"].values().setRandom();
+    TS_ASSERT_DELTA(lmks["pt1"].values().coeff(0),tss[0]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt2"].values().coeff(0),tss[1]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt3"].values().coeff(0),tss[2]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt4"].values().coeff(0),tss[3]->data()[0],1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(UtilsTest)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformRelative)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformInvalid)
+CXXTEST_TEST_REGISTRATION(UtilsTest, extractLandmarkPositions)

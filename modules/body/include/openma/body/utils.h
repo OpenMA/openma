@@ -54,10 +54,12 @@ namespace body
   class Point;
   class ReferenceFrame;
   class InertialParameters;
+  class LandmarksTranslator;
   class Segment;
   class SkeletonHelper;
   
   OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
+  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(LandmarksTranslator* lt, const std::vector<TimeSequence*>& tss, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
   
   OPENMA_BODY_EXPORT math::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
   OPENMA_BODY_EXPORT math::Position transform_relative_point(const Point* relpoint, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;

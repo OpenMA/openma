@@ -48,6 +48,7 @@ namespace body
 {
   /**
    * Returns a collection of mapped time sequences based on the stored LandmarksTranslator in the given @a helper.
+   * The time sequences are extracted from the child node "TimeSequences" of the given @a trial.
    * If no translator was set in the helper, try to use its default translator.
    * If no translator was found, the keys used in the collection are directly the name of each time sequence.
    * If a translator was found, only the registered landmarks will be extracted, their name converted and stored in the output collection.
@@ -59,17 +60,31 @@ namespace body
    */
   std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
   {
-    std::unordered_map<std::string,math::Map<math::Vector>> positions;
-    
-    double sampleRate = -1.0, startTime = -1.0;
-    bool common = true;
-
     auto lt = helper->findChild<LandmarksTranslator*>({},{},false);
     // No defined translator? Let's use the one embedded within the helper (if any)
     if (lt == nullptr)
       lt = helper->defaultLandmarksTranslator();
-    auto markers = trial->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Marker},{"components",4}},false);
-    decltype(markers) landmarks;
+    const auto& markers = trial->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Marker},{"components",4}},false);
+    return extract_landmark_positions(lt,markers,rate,start,ok);
+  };
+  
+  
+  /**
+   * Returns a collection of mapped time sequences based on the given LandmarksTranslator @a lt.
+   * If no translator was given (i.e. null pointer), the keys used in the collection are directly the name of each time sequence.
+   *
+   * There is also extra outputs to determine the common sample rate and the common start time in all extracted landmarks.
+   * If all the landmarks have the same sample rate, and if the output @a rate is given, its value will be assigned to the found common sample rate (-1.0 otherwise).
+   * If all the landmarks have the same start time, and if the output @a start is given, its value will be assigned to the found common start time (-1.0 otherwise).
+   * If all the landmarks have the same sample rate and start time, and if the output @a ok is given, its value will be assigned to true (false otherwise).
+   */
+  std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(LandmarksTranslator* lt, const std::vector<TimeSequence*>& markers, double* rate, double* start, bool* ok) _OPENMA_NOEXCEPT
+  {
+    std::unordered_map<std::string,math::Map<math::Vector>> positions;
+    
+    double sampleRate = -1.0, startTime = -1.0;
+    bool common = true;
+    std::vector<TimeSequence*> landmarks;
     // No translator found? Create positions for all the markers found
     if (lt == nullptr)
     {
