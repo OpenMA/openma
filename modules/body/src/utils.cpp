@@ -138,6 +138,17 @@ namespace body
   };
   
   /**
+   * Convenient method to average the content of a timeSequence known as a 3D position (e.g. marker).
+   * The returned time sequence is allocated on the heap and p
+   * @ingroup openma_body
+   */
+  TimeSequence* average_marker(const TimeSequence* marker, Node* parent)
+  {
+    math::Position avgpos = math::to_position(marker).mean();
+    return math::to_timesequence(avgpos, marker->name(), marker->sampleRate(), marker->startTime(), marker->type(), marker->unit(), parent);
+  };
+  
+  /**
    * Returns the transformation of the relative ReferenceFrame @a relframe expressed in the Segment @a seg. The Pose associated with the Segment is given in @a segpose.
    * @warning The ReferenceFrame node @a relframe must be a (non-)direct child of the Segment @a seg. Moreover, this function does not check if the input variables (@a relpoint, @a seg, @a pose) are null or not.
    * @relates ReferenceFrame

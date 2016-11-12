@@ -182,9 +182,40 @@ CXXTEST_SUITE(UtilsTest)
     TS_ASSERT_DELTA(lmks["pt3"].values().coeff(0),tss[2]->data()[0],1e-15);
     TS_ASSERT_DELTA(lmks["pt4"].values().coeff(0),tss[3]->data()[0],1e-15);
   };
+  
+  CXXTEST_TEST(averageMarker)
+  {
+    ma::TimeSequence ts("foo",4,10,100.0,0.0,ma::TimeSequence::Marker,"mm");
+    ma::Node root("root");
+    auto map = ma::math::to_position(&ts);
+    map.values() << 0., 1.,	2.,
+                    1., 1.,	4.,
+                    2., 1.,	6.,
+                    3., 1.,	8.,
+                    4., 1.,	0.,
+                    5., 1.,	1.,
+                    6., 1.,	3.,
+                    7., 1.,	5.,
+                    8., 1.,	7.,
+                    9., 1.,	9.;
+    map.residuals().setZero(); map.residuals().coeffRef(2) = -1.0;
+    auto ats = ma::body::average_marker(&ts,&root);
+    TS_ASSERT_EQUALS(ats->name(),ts.name());
+    TS_ASSERT_EQUALS(ats->components(),ts.components());
+    TS_ASSERT_EQUALS(ats->samples(),1u);
+    TS_ASSERT_EQUALS(ats->unit(),ts.unit());
+    TS_ASSERT_EQUALS(ats->startTime(),ts.startTime());
+    TS_ASSERT_EQUALS(ats->sampleRate(),ts.sampleRate());
+    TS_ASSERT_EQUALS(ats->type(),ts.type());
+    TS_ASSERT_DELTA(ats->data()[0],4.777777777777778, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[1],1.0, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[2],4.333333333333333, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[3],0.0, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(UtilsTest)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformRelative)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformInvalid)
 CXXTEST_TEST_REGISTRATION(UtilsTest, extractLandmarkPositions)
+CXXTEST_TEST_REGISTRATION(UtilsTest, averageMarker)
