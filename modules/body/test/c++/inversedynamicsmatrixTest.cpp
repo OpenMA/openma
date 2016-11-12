@@ -76,8 +76,9 @@ CXXTEST_SUITE(InverseDynamicMatrixTest)
     new ma::body::InertialParameters("R.Thigh.BSIP", 11.07, relcom[2], relinertia[2], &thigh);
     new ma::body::InertialParameters("Pelvis.BSIP",  12.78, relcom[3], relinertia[3], &pelvis);
     
+    ma::Node tmp("tmp");
     const unsigned numeltsscs = 130;
-    auto tss = ma::make_nodes<ma::TimeSequence*>(4, 13, 10, 100.0, 0.0, ma::TimeSequence::Pose, "");
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4, 13, 10, 100.0, 0.0, ma::TimeSequence::Pose, "", &tmp);
     
     // Data for the foot
     tss[0]->setName("R.Foot.SCS");
