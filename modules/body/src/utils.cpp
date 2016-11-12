@@ -197,12 +197,21 @@ namespace body
     return temp;
   };
   
+  /**
+   * Transform the relative tensor of inertia stored in @a relbsip (and related to the segment @a seg) using the orientation data stored in @a pose.
+   * @note The formula to transform a tensor of inertia is <em>R x I x Rt</em>
+   * @ingroup openma_body
+   */
   math::Array<9> transform_relative_inertia(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT
   {
     ReferenceFrame rInertia("rInertia", relbsip->inertia(), relbsip);
     return transform_relative_frame(&rInertia, seg, pose).block<9>(0).transform(pose.block<9>(0).transpose());
   };
   
+  /**
+   * Transform the relative coordinates of the center of mass stored in @a relbsip (and related to the segment @a seg) using the data stored in @a pose.
+   * @ingroup openma_body
+   */
   math::Position transform_relative_com(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT
   {
     Point rCoM("rCoM", relbsip->centerOfMass(), relbsip);
