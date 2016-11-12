@@ -35,6 +35,7 @@
 #include "openma/io/handlerreader.h"
 #include "openma/io/handlerplugin.h"
 #include "openma/io/device.h"
+#include "openma/io/enums.h"
 #include "openma/io/handler.h"
 
 // -------------------------------------------------------------------------- //
@@ -47,8 +48,6 @@ namespace ma
 {
 namespace io
 {
-  enum class Error;
-  
   class HandlerReaderPrivate
   {
   public:
@@ -63,7 +62,7 @@ namespace io
   };
   
   HandlerReaderPrivate::HandlerReaderPrivate(Device* device, const std::string& format)
-  : Source(device), Format(format), Reader(nullptr), ErrorCode(Error::None), ErrorMessage(std::string{})
+  : Source(device), Format(format), Reader(nullptr), ErrorCode(Error::None), ErrorMessage()
   {};
   
   HandlerReaderPrivate::~HandlerReaderPrivate() _OPENMA_NOEXCEPT = default; // Cannot be inlined
