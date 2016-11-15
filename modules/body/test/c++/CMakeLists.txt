@@ -20,7 +20,7 @@ ADD_CXXTEST_TESTDRIVER(openma_body_plugingait_reconstruction plugingaitTest_reco
 ADD_CXXTEST_TESTDRIVER(openma_body_plugingait_kinematics plugingaitTest_kinematics.cpp INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
 ADD_CXXTEST_TESTDRIVER(openma_body_plugingait_kinetics plugingaitTest_kinetics.cpp INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
 ADD_CXXTEST_TESTDRIVER(openma_body_point pointTest.cpp body)
-ADD_CXXTEST_TESTDRIVER(openma_body_registermarkerclusterTest registermarkerclusterTest.cpp body)
+ADD_CXXTEST_TESTDRIVER(openma_body_registermarkerclusterTest registermarkerclusterTest.cpp  INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
 ADD_CXXTEST_TESTDRIVER(openma_body_segment segmentTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_simplegaitforceplatetofeetassigner simplegaitforceplatetofeetassignerTest.cpp INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
 ADD_CXXTEST_TESTDRIVER(openma_body_skeletonhelper skeletonhelperTest.cpp body)

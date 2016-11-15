@@ -43,6 +43,7 @@
 #include "openma/body/eulerdescriptor.h"
 #include "openma/body/inversedynamicsmatrix.h"
 #include "openma/body/joint.h"
+#include "openma/body/landmarksregistrar.h"
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/body/point.h"
@@ -524,6 +525,9 @@ namespace body
         Segment* leftArm = new Segment("L.Arm", Part::Arm, Side::Left, segments);
         Segment* leftForearm = new Segment("L.Forearm", Part::Forearm, Side::Left, segments);
         Segment* leftHand = new Segment("L.Hand", Part::Hand, Side::Left, segments);
+        new LandmarksRegistrar("L.Arm.Landmarks", {{"L.GH","L.MHE","L.LHE"}}, leftArm);
+        new LandmarksRegistrar("L.Forearm.Landmarks", {{"L.US","L.RS","L.LTM"}}, leftForearm);
+        new LandmarksRegistrar("L.Hand.Landmarks", {{"L.MTH1","L.MTH5","L.HEE"}}, leftHand);
         std::vector<Joint*> leftUpperLimbJoints(3);
         jnt = new Joint("L.Shoulder", torso, leftArm, joints);
         leftUpperLimbJoints[0] = jnt;
@@ -541,6 +545,9 @@ namespace body
         Segment* rightArm = new Segment("R.Arm", Part::Arm, Side::Right, segments);
         Segment* rightForearm = new Segment("R.Forearm", Part::Forearm, Side::Right, segments);
         Segment* rightHand = new Segment("R.Hand", Part::Hand, Side::Right, segments);
+        new LandmarksRegistrar("R.Arm.Landmarks", {{"L.GH","L.MHE","L.LHE"}}, rightArm);
+        new LandmarksRegistrar("R.Forearm.Landmarks", {{"L.US","L.RS","L.LTM"}}, rightForearm);
+        new LandmarksRegistrar("R.Hand.Landmarks", {{"L.MTH1","L.MTH5","L.HEE"}}, rightHand);
         std::vector<Joint*> rightUpperLimbJoints(3);
         jnt = new Joint("R.Shoulder", torso, rightArm, joints);
         rightUpperLimbJoints[0] = jnt;
@@ -563,6 +570,9 @@ namespace body
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
         Segment* leftShank = new Segment("L.Shank", Part::Shank, Side::Left, segments);
         Segment* leftFoot = new Segment("L.Foot", Part::Foot, Side::Left, segments);
+        new LandmarksRegistrar("L.Thigh.Landmarks", {{"L.GT","L.LFE","L.MFE"}}, leftThigh);
+        new LandmarksRegistrar("L.Shank.Landmarks", {{"L.FH","L.MTM","L.LTM"}}, leftShank);
+        new LandmarksRegistrar("L.Foot.Landmarks", {{"L.MTH1","L.MTH5","L.HEE"}}, leftFoot);
         std::vector<Joint*> leftLowerLimbJoints(3);
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, joints);
         leftLowerLimbJoints[0] = jnt;
@@ -583,6 +593,9 @@ namespace body
         Segment* rightThigh = new Segment("R.Thigh", Part::Thigh, Side::Right, segments);
         Segment* rightShank = new Segment("R.Shank", Part::Shank, Side::Right, segments);
         Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
+        new LandmarksRegistrar("R.Thigh.Landmarks", {{"R.GT","R.LFE","R.MFE"}}, rightThigh);
+        new LandmarksRegistrar("R.Shank.Landmarks", {{"R.FH","R.MTM","R.LTM"}}, rightShank);
+        new LandmarksRegistrar("R.Foot.Landmarks", {{"L.MTH1","R.MTH5","R.HEE"}}, rightFoot);
         std::vector<Joint*> rightLowerLimbJoints(3);
         jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, joints);
         rightLowerLimbJoints[0] = jnt;
