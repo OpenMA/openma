@@ -35,18 +35,21 @@
 #ifndef __eigen_openma_VectorOpAddons_h
 #define __eigen_openma_VectorOpAddons_h
 
+
 /* 
  * Returns a row (or column) vector expression of the median
  * of each column (or row) of the referenced expression.
  */
-const typename ReturnType<openma_eigen_vectorop_member_median>::Type median() const
-{ return _expression(); };
+using MedianReturnType = typename ReturnType<openma_eigen_vectorop_member_median>::Type;
+const MedianReturnType median() const
+{ return MedianReturnType(_expression()); };
 
 /* 
  * Returns a row (or column) vector expression of the standard deviation
  * of each column (or row) of the referenced expression.
  */
-const typename ReturnType<openma_eigen_vectorop_member_std>::Type std() const
-{ return _expression(); };
+using StdReturnType = typename ReturnType<openma_eigen_vectorop_member_std>::Type;
+const StdReturnType std() const
+{ return StdReturnType(_expression()); };
 
 #endif // __eigen_openma_VectorOpAddons_h
