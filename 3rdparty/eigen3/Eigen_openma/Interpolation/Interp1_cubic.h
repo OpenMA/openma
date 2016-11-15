@@ -109,15 +109,15 @@ namespace Eigen
         this->dk.segment(1,num-2) = (condition).select(dmin.cwiseQuotient((w1.cwiseProduct(mk.segment(0,num-2))+w2.cwiseProduct(mk.segment(1,num-2))).cwiseQuotient(dmax)),0.0);
         // dk(0)
         this->dk.coeffRef(0) = ((2.0*hk.coeff(0)+hk.coeff(1))*mk.coeff(0) - hk.coeff(0)*mk.coeff(1)) / (hk.coeff(0)+hk.coeff(1));
-        if (sign(dk.coeff(0)) != sign(mk.coeff(0)))
+        if (::sign(dk.coeff(0)) != ::sign(mk.coeff(0)))
           this->dk.coeffRef(0) = 0.0;
-        else if ((sign(mk.coeff(0)) != sign(mk.coeff(1))) && (std::fabs(dk.coeff(0)) > std::fabs(3.0*mk.coeff(0))))
+        else if ((::sign(mk.coeff(0)) != ::sign(mk.coeff(1))) && (std::fabs(dk.coeff(0)) > std::fabs(3.0*mk.coeff(0))))
           this->dk.coeffRef(0) = 3.0*mk.coeff(0);
         // dk(-1)
         this->dk.coeffRef(num-1) = ((2.0*hk.coeff(num-2)+hk.coeff(num-3))*mk.coeff(num-2) - hk.coeff(num-2)*mk.coeff(num-3)) / (hk.coeff(num-2)+hk.coeff(num-3));
-        if (sign(dk.coeff(num-1)) != sign(mk.coeff(num-2)))
+        if (::sign(dk.coeff(num-1)) != ::sign(mk.coeff(num-2)))
           this->dk.coeffRef(num-1) = 0.0;
-        else if ((sign(mk.coeff(num-2)) != sign(mk.coeff(num-3))) && (std::fabs(dk.coeff(num-1)) > std::fabs(3.0*mk.coeff(num-2))))
+        else if ((::sign(mk.coeff(num-2)) != ::sign(mk.coeff(num-3))) && (std::fabs(dk.coeff(num-1)) > std::fabs(3.0*mk.coeff(num-2))))
           this->dk.coeffRef(num-1) = 3.0*mk.coeff(num-2);
 #else
         // ScyPy method
