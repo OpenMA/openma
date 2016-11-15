@@ -239,13 +239,9 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS // Doxygen does not like the use of '.template'
-    auto residuals() const _OPENMA_NOEXCEPT -> decltype(generate_residuals((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).colwise().sum()))
-#else
-    auto residuals() const _OPENMA_NOEXCEPT  
-#endif
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MeanOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
-      return generate_residuals((this->m_Xpr.residuals() >= 0.0).colwise().sum());
+      return Traits<UnaryOp<MeanOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
   };
   
@@ -690,7 +686,7 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
       return Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
@@ -752,7 +748,7 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
       return Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
