@@ -37,7 +37,7 @@
 
 /// \internal helper struct to form the return type of the percentile
 template<typename OtherDerived> struct precentile_return_type {
-  typedef typename internal::scalar_product_traits<typename internal::traits<Derived>::Scalar,typename internal::traits<OtherDerived>::Scalar>::ReturnType Scalar;
+  typedef typename ScalarBinaryOpTraits<typename internal::traits<Derived>::Scalar,typename internal::traits<OtherDerived>::Scalar>::ReturnType Scalar;
   typedef Array<typename DenseBase<OtherDerived>::Scalar, DenseBase<OtherDerived>::RowsAtCompileTime, DenseBase<OtherDerived>::ColsAtCompileTime> type;
 };
 
