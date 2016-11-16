@@ -63,6 +63,7 @@ namespace internal
     using InputType1 = typename std::decay<V1>::type;
     using InputType2 = typename std::decay<V2>::type;
     using Index = typename InputType1::Index;
+    using Nested = typename traits<CrossOpValues<V1,V2>>::ReturnType;
     typename InputType1::Nested m_V1;
     typename InputType2::Nested m_V2;
   public:
@@ -104,6 +105,7 @@ namespace internal
     using InputType1 = typename std::decay<V1>::type;
     using InputType2 = typename std::decay<V2>::type;
     using Index = typename InputType1::Index;
+    using Nested = typename traits<TransformOpValues<V1,V2>>::ReturnType;
     typename InputType1::Nested m_V1;
     typename InputType2::Nested m_V2;
     
@@ -300,6 +302,7 @@ namespace internal
   {
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
+    using Nested = typename traits<TransposeOpValues<V>>::ReturnType;
     typename InputType::Nested m_V;
   public:
     TransposeOpValues(const V& v) : m_V(v) {};
@@ -336,6 +339,7 @@ namespace internal
   {
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
+    using Nested = typename traits<InverseOpValues<V>>::ReturnType;
     typename InputType::Nested m_V;
   public:
     InverseOpValues(const V& v) : m_V(v) {};
@@ -389,6 +393,7 @@ namespace internal
   {
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
+    using Nested = typename traits<DownsampleOpValues<V>>::ReturnType;
     typename InputType::Nested m_V;
     Index m_Factor;
   public:
@@ -475,6 +480,7 @@ namespace internal
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
     using Scalar = typename InputType::Scalar;
+    using Nested = typename traits<EulerAnglesOpValues<V>>::ReturnType;
     typename InputType::Nested m_V;
     const Index m_A0;
     const Index m_A1;
@@ -535,6 +541,7 @@ namespace internal
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
     using Scalar = typename InputType::Scalar;
+    using Nested = typename traits<SkewReduxOpValues<V>>::ReturnType;
     typename InputType::Nested m_V;
   public:
     SkewReduxOpValues(const V& v) : m_V(v) {};
@@ -589,6 +596,7 @@ namespace internal
   {
     using InputType = typename std::decay<V>::type;
     using Index = typename InputType::Index;
+    using Nested = typename traits<DerivativeOpValues<V,O>>::ReturnType;
     typename InputType::Nested m_V;
     const std::vector<std::array<unsigned,2>>& m_W;
     double m_H;
