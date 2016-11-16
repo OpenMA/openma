@@ -76,7 +76,6 @@ namespace internal
       const auto& v2x = this->m_V2.col(0);
       const auto& v2y = this->m_V2.col(1);
       const auto& v2z = this->m_V2.col(2);
-      // result.resize(this->rows(),Eigen::NoChange);
       result.col(0) = (v1y * v2z) - (v1z * v2y);
       result.col(1) = (v1z * v2x) - (v1x * v2z);
       result.col(2) = (v1x * v2y) - (v1y * v2x);
@@ -354,7 +353,6 @@ namespace internal
       const auto& v14 = this->m_V.col(9);
       const auto& v24 = this->m_V.col(10);
       const auto& v34 = this->m_V.col(11);
-      // result.resize(this->rows(),Eigen::NoChange);
       // Rotation (v(1:3,1:3) transposed)
       result.col(0) = v11; // i11
       result.col(1) = v12; // i21
@@ -489,7 +487,6 @@ namespace internal
       using MapMatrix33 = Eigen::Map<const Eigen::Matrix<double,3,3>, Eigen::Unaligned, MapStride>;
       const Index rows = this->m_V.rows();
       const Eigen::Array<double,Eigen::Dynamic,9> values = this->m_V.block(0,0,rows,9);
-      // result.resize(rows, Eigen::NoChange);
       const MapStride stride(3*rows,rows);
       MapMatrix33 rot(nullptr,stride);
       Index i = 0, j = 0, k = 0;
