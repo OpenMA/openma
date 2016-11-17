@@ -341,7 +341,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     }
   };
   
-  CXXTEST_TEST(reconstructFullBodyFrameKAD)
+  CXXTEST_TEST(reconstructFullBodyKAD)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -370,7 +370,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
   };
   
-  CXXTEST_TEST(reconstructFullBodyFrameKADFF)
+  CXXTEST_TEST(reconstructFullBodyKADFF)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -401,7 +401,7 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
   };
   
-  CXXTEST_TEST(reconstructFullBodyFrameKADMed)
+  CXXTEST_TEST(reconstructFullBodyKADMed)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
     helper.setMarkerDiameter(14.0); // mm
@@ -442,6 +442,6 @@ CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBod
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct3BothLowerBodyNoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct2BothUpperBodyHeadOffsetDisabled)
-CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameKAD)
-CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameKADFF)
-CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyFrameKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKADMed)

@@ -331,7 +331,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_EQUALS(helper.rightStaticRotationOffset(), 0.0);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameKAD)
+  CXXTEST_TEST(calibrateFullBodyKAD)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -360,7 +360,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 2.22081 * M_PI / 180.0, 1e-5);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameKADFF)
+  CXXTEST_TEST(calibrateFullBodyKADFF)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
     helper.setMarkerDiameter(14.0); // mm
@@ -392,7 +392,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightStaticRotationOffset(), 0.0345916, 1e-5);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameKADMed)
+  CXXTEST_TEST(calibrateFullBodyKADMed)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
     helper.setMarkerDiameter(14.0); // mm
@@ -425,7 +425,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     TS_ASSERT_DELTA(helper.rightAnkleAbAddOffset(), 8.70843 * M_PI / 180.0, 1e-5);
   };
   
-  CXXTEST_TEST(calibrateFullBodyFrameKADMed2)
+  CXXTEST_TEST(calibrateFullBodyKADMed2)
   {
     ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
     helper.setMarkerDiameter(25.0); // mm
@@ -472,7 +472,7 @@ CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate3BothLowerBodynoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrate2BothUpperBodyHeadOffsetDisabled)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKAD)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKADFF)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKADMed)
-CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyFrameKADMed2)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitCalibrationTest, calibrateFullBodyKADMed2)

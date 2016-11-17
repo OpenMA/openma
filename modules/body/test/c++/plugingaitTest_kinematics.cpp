@@ -461,7 +461,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LViconHeadAngles");
   };
   
-  CXXTEST_TEST(kinematicsFullBodyFrameKAD)
+  CXXTEST_TEST(kinematicsFullBodyKAD)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 14.0},
@@ -505,7 +505,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.5e-4}});
   };
   
-  CXXTEST_TEST(kinematicsFullBodyFrameKADFF)
+  CXXTEST_TEST(kinematicsFullBodyKADFF)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 14.0},
@@ -551,7 +551,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.4e-4}});
   };
   
-  CXXTEST_TEST(kinematicsFullBodyFrameKADMed)
+  CXXTEST_TEST(kinematicsFullBodyKADMed)
   {
     ma::Subject subject("Anonymous",
       {{"markerDiameter", 14.0},
@@ -606,6 +606,6 @@ CXXTEST_SUITE_REGISTRATION(PluginGaitKinematicsTest)
 // CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
 // CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
 // CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyFrameKAD)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyFrameKADFF)
-CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyFrameKADMed)
+// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKAD)
+// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADMed)
