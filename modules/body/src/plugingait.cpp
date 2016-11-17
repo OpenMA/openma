@@ -76,14 +76,16 @@ void _ma_plugingait_construct_shank_pose(ma::math::Vector* u, ma::math::Vector* 
   *v = w->cross(*u);
 };
 
-void _ma_plugingait_compute_shank_rotation_offset(double* offset, const ma::math::Position* AJC, const ma::math::Position* KJC, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* LTM)
+void _ma_plugingait_compute_shank_rotation_offset(double* offset, const ma::math::Position* AJC, const ma::math::Position* KJC, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* LTM, double s)
 {
   ma::math::Vector u, v, w;
-  _ma_plugingait_construct_shank_pose(&u, &v, &w, LTM, KJC, AJC, -1.0);
+  _ma_plugingait_construct_shank_pose(&u, &v, &w, LTM, KJC, AJC, s);
+  v *= -s;
   ma::math::Vector LS_proj_trans_unit = ((*LS - (*LS - *AJC).dot(w).replicate<3>() * w) - *AJC).normalized();
+  ma::math::Vector cross = LS_proj_trans_unit.cross(v);
   ma::math::Scalar dot = LS_proj_trans_unit.dot(v);
-  ma::math::Scalar crossnorm = LS_proj_trans_unit.cross(v).norm();
-  *offset = crossnorm.atan2(dot).mean();
+  const double ss = s * sign(static_cast<double>(cross.dot(w).mean()));
+  *offset = ss * cross.norm().atan2(dot).mean();
 };
 
 bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, ma::math::Position* /**/, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double kneeWidth, const ma::math::Position* HJC)
@@ -124,9 +126,10 @@ bool _ma_plugingait_calibrate_kjc_kad(ma::math::Position* KJC, ma::math::Positio
   ma::math::Vector w = (*HJC - *KJC).normalized();
   ma::math::Vector ITB_proj_trans_unit = ((ITB - (ITB - *KJC).dot(w).replicate<3>() * w) - *KJC).normalized();
   ma::math::Vector v = (*VLFE - *KJC).normalized();
+  ma::math::Vector cross = ITB_proj_trans_unit.cross(v);
   ma::math::Scalar dot = ITB_proj_trans_unit.dot(v);
-  ma::math::Scalar crossnorm = ITB_proj_trans_unit.cross(v).norm();
-  *offsets[0] = -s * crossnorm.atan2(dot).mean();
+  const double ss = s * sign(static_cast<double>(cross.dot(w).mean()));
+  *offsets[0] = ss * cross.norm().atan2(dot).mean();
   return true;
 };
 
@@ -144,7 +147,7 @@ bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::math::Posit
   return true;
 };
 
-bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double ankleWidth, const ma::math::Position* KJC)
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double ankleWidth, const ma::math::Position* KJC)
 {
   const auto& LTM = (*landmarks)[prefix+"LTM"];
   const auto& KAX = (*landmarks)[prefix+"KAX"];
@@ -157,7 +160,7 @@ bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Positio
   // Compute the ankle joint centre (AJC)
   *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, KAX);
   // Compute the shank marker rotation offset
-  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM);
+  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM, s);
   return true;
 };
 
@@ -174,7 +177,7 @@ bool _ma_plugingait_calibrate_ajc_kadmed(ma::math::Position* AJC, ma::math::Posi
   // Compute the ankle joint centre (AJC)
   *AJC = LTM + (optr->MarkerDiameter + ankleWidth) * 0.5 * (MTM - LTM).normalized();
   // Compute the shank marker rotation offset
-  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM);
+  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM, s);
   // Compute the tibial torsion offset
   ma::math::Vector u, v, w;
   // 1. Construct the shank SCS
