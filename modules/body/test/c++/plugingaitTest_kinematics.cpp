@@ -594,18 +594,63 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     // compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
     // compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
   };
+  
+  CXXTEST_TEST(kinematicsFullBodyKADMed2)
+  {
+    ma::Subject subject("Anonymous",
+      {{"markerDiameter", 25.0},
+       {"leftLegLength", 775.0},
+       {"leftKneeWidth", 105.1},
+       {"leftAnkleWidth", 68.4},
+       {"rightLegLength", 770.0},
+       {"rightKneeWidth", 107.0},
+       {"rightAnkleWidth", 68.6}});
+
+    ma::Node statictrials("statictrials"), dynamictrials("dynamictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
+    // Static trial
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration2.c3d")), true);
+    TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
+    // Dynamic trial
+    TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Motion2.c3d")), true);
+    TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
+    // Skeleton helper creation
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    // Skeleton helper calibration
+    TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
+    // Model reconstruction
+    TS_ASSERT_EQUALS(ma::body::reconstruct(&models, &skeletonhelper, &dynamictrials), true);
+    TS_ASSERT_EQUALS(models.children().size(), 1u);
+    // Joint kinematics
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinematics(&kinematicsanalyses, &models, true), true);
+    TS_ASSERT_EQUALS(kinematicsanalyses.children().size(), 1u);
+
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinematics = kinematicsanalyses.child(0);
+
+    compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{3e-4,1e-4,1.6e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{8e-4,1.5e-3,1.3e-3}});
+    // compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{2.1e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{4.1e-4,8.1e-4,1.3e-3}});
+    // compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    // compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
+    // compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitKinematicsTest)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyOneFrame)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyOneFrame)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyHoleFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyHoleFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFrames)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKAD)
-// CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyOneFrame)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyOneFrame)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothLowerBodyHoleFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothUpperBodyHoleFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFrames)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADMed2)
