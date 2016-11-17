@@ -593,7 +593,14 @@ namespace body
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
     w = (AJC - MTH2).normalized();
     // NOTE: IT WAS DISCOVERED THAT THE ORIGINAL PLUGIN GAIT CODE USES THE WRONG ML AXIS. INDEED, THE FOOT OFFSETS ARE DEFINED BASED ON THE TORSIONED SHANK BUT, THE ORIGINAL MODEL USES THE UNTORTIONED SHANK FOR THE RECONSTRUCTION
+#if defined(NDEBUG)
     u = v_tibia_tortioned.cross(w).normalized();
+#else
+    if (pptr->property("_ma_debug_vicon_original_foot_frame").cast<bool>())
+      u = v_shank.cross(w).normalized();
+    else
+      u = v_tibia_tortioned.cross(w).normalized();
+#endif
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
                  cy = cos(staticPlantarFlexionOffset), sy = sin(staticPlantarFlexionOffset);
