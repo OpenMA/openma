@@ -430,6 +430,36 @@ CXXTEST_SUITE(PluginGaitReconstructionTest)
     // compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4});
     // compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
   };
+  
+  CXXTEST_TEST(reconstructFullBodyKADMed2)
+  {
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    helper.setMarkerDiameter(25.0); // mm
+    helper.setLeftLegLength(775.0); // mm
+    helper.setLeftKneeWidth(105.1); // mm
+    helper.setLeftAnkleWidth(68.4); // mm
+    helper.setRightLegLength(770.0); // mm
+    helper.setRightKneeWidth(107.0); // mm
+    helper.setRightAnkleWidth(68.6); // mm
+    
+    ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
+    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration2.c3d"));
+    TS_ASSERT_EQUALS(rootCalibration.children().size(),1u);
+    TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
+    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Motion2.c3d"));
+    TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
+    
+    auto trial = rootDynamic.findChild<ma::Trial*>();
+    auto model = rootModel.findChild<ma::body::Model*>();
+    compare_segment_motion(model, trial, "Pelvis.SCS", {"PELO","PELA","PELL","PELP"}, {5e-4});
+    compare_segment_motion(model, trial, "R.Thigh.SCS", {"RFEO","RFEA","RFEL","RFEP"}, {1.2e-3,2e-5,2e-5});
+    compare_segment_motion(model, trial, "L.Thigh.SCS", {"LFEO","LFEA","LFEL","LFEP"}, {1.8e-3,3e-5,3e-5});
+    compare_segment_motion(model, trial, "R.Shank.SCS", {"RTIO","RTIA","RTIL","RTIP"}, {1.3e-3,2e-5,2e-5});
+    compare_segment_motion(model, trial, "L.Shank.SCS", {"LTIO","LTIA","LTIL","LTIP"}, {1.5e-3,3e-5,3e-5});
+    // NOTE: The feet  cannot be compared as it seems there is an error in the definition of their SCS in the original PluginGait KADMed model.
+    // compare_segment_motion(model, trial, "R.Foot.SCS", {"RFOO","RFOA","RFOL","RFOP"}, {1e4});
+    // compare_segment_motion(model, trial, "L.Foot.SCS", {"LFOO","LFOA","LFOL","LFOP"}, {1e4});
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitReconstructionTest)
@@ -445,3 +475,4 @@ CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstruct2BothUpperBod
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKAD)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKADFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitReconstructionTest, reconstructFullBodyKADMed2)
