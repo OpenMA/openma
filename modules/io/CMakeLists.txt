@@ -1,4 +1,5 @@
 SET(OPENMA_IO_SRCS
+  src/_io.cpp
   src/binarystream.cpp
   src/buffer.cpp
   src/device.cpp

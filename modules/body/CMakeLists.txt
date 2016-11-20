@@ -1,4 +1,5 @@
 SET(OPENMA_BODY_SRCS
+  src/_body.cpp
   src/anchor.cpp
   src/chain.cpp
   src/dempstertable.cpp
