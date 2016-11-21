@@ -53,7 +53,8 @@ namespace io
 
   Capability C3DPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
   {
-    OPENMA_UNUSED(format)
+    if (format.compare(_OPENMA_IO_HANDLER_ORG_C3D_FORMAT) != 0)
+      return Capability::None;
     return Capability::CanReadAndWrite;
   };
 
