@@ -32,18 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_io_h
-#define __openma_io_h
-
-#include "openma/io/binarystream.h"
-#include "openma/io/buffer.h"
-#include "openma/io/device.h"
-#include "openma/io/enums.h"
-#include "openma/io/file.h"
-#include "openma/io/handler.h"
-#include "openma/io/handlerplugin.h"
-#include "openma/io/handlerreader.h"
-#include "openma/io/handlerwriter.h"
+#include "openma/io.h"
 
 #include "openma/base/node.h"
 #include "openma/base/logger.h"
@@ -113,5 +102,3 @@ namespace io
   };
 };
 };
-
-#endif // __openma_io_h
