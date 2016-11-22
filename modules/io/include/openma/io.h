@@ -35,6 +35,7 @@
 #ifndef __openma_io_h
 #define __openma_io_h
 
+#include "openma/io_export.h"
 #include "openma/io/binarystream.h"
 #include "openma/io/buffer.h"
 #include "openma/io/device.h"
@@ -51,9 +52,9 @@ namespace ma
 {
 namespace io
 {
-  bool read(Node* root, const std::string& filepath, const std::string& format = std::string{});
-  Node* read(const std::string& filepath, const std::string& format = std::string{});
-  bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string{});
+  OPENMA_IO_EXPORT bool read(Node* root, const std::string& filepath, const std::string& format = std::string{});
+  OPENMA_IO_EXPORT Node* read(const std::string& filepath, const std::string& format = std::string{});
+  OPENMA_IO_EXPORT bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string{});
 };
 };
 

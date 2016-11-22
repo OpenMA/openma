@@ -35,6 +35,7 @@
 #ifndef __openma_body_h
 #define __openma_body_h
 
+#include "openma/body_export.h"
 #include "openma/body/descriptor.h"
 #include "openma/body/dynamicdescriptor.h"
 #include "openma/body/enums.h"
@@ -53,13 +54,13 @@ namespace ma
 {
 namespace body
 {
-  bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
-  Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);
-  Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
-  Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
+  OPENMA_BODY_EXPORT bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
+  OPENMA_BODY_EXPORT bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
+  OPENMA_BODY_EXPORT Node* reconstruct(SkeletonHelper* helper, Node* trials);
+  OPENMA_BODY_EXPORT bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);
+  OPENMA_BODY_EXPORT Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
+  OPENMA_BODY_EXPORT bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
+  OPENMA_BODY_EXPORT Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
 };
 };
 
