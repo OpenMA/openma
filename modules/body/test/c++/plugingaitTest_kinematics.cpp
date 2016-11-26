@@ -571,6 +571,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
     ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    skeletonhelper.setProperty("_ma_debug_vicon_original_foot_frame", true);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -585,14 +586,16 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
 
     compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.6e-4,1e-4,1.1e-3}});
     compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{5e-4,8.8e-4,1.3e-3}});
-    // compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles");
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{4e-4,6e-4,1.11e-3}});
-    // compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles");
     compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
-    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
-    // compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
-    // compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");    
+#if !defined(NDEBUG)
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{5e-4,5e-4,3e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles", {{3e-4,1.25e-4,9e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1.1e-3,3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{2.5e-3,5e-4,2e-4}});
+#endif
   };
   
   CXXTEST_TEST(kinematicsFullBodyKADMed2)
@@ -615,6 +618,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
     ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    skeletonhelper.setProperty("_ma_debug_vicon_original_foot_frame", true);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -629,14 +633,16 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
 
     compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{3e-4,1e-4,1.6e-3}});
     compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{8e-4,1.5e-3,1.3e-3}});
-    // compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles");
     compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{2.1e-4,1e-4,1.1e-3}});
     compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{4.1e-4,8.1e-4,1.3e-3}});
-    // compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles");
     compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
     compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
-    // compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles");
-    // compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles");
+#if !defined(NDEBUG)
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles",{{6e-4,6e-4,2e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{5e-4,3e-4,1.7e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{3e-4,3e-4,3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{3e-4,4e-4,3e-4}});
+#endif
   };
 };
 

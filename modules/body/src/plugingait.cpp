@@ -62,6 +62,8 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+static _OPENMA_CONSTEXPR int PartShankTorsioned = ma::body::Part::User+1;
+
 void _ma_plugingait_construct_thigh_pose(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* LFE, const ma::math::Position* HJC, const ma::math::Position* KJC, double s)
 {
   *w = (*HJC - *KJC).normalized();
@@ -571,8 +573,12 @@ namespace body
     AJC.y() = u.y() * tmp.x() + v.y() * tmp.y() + w.y() * tmp.z();
     AJC.z() = u.z() * tmp.x() + v.z() * tmp.y() + w.z() * tmp.z();
     AJC += LTM;
+    // Compute the torsioned shank reference frame
     math::Vector v_shank_torsioned;
     _ma_plugingait_construct_shank_pose(&u, &v_shank_torsioned, &w, &LTM, &KJC, &AJC, s);
+    auto shankTorsioned = model->segments()->findChild<Segment*>({},{{"side",side},{"part",PartShankTorsioned}},false);
+    math::to_timesequence(u, v_shank_torsioned, w, AJC, shankTorsioned->name()+".SCS", sampleRate, startTime, shankTorsioned);
+    // Compute the untorsioned shank reference frame
     const double ct = cos(tibialTorsionOffset);
     const double st = sin(tibialTorsionOffset);
     math::Vector u_shank = ct * u - st * v_shank_torsioned;
@@ -1083,7 +1089,7 @@ namespace body
       optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kadmed;
     }
   };
-
+  
   /**
    * Create segments and joints according to the region and side given to the constructor.
    */
@@ -1164,6 +1170,7 @@ namespace body
       {
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
         Segment* leftShank = new Segment("L.Shank", Part::Shank, Side::Left, segments);
+        Segment* leftShankTorsioned = new Segment("L.Shank.Torsioned", PartShankTorsioned, Side::Left, segments);
         Segment* leftFoot = new Segment("L.Foot", Part::Foot, Side::Left, segments);
         std::vector<Joint*> leftLowerLimbJoints(3);
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
@@ -1174,9 +1181,11 @@ namespace body
         leftLowerLimbJoints[1] = jnt;
         new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,1.,1.,1.,1.,-1.}}, jnt);
+        jnt = new Joint("L.Ankle", leftShankTorsioned, leftFoot, Anchor::origin(leftShankTorsioned), joints);
+        new PluginGaitLeftAnkleDescriptor(jnt);
+        // YES THERE IS TWO JOINTS FOR THE ANKLE DUE TO THE USE OF THE "UNTORSIONED" SHANK AS PROXIMAL FRAME FOR THE ANKLE FORCES AND MOMENTS
         jnt = new Joint("L.Ankle", leftShank, leftFoot, Anchor::origin(leftShank), joints);
         leftLowerLimbJoints[2] = jnt;
-        new PluginGaitLeftAnkleDescriptor(jnt);
         new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,-1.,1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("L.Foot.Progress", progression, leftFoot, joints);
         jnt->setDescription("Left foot relative to progression frame");
@@ -1187,7 +1196,8 @@ namespace body
       {
         Segment* rightThigh = new Segment("R.Thigh", Part::Thigh, Side::Right, segments);
         Segment* rightShank = new Segment("R.Shank", Part::Shank, Side::Right, segments);
-        Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
+        Segment* rightShankTorsioned = new Segment("R.Shank.Torsioned", PartShankTorsioned, Side::Right, segments);
+        Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right, segments);
         std::vector<Joint*> rightLowerLimbJoints(3);
         jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, Anchor::point("R.HJC", pelvis), joints);
         rightLowerLimbJoints[0] = jnt;
@@ -1197,9 +1207,11 @@ namespace body
         rightLowerLimbJoints[1] = jnt;
         new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,-1.,-1.,1.,1.,-1.}}, jnt);
+        jnt = new Joint("R.Ankle", rightShankTorsioned, rightFoot, Anchor::origin(rightShankTorsioned), joints);
+        new PluginGaitRightAnkleDescriptor(jnt);
+        // YES THERE IS TWO JOINTS FOR THE ANKLE DUE TO THE USE OF THE "UNTORSIONED" SHANK AS PROXIMAL FRAME FOR THE ANKLE FORCES AND MOMENTS
         jnt = new Joint("R.Ankle", rightShank, rightFoot, Anchor::origin(rightShank), joints);
         rightLowerLimbJoints[2] = jnt;
-        new PluginGaitRightAnkleDescriptor(jnt);
         new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,1.,-1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("R.Foot.Progress", progression, rightFoot, joints);
         jnt->setDescription("Right foot relative to progression frame");
