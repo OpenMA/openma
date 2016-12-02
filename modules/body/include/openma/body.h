@@ -174,16 +174,16 @@ namespace body
       math::Map<const math::Vector> v(1,U.data()+3,&res);
       math::Pose tcsi = math::Pose(u,v,u.cross(v),c).inverse();
       math::Pose T = tcsi.transform(scs);
-      std::string relscslabel = segpose->name() + "._TCS";
+      std::string relscslabel = segpose->name();
       auto relscs = mcr->findChild<ReferenceFrame*>(relscslabel,{},false);
       if (relscs == nullptr)
         relscs = new ReferenceFrame(relscslabel,nullptr,mcr);
       std::copy_n(T.values().data(),12,relscs->data());
-      // Express the markers in the SCS register the result
+      // Express the markers in the SCS and register the result
       for (const auto& marker : markers)
       {
         math::Position p = tcsi.transform(marker.second);
-        std::string relptlabel = segment->name() + "." + marker.first + "._TCS";
+        std::string relptlabel = segment->name() + "." + marker.first;
         auto relpt = mcr->findChild<Point*>(relptlabel,{},false);
         if (relpt == nullptr)
           relpt = new Point(relptlabel,nullptr,mcr);
