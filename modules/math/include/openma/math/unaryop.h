@@ -239,13 +239,9 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS // Doxygen does not like the use of '.template'
-    auto residuals() const _OPENMA_NOEXCEPT -> decltype(generate_residuals((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).colwise().sum()))
-#else
-    auto residuals() const _OPENMA_NOEXCEPT  
-#endif
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MeanOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
-      return generate_residuals((this->m_Xpr.residuals() >= 0.0).colwise().sum());
+      return Traits<UnaryOp<MeanOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
   };
   
@@ -701,7 +697,7 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
       return Traits<UnaryOp<MinOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
@@ -763,7 +759,7 @@ namespace math
     /**
      * Returns the residuals associated with this operation. The residuals is generated based on the input one.
      */
-    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals
+    auto residuals() const _OPENMA_NOEXCEPT -> typename Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::ConstantReturnType
     {
       return Traits<UnaryOp<MaxOp<Xpr>,Xpr>>::Residuals::Constant(1, (this->m_Xpr.residuals() >= 0.0).any() ? 0.0 : -1.0);
     };
@@ -895,39 +891,6 @@ namespace math
     mutable Residuals m_Residuals; ///< Store the residual generated for the derivate
     double m_Spacing; ///< Scalar value used in the denominator of the different quotient.
     
-    void prepareWindowProcessing(unsigned mwlen) const
-    {
-      if (this->m_Residuals.size() != 0)
-        return;
-      Residuals xprres = this->m_Xpr.residuals();
-      this->m_Residuals = xprres;
-      this->m_Residuals.setConstant(-1.0);
-      unsigned istart = 0, len = this->rows();
-      while (1)
-      {
-        // Beginning of the window
-        while ((istart < len) && (xprres.coeff(istart) < 0.))
-          ++istart;
-        // Check if the beginning of the window is valid
-        if (istart >= len)
-          break;
-        // End of the window
-        unsigned istop = istart;
-        while ((istop < len) && (xprres.coeff(istop) >= 0.))
-          ++istop;
-        // Compute the length of the window
-        unsigned ilen = istop - istart;
-        // If the window is large enough to be processed, register it
-        if (ilen >= mwlen)
-        {
-          this->m_Windows.push_back({{istart,ilen}});
-          this->m_Residuals.segment(istart,ilen).setZero();
-        }
-        // Pass to the next window
-        istart = istop + 1;
-      }
-    };
-    
   public:
     /**
      * Constructor
@@ -948,7 +911,7 @@ namespace math
      */
     auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::DerivativeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()),Order>
     {
-      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      prepare_window_processing(this->m_Residuals, this->m_Windows, this->m_Xpr.residuals(), Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
       using V = decltype(this->m_Xpr.values());
       return Eigen::internal::DerivativeOpValues<V,Order>(this->m_Xpr.values(), this->m_Windows, this->m_Spacing);
     };
@@ -958,7 +921,7 @@ namespace math
      */
     const Residuals& residuals() const _OPENMA_NOEXCEPT
     {
-      this->prepareWindowProcessing(Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
+      prepare_window_processing(this->m_Residuals, this->m_Windows, this->m_Xpr.residuals(), Eigen::internal::FiniteDifferenceCoefficents<Order>::minimum_window_length());
       return this->m_Residuals;
     };
   };

@@ -6,6 +6,7 @@
 #include "test_file_path.h"
 
 #include <openma/body.h>
+#include <openma/base/subject.h>
 #include <openma/io.h>
 
 #include <memory> // std::shared_ptr

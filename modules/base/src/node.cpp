@@ -893,5 +893,15 @@ namespace ma
    * @endcode
    *
    * @note The type U must be a pointer type which inherit of the Node class. If this is not the case a compilation error will be thrown.
+   * @ingroup openma_base
+   */
+  
+  /**
+   * @fn template <typename T, typename... Args> inline std::vector<T> make_nodes(size_t num, Args&&... args)
+   * Convenient method to generate nodes based on the given template classname @a T and the required arguments (WITHTOUT THE NAME).
+   * The number of nodes to make is specified by @a num. The variadiac number of arugements @a args depends on the kind of nodes instanced.
+   * This function returns a list of pointer to objects' instance. The name of each instance is automatically generated and happened at the beginning of the arguments passed to the constructor of the class @a T. The generated name is "uname*" followed by a incremental number starting from 1.
+   * @important The generated nodes are allocated on the heap. This is the responsability of the developer to delete these objects if no parent was set in the given arguments.
+   * @ingroup openma_base
    */
 };

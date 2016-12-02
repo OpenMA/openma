@@ -285,6 +285,42 @@ namespace math
     return ts;
   };
   
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Out, typename In>
+  inline void prepare_window_processing(Out& resout, std::vector<std::array<unsigned,2>>& windows, const In& resin, unsigned mwlen)
+  {
+    if (resout.size() != 0)
+      return;
+    typename Traits<Array<In::ColsAtCompileTime>>::Residuals xprres = resin;
+    resout = xprres;
+    resout.setConstant(-1.0);
+    unsigned istart = 0, len = xprres.rows();
+    while (1)
+    {
+      // Beginning of the window
+      while ((istart < len) && (xprres.coeff(istart) < 0.))
+        ++istart;
+      // Check if the beginning of the window is valid
+      if (istart >= len)
+        break;
+      // End of the window
+      unsigned istop = istart;
+      while ((istop < len) && (xprres.coeff(istop) >= 0.))
+        ++istop;
+      // Compute the length of the window
+      unsigned ilen = istop - istart;
+      // If the window is large enough to be processed, register it
+      if (ilen >= mwlen)
+      {
+        windows.push_back({{istart,ilen}});
+        resout.segment(istart,ilen).setZero();
+      }
+      // Pass to the next window
+      istart = istop + 1;
+    }
+  };
+  
 };
 };
 

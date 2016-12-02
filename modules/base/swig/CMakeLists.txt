@@ -50,7 +50,7 @@ IF(BUILD_PYTHON_BINDINGS)
   TARGET_INCLUDE_DIRECTORIES(${SWIG_MODULE_ma_REAL_NAME} PRIVATE "${PYTHON_INCLUDE_DIR}" "${NUMPY_INCLUDE_DIR}")
   SET_TARGET_PROPERTIES(${SWIG_MODULE_ma_REAL_NAME} PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma")
-  # TODO Is there a way to rename the file without that it triggers a new call of SWIG?
+  FILE(WRITE "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma/__init__.py" "# OpenMA ${OPENMA_VERSION_STRING}\nfrom .ma import *\n")
   ADD_CUSTOM_COMMAND(TARGET ${SWIG_MODULE_ma_REAL_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "ma.py" "__init__.py" WORKING_DIRECTORY "${OPENMA_EXECUTABLE_PATH}/swig/python/openma/ma")
 ENDIF()

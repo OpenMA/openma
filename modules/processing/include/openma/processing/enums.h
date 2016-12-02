@@ -32,49 +32,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "c3dplugin.h"
-#include "openma/io/enums.h"
-
-#define _OPENMA_IO_HANDLER_ORG_C3D_FORMAT "org.c3d"
+#ifndef __openma_processing_enums_h
+#define __openma_processing_enums_h
 
 namespace ma
 {
-namespace io
+namespace processing
 {
-  std::string C3DPlugin::name() const _OPENMA_NOEXCEPT
+  enum class Response
   {
-    return "C3DPlugin";
-  }
+    LowPass = 1,
+    HighPass,
+    BandPass,
+    BandStop
+  };
   
-  std::vector<std::string> C3DPlugin::supportedFormats() const _OPENMA_NOEXCEPT
-  {
-    return {_OPENMA_IO_HANDLER_ORG_C3D_FORMAT};
-  };
-
-  Capability C3DPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
-  {
-    if (format.compare(_OPENMA_IO_HANDLER_ORG_C3D_FORMAT) != 0)
-      return Capability::None;
-    return Capability::CanReadAndWrite;
-  };
-
-  Signature C3DPlugin::detectSignature(const Device* const device, std::string* format) const _OPENMA_NOEXCEPT
-  {
-    Signature detected = Signature::Invalid;
-    if ((detected = C3DHandler::verifySignature(device)) == Signature::Valid)
-    {
-      if (format != nullptr)
-        *format = _OPENMA_IO_HANDLER_ORG_C3D_FORMAT;
-    }
-    return detected;
-  };
-
-  Handler* C3DPlugin::create(Device* device, const std::string& format)
-  {
-    OPENMA_UNUSED(format)
-    Handler* handler = new C3DHandler;
-    handler->setDevice(device);
-    return handler;
-  };
+  /**
+   * @enum Response
+   * Enumerator for filter response type
+   * @sa filter_butterworth_zero_lag
+   * @ingroup openma_processing
+   */
+  /**
+   * @var Response Response::LowPass
+   * To be used when designing a low-pass filter response type
+   */
+  /**
+   * @var Response Response::HighPass
+   * To be used when designing a high-pass filter response type
+   */
+  /**
+   * @var Response Response::BandPass
+   * To be used when designing a band-pass filter response type
+   */
+  /**
+   * @var Response Response::BandStop
+   * To be used when designing a band-stop (or band-rejection) filter response type 
+   */
 };
+
 };
+
+#endif // __openma_processing_h

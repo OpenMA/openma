@@ -35,6 +35,7 @@
 #ifndef __openma_body_h
 #define __openma_body_h
 
+#include "openma/body_export.h"
 #include "openma/body/descriptor.h"
 #include "openma/body/dynamicdescriptor.h"
 #include "openma/body/enums.h"
@@ -49,178 +50,17 @@
 #include "openma/body/skeletonhelper.h"
 #include "openma/body/utils.h"
 
-#include "openma/base/node.h"
-#include "openma/base/subject.h"
-#include "openma/base/logger.h"
-
 namespace ma
 {
 namespace body
 {
-  /**
-   * Convenient function to calibrate the @a helper from the @a trials and the @a subject data.
-   * The number of required trials, the parameters required in the subject and the way to calibrate the helper is specific to it.
-   * @relates SkeletonHelper
-   * @ingroup openma_body
-   */
-  inline bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr)
-  {
-    if (helper == nullptr)
-    {
-      error("A null pointer to a SkeletonHelper object was passed. Calibration aborted.");
-      return false;
-    }
-    return helper->calibrate(trials, subject);
-  };
-  
-  /**
-   * Convenient function to create Model nodes and reconstrust their movement based on the @a helper and the @a trials.
-   * For each trial, a model is created and added to the @a output.
-   * @note The @a helper might need to be calibrated before the use of the reconstruct() function.
-   */
-  inline bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials)
-  {
-    if (helper == nullptr)
-    {
-      error("A null pointer to a SkeletonHelper object was passed. Reconstruction aborted.");
-      return false;
-    }
-    return helper->reconstruct(root, trials);
-  };
-  
-  /**
-   * Similar to the other reconstruct method but the models are added to the returned node.
-   * @warning The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
-   */
-  inline Node* reconstruct(SkeletonHelper* helper, Node* trials)
-  {
-    Node* root = new Node("root");
-    if (!reconstruct(root, helper, trials))
-    {
-      delete root;
-      root = nullptr;
-    }
-    return root;
-  };
-  
-  /**
-   * Convenient function to extract kinematics described by EulerDescriptor objects found in Model objects passed as the children of the @a input.
-   * Internally, a node is added to the @a output. TimeSequence objects representing joint kinematics are added to this node.
-   * Several options are passed to each descriptor found:
-   *  - suffixProximal is set to ".SCS"
-   *  - suffixDistal is set to ".SCS"
-   *  - enableDegreeConversion is enabled
-   *  - adaptForInterpretation is set to the value passed in @a sideAdaptation
-   * The use of these options means that computed Euler angles are expressed in degrees. The TimeSequence associated with each Segment will use both the corresponding segments' name concatenated with the suffix ".SCS". They are adapted or not depending of the value in @a sideAdaptation.
-   * The adaptation of the angles depends of the setting of each descriptor. You should refer to the model's definition (or helper) to know the descriptor used. For example with the PluginGait helper, the adaptation is used to be able to compare directly the left/right sides.
-   */
-  inline bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true)
-  {
-    if (output == nullptr)
-    {
-      error("Invalid null output node. Joint kinematics computation aborted.");
-      return false;
-    }
-    auto models = input->findChildren<Model*>({},{},false);
-    std::unordered_map<std::string, Any> options{
-      {"suffixProximal", ".SCS"},
-      {"suffixDistal", ".SCS"},
-      {"enableDegreeConversion", true},
-      {"adaptForInterpretation", sideAdaptation}
-    };
-    for (auto& model: models)
-    {
-      auto analysis = new Node(model->name() + "_JointKinematics", output);
-      auto joints = model->joints()->findChildren<Joint*>({},{},false);
-      for (auto& joint: joints)
-      {
-        auto descriptors = joint->findChildren<EulerDescriptor*>({},{},false);
-        for (auto& descriptor: descriptors)
-        {
-          descriptor->evaluate(analysis, joint, options);
-        }
-      }
-    }
-    return true;
-  };
-  
-  /**
-   * Similar to the other extract_joint_kinematics() method but the computed joint kinematics are added to a returned node.
-   * @warning The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
-   */
-  inline Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true)
-  {
-    Node* root = new Node("root");
-    if (!extract_joint_kinematics(root, input, sideAdaptation))
-    {
-      delete root;
-      root = nullptr;
-    }
-    return root;
-  };
-  
-  /**
-   * Convenient function to extract joint kinetics described by DynamicDescriptor objects found in Model objects passed as the children of the @a input.
-   * Internally, a node is added to the @a output. TimeSequence objects representing joint kinetics (force, moment, and power) are added to this node.
-   * Several options are passed to each descriptor found:
-   *  - adaptForInterpretation is set to the value passed in @a sideAdaptation
-   *  - massNormalization is set to model's mass property if @a massNormalization is set to true
-   *  - representationFrame is set to the value passed in @a frame
-   *  - representationFrameSuffix is set to ".SCS"
-   * The default values passed to these options means that computed joint forces and moment are expressed int the reference frame associated with the distal segment and normalized by subject's mass. They are also adapted to interpret values for the left and right side.
-   */
-  inline bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal)
-  {
-    if (output == nullptr)
-    {
-      error("Invalid null output node. Joint kinetics computation aborted.");
-      return false;
-    }
-    auto models = input->findChildren<Model*>({},{},false);
-    std::unordered_map<std::string, Any> options{
-      {"representationFrame", frame},
-      {"representationFrameSuffix", ".SCS"},
-      {"adaptForInterpretation", sideAdaptation}
-    };
-    for (auto& model: models)
-    {
-      if (massNormalization)
-      {
-        auto massProp = model->property("mass");
-        auto massVal = massProp.cast<double>();
-        if (massProp.isValid() && (massVal > 0.) && !isnan(massVal))
-          options["massNormalization"] = model->property("mass");
-        else
-          warning("The model '%s' has no property 'mass' or is set to a non positive value or a not a number (NaN). It is not possible to normalize the data.", model->name().c_str());
-      }
-      auto analysis = new Node(model->name() + "_JointKinetics", output);
-      auto joints = model->joints()->findChildren<Joint*>({},{},false);
-      for (auto& joint: joints)
-      {
-        auto descriptors = joint->findChildren<DynamicDescriptor*>({},{},false);
-        for (auto& descriptor: descriptors)
-        {
-          descriptor->evaluate(analysis, joint, options);
-        }
-      }
-    }
-    return true;
-  };
-  
-  /**
-   * Similar to the other extract_joint_kinetics() method but the computed joint kinetics are added to a returned node.
-   * @important The returned node is allocated on the heap. The developer must care of the deletion of the object using the @c delete keyword.
-   */
-  inline Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal)
-  {
-    Node* root = new Node("root");
-    if (!extract_joint_kinetics(root, input, sideAdaptation, massNormalization, frame))
-    {
-      delete root;
-      root = nullptr;
-    }
-    return root;
-  };
+  OPENMA_BODY_EXPORT bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
+  OPENMA_BODY_EXPORT bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
+  OPENMA_BODY_EXPORT Node* reconstruct(SkeletonHelper* helper, Node* trials);
+  OPENMA_BODY_EXPORT bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);
+  OPENMA_BODY_EXPORT Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
+  OPENMA_BODY_EXPORT bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
+  OPENMA_BODY_EXPORT Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
 };
 };
 

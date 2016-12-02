@@ -32,49 +32,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "c3dplugin.h"
-#include "openma/io/enums.h"
+#ifndef __openma_processing_h
+#define __openma_processing_h
 
-#define _OPENMA_IO_HANDLER_ORG_C3D_FORMAT "org.c3d"
+#include "openma/processing_export.h"
+#include "openma/processing/enums.h"
+
+#include <vector>
 
 namespace ma
 {
-namespace io
-{
-  std::string C3DPlugin::name() const _OPENMA_NOEXCEPT
-  {
-    return "C3DPlugin";
-  }
+  class TimeSequence;
   
-  std::vector<std::string> C3DPlugin::supportedFormats() const _OPENMA_NOEXCEPT
-  {
-    return {_OPENMA_IO_HANDLER_ORG_C3D_FORMAT};
-  };
-
-  Capability C3DPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
-  {
-    if (format.compare(_OPENMA_IO_HANDLER_ORG_C3D_FORMAT) != 0)
-      return Capability::None;
-    return Capability::CanReadAndWrite;
-  };
-
-  Signature C3DPlugin::detectSignature(const Device* const device, std::string* format) const _OPENMA_NOEXCEPT
-  {
-    Signature detected = Signature::Invalid;
-    if ((detected = C3DHandler::verifySignature(device)) == Signature::Valid)
-    {
-      if (format != nullptr)
-        *format = _OPENMA_IO_HANDLER_ORG_C3D_FORMAT;
-    }
-    return detected;
-  };
-
-  Handler* C3DPlugin::create(Device* device, const std::string& format)
-  {
-    OPENMA_UNUSED(format)
-    Handler* handler = new C3DHandler;
-    handler->setDevice(device);
-    return handler;
-  };
+namespace processing
+{
+  OPENMA_PROCESSING_EXPORT bool filter_butterworth_zero_lag(const std::vector<TimeSequence*>& tss, Response type, double fc, int fn);
 };
+
 };
+
+#endif // __openma_processing_h
