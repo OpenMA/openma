@@ -5,12 +5,13 @@
 
 // Util functions
 
-inline void set_pt_data(ma::TimeSequence* ts, double x, double y, double z)
+inline void set_pt_data(ma::TimeSequence* ts, double x, double y, double z, int index = 0)
 {
-  ts->data()[0] = x;
-  ts->data()[1] = y;
-  ts->data()[2] = z;
-  ts->data()[3] = 0.;
+  auto samples = ts->samples();
+  ts->data()[0*samples+index] = x;
+  ts->data()[1*samples+index] = y;
+  ts->data()[2*samples+index] = z;
+  ts->data()[3*samples+index] = 0.;
 };
 
 inline void set_pose_data_fake(const std::string& name, ma::Node* parent)
@@ -58,6 +59,7 @@ public:
   CubeHelper() : ma::body::SkeletonHelper("CubeHelper") {};
   virtual bool calibrate(ma::Node* /*trials*/, ma::Subject* /*subject*/) override {return true;};
   virtual ma::body::LandmarksTranslator* defaultLandmarksTranslator() override {return nullptr;};
+  virtual ma::body::PoseEstimator* defaultPoseEstimator() override {return new ma::body::SkeletonHelperPoseEstimator("CubePoseEstimator",this);};
   virtual ma::body::InertialParametersEstimator* defaultInertialParametersEstimator() override {return nullptr;};
   virtual ma::body::ExternalWrenchAssigner* defaultExternalWrenchAssigner() override {return nullptr;};
   virtual ma::body::InverseDynamicProcessor* defaultInverseDynamicProcessor() override {return nullptr;};
@@ -87,6 +89,7 @@ public:
   LowerLimbsHelper() : ma::body::SkeletonHelper("LowerLimbsHelper") {};
   virtual bool calibrate(ma::Node* /*trials*/, ma::Subject* /*subject*/) override {return true;};
   virtual ma::body::LandmarksTranslator* defaultLandmarksTranslator() override {return nullptr;};
+  virtual ma::body::PoseEstimator* defaultPoseEstimator() override {return new ma::body::SkeletonHelperPoseEstimator("LowerLimbsHelperPoseEstimator",this);};
   virtual ma::body::InertialParametersEstimator* defaultInertialParametersEstimator() override {return nullptr;};
   virtual ma::body::ExternalWrenchAssigner* defaultExternalWrenchAssigner() override {return nullptr;};
   virtual ma::body::InverseDynamicProcessor* defaultInverseDynamicProcessor() override {return nullptr;};
