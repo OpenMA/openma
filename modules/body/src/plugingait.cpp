@@ -48,6 +48,7 @@
 #include "openma/body/segment.h"
 #include "openma/body/utils.h"
 #include "openma/body/inversedynamicsmatrix.h"
+#include "openma/body/skeletonhelperposeestimator.h"
 #include "openma/base/logger.h"
 #include "openma/base/subject.h"
 #include "openma/base/trial.h"
@@ -1995,16 +1996,33 @@ namespace body
       }, this);
   };
   
+  /*
+   * Returns a SkeletonHelperPoseEstimator node
+   */
+  PoseEstimator* PluginGait::defaultPoseEstimator()
+  {
+    return new SkeletonHelperPoseEstimator("PluginGaitPoseEstimator", this);
+  };
+
+  /*
+   * Returns a DempsterTable node
+   */
   InertialParametersEstimator* PluginGait::defaultInertialParametersEstimator()
   {
     return new DempsterTable(this);
   };
   
+  /*
+   * Returns a SimpleGaitForcePlateToFeetAssigner node
+   */
   ExternalWrenchAssigner* PluginGait::defaultExternalWrenchAssigner()
   {
     return new SimpleGaitForcePlateToFeetAssigner(this);
   };
   
+  /*
+   * Returns a InverseDynamicMatrix node
+   */
   InverseDynamicProcessor* PluginGait::defaultInverseDynamicProcessor()
   {
     return new InverseDynamicMatrix(this);

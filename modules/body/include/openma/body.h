@@ -45,11 +45,14 @@
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/body/point.h"
+#include "openma/body/poseestimator.h"
 #include "openma/body/plugingait.h"
 #include "openma/body/referenceframe.h"
 #include "openma/body/segment.h"
 #include "openma/body/skeletonhelper.h"
+#include "openma/body/skeletonhelperposeestimator.h"
 #include "openma/body/utils.h"
+#include "openma/body/unitquaternionposeestimator.h"
 
 #include "openma/base/logger.h"
 #include "openma/base/node.h"
@@ -103,8 +106,18 @@ namespace body
     for (const auto& m : markers)
       average_marker(m, ttfsr.timeSequences());
     // TODO DISABLE INVERSE DYNAMICS COMPUTATION
-    // Reconstruct segments' SCS
+    // Delete the existing pose estimators (if any) to use the default one
+    auto estimators = helper->findChildren<PoseEstimator*>({},{},false);
+    for (auto e : estimators)
+    {
+      e->removeParent(helper);
+      if (!e->hasParents())
+        delete e;
+    }
+    // Reconstruct segments' SCS using the default pose estimator
+    auto defaultEstimator = helper->defaultPoseEstimator();
     bool reconstructed = helper->reconstruct(&tmrfsr, &ttrfsr);
+    delete defaultEstimator;
     if (!reconstructed || (tmrfsr.children().empty()))
     {
       error("An error occurred during the reconstruction of segments SCS used by the registration process. Registration aborted.");
@@ -190,6 +203,8 @@ namespace body
         std::copy_n(p.values().data(),3,relpt->data());
       }
     }
+    // Attach a least square pose estimator
+    new UnitQuaternionPoseEstimator("LeastSquarePoseEstimator",helper);
     return true;
   };
   

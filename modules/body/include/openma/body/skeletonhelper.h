@@ -57,6 +57,7 @@ namespace body
   class ExternalWrenchAssigner;
   class InverseDynamicProcessor;
   class Model;
+  class PoseEstimator;
   
   class SkeletonHelperPrivate;
   
@@ -80,6 +81,7 @@ namespace body
     bool reconstruct(Node* output, Node* trials);
     
     virtual LandmarksTranslator* defaultLandmarksTranslator() = 0;
+    virtual PoseEstimator* defaultPoseEstimator() = 0;
     virtual InertialParametersEstimator* defaultInertialParametersEstimator() = 0;
     virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() = 0;
     virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() = 0;
@@ -87,6 +89,8 @@ namespace body
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   protected:
+    friend class SkeletonHelperPoseEstimator;
+    
     SkeletonHelper(const std::string& name, int region = 0, int side = 0, Node* parent = nullptr);
     SkeletonHelper(SkeletonHelperPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     

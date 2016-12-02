@@ -49,6 +49,7 @@
 #include "openma/body/point.h"
 #include "openma/body/referenceframe.h"
 #include "openma/body/segment.h"
+#include "openma/body/skeletonhelperposeestimator.h"
 #include "openma/body/utils.h"
 #include "openma/base/enums.h"
 #include "openma/base/subject.h"
@@ -1140,8 +1141,16 @@ namespace body
       }, this);
   };
   
+  /*
+   * Returns a SkeletonHelperPoseEstimator node
+   */
+  PoseEstimator* InternationalSocietyBiomechanics::defaultPoseEstimator()
+  {
+    return new SkeletonHelperPoseEstimator("InternationalSocietyBiomechanicsPoseEstimator",this);
+  };
+  
   /**
-   *
+   * Returns a DumasMcConvilleYoungTable node
    */
   InertialParametersEstimator* InternationalSocietyBiomechanics::defaultInertialParametersEstimator()
   {
@@ -1149,7 +1158,7 @@ namespace body
   };
   
   /**
-   *
+   * Retuns a null pointer. This means that the developer must create and parent a wrench assigner to correctly compute the inverse dynamics.
    */
   ExternalWrenchAssigner* InternationalSocietyBiomechanics::defaultExternalWrenchAssigner()
   {
@@ -1157,7 +1166,7 @@ namespace body
   };
   
   /**
-   *
+   * Returns a InverseDynamicMatrix node
    */
   InverseDynamicProcessor* InternationalSocietyBiomechanics::defaultInverseDynamicProcessor()
   {

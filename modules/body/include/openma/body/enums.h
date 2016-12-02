@@ -44,7 +44,7 @@ namespace body
   
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
   
-  // NOTE: The next enums are fake strongly typed enumerations to simplify the syntax in the code (e.g. with the Segment class constructor).
+  // NOTE: The next enums are fake strongly typed enumerations to simplify the syntax in the code (e.g. with the Segment class constructor where integers are used to define the Side, Region, and Part. The last one can have user defined values).
   
   struct Side
   {

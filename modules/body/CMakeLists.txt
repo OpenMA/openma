@@ -7,7 +7,6 @@ SET(OPENMA_BODY_SRCS
   src/dynamicdescriptor.cpp
   src/eulerdescriptor.cpp
   src/externalwrenchassigner.cpp
-  src/simplegaitforceplatetofeetassigner.cpp
   src/inertialparameters.cpp
   src/inertialparametersestimator.cpp
   src/internationalsocietybiomechanics.cpp
@@ -19,9 +18,13 @@ SET(OPENMA_BODY_SRCS
   src/model.cpp
   src/plugingait.cpp
   src/point.cpp
+  src/poseestimator.cpp
   src/referenceframe.cpp
   src/segment.cpp
+  src/simplegaitforceplatetofeetassigner.cpp
   src/skeletonhelper.cpp
+  src/skeletonhelperposeestimator.cpp
+  src/unitquaternionposeestimator.cpp
   src/utils.cpp
 )
 

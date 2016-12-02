@@ -60,6 +60,7 @@ namespace body
     
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;
+    virtual PoseEstimator* defaultPoseEstimator() override;
     virtual InertialParametersEstimator* defaultInertialParametersEstimator() override;
     virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() override;
     virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() override;
