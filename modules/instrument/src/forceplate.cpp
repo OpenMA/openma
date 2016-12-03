@@ -482,7 +482,7 @@ namespace instrument
       // For explanations of the PWA calculation, see Shimba T. (1984), 
       // "An estimation of center of gravity from force platform data", 
       // Journal of Biomechanics 17(1), 53–60.
-      math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum().sqrt();
+      math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum();
       Px = (Fy * Mz - Fz * My) / sNF - (Fx.square() * My - Fx * (Fy * Mx)) / (sNF * Fz);
       Py = (Fz * Mx - Fx * Mz) / sNF - (Fx * (Fy * My) - Fy.square() * Mx) / (sNF * Fz);
     }

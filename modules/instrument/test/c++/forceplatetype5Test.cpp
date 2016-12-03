@@ -14,6 +14,14 @@ CXXTEST_SUITE(ForcePlateType5Test)
     forceplatetest_compare_gait1_wrench_position_at_cop(&fp);
   };
   
+  
+  CXXTEST_TEST(pointOfApplicationCrossVerification)
+  {
+    ma::instrument::ForcePlateType5 fp("FP");
+    forceplatetest_fill_gait1_type5(&fp);
+    forceplatetest_cross_verification_pwa(&fp, {1e-15,7.5e1,2e0}); // 75Nmm, 2mm
+  };
+  
   CXXTEST_TEST(clone)
   {
     ma::instrument::ForcePlateType5 fp("FP");
@@ -37,5 +45,6 @@ CXXTEST_SUITE(ForcePlateType5Test)
 
 CXXTEST_SUITE_REGISTRATION(ForcePlateType5Test)
 CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, wrench)
+CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, pointOfApplicationCrossVerification)
 CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, clone)
 CXXTEST_TEST_REGISTRATION(ForcePlateType5Test, nodeid)

@@ -22,6 +22,13 @@ CXXTEST_SUITE(ForcePlateType3Test)
     forceplatetest_compare_gaitfb1_type3_wrench_global(&fp);
   };
   
+  CXXTEST_TEST(pointOfApplicationCrossVerification)
+  {
+    ma::instrument::ForcePlateType3 fp("FP");
+    forceplatetest_fill_gaitfb1_type3(&fp);
+    forceplatetest_cross_verification_pwa(&fp, {1e-15,1.5e2,7.5e-1}); // 150Nmm, 0.75mm
+  };
+  
   CXXTEST_TEST(clone)
   {
     ma::instrument::ForcePlateType3 fp("FP");
@@ -45,5 +52,6 @@ CXXTEST_SUITE(ForcePlateType3Test)
 CXXTEST_SUITE_REGISTRATION(ForcePlateType3Test)
 CXXTEST_TEST_REGISTRATION(ForcePlateType3Test, wrench_local)
 CXXTEST_TEST_REGISTRATION(ForcePlateType3Test, wrench_global)
+CXXTEST_TEST_REGISTRATION(ForcePlateType3Test, pointOfApplicationCrossVerification)
 CXXTEST_TEST_REGISTRATION(ForcePlateType3Test, clone)
 CXXTEST_TEST_REGISTRATION(ForcePlateType3Test, nodeid)
