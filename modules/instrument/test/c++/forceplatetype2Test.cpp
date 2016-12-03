@@ -13,6 +13,13 @@ CXXTEST_SUITE(ForcePlateType2Test)
     forceplatetest_compare_sample10_wrench_at_origin(&fp, fp2data);
   };
   
+  CXXTEST_TEST(pointOfApplicationCrossVerification)
+  {
+    ma::instrument::ForcePlateType2 fp("FP");
+    forceplatetest_fill_sample10_type2(&fp);
+    forceplatetest_cross_verification_pwa(&fp, {1e-15,1e-10,1e-10});
+  };
+  
   CXXTEST_TEST(clone)
   {
     ma::instrument::ForcePlateType2 fp("FP");
@@ -34,5 +41,6 @@ CXXTEST_SUITE(ForcePlateType2Test)
 
 CXXTEST_SUITE_REGISTRATION(ForcePlateType2Test)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, wrench)
+CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, pointOfApplicationCrossVerification)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, clone)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, nodeid)

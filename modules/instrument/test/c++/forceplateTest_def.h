@@ -4,6 +4,7 @@
 #include <openma/instrument/forceplate.h>
 #include <openma/instrument/forceplatetype3.h>
 #include <openma/base/timesequence.h>
+#include <openma/math.h>
 
 static unsigned sample10_fpsamples = 22;
 static unsigned gait1_fpsamples = 17;
@@ -145,6 +146,17 @@ const std::array<double,3> fp3sc4{{594.332993, 2.39287, -0.357709}};
 const std::array<double,2> fp3offsets{{120., 200.}};
 
 // COMPARISON FUNCTIONS
+
+void forceplatetest_cross_verification_pwa(ma::instrument::ForcePlate* fp, std::vector<double> eps = {})
+{
+  eps.resize(3,1e-15);
+  auto wcop = ma::math::to_wrench(fp->wrench(ma::instrument::Location::CentreOfPressure));
+  auto wpwa = ma::math::to_wrench(fp->wrench(ma::instrument::Location::PointOfApplication));
+  ma::math::Array<9>::Values rmsd = (wcop.values() - wpwa.values()).square().colwise().mean().sqrt();
+  TSM_ASSERT_EQUALS("RMSD Force (max: " + std::to_string(rmsd.block<1,3>(0,0).maxCoeff()) + ")",(rmsd.block<1,3>(0,0) < eps[0]).all(), true);
+  TSM_ASSERT_EQUALS("RMSD Moment (max: " + std::to_string(rmsd.block<1,3>(0,3).maxCoeff()) + ")",(rmsd.block<1,3>(0,3) < eps[1]).all(), true);
+  TSM_ASSERT_EQUALS("RMSD Position (max: " + std::to_string(rmsd.block<1,3>(0,6).maxCoeff()) + ")",(rmsd.block<1,3>(0,6) < eps[2]).all(), true);
+};
 
 void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* data)
 {
