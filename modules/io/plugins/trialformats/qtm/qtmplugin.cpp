@@ -53,7 +53,8 @@ namespace io
 
   Capability QTMPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
   {
-    OPENMA_UNUSED(format)
+    if (format.compare(_OPENMA_IO_HANDLER_QUALISYS_QTM_FORMAT) != 0)
+      return Capability::None;
     return Capability::CanRead;
   };
 
