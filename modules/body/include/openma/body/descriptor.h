@@ -40,8 +40,6 @@
 #include "openma/base/any.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, Descriptor, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -71,9 +69,12 @@ namespace body
     virtual bool process(const std::unordered_map<std::string, Any>& options) = 0;
     virtual bool finalize(Node* output, const std::unordered_map<std::string, Any>& options) = 0;
 
-    Descriptor(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+    Descriptor(DescriptorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::Descriptor, OPENMA_BODY_EXPORT);
+
 
 #endif // __openma_body_descriptor_h

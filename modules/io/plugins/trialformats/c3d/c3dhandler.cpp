@@ -47,6 +47,12 @@
 #include "openma/base/event.h"
 #include "openma/base/logger.h"
 
+#include "openma/instrument/forceplate.h"
+#include "openma/instrument/forceplatetype2.h"
+#include "openma/instrument/forceplatetype3.h"
+#include "openma/instrument/forceplatetype4.h"
+#include "openma/instrument/forceplatetype5.h"
+
 #include <string>
 #include <list>
 #include <vector>
@@ -54,6 +60,7 @@
 #include <array>
 #include <memory> // std::unique_ptr
 #include <functional> // std::function
+#include <cassert>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -97,6 +104,17 @@ namespace io
     
     template <typename T>
     static void mergeProperties(std::vector<T>* target, Trial* trial, const std::string& base, int finalSize = -1, T&& defaultValue = T());
+    
+    template <typename T>
+    static void createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const T& value);
+    
+    template <typename T>
+    static void createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const std::vector<T>& values, size_t inc = 1);
+    
+    template <typename T>
+    static void createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const std::vector<T>& values, const std::vector<unsigned>& dims, size_t inc = 1);
+    
+    static void extractForcePlatformData(instrument::ForcePlate* fp, const std::vector<TimeSequence*>& analogs, double* origin, double* corners, int* channelIndices, size_t channelStep, double* calMatrix = nullptr, const unsigned* calMatrixSize = nullptr);
   };
   
   C3DHandlerPrivate::C3DHandlerPrivate()
@@ -143,6 +161,89 @@ namespace io
         target->operator[](inc) = generateDefaultValue(std::forward<T>(defaultValue), inc+1);
     }
   };
+  
+  template <typename T>
+  void C3DHandlerPrivate::createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const T& value)
+  {
+    props[name] = value;
+  };
+  
+  template <typename T>
+  void C3DHandlerPrivate::createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const std::vector<T>& values, size_t inc)
+  {
+    if (values.size() >= 256)
+    {
+      std::vector<T> values1, values2;
+      auto it = values.begin();
+      std::advance(it, 255);
+      values1.assign(values.begin(), it);
+      values2.assign(it, values.end());
+      createProperties(props, name, values1, inc);
+      createProperties(props, name, values2, inc+1);
+    }
+    else
+    {
+      auto str = (inc == 1 ? name : name+std::to_string(inc));
+      props[str] = values;
+    }
+  };
+  
+  template <typename T>
+  void C3DHandlerPrivate::createProperties(std::unordered_map<std::string,Any>& props, const std::string& name, const std::vector<T>& values, const std::vector<unsigned>& dims, size_t inc)
+  {
+    assert((dims.size() >= 2) && (dims[1] != 0));
+    if ((values.size() / dims[1]) >= 256)
+    {
+      std::vector<T> values1, values2;
+      auto it = values.begin();
+      std::advance(it, 255 * dims[0]);
+      values1.assign(values.begin(), it);
+      values2.assign(it, values.end());
+      std::vector<unsigned> dims1 = dims, dims2 = dims;
+      dims1[1] = 255;
+      dims2[1] -= 255;
+      createProperties(props, name, values1, dims1, inc);
+      createProperties(props, name, values2, dims2, inc+1);
+    }
+    else
+    {
+      auto str = (inc == 1 ? name : name+std::to_string(inc));
+      props[str] = Any(values,dims);
+    }
+  };
+  
+  void C3DHandlerPrivate::extractForcePlatformData(instrument::ForcePlate* fp, const std::vector<TimeSequence*>& analogs, double* origin, double* corners, int* channelIndices, size_t channelStep, double* calMatrix, const unsigned* calMatrixSize)
+  {
+    if (fp == nullptr)
+      return;
+    // TODO Debug assertions should be transformed in regular tests
+    // Analog channels
+    assert(fp->channelsNumberRequired() <= channelStep);
+    for (unsigned i = 0 ; i < fp->channelsNumberRequired() ; ++i)
+    {
+      assert((channelIndices[i] > 0) && (static_cast<unsigned>(channelIndices[i]) <= analogs.size()));
+      fp->setChannel(i, analogs[channelIndices[i]-1]);
+    }
+    // Geometry
+    fp->setGeometry(std::array<double,3>{{origin[0],origin[1],origin[2]}},
+                    std::array<double,3>{{corners[0],corners[1],corners[2]}},
+                    std::array<double,3>{{corners[3],corners[4],corners[5]}},
+                    std::array<double,3>{{corners[6],corners[7],corners[8]}},
+                    std::array<double,3>{{corners[9],corners[10],corners[11]}});
+    // Calibration matrix (if any)
+    if (calMatrix != nullptr)
+    {
+      auto calVal = fp->calibrationMatrixData();
+      const auto& calDims = fp->calibrationMatrixDimensions();
+      assert((calDims[0] <= calMatrixSize[0]) && (calDims[1] <= calMatrixSize[1]));
+      for (unsigned j = 0 ; j < calDims[1] ; ++j)
+        for (unsigned i = 0 ; i < calDims[0] ; ++i)
+          calVal[i*calDims[1] + j] = calMatrix[i*calMatrixSize[1] + j];
+      fp->setCalibrationMatrixData(calVal);
+    }
+    // TODO Manage case where there are missing channels
+  };
+  
 };
 };
 
@@ -339,12 +440,14 @@ namespace io
               int8_t inc2 = 1 ; while (inc2 < numDims) rows *= dims[inc2++];
               prod = dims[0]; // reused
               std::vector<uint8_t>(dims.begin()+1, dims.end()).swap(dims); // Remove the first element
+              std::vector<std::string> p(dataSizeExceeded ? 0 : rows);
+              stream.readString(prod, p.size(), p.data());
+              value = Any(p, dims);
             }
             else
-              dims = std::vector<uint8_t>{1};
-            std::vector<std::string> p(dataSizeExceeded ? 0 : rows);
-            stream.readString(prod, p.size(), p.data());
-            value = Any(p, dims);
+            {
+              value = Any(stream.readString(dims[0]));
+            }
             break;
             }
           case 1: // Byte
@@ -459,10 +562,12 @@ namespace io
         int eventsNumber = eventUsed;
         std::vector<std::string> eventsLabel;
         std::vector<double> eventsTime;
-        // std::vector<int> eventsId;
+        std::vector<int> eventsIconId;
         std::vector<std::string> eventsContext;
         std::vector<std::string> eventsSubject;
         std::vector<std::string> eventsDescription;
+        std::vector<std::string> eventUniqueLabels;
+        std::vector<int16_t> eventUniqueColours;
         C3DHandlerPrivate::mergeProperties<std::string>(&eventsLabel, trial, eventPrefix+"LABELS", eventsNumber, "uname*");
         C3DHandlerPrivate::mergeProperties(&eventsTime, trial, eventPrefix+"TIMES");
         if (eventsTime.size() < static_cast<size_t>(2 * eventsNumber))
@@ -471,7 +576,12 @@ namespace io
         C3DHandlerPrivate::mergeProperties(&eventsContext, trial, eventPrefix+"CONTEXTS", eventsNumber);
         C3DHandlerPrivate::mergeProperties(&eventsSubject, trial, eventPrefix+"SUBJECTS", eventsNumber);
         C3DHandlerPrivate::mergeProperties(&eventsDescription, trial, eventPrefix+"DESCRIPTIONS", eventsNumber);
-        // C3DHandlerPrivate::mergeProperties(eventsId, trial, eventPrefix+"ICON_IDS", eventsNumber);
+        C3DHandlerPrivate::mergeProperties(&eventsIconId, trial, eventPrefix+"ICON_IDS", eventsNumber);
+        C3DHandlerPrivate::mergeProperties(&eventUniqueLabels, trial, "EVENT_CONTEXT:LABELS");
+        C3DHandlerPrivate::mergeProperties(&eventUniqueColours, trial, "EVENT_CONTEXT:COLOURS", eventUniqueLabels.size()*3);
+        std::unordered_map<std::string,std::array<int16_t,3>> eventProposedColours;
+        for (size_t i = 0, len = eventUniqueLabels.size() ; i < len ; ++i)
+          eventProposedColours.emplace(trim_string(eventUniqueLabels[i]), std::array<int16_t,3>{{eventUniqueColours[i*3], eventUniqueColours[i*3+1], eventUniqueColours[i*3+2]}});
         for (int incEvt = 0 ; incEvt < eventsNumber ; ++incEvt)
         {
           Event* event = new Event(trim_string(eventsLabel[incEvt]),
@@ -480,6 +590,10 @@ namespace io
                                    trim_string(eventsSubject[incEvt]),
                                    trial->events());
           event->setDescription(eventsDescription[incEvt]);
+          event->setProperty("icon_id", eventsIconId[incEvt]);
+          auto itColour = eventProposedColours.find(event->name());
+          if (itColour != eventProposedColours.cend())
+            event->setProperty("colour", itColour->second);
         }
       }
     // Configure the acquisition based on some metadata
@@ -536,23 +650,23 @@ namespace io
         optr->Source->seek((512 * (dataFirstBlock - 1)), Origin::Begin);
         if (numberSamplesPerAnalogChannel == 0)
           numberSamplesPerAnalogChannel = 1;
-        uint16_t analogNumber = totalAnalogSamplesPer3dFrame / numberSamplesPerAnalogChannel;
+        uint16_t numAnalogs = totalAnalogSamplesPer3dFrame / numberSamplesPerAnalogChannel;
         // ANALOG
         Any analogUsed = trial->property("ANALOG:USED");
         if (analogUsed.isValid())
         {
           // ANALOG:USED
-          if (analogNumber != analogUsed)
+          if (numAnalogs != analogUsed)
             warning("ORG.C3D - %s - The number of analog channels wrote in the header section and in the parameter section are not the same. The value kept is from the header section", optr->Source->name());
-          optr->AnalogChannelScale.resize(analogNumber, 1.0);
-          optr->AnalogZeroOffset.resize(analogNumber, 0.0);
+          optr->AnalogChannelScale.resize(numAnalogs, 1.0);
+          optr->AnalogZeroOffset.resize(numAnalogs, 0.0);
           optr->AnalogUniversalScale = 1.0;
 
-          if (analogNumber != 0)
+          if (numAnalogs != 0)
           {
             // Check if values in ANALOG:OFFSET correspond to the informations in ANALOG:FORMAT and ANALOG:BITS
             std::vector<int16_t> zeroOffset;
-            C3DHandlerPrivate::mergeProperties(&zeroOffset, trial, "ANALOG:OFFSET",analogNumber,int16_t(0));
+            C3DHandlerPrivate::mergeProperties(&zeroOffset, trial, "ANALOG:OFFSET",numAnalogs,int16_t(0));
             int bits = optr->AnalogResolution;
             for (size_t inc = 0 ; inc < optr->AnalogZeroOffset.size() ; ++inc)
             {
@@ -585,9 +699,9 @@ namespace io
                 optr->AnalogZeroOffset[inc] = static_cast<double>(static_cast<uint16_t>(zeroOffset[inc]));
             }
             else // signed
-              C3DHandlerPrivate::mergeProperties(&optr->AnalogZeroOffset, trial, "ANALOG:OFFSET", analogNumber, 0.0);
+              C3DHandlerPrivate::mergeProperties(&optr->AnalogZeroOffset, trial, "ANALOG:OFFSET", numAnalogs, 0.0);
             // - ANALOG:SCALE
-            C3DHandlerPrivate::mergeProperties(&optr->AnalogChannelScale, trial, "ANALOG:SCALE", analogNumber, 1.0);
+            C3DHandlerPrivate::mergeProperties(&optr->AnalogChannelScale, trial, "ANALOG:SCALE", numAnalogs, 1.0);
             // - ANALOG:GEN_SCALE
             optr->AnalogUniversalScale = trial->property("ANALOG:GEN_SCALE");
             if (optr->AnalogUniversalScale == 0.0)
@@ -619,7 +733,7 @@ namespace io
         size_t pointSamples = lastSampleIndex - firstSampleIndex + 1;
         double startTime = static_cast<double>(firstSampleIndex-1) / pointSampleRate;
         auto points = make_nodes<TimeSequence*>(pointNumber,4,pointSamples,pointSampleRate,startTime,TimeSequence::Marker,pointUnits[0],trial->timeSequences());
-        auto analogs = make_nodes<TimeSequence*>(analogNumber,1,pointSamples*numberSamplesPerAnalogChannel,pointSampleRate*numberSamplesPerAnalogChannel,startTime,TimeSequence::Analog,"V",trial->timeSequences());
+        auto analogs = make_nodes<TimeSequence*>(numAnalogs,1,pointSamples*numberSamplesPerAnalogChannel,pointSampleRate*numberSamplesPerAnalogChannel,startTime,TimeSequence::Analog,"V",trial->timeSequences());
         try
         {
           for (size_t sample = 0 ; sample < pointSamples ; ++sample)
@@ -705,7 +819,7 @@ namespace io
           C3DHandlerPrivate::mergeProperties<std::string>(&labels, trial, pointTypeNames[i]);
           for (size_t j = 0 ; j < labels.size() ; ++j)
           {
-            auto pt = trial->timeSequences()->findChild<TimeSequence*>(labels[j],{},false);
+            auto pt = trial->timeSequences()->findChild<TimeSequence*>(trim_string(labels[j]),{},false);
             if (pt != nullptr)
             {
               pt->setUnit(trim_string(pointUnits[i+1])); // +1: because the first element in pointUnits stores markers' unit.
@@ -722,16 +836,16 @@ namespace io
           if (!c3dFromMotion)
           {
             // POINT:LABELS & POINT:DESCRIPTIONS
-            C3DHandlerPrivate::mergeProperties<std::string>(&labels, trial, "ANALOG:LABELS", analogNumber, "uname*");
-            C3DHandlerPrivate::mergeProperties<std::string>(&descriptions, trial, "ANALOG:DESCRIPTIONS", analogNumber);
+            C3DHandlerPrivate::mergeProperties<std::string>(&labels, trial, "ANALOG:LABELS", numAnalogs, "uname*");
+            C3DHandlerPrivate::mergeProperties<std::string>(&descriptions, trial, "ANALOG:DESCRIPTIONS", numAnalogs);
           }
           else
           {
             // A for the points, Motion Analysis Corp. uses the parameter to store the exact analogs' label
-            C3DHandlerPrivate::mergeProperties<std::string>(&labels, trial, "ANALOG:DESCRIPTIONS", analogNumber, "uname*");
+            C3DHandlerPrivate::mergeProperties<std::string>(&labels, trial, "ANALOG:DESCRIPTIONS", numAnalogs, "uname*");
           }
-          C3DHandlerPrivate::mergeProperties(&units, trial, "ANALOG:UNITS", analogNumber);
-          C3DHandlerPrivate::mergeProperties(&gains, trial, "ANALOG:GAIN", analogNumber);
+          C3DHandlerPrivate::mergeProperties(&units, trial, "ANALOG:UNITS", numAnalogs);
+          C3DHandlerPrivate::mergeProperties(&gains, trial, "ANALOG:GAIN", numAnalogs);
           C3DHandlerPrivate::mergeProperties(&ranges, trial, "ANALOG:RANGE");
           inc = 0;
           for (auto& an: analogs)
@@ -775,9 +889,99 @@ namespace io
             ++inc;
           }
         }
+        // Finally, try to generate instrument nodes from trial's parameters
+        size_t numfps = trial->property("FORCE_PLATFORM:USED");
+        if (numfps > 0)
+        {
+          const Any& type = trial->property("FORCE_PLATFORM:TYPE");
+          const Any& corners = trial->property("FORCE_PLATFORM:CORNERS");
+          const Any& origin = trial->property("FORCE_PLATFORM:ORIGIN");
+          const Any& channel = trial->property("FORCE_PLATFORM:CHANNEL");
+          const Any& calmatrix = trial->property("FORCE_PLATFORM:CAL_MATRIX");
+          if (type.isValid() && corners.isValid() && origin.isValid() && channel.isValid())
+          {
+            // const auto& dimType = type.dimensions();
+            // const auto& dimCorners = corners.dimensions();
+            // const auto& dimOrigin = orgin.dimensions();
+            const auto& dimChannel = channel.dimensions();
+            const auto& dimCalMatrix = calmatrix.dimensions();
+            auto valType = type.cast<std::vector<int>>();
+            auto valCorners = corners.cast<std::vector<double>>();
+            auto valOrigin = origin.cast<std::vector<double>>();
+            auto valChannel = channel.cast<std::vector<int>>();
+            auto valCalMatrix = calmatrix.cast<std::vector<double>>();
+            if ((valType.size() >= numfps) && (valCorners.size() >= (12 * numfps)) && (valOrigin.size() == (3 * numfps)) && (dimChannel.size() >= 2) && (dimChannel[1] >= numfps))
+            {
+              int maxType = *std::max_element(valType.cbegin(), valType.cend());
+              if ((maxType <= 3) || ((maxType > 3) && calmatrix.isValid() && (dimCalMatrix.size() >= 3) && (dimCalMatrix[2] >= numfps)))
+              {
+                unsigned channelStep = dimChannel[0];
+                unsigned calMatrixStep = calmatrix.isValid() ? dimCalMatrix[0] * dimCalMatrix[1] : 0;
+                for (size_t i = 0 ; i < numfps ; ++i)
+                {
+                  instrument::ForcePlate* fp = nullptr;
+                  double* o = valOrigin.data()+(i*3);
+                  double* c = valCorners.data()+(i*12);
+                  int* ch = valChannel.data()+(i*channelStep);
+                  double* cm = calmatrix.isValid() ? valCalMatrix.data()+(i*calMatrixStep) : nullptr;
+                  if (o[2] > 0.0)
+                  {
+                    warning("Origin parameter for the force platform #%i seems to locate the hardware origin from the center of the working surface. Data are set to the opposite to locate the center of the working surface from the hardware's origin.", i+1);
+                    o[0] *= -1.0; o[1] *= -1.0; o[2] *= -1.0;
+                  }
+                  
+                  switch(valType[i])
+                  {
+                  case 1:
+                    error("Force Platform type 1 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 2:
+                    fp = new instrument::ForcePlateType2("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 3:
+                    fp = new instrument::ForcePlateType3("FP"+std::to_string(i+1), trial->hardwares());
+                    static_cast<instrument::ForcePlateType3*>(fp)->setSensorOffsets(std::array<double,2>{{o[0],o[1]}});
+                    o[0] = 0.0; o[1] = 0.0;
+                    break;
+                  case 4:
+                    fp = new instrument::ForcePlateType4("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 5:
+                    fp = new instrument::ForcePlateType5("FP"+std::to_string(i+1), trial->hardwares());
+                    break;
+                  case 6:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 7:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                  break;
+                  case 11:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                  break;
+                  case 12:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  case 21:
+                    error("Force Platform type 6 is not yet supported. Please, report this to the developers");
+                    break;
+                  default:
+                    error("Unsupported force platform type '%i'. Impossible to extract corresponding data", valType[i]);
+                    break;
+                  }
+                  C3DHandlerPrivate::extractForcePlatformData(fp, analogs, o, c, ch, channelStep, cm, dimCalMatrix.data());
+                }
+              }
+              else
+                warning("Corrupted parameter(s) - Missing or invalid calibration parameter. Impossible to generate force platform objects"); 
+            }
+            else
+              warning("Corrupted parameter(s) - Wrong dimensions. Impossible to generate force platform objects.");
+          }
+          else
+            warning("Missing parameter(s). Impossible to generate force platform objects.");
+        
+        }
       }
-    // Finally, try to generate hardware nodes from the trial's properties group/parameter
-      // NodeFactory::generateHardwareFromProperties(trial,trial->hardware());
     }
   };
   
@@ -803,8 +1007,23 @@ namespace io
     double pointScaleFactor = 1.0;
     uint16_t numberAnalogSamplesPerPointSample = 1;
     const size_t maxNumEventsHeader = 18;
+    size_t numPoints = 0, numAnalogs = 0;
     std::vector<const TimeSequence*> points, analogs;
     std::vector<const Event*> events, eventsHeader;
+    std::vector<std::string> pointLabels, pointDescs, angleLabels, forceLabels, momentLabels, powerLabels, scalarLabels;
+    std::vector<std::string> analogLabels, analogDescs, analogUnits;
+    std::vector<int16_t> analogGains, analogOffsets;
+    std::vector<double> analogScales;
+    // TODO: Manage the case where no "point" timesequence is provided => set default unit
+    std::unordered_map<int,std::string> pointUnits{
+      {ma::TimeSequence::Marker,""},
+      {ma::TimeSequence::Angle,""},
+      {ma::TimeSequence::Force,""},
+      {ma::TimeSequence::Moment,""},
+      {ma::TimeSequence::Power,""},
+      {ma::TimeSequence::Scalar,""}
+    };
+    double analogMinAbsoluteScale = std::numeric_limits<double>::infinity(), analogUniversalScale = 1.;
     // Prepare the content of the Trial
     //  - Any timesequence? If yes, then this is not a template file
     auto timeSequencesNode = trial->findChild("TimeSequences",{},false);
@@ -824,6 +1043,14 @@ namespace io
         else
           ++it;
       }
+      numPoints = points.size();
+      pointLabels.reserve(numPoints);
+      pointDescs.reserve(numPoints);
+      angleLabels.reserve(numPoints);
+      forceLabels.reserve(numPoints);
+      momentLabels.reserve(numPoints);
+      powerLabels.reserve(numPoints);
+      scalarLabels.reserve(numPoints);
       bool first = true;
       for (const auto& point: points)
       {
@@ -835,17 +1062,45 @@ namespace io
           pointScaleFactor = point->scale();
           first = false;
         }
+        auto itUnit = pointUnits.find(point->type());
+        if (itUnit == pointUnits.end())
+          throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have a type supported by the C3D file format."));
         if (fabs(point->sampleRate() - sampleRate) > std::numeric_limits<float>::epsilon())
           throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same sample frequency than the others."));
         if (fabs(point->startTime() - startTime) > std::numeric_limits<float>::epsilon())
           throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same start time than the others."));
         if (point->samples() != frames)
           throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same number of samples than the others."));
+        if (!itUnit->second.empty() && (itUnit->second.compare(point->unit()) != 0))
+          throw(FormatError("ORG.C3D - The TimeSequence '" + point->name() + "' marked as 'Reconstructed' with 4 components does not have the same unit than the others of the same type."));
+        else
+          itUnit->second = point->unit();
+        pointLabels.push_back(point->name());
+        pointDescs.push_back(point->description());
+        if (point->type() == TimeSequence::Angle)
+          angleLabels.push_back(point->name());
+        else if (point->type() == TimeSequence::Force)
+          forceLabels.push_back(point->name());
+        else if (point->type() == TimeSequence::Moment)
+          momentLabels.push_back(point->name());
+        else if (point->type() == TimeSequence::Power)
+          powerLabels.push_back(point->name());
+        else if (point->type() == TimeSequence::Scalar)
+          scalarLabels.push_back(point->name());
       }
+      if (pointScaleFactor == 0)
+        throw(FormatError("Null 3D scale factor found! The current implementation does not regenerate this factor. Please, contact the developers."));
       // And then the analog channels
       analogs = timeSequencesNode->findChildren<const TimeSequence*>({},{{"type",TimeSequence::Analog},{"components",1}},false);
-      optr->AnalogChannelScale.resize(analogs.size());
-      optr->AnalogZeroOffset.resize(analogs.size());
+      numAnalogs = analogs.size();
+      analogLabels.resize(numAnalogs);
+      analogDescs.resize(numAnalogs);
+      analogUnits.resize(numAnalogs);
+      analogGains.resize(numAnalogs);
+      analogOffsets.resize(numAnalogs);
+      analogScales.resize(numAnalogs);
+      optr->AnalogChannelScale.resize(numAnalogs);
+      optr->AnalogZeroOffset.resize(numAnalogs);
       first = true;
       size_t inc = 0;
       for (const auto& analog: analogs)
@@ -859,8 +1114,34 @@ namespace io
           throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have the same number of samples than the others."));
         if ((analog->samples() % frames) != 0)
           throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have the same sample rate than the others."));
-        optr->AnalogChannelScale[inc] = analog->scale();
-        optr->AnalogZeroOffset[inc] = analog->offset();
+        // double intpart = 0.0;
+        // if (fabs(std::modf(analog->offset(), &intpart)) > 1e-5)
+        //   throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have an integer offset but a real one. This is not supported by the C3D file format."));
+        if (analog->range()[0] != -analog->range()[1])
+          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have a symmetrical gain This is not supported by the C3D file format."));
+        double posgain = analog->range()[1];
+        if (posgain == 10.)
+          analogGains[inc] = 1;
+        else if (posgain == 5.)
+          analogGains[inc] = 2;
+        else if (posgain == 2.5)
+          analogGains[inc] = 3;
+        else if (posgain == 1.25)
+          analogGains[inc] = 4;
+        // else if (posgain == 1.)
+        //   analogGains[inc] = 5;
+        else if (posgain == std::numeric_limits<double>::infinity())
+          analogGains[inc] = 0;
+        else
+          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have a predefined gain This writer does not yet support the writing of custom gain."));
+        analogLabels[inc] = analog->name();
+        analogDescs[inc] = analog->description();
+        analogUnits[inc] = analog->unit();
+        analogOffsets[inc] = 0.0;//analog->offset();
+        analogScales[inc] = analog->scale();
+        optr->AnalogZeroOffset[inc] = analogOffsets[inc];
+        optr->AnalogChannelScale[inc] = analogScales[inc];
+        analogMinAbsoluteScale = std::min(analogMinAbsoluteScale, fabs(analogScales[inc]));
         ++inc;
       }
     }
@@ -869,10 +1150,27 @@ namespace io
     const Any& pointMaximumInterpolationGapProperty = trial->property("c3d_pointmaxinterpgap");
     uint16_t pointMaximumInterpolationGap = pointMaximumInterpolationGapProperty.isValid() ? pointMaximumInterpolationGapProperty.cast<uint16_t>() : 10;
     //  - Look for events to store in the header.
+    size_t numEvents = 0;
+    std::vector<std::string> eventLabels, eventDescs, eventContexts, eventSubjects, eventUniqueLabels, eventUniqueDescs;
+    std::vector<float> eventTimes;
+    std::vector<int8_t> eventGenericFlags;
+    std::vector<int16_t> eventIconIds, eventUniqueIconIds, eventUniqueColours;
     auto eventsNode = trial->findChild("Events",{},false);
     if (eventsNode != nullptr)
     {
       events = eventsNode->findChildren<const Event*>();
+      numEvents = events.size();
+      eventLabels.reserve(numEvents);
+      eventDescs.reserve(numEvents);
+      eventContexts.reserve(numEvents);
+      eventSubjects.reserve(numEvents);
+      eventTimes.reserve(2*numEvents);
+      eventGenericFlags.reserve(numEvents);
+      eventIconIds.reserve(numEvents);
+      eventUniqueLabels.reserve(numEvents);
+      eventUniqueDescs.reserve(numEvents);
+      eventUniqueIconIds.reserve(numEvents);
+      eventUniqueColours.reserve(numEvents*3);
       auto it = events.begin();
       while (it != events.end())
       {
@@ -884,8 +1182,29 @@ namespace io
           it = events.erase(it);
         }
         else
+        {
+          eventLabels.push_back((*it)->name());
+          eventDescs.push_back((*it)->description());
+          eventContexts.push_back((*it)->context());
+          eventSubjects.push_back((*it)->subject());
+          eventTimes.push_back(static_cast<float>(static_cast<int>((*it)->time() / 60.0f)));
+          eventTimes.push_back(static_cast<float>((*it)->time() - (eventTimes.back() * 60.0f)));
+          std::string temp = (*it)->context();
+          std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
+          eventGenericFlags.push_back(temp.compare("general") == 0 ? 1 : 0);
+          eventIconIds.push_back((*it)->property("icon_id").cast<int16_t>());
+          if (std::find(eventUniqueLabels.begin(),eventUniqueLabels.end(),(*it)->name()) == eventUniqueLabels.end())
+          {
+            eventUniqueLabels.push_back((*it)->name());
+            eventUniqueDescs.push_back((*it)->description());
+            eventUniqueIconIds.push_back(eventIconIds.back());
+            const auto& colour = (*it)->property("colour").cast<std::array<int16_t,3>>();
+            eventUniqueColours.insert(eventUniqueColours.end(), colour.begin(), colour.end());
+          }
           ++it;
+        }
       }
+      numEvents = events.size();
       if (eventsHeader.size() > maxNumEventsHeader)
         throw(FormatError("ORG.C3D - The number of events to store in the header is greater to the maximum number allowed (i.e. " + std::to_string(maxNumEventsHeader) + ")."));
     }
@@ -901,9 +1220,9 @@ namespace io
       // C3D header key
       writtenBytes += stream.writeI8(static_cast<int8_t>(80));
       // Number of points
-      writtenBytes += stream.writeU16(static_cast<uint16_t>(points.size()));
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(numPoints));
       // Total number of analog samples per 3d frame
-      writtenBytes += stream.writeU16(static_cast<uint16_t>(analogs.size() * numberAnalogSamplesPerPointSample));
+      writtenBytes += stream.writeU16(static_cast<uint16_t>(numAnalogs * numberAnalogSamplesPerPointSample));
       // First frame
       writtenBytes += stream.writeU16(static_cast<uint16_t>(firstFrame > 65535 ? 65535 : firstFrame));
       // Last frame
@@ -911,7 +1230,7 @@ namespace io
       // Maximum interpolation gap in 3D frames
       writtenBytes += stream.writeU16(static_cast<uint16_t>(pointMaximumInterpolationGap));
       // The 3D scale factor
-      writtenBytes += stream.writeFloat(-1.0f * static_cast<float>(pointScaleFactor));
+      writtenBytes += stream.writeFloat(-static_cast<float>(pointScaleFactor));
       // The (false) number of the first block of the Data section
       writtenBytes += stream.writeU16(static_cast<uint16_t>(0));
       // The number of analog samples per analog channel
@@ -963,11 +1282,106 @@ namespace io
     writtenBytes += stream.writeI8(static_cast<int8_t>(0));
     // The processor type
     writtenBytes += stream.writeI8(static_cast<int8_t>(static_cast<int>(stream.byteOrder()) + 83));
+    // (Re)generate the properties used a group and parameters in the C3D format
+    auto props = trial->dynamicProperties();
+    // - POINT:* (USED, LABELS, DESCRIPTIONS, ...)
+    std::vector<std::string> typegroups;
+    typegroups.reserve(10);
+    auto generate_point_type_groups = [](std::unordered_map<std::string,Any>& props, std::vector<std::string>& typegroups, const std::string& type, const std::vector<std::string>& labels)
+    {
+      if (!labels.empty())
+      {
+        C3DHandlerPrivate::createProperties(props, "POINT:"+type+"S", labels);
+        typegroups.push_back(type+"S");
+        typegroups.push_back(type);
+      }
+      else
+        props.erase("POINT:"+type+"S");
+    };
+    C3DHandlerPrivate::createProperties(props, "POINT:USED", static_cast<int16_t>(numPoints));
+    C3DHandlerPrivate::createProperties(props, "POINT:SCALE", -static_cast<float>(pointScaleFactor));
+    C3DHandlerPrivate::createProperties(props, "POINT:RATE", static_cast<float>(sampleRate));
+    C3DHandlerPrivate::createProperties(props, "POINT:FRAMES", static_cast<float>(static_cast<int16_t>(frames > 65535 ? 65535 : frames)));
+    C3DHandlerPrivate::createProperties(props, "POINT:LABELS", pointLabels);
+    C3DHandlerPrivate::createProperties(props, "POINT:DESCRIPTIONS", pointDescs);
+    C3DHandlerPrivate::createProperties(props, "POINT:UNITS", pointUnits[TimeSequence::Marker]);
+    C3DHandlerPrivate::createProperties(props, "POINT:ANGLE_UNITS", pointUnits[TimeSequence::Angle]);
+    C3DHandlerPrivate::createProperties(props, "POINT:FORCE_UNITS", pointUnits[TimeSequence::Force]);
+    C3DHandlerPrivate::createProperties(props, "POINT:MOMENT_UNITS", pointUnits[TimeSequence::Moment]);
+    C3DHandlerPrivate::createProperties(props, "POINT:POWER_UNITS", pointUnits[TimeSequence::Power]);
+    C3DHandlerPrivate::createProperties(props, "POINT:SCALAR_UNITS", pointUnits[TimeSequence::Scalar]);
+    generate_point_type_groups(props, typegroups, "ANGLE", angleLabels);
+    generate_point_type_groups(props, typegroups, "FORCE", forceLabels);
+    generate_point_type_groups(props, typegroups, "MOMENT", momentLabels);
+    generate_point_type_groups(props, typegroups, "POWER", powerLabels);
+    generate_point_type_groups(props, typegroups, "SCALAR", scalarLabels);
+    if (!typegroups.empty())
+      C3DHandlerPrivate::createProperties(props, "POINT:TYPE_GROUPS", typegroups, {{2,static_cast<unsigned>(typegroups.size()/2)}});
+    else
+      props.erase("POINT:TYPE_GROUPS");
+    // - ANALOG:* (USED, LABELS, DESCRIPTIONS, ...)
+    if (analogMinAbsoluteScale < 1.0e-5)
+    {
+      while (analogMinAbsoluteScale < 1.0e-3) // To keep some precision of the scale factor.
+      {
+        analogUniversalScale *= 0.1;
+        analogMinAbsoluteScale *= 10.0;
+      }
+      for (size_t i = 0 ; i < numAnalogs ; ++i)
+        analogScales[i] /= analogUniversalScale;
+    }
+    C3DHandlerPrivate::createProperties(props, "ANALOG:USED", static_cast<int16_t>(numAnalogs));
+    C3DHandlerPrivate::createProperties(props, "ANALOG:LABELS", analogLabels);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:DESCRIPTIONS", analogDescs);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:UNITS", analogUnits);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:GAIN", analogGains);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:SCALE", analogScales);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:OFFSET", analogOffsets);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:GEN_SCALE", analogUniversalScale);
+    C3DHandlerPrivate::createProperties(props, "ANALOG:RATE", static_cast<float>(sampleRate * static_cast<double>(numberAnalogSamplesPerPointSample)));
+    props.erase("ANALOG:BITS");
+    props.erase("ANALOG:FORMAT");
+    // TODO: FORCE PLATFORM
+    // TRIAL (ACTUAL_START_FIELD, ACTUAL_END_FIELD)
+    std::array<int16_t,2> actualField;
+    actualField[1] = firstFrame >> 16; // HSB
+    actualField[0] = firstFrame - (actualField[1] << 16); // LSB
+    C3DHandlerPrivate::createProperties(props, "TRIAL:ACTUAL_START_FIELD", actualField);
+    actualField[1] = lastFrame >> 16; // HSB
+    actualField[0] = lastFrame - (actualField[1] << 16); // LSB
+    C3DHandlerPrivate::createProperties(props, "TRIAL:ACTUAL_END_FIELD", actualField);
+    // - EVENT:* &&  EVENT_CONTEXT:*
+    if (numEvents != 0)
+    {
+      C3DHandlerPrivate::createProperties(props, "EVENT:USED", numEvents);
+      C3DHandlerPrivate::createProperties(props, "EVENT:CONTEXTS", eventContexts);
+      C3DHandlerPrivate::createProperties(props, "EVENT:LABELS", eventLabels);
+      C3DHandlerPrivate::createProperties(props, "EVENT:DESCRIPTIONS", eventDescs);
+      C3DHandlerPrivate::createProperties(props, "EVENT:TIMES", eventTimes, {{2, static_cast<unsigned>(numEvents)}});
+      C3DHandlerPrivate::createProperties(props, "EVENT:SUBJECTS", eventSubjects);
+      C3DHandlerPrivate::createProperties(props, "EVENT:GENERIC_FLAGS", eventGenericFlags);
+      C3DHandlerPrivate::createProperties(props, "EVENT:ICON_IDS", eventIconIds);
+      C3DHandlerPrivate::createProperties(props, "EVENT_CONTEXT:USED", static_cast<int16_t>(eventUniqueLabels.size()));
+      C3DHandlerPrivate::createProperties(props, "EVENT_CONTEXT:ICON_IDS", eventUniqueIconIds);
+      C3DHandlerPrivate::createProperties(props, "EVENT_CONTEXT:LABELS", eventUniqueLabels);
+      C3DHandlerPrivate::createProperties(props, "EVENT_CONTEXT:DESCRIPTIONS", eventUniqueDescs);
+      C3DHandlerPrivate::createProperties(props, "EVENT_CONTEXT:COLOURS", eventUniqueColours, {{3, static_cast<unsigned>(eventUniqueLabels.size())}});
+    }
+    else
+    {
+      auto it = props.begin();
+      while (it != props.end())
+      {
+        if ((it->first.compare(0,7,"EVENT:") == 0) || (it->first.compare(0,15,"EVENT_CONTEXT:") == 0))
+          it = props.erase(it);
+        else
+          ++it;
+      }
+    }
     // Transfrom the trial's dynamic properties into group and parameters
-    const auto& dynamicProperties = trial->dynamicProperties();
     std::vector<const char*> properties;
-    properties.reserve(dynamicProperties.size());
-    for (auto it = dynamicProperties.cbegin() ; it != dynamicProperties.cend() ; ++it)
+    properties.reserve(props.size());
+    for (auto it = props.cbegin() ; it != props.cend() ; ++it)
     {
       // Remove properties that do not find the required format: 'GROUP:PARAMETER'.
       if (it->first.find(':') == std::string::npos)
@@ -1004,7 +1418,7 @@ namespace io
       size_t len = strlen(*it) - idx;
       if ((len == 0) || (len > 127))
         throw(FormatError("ORG.C3D - The name of the parameter must be between 1 and 127 characters: '" + std::string(ch,idx+1) + "'."));
-      const auto& value = dynamicProperties.find(*it)->second;
+      const auto& value = props.find(*it)->second;
       if (!value.isArithmetic() && !value.isString())
         throw(FormatError("ORG.C3D - The value stored in the ma::Any object '" + std::string(*it) + "' is not compatible with the C3D format."));
       parameters.emplace_back(ch, static_cast<uint8_t>(len), value, id);
@@ -1029,8 +1443,8 @@ namespace io
       // Verify the compatibility of the property (format, dimensions, etc.)
       const auto& data = std::get<2>(parameter);
       const auto& type = data.type();
-      bool single = (data.size() == 1);
       auto dimensions = data.dimensions();
+      bool single = (data.size() == 1) && dimensions.empty();
       int8_t format = 0;
       std::vector<std::string> temp;
       std::function<size_t()> writeValue;
@@ -1040,6 +1454,7 @@ namespace io
         temp = data.cast<std::vector<std::string>>();
         if (single)
         {
+          dimensions.resize(1);
           dimensions[0] = temp[0].length();
         }
         else

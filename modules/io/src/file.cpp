@@ -37,6 +37,7 @@
 #include "openma/config.h"
 #include "openma/base/logger.h"
 
+#include <sys/stat.h>
 #if defined(HAVE_SYS_MMAP)
   #if defined(HAVE_64_BIT_COMPILER)
     #ifndef _LARGEFILE_SOURCE
@@ -45,9 +46,10 @@
     #define _FILE_OFFSET_BITS 64 // Replace all the functions (mmap, lssek, ...) by their 64 bit version
   #endif
   #include <sys/mman.h> // mmap, munmap
-  #include <sys/stat.h> // fstat
   #include <fcntl.h> // open, Close
   #include <unistd.h> // ftruncate
+#else
+  #define stat _stat
 #endif
 
 // -------------------------------------------------------------------------- //
@@ -88,7 +90,7 @@ namespace io
     this->m_Offset = -1;
     this->m_Writing = false;
   };
-  
+
   /**
    * Destructor. Try to Close the file if opened.
    */
@@ -441,7 +443,16 @@ namespace io
    * Destructor (default).
    */
   File::~File() _OPENMA_NOEXCEPT = default;
-  
+ 
+  /**
+   * Returns true if the file specified by @a filepath exists, false otherwise.
+   */
+  bool File::exists(const char* filepath)
+  {
+    struct stat buffer;   
+    return (stat(filepath, &buffer) == 0); 
+  };
+ 
   /**
    * Open the given @a filepath with the specified @a mode.
    * @note To open a file, the device has to be first closed if a previous file was already opened.

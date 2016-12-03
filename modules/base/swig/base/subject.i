@@ -34,7 +34,7 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Subject)
+  SWIG_TYPEMAP_NODE_OUT(ma, Subject)
   SWIG_CREATE_TEMPLATE_HELPER_1(ma, Subject, SWIGTYPE)
   
   %nodefaultctor;
@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Subject, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, Subject)
     
     Subject(const std::string& name, std::unordered_map<std::string, Any>&& properties = std::unordered_map<std::string, Any>(), Node* parent = nullptr);
     ~Subject();

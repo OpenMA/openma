@@ -1,6 +1,7 @@
 IF(BUILD_LANGUAGE_BINDINGS)
   
 SET(OPENMA_BINDINGS_SRCS
+  src/loggerdevice.cpp
   src/referencecounting.cpp
   src/utils.cpp
 )

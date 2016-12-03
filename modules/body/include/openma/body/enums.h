@@ -104,8 +104,34 @@ namespace body
     Part& operator=(const Part& ) = delete;
     Part& operator=(Part&& ) _OPENMA_NOEXCEPT = delete;
   };
+#endif
   
-#else
+  enum class RepresentationFrame: char
+  {
+    Global = 0x01,
+    Proximal,
+    Distal
+  };
+  
+  /**
+   * @enum RepresentationFrame
+   * Enumerator to specify in which reference frame some data have to be represented (expressed)
+   * @ingroup openma_body
+   */
+  /**
+   * @var RepresentationFrame RepresentationFrame::Global
+   * Data have to be repesented in the global frame
+   */
+  /**
+   * @var RepresentationFrame RepresentationFrame::Proximal
+   * Data have to be repesented in the proximal frame (e.g. associated with a Joint)
+   */
+  /**
+   * @var RepresentationFrame RepresentationFrame::Distal
+   * Data have to be repesented in the distal frame (e.g. associated with a Joint)
+   */
+    
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
   
   /**
    * @enum Side

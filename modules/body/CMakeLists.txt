@@ -1,6 +1,17 @@
 SET(OPENMA_BODY_SRCS
+  src/_body.cpp
+  src/anchor.cpp
+  src/chain.cpp
+  src/dempstertable.cpp
   src/descriptor.cpp
+  src/dynamicdescriptor.cpp
   src/eulerdescriptor.cpp
+  src/externalwrenchassigner.cpp
+  src/simplegaitforceplatetofeetassigner.cpp
+  src/inertialparameters.cpp
+  src/inertialparametersestimator.cpp
+  src/inversedynamicsmatrix.cpp
+  src/inversedynamicsprocessor.cpp
   src/joint.cpp
   src/landmarkstranslator.cpp
   src/model.cpp
@@ -13,7 +24,7 @@ SET(OPENMA_BODY_SRCS
 )
 
 ADD_LIBRARY(body ${OPENMA_LIBS_BUILD_TYPE} ${OPENMA_BODY_SRCS})
-TARGET_LINK_LIBRARIES(body base math)
+TARGET_LINK_LIBRARIES(body base instrument math)
 TARGET_INCLUDE_DIRECTORIES(body PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>

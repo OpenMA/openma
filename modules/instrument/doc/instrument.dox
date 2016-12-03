@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_instrument ma::instrument
+ * @brief Classes for the management of measurement devices.
+ *
+ * This module corresponds to the library @c openma_instrument. It uses the nested namespace @c instrument. As a consequence all the types proposed in this module use the @c ma::instrument namespace.
+ *
+ * The main goal of this module is to define and manage measurement devices.
+ *
+ * @todo Details the goal and usage of ma::instrument.
+ */

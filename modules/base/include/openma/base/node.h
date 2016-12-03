@@ -45,16 +45,6 @@
 #include <string>
 #include <regex>
 
-#define OPENMA_EXPORT_NODE_CAST_1(ns, cn, en) \
-  namespace ns { class cn; }; \
-  OPENMA_EXPORT_STATIC_TYPEID(ns::cn,en)
-    
-#define OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en) \
-  namespace ns { namespace nns { class cn; } ;}; \
-  OPENMA_EXPORT_STATIC_TYPEID(ns::nns::cn,en)
-
-OPENMA_EXPORT_NODE_CAST_1(ma, Node, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   template <typename T, typename N> T node_cast(N* node) _OPENMA_NOEXCEPT;
@@ -111,16 +101,26 @@ namespace ma
   protected:
     Node(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     
+    template<typename U = Node*> U findChild(Node* node) const _OPENMA_NOEXCEPT;
     void replaceChild(Node* current, Node* substitute);
+    
+    virtual Node* allocateNew() const;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT;
+    Node* cloneContents(Node* parent, std::unordered_map<const Node*,Node*>& map) const;
+    void cloneChildren(Node* parent, std::unordered_map<const Node*,Node*>& map) const;
     
   private:
     Node* findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
+    Node* findNode(typeid_t id, Node* node) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
     void findNodes(std::vector<void*>* vector, typeid_t id, const std::regex& regexp, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT;
   };
-  
-  // ----------------------------------------------------------------------- //
-  
+};
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Node, OPENMA_BASE_EXPORT);
+
+namespace ma
+{ 
   template <typename U>
   U Node::child(unsigned index) const _OPENMA_NOEXCEPT
   {
@@ -142,6 +142,28 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     return static_cast<U>(this->findNode(static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch));
   };
+  
+  template <typename U>
+  U Node::findChild(Node* node) const _OPENMA_NOEXCEPT
+  {
+    static_assert(std::is_pointer<U>::value, "The casted type must be a (const) pointer type.");
+    static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
+    return static_cast<U>(this->findNode(static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),node));
+  };
+  
+  template <typename U>
+  inline void remove_duplicates(std::vector<U>& children)
+  {
+    for (size_t i = 0 ; i < children.size() ; ++i)
+    {
+      children.erase(
+        std::remove_if(children.begin()+i+1, children.end(), 
+          [&children, &i](U& rhs) { return children[i] == rhs; }
+        ), 
+        children.end()
+      );
+    }
+  };
 
   template <typename U>
   std::vector<U> Node::findChildren(const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
@@ -150,6 +172,7 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     std::vector<U> children;
     this->findNodes(reinterpret_cast<std::vector<void*>*>(&children),static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),name,std::move(properties),recursiveSearch);
+    remove_duplicates(children);
     return children;
   };
   
@@ -160,6 +183,7 @@ namespace ma
     static_assert(std::is_base_of<Node,typename std::remove_pointer<U>::type>::value, "The casted type must derive from ma::Node.");
     std::vector<U> children;
     this->findNodes(reinterpret_cast<std::vector<void*>*>(&children), static_typeid<typename std::remove_cv<typename std::remove_pointer<U>::type>::type>(),regexp,std::move(properties),recursiveSearch);
+    remove_duplicates(children);
     return children;
   };
   

@@ -39,14 +39,13 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, Model, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
 {
   class Segment;
   class Joint;
+  class Chain;
   
   class ModelPrivate;
   
@@ -56,6 +55,10 @@ namespace body
     OPENMA_DECLARE_NODEID(Model, Node)
     
   public:
+#if !defined(_MSC_VER)
+#warning A MODEL MUST HAVE UNITS
+#endif
+    
     Model(const std::string& name, Node* parent = nullptr);
     ~Model() _OPENMA_NOEXCEPT;
     
@@ -64,16 +67,24 @@ namespace body
     Model& operator=(const Model& ) = delete;
     Model& operator=(Model&& ) _OPENMA_NOEXCEPT = delete;
     
+    const double* gravity() const _OPENMA_NOEXCEPT;
+    void setGravity(const double value[3]) _OPENMA_NOEXCEPT;
+    
     Node* segments();
     Segment* segment(unsigned idx) _OPENMA_NOEXCEPT;
     
     Node* joints();
     Joint* joint(unsigned idx) _OPENMA_NOEXCEPT;
     
+    Node* chains();
+    Chain* chain(unsigned idx) _OPENMA_NOEXCEPT;
+    
     virtual Model* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::Model, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_model_h

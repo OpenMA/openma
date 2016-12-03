@@ -313,6 +313,54 @@ CXXTEST_SUITE(NodeTest)
     delete root_;
   };
   
+  CXXTEST_TEST(cloneWithSharedChildren)
+  {
+    ma::Node root("root");
+    ma::Node branchA("branchA", &root);
+    ma::Node branchB("branchB", &root);
+    ma::Node leaf1("leaf1", &branchA);
+    ma::Node leaf2("leaf2");
+    ma::Node leaf3("leaf3", &branchB);
+    leaf2.addParent(&branchA);
+    leaf2.addParent(&branchB);
+    
+    auto root_ = root.clone();
+    TS_ASSERT_EQUALS(root_->findChildren().size(), 5u);
+    auto leaf2_ = root_->findChild("leaf2");
+    TS_ASSERT_DIFFERS(leaf2_, nullptr);
+    TS_ASSERT_EQUALS(leaf2_->name(), "leaf2");
+    TS_ASSERT_EQUALS(leaf2_->parents().size(), 2u);
+    delete root_;
+  };
+  
+  CXXTEST_TEST(cloneWithSharedChildrenBis)
+  {
+    ma::Node root("root");
+    ma::Node branchA("branchA", &root);
+    ma::Node branchB("branchB", &root);
+    TestNode subbranch("subbranch");
+    ma::Node leaf1("leaf1", &branchA);
+    TestNode leaf2("leaf2", &branchB);
+    ma::Node leaf3("leaf3");
+    subbranch.addParent(&branchA);
+    subbranch.addParent(&branchB);
+    leaf3.addParent(&subbranch);
+    leaf3.addParent(&leaf1);
+    leaf3.addParent(&leaf2);
+        
+    auto root_ = root.clone();
+    TS_ASSERT_EQUALS(root_->findChildren().size(), 6u);
+    auto subbranch_ = root_->findChild("subbranch");
+    TS_ASSERT_DIFFERS(subbranch_, nullptr);
+    TS_ASSERT_EQUALS(subbranch_->name(), "subbranch");
+    TS_ASSERT_EQUALS(subbranch_->parents().size(), 2u);
+    auto leaf3_ = root_->findChild("leaf3");
+    TS_ASSERT_DIFFERS(leaf3_, nullptr);
+    TS_ASSERT_EQUALS(leaf3_->name(), "leaf3");
+    TS_ASSERT_EQUALS(leaf3_->parents().size(), 3u);
+    delete root_;
+  };
+  
   CXXTEST_TEST(cloneWithRoot)
   {
     TestNode root("root");
@@ -375,6 +423,27 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_EQUALS(leaf.hasParents(),false);
     TS_ASSERT_EQUALS(leaf.name(),"foo");
     TS_ASSERT_EQUALS(leaf.version(),99);
+  }
+  
+  CXXTEST_TEST(copyWithSharedChildren)
+  {
+    ma::Node root("root");
+    ma::Node branchA("branchA", &root);
+    ma::Node branchB("branchB", &root);
+    ma::Node leaf1("leaf1", &root);
+    ma::Node leaf2("leaf2");
+    ma::Node leaf3("leaf3", &root);
+    leaf2.addParent(&branchA);
+    leaf2.addParent(&branchB);
+    
+    ma::Node root_("copy");
+    root_.copy(&root);
+
+    TS_ASSERT_EQUALS(root_.findChildren().size(), 5u);
+    auto leaf2_ = root_.findChild("leaf2");
+    TS_ASSERT_DIFFERS(leaf2_, nullptr);
+    TS_ASSERT_EQUALS(leaf2_->name(), "leaf2");
+    TS_ASSERT_EQUALS(leaf2_->parents().size(), 2u);
   }
   
   CXXTEST_TEST(retrievePath)
@@ -458,6 +527,49 @@ CXXTEST_SUITE(NodeTest)
     TS_ASSERT_EQUALS(temp2.version(),2);
     TS_ASSERT_EQUALS(foo.version(),99);
   };
+  
+  CXXTEST_TEST(shortcut)
+  {
+    TestNode3 foo("foo");
+    ma::Node* bar = new ma::Node("bar"); // MUST BE ALLOCATED ON THE HEAP
+    foo.setShortcut(bar);
+    TS_ASSERT_EQUALS(foo.hasChildren(),true);
+    TS_ASSERT_EQUALS(bar->hasParents(),true);
+    TS_ASSERT_EQUALS(foo.shortcut(),bar);
+    TS_ASSERT_EQUALS(foo.findChild("bar"),bar);
+    bar->removeParent(&foo);
+    TS_ASSERT_EQUALS(foo.hasChildren(),false);
+    TS_ASSERT_EQUALS(bar->hasParents(),false);
+    TS_ASSERT_EQUALS(foo.shortcut(),nullptr);
+    TS_ASSERT_EQUALS(foo.findChild("bar"),nullptr);
+    ma::Node* toto = new ma::Node("toto");
+    foo.setShortcut(toto);
+    TS_ASSERT_EQUALS(foo.hasChildren(),true);
+    TS_ASSERT_EQUALS(toto->hasParents(),true);
+    TS_ASSERT_EQUALS(bar->hasParents(),false);
+    TS_ASSERT_EQUALS(foo.shortcut(),toto);
+    TS_ASSERT_EQUALS(foo.findChild("toto"),toto);
+    delete bar;
+  };
+  
+  CXXTEST_TEST(shortcutClone)
+  {
+    TestNode3 foo("foo");
+    ma::Node* bar = new ma::Node("bar"); // MUST BE ALLOCATED ON THE HEAP
+    foo.setShortcut(bar);
+    auto foo_ = static_cast<TestNode3*>(foo.clone());
+    TS_ASSERT_EQUALS(foo_->hasChildren(),true);
+    TS_ASSERT_DIFFERS(foo_->shortcut(),bar);
+    TS_ASSERT_DIFFERS(foo_->findChild("bar"),bar);
+    TS_ASSERT_EQUALS(foo_->findChild("bar"),foo_->shortcut());
+    delete foo_;
+    delete bar;
+    foo_ = static_cast<TestNode3*>(foo.clone());
+    TS_ASSERT_EQUALS(foo_->hasChildren(),false);
+    TS_ASSERT_EQUALS(foo_->shortcut(),nullptr);
+    TS_ASSERT_EQUALS(foo_->findChild("bar"),nullptr);
+    delete foo_;
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(NodeTest)
@@ -472,9 +584,14 @@ CXXTEST_TEST_REGISTRATION(NodeTest, addParent)
 CXXTEST_TEST_REGISTRATION(NodeTest, removeParent)
 CXXTEST_TEST_REGISTRATION(NodeTest, clone)
 CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithChildren)
+CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithSharedChildren)
+CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithSharedChildrenBis)
 CXXTEST_TEST_REGISTRATION(NodeTest, cloneWithRoot)
 CXXTEST_TEST_REGISTRATION(NodeTest, copy)
 CXXTEST_TEST_REGISTRATION(NodeTest, copyAndParent)
+CXXTEST_TEST_REGISTRATION(NodeTest, copyWithSharedChildren)
 CXXTEST_TEST_REGISTRATION(NodeTest, retrievePath)
 CXXTEST_TEST_REGISTRATION(NodeTest, isCastable)
 CXXTEST_TEST_REGISTRATION(NodeTest, externInheriting)
+CXXTEST_TEST_REGISTRATION(NodeTest, shortcut)
+CXXTEST_TEST_REGISTRATION(NodeTest, shortcutClone)

@@ -43,8 +43,6 @@
 #include <numeric>
 #include <initializer_list>
 
-OPENMA_EXPORT_NODE_CAST_1(ma, TimeSequence, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   class TimeSequencePrivate;
@@ -58,14 +56,16 @@ namespace ma
     typedef enum : int {
       Unknown = 0x00,
       Reconstructed = 0x01,
-      Marker = 0x02 | Reconstructed,
-      Angle  = 0x04 | Reconstructed,
-      Force  = 0x08 | Reconstructed,
-      Moment = 0x10 | Reconstructed,
-      Power  = 0x20 | Reconstructed,
-      Scalar = 0x40 | Reconstructed,
-      Pose   = 0x80 | Reconstructed,
-      Analog = 0x100,
+      Marker = 0x02  | Reconstructed,
+      Angle  = 0x04  | Reconstructed,
+      Force  = 0x08  | Reconstructed,
+      Moment = 0x10  | Reconstructed,
+      Power  = 0x20  | Reconstructed,
+      Scalar = 0x40  | Reconstructed,
+      Pose   = 0x80  | Reconstructed,
+      Wrench = 0x100 | Reconstructed,
+      Velocity = 0x200,
+      Analog = 0x1000,
       Other  = 0x10000
     } Type;
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
@@ -121,14 +121,22 @@ namespace ma
     
     void resize(unsigned samples);
     
-    virtual TimeSequence* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+  protected:
+    virtual Node* allocateNew() const override;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
   
   private:
     TimeSequence(const std::string& name, Node* parent = nullptr);
     double& data(unsigned sample, std::initializer_list<unsigned>&& indices) const _OPENMA_NOEXCEPT;
   };
   
+  OPENMA_BASE_EXPORT bool compare_timesequences_properties(const std::vector<TimeSequence*>& tss, double& sampleRate, double& startTime, unsigned& samples);
+};
+  
+OPENMA_EXPORT_STATIC_TYPEID(ma::TimeSequence, OPENMA_BASE_EXPORT);
+
+namespace ma
+{  
   template <typename... Is>
   inline double TimeSequence::data(unsigned sample, Is... indices) const _OPENMA_NOEXCEPT
   {

@@ -38,6 +38,8 @@
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Subject);
+
 namespace ma
 {
   /**
@@ -64,24 +66,10 @@ namespace ma
   Subject::~Subject() _OPENMA_NOEXCEPT = default;
   
   /**
-   * Create a deep copy of the object and return it as another object.
+   * Create a new Subject object on the heap
    */
-  Subject* Subject::clone(Node* parent) const
+  Node* Subject::allocateNew() const
   {
-    auto dest = new Subject(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-  
-  /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
-   */
-  void Subject::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const Subject*>(source);
-    if (src == nullptr)
-      return;
-    this->Node::copy(src);
+    return new Subject(this->name());
   };
 };

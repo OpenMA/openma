@@ -39,8 +39,6 @@
 #include "openma/base/any.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_1(ma, Subject, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   class OPENMA_BASE_EXPORT Subject : public Node
@@ -56,9 +54,11 @@ namespace ma
     Subject& operator=(const Subject& ) = delete;
     Subject& operator=(Subject&& ) _OPENMA_NOEXCEPT = delete;
 
-    virtual Subject* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+  protected:
+    virtual Node* allocateNew() const override;
   };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Subject, OPENMA_BASE_EXPORT);
 
 #endif // __openma_base_subject_h

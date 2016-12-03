@@ -60,7 +60,7 @@ namespace ma
     friend _OPENMA_CONSTEXPR bool operator!=(typeid_t lhs, typeid_t rhs) _OPENMA_NOEXCEPT {return (lhs.id != rhs.id);};
     
   private:
-    template<typename T> friend _OPENMA_CONSTEXPR typeid_t static_typeid() _OPENMA_NOEXCEPT;
+    template<typename T> friend typeid_t static_typeid() _OPENMA_NOEXCEPT;
     
     using sig = typeid_t(*)();
     sig id;
@@ -89,7 +89,7 @@ namespace ma
   };
 
   template <typename T>
-  inline _OPENMA_CONSTEXPR typeid_t static_typeid() _OPENMA_NOEXCEPT
+  typeid_t static_typeid() _OPENMA_NOEXCEPT
   {
 #if defined(_MSC_VER)
     static auto odr = &static_typeid<T>;
@@ -98,42 +98,6 @@ namespace ma
     return &static_typeid<T>;
 #endif
   };
-  
-  // UNDER MSVC 
-#if !defined(_MSC_VER)
-  #define OPENMA_EXPORT_STATIC_TYPEID(classname, exportname)
-#else
-  #define OPENMA_EXPORT_STATIC_TYPEID(classname, exportname) \
-    template<> \
-    exportname inline _OPENMA_CONSTEXPR ma::typeid_t ma::static_typeid<classname>() _OPENMA_NOEXCEPT \
-    { \
-      static auto odr = &ma::static_typeid<classname>; \
-      return reinterpret_cast<ma::typeid_t::sig>(odr); \
-    };
-  
-  // Arithmetic types
-  OPENMA_EXPORT_STATIC_TYPEID(bool, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(char, OPENMA_BASE_EXPORT)
-  // OPENMA_EXPORT_STATIC_TYPEID(char16_t, OPENMA_BASE_EXPORT) // same as unsigned short int
-  // OPENMA_EXPORT_STATIC_TYPEID(char32_t, OPENMA_BASE_EXPORT) // same as unsigned int
-  OPENMA_EXPORT_STATIC_TYPEID(wchar_t, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(signed char, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(short int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(long int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(long long int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(unsigned char, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(unsigned short int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(unsigned int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(unsigned long int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(unsigned long long int, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(float, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(double, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(long double, OPENMA_BASE_EXPORT)
-  // String types
-  OPENMA_EXPORT_STATIC_TYPEID(std::string, OPENMA_BASE_EXPORT)
-  OPENMA_EXPORT_STATIC_TYPEID(const char*, OPENMA_BASE_EXPORT)
-#endif
   
   /**
    * @class typeid_t openma/base/typeid.h
@@ -199,5 +163,50 @@ namespace ma
    * Returns the identifier associated with the given template type
    */
 }
+
+/**
+ * Convenient macro to export the static type ID associated with the new class @a classname with the export symbol @a exportname.
+ * Internally this create an external reference to a symbol defined by the macro OPENMA_INSTANCE_STATIC_TYPEID()
+ * This is required to verify the static typeid of an object created by another shared library.
+ * @relates ma::Node
+ * @ingroup openma_base
+ */
+#define OPENMA_EXPORT_STATIC_TYPEID(classname, exportname) \
+  namespace ma { \
+    extern template exportname typeid_t static_typeid<classname>() _OPENMA_NOEXCEPT; \
+  };
+/**
+ * Convient macro to instantiate the static_typeid template for the given @a classname.
+ * This is required to verify the static typeid of an object by from another shared library.
+ * @relates ma::Node
+ * @ingroup openma_base
+ */
+#define OPENMA_INSTANCE_STATIC_TYPEID(classname) \
+  namespace ma { \
+    template typeid_t static_typeid<classname>() _OPENMA_NOEXCEPT; \
+  }; 
+  
+// Arithmetic types
+OPENMA_EXPORT_STATIC_TYPEID(bool, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(char, OPENMA_BASE_EXPORT)
+// OPENMA_EXPORT_STATIC_TYPEID(char16_t, OPENMA_BASE_EXPORT) // same as unsigned short int
+// OPENMA_EXPORT_STATIC_TYPEID(char32_t, OPENMA_BASE_EXPORT) // same as unsigned int
+OPENMA_EXPORT_STATIC_TYPEID(wchar_t, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(signed char, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(short int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(long int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(long long int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(unsigned char, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(unsigned short int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(unsigned int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(unsigned long int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(unsigned long long int, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(float, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(double, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(long double, OPENMA_BASE_EXPORT)
+// String types
+OPENMA_EXPORT_STATIC_TYPEID(std::string, OPENMA_BASE_EXPORT)
+OPENMA_EXPORT_STATIC_TYPEID(const char*, OPENMA_BASE_EXPORT)
 
 #endif // __openma_base_typeid_h

@@ -34,8 +34,9 @@
 
 #include "openma/base/trial.h"
 #include "openma/base/trial_p.h"
-#include "openma/base/timesequence.h"
 #include "openma/base/event.h"
+#include "openma/base/hardware.h"
+#include "openma/base/timesequence.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -57,6 +58,8 @@ namespace ma
 // -------------------------------------------------------------------------- //
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
+
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Trial);
 
 namespace ma
 {
@@ -151,24 +154,31 @@ namespace ma
   };
   
   /**
-   * Create a deep copy of the object and return it as another object.
+   * Returns the subnode "Hardwares".
+   * If the subnode does not exist, this one is created. 
    */
-  Trial* Trial::clone(Node* parent) const
+  Node* Trial::hardwares()
   {
-    auto dest = new Trial(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
+    auto pt = this->findChild("Hardwares",{},false);
+    if (pt == nullptr)
+      pt = new Node("Hardwares",this);
+    return pt;
   };
   
   /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
+   * Returns the @a idx child of the subnode "Hardwares" and cast it as an Hardware object.
+   * If @a idx is out of range or if the extracted node is not an Hardware object, the method returns nullptr.
    */
-  void Trial::copy(const Node* source) _OPENMA_NOEXCEPT
+  Hardware* Trial::hardware(unsigned idx) _OPENMA_NOEXCEPT
   {
-    auto src = node_cast<const Trial*>(source);
-    if (src == nullptr)
-      return;
-    this->Node::copy(src);
+    return this->hardwares()->child<Hardware*>(idx);
+  };
+  
+  /**
+   * Create a new Event object on the heap
+   */
+  Node* Trial::allocateNew() const
+  {
+    return new Trial(this->name());
   };
 };

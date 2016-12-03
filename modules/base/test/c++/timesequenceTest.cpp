@@ -94,7 +94,7 @@ CXXTEST_SUITE(TimeSequenceTest)
       TS_ASSERT_EQUALS(barcloned->data()[i], bar.data()[i]);
     delete rootcloned; // This will delete also barcloned
     
-    barcloned = bar.clone(&root);
+    barcloned = static_cast<ma::TimeSequence*>(bar.clone(&root));
     TS_ASSERT_EQUALS(root.hasChildren(),true);
     TS_ASSERT_EQUALS(root.children().size(),2ul);
     auto child = root.child<ma::TimeSequence*>(1);
@@ -145,6 +145,36 @@ CXXTEST_SUITE(TimeSequenceTest)
     for (unsigned i = 0 ; i < foo.elements() ; ++i)
       TS_ASSERT_EQUALS(foo.data()[i], bar.data()[i]);
   };
+  
+  CXXTEST_TEST(checkCommonProperties)
+  {
+    std::vector<ma::TimeSequence*> tss;
+    ma::TimeSequence foo1("foo1",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    tss.push_back(&foo1);
+    ma::TimeSequence foo2("foo2",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    tss.push_back(&foo2);
+    ma::TimeSequence foo3("foo3",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    tss.push_back(&foo3);
+    double sampleRate = 0., startTime = 0.;
+    unsigned samples = 0;
+    TS_ASSERT_EQUALS(ma::compare_timesequences_properties(tss, sampleRate, startTime, samples), true);
+    TS_ASSERT_EQUALS(sampleRate, 100.0);
+    TS_ASSERT_EQUALS(startTime, 1.0);
+    TS_ASSERT_EQUALS(samples, 5u);
+    foo1.setSampleRate(50.0);
+    TS_ASSERT_EQUALS(ma::compare_timesequences_properties(tss, sampleRate, startTime, samples), false);
+    foo1.setSampleRate(100.0);
+    foo2.setStartTime(0.0);
+    TS_ASSERT_EQUALS(ma::compare_timesequences_properties(tss, sampleRate, startTime, samples), false);
+    foo2.setStartTime(1.0);
+    foo3.resize(10);
+    TS_ASSERT_EQUALS(ma::compare_timesequences_properties(tss, sampleRate, startTime, samples), false);
+    foo3.resize(5);
+    TS_ASSERT_EQUALS(ma::compare_timesequences_properties(tss, sampleRate, startTime, samples), true);
+    TS_ASSERT_EQUALS(sampleRate, 100.0);
+    TS_ASSERT_EQUALS(startTime, 1.0);
+    TS_ASSERT_EQUALS(samples, 5u);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(TimeSequenceTest)
@@ -152,3 +182,4 @@ CXXTEST_TEST_REGISTRATION(TimeSequenceTest, accessor)
 CXXTEST_TEST_REGISTRATION(TimeSequenceTest, findWithType)
 CXXTEST_TEST_REGISTRATION(TimeSequenceTest, clone)
 CXXTEST_TEST_REGISTRATION(TimeSequenceTest, copy)
+CXXTEST_TEST_REGISTRATION(TimeSequenceTest, checkCommonProperties)

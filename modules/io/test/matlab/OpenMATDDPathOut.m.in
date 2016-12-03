@@ -1,0 +1,2 @@
+function path = OpenMATDDPathOut(rel)
+    path = ['${PROJECT_BINARY_DIR}/test/data/output/' , rel];

@@ -1,0 +1,21 @@
+import sys
+import importlib
+import unittest
+
+for include_path in [@_TEST_INCLUDE_PATHS@]:
+    sys.path.append(include_path);
+
+if __name__ == '__main__':
+    out = True
+    for source in [@_TEST_SOURCE_NAMES@]:
+        module = importlib.import_module(source)
+        for name in dir(module):
+            attribute = getattr(module, name)
+            if name.endswith('Test') and callable(attribute):
+                suite = unittest.TestLoader().loadTestsFromTestCase(attribute)
+                result = unittest.TextTestRunner().run(suite)
+                out &= result.wasSuccessful()
+    if out:
+        sys.exit(0)
+    else:
+        sys.exit(1)

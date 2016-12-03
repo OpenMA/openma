@@ -34,7 +34,7 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, Event)
+  SWIG_TYPEMAP_NODE_OUT(ma, Event)
   SWIG_CREATE_TEMPLATE_HELPER_1(ma, Event, SWIGTYPE)
   
   %nodefaultctor;
@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Event, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, Event)
   
     Event(const std::string& name, double time = 0.0, const std::string& context = "", const std::string& subject = "", Node* parent = nullptr);
     ~Event();

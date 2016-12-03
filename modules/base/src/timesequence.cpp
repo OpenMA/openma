@@ -83,6 +83,8 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::TimeSequence);
+
 namespace ma
 {
   /**
@@ -527,46 +529,7 @@ namespace ma
     delete oldData;
     this->modified();
   };
-  
-  /**
-   * Create a deep copy of the object and return it as another object.
-   */
-  TimeSequence* TimeSequence::clone(Node* parent) const
-  {
-    auto optr = this->pimpl();
-    auto dest = new TimeSequence(optr->Name);
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
-  };
-  
-  /**
-   * Do a deep copy of the the given @a source. The previous content is replaced.
-   */
-  void TimeSequence::copy(const Node* source) _OPENMA_NOEXCEPT
-  {
-    auto src = node_cast<const TimeSequence*>(source);
-    if (src == nullptr)
-      return;
-    auto optr = this->pimpl();
-    auto optr_src = src->pimpl();
-    this->Node::copy(src);
-    optr->Dimensions = optr_src->Dimensions;
-    optr->AccumulatedDimensions = optr_src->AccumulatedDimensions;
-    optr->Samples = optr_src->Samples;
-    optr->SampleRate = optr_src->SampleRate;
-    optr->StartTime = optr_src->StartTime;
-    optr->Type = optr_src->Type;
-    optr->Unit = optr_src->Unit;
-    optr->Scale = optr_src->Scale;
-    optr->Offset = optr_src->Offset;
-    optr->Range = optr_src->Range;
-    delete optr->Data;
-    size_t numelts = src->elements();
-    optr->Data = new double[numelts];
-    std::copy_n(optr_src->Data, numelts, optr->Data);
-  };
-  
+
   /**
    * Internal method to extract an element based on the given @a sample index and dimensions @a indices
    */
@@ -585,5 +548,73 @@ namespace ma
       ++it;
     }
     return optr->Data[col*optr->Samples+sample];
+  };
+  
+  /**
+   * Create a new Event object on the heap
+   */
+  Node* TimeSequence::allocateNew() const
+  {
+    return new TimeSequence(this->name());
+  };
+  
+  /**
+   * Copy the content of the @a source
+   */
+  void TimeSequence::copyContents(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const TimeSequence*>(source);
+    if (src == nullptr)
+      return;
+    auto optr = this->pimpl();
+    auto optr_src = src->pimpl();
+    this->Node::copyContents(src);
+    optr->Dimensions = optr_src->Dimensions;
+    optr->AccumulatedDimensions = optr_src->AccumulatedDimensions;
+    optr->Samples = optr_src->Samples;
+    optr->SampleRate = optr_src->SampleRate;
+    optr->StartTime = optr_src->StartTime;
+    optr->Type = optr_src->Type;
+    optr->Unit = optr_src->Unit;
+    optr->Scale = optr_src->Scale;
+    optr->Offset = optr_src->Offset;
+    optr->Range = optr_src->Range;
+    delete optr->Data;
+    size_t numelts = src->elements();
+    optr->Data = new double[numelts];
+    std::copy_n(optr_src->Data, numelts, optr->Data);
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * Compare different properties for each TimeSequence passed in @a timeSequences.
+   * If for each property the values are the same, this function returns true, otherwise false.
+   * The properties compared are:
+   *  - the sample rate ;
+   *  - the start time ;
+   *  - the number of samples.
+   * The common values are returned by the inout arguments @a sampleRate, @a startTime, @a samples.
+   * @relates TimeSequence
+   * @ingroup openma_base
+   */
+  bool compare_timesequences_properties(const std::vector<TimeSequence*>& timeSequences, double& sampleRate, double& startTime, unsigned& samples)
+  {
+    bool first = true;
+    for (const auto& ts: timeSequences)
+    {
+      if (first)
+      {
+        sampleRate = ts->sampleRate();
+        startTime = ts->startTime();
+        samples = ts->samples();
+        first = false;
+      }
+      if ((fabs(ts->sampleRate() - sampleRate) > std::numeric_limits<float>::epsilon())
+       || (fabs(ts->startTime() - startTime) > std::numeric_limits<float>::epsilon())
+       || (ts->samples() != samples))
+        return false;
+    }
+    return true;
   };
 };

@@ -35,6 +35,7 @@
 #ifndef __openma_io_h
 #define __openma_io_h
 
+#include "openma/io_export.h"
 #include "openma/io/binarystream.h"
 #include "openma/io/buffer.h"
 #include "openma/io/device.h"
@@ -45,50 +46,16 @@
 #include "openma/io/handlerreader.h"
 #include "openma/io/handlerwriter.h"
 
-#include "openma/base/node.h"
-#include "openma/base/logger.h"
-
 #include <string>
 
 namespace ma
 {
 namespace io
 {
-  /**
-   * Convenient function to read the content of a file and set it in @a root.
-   * Internally, this function use the class HandlerReader.
-   * @relates HandlerReader
-   * @ingroup openma_io
-   */
-  inline bool read(Node* root, const std::string& filepath, const std::string& format = std::string{})
-  {
-    File file;
-    file.open(filepath.c_str(), Mode::In);
-    HandlerReader reader(&file, format);
-    bool result = reader.read(root);
-    if (!result && (reader.errorCode() != Error::None))
-      error(reader.errorMessage().c_str());
-    return result;
-  };
-    
-  /**
-   * Convenient function to read the content of a file and return it in a Node object.
-   * In case the result is null (@c nullptr), this certainly means that an error was thrown. Error message are sent to the logger and might help to determine the problem.
-   * @note The returned Node was created by the new() operator. It is the responsability of the developer to delete it.
-   * @relates HandlerReader
-   * @ingroup openma_io
-   */
-  inline Node* read(const std::string& filepath, const std::string& format = std::string{})
-  {
-    Node* root = new Node("root");
-    if (!read(root, filepath, format))
-    {
-      delete root;
-      root = nullptr;
-    }
-    return root;
-  };
-}  
-}
+  OPENMA_IO_EXPORT bool read(Node* root, const std::string& filepath, const std::string& format = std::string{});
+  OPENMA_IO_EXPORT Node* read(const std::string& filepath, const std::string& format = std::string{});
+  OPENMA_IO_EXPORT bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string{});
+};
+};
 
 #endif // __openma_io_h

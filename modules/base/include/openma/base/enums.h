@@ -53,7 +53,7 @@ namespace ma
    * Male subject.
    */
   /**
-   * @var Sex Sex::Out
+   * @var Sex Sex::Female
    * Female subject.
    */
 };

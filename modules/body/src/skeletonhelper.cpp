@@ -34,6 +34,10 @@
 
 #include "openma/body/skeletonhelper.h"
 #include "openma/body/skeletonhelper_p.h"
+#include "openma/body/externalwrenchassigner.h"
+#include "openma/body/inversedynamicsprocessor.h"
+#include "openma/body/inertialparametersestimator.h"
+#include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/base/trial.h"
 
@@ -49,9 +53,23 @@ namespace body
 {
   SkeletonHelperPrivate::SkeletonHelperPrivate(SkeletonHelper* pint, const std::string& name, int region, int side)
   : NodePrivate(pint,name), Region(region), Side(side)
-  {};
+#if !defined(_MSC_VER) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
+    , Gravity{{0.,0.,0.}}
+#endif
+  {
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    this->Gravity[0] = 0.;
+    this->Gravity[1] = 0.;
+    this->Gravity[2] = 0.;
+#endif
+  };
   
   SkeletonHelperPrivate::~SkeletonHelperPrivate() = default;
+  
+  bool SkeletonHelperPrivate::hasNonNullGravity() const _OPENMA_NOEXCEPT
+  {
+    return (this->Gravity[0] != 0.) || (this->Gravity[1] != 0.) || (this->Gravity[2] != 0.);
+  };
 };
 };
 
@@ -60,6 +78,8 @@ namespace body
 // -------------------------------------------------------------------------- //
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
+
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::SkeletonHelper);
 
 namespace ma
 {
@@ -72,6 +92,19 @@ namespace body
    * @todo Write a very detailed description for this class.
    * @ingroup openma_body
    */
+
+#ifdef DOXYGEN_SHOULD_TAKE_THIS
+  /** * @brief Fake structure to create node's properties */
+  struct SkeletonHelper::__Doxygen_Properties
+  {
+    /**
+     * This property holds the gravity direction and magnitude used by some calculation like the inverse dynamics. By default, this property contains a vector of zeros.
+     * The unit to use must be the metre by second squared (m/s^2). If the gravity is not set (or reset to 0.), the method reconstruct() will not compute the inverse dynamics. Only the geometry foir each model will be computed.
+     * @sa gravity() setGravity()
+     */
+    std::array<double,3> Gravity;
+  };
+#endif
   
   /**
    * Constructor. Store the @a region and @a side for later use. You can use the enum Region and Side to set these values.
@@ -93,6 +126,27 @@ namespace body
   SkeletonHelper::~SkeletonHelper() _OPENMA_NOEXCEPT = default;
   
   /**
+   * Sets the internal parameter Gravity.
+   */
+  void SkeletonHelper::setGravity(const std::array<double,3>& g)
+  {
+    auto optr = this->pimpl();
+    if (optr->Gravity == g)
+      return;
+    optr->Gravity = g;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter Gravity.
+   */
+  const std::array<double,3>& SkeletonHelper::gravity() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->Gravity;
+  };
+  
+  /**
    * @fn virtual bool SkeletonHelper::calibrate(Node* trials, Subject* subject) _OPENMA_NOEXCEPT = 0;
    * This methods must be overloaded by inheriting classes to calibrate the helper. For this, the content of @a trials and @a subject can be used.
    * For example, in the PluginGait helper, the method calibrate() is used to set several joint center coordinates and angle offsets. For that, the first Trial object found is used as well as the content of the @a subject.
@@ -103,6 +157,7 @@ namespace body
    */
   bool SkeletonHelper::reconstruct(Node* output, Node* trials)
   {
+    auto optr = this->pimpl();
     if (output == nullptr)
     {
       error("SkeletonHelper - Null output passed. Movement reconstruction aborted.");
@@ -136,7 +191,55 @@ namespace body
         delete model;
         continue;
       }
+      // Attach the model to the output
       model->addParent(output);
+      // Copy the gravity
+      // FIXME WE MUST FIND A WAY TO NOT FORCE THE SETTING OF THE GRAVITY TO THE UNIT MM/S^2
+      const double g[3] = {optr->Gravity[0] * 1000., optr->Gravity[1] * 1000., optr->Gravity[2] * 1000.};
+      model->setGravity(g);
+      // Copy dynamic properties to the model. They can be used later.
+      const auto& props = this->dynamicProperties();
+      for (const auto& prop : props)
+        model->setProperty(prop.first, prop.second);
+      // Attach the landmarks translator to the model. It can be used later.
+      auto translator = this->findChild<LandmarksTranslator*>({},{},false);
+      if (translator != nullptr)
+        translator->addParent(model);
+      // Attach the trial to the model. It can be used later.
+      trial->addParent(model);
+      // Computation of the inverse dynamics?
+      if (optr->hasNonNullGravity())
+      {
+        Node temp("_TRID");
+        model->addParent(&temp);
+        // Associate FP wrench to feet
+        ExternalWrenchAssigner* ewa = this->findChild<ExternalWrenchAssigner*>({},{},false);
+        if (ewa == nullptr)
+          ewa = this->defaultExternalWrenchAssigner();
+        if ((ewa != nullptr) && !ewa->run(&temp))
+        {
+          error("SkeletonHelper - Error during the setting of external wrenches. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+        // Compute BSIPs
+        InertialParametersEstimator* ipe = this->findChild<InertialParametersEstimator*>({},{},false);
+        if (ipe == nullptr)
+          ipe = this->defaultInertialParametersEstimator();
+        if ((ipe != nullptr) && !ipe->generate(&temp))
+        {
+          error("SkeletonHelper - Error during the estimation of the segment inertial parameters. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+        // Compute inverse dynamics in the global frame
+        InverseDynamicProcessor* idp = this->findChild<InverseDynamicProcessor*>({},{},false);
+        if (idp == nullptr)
+          idp = this->defaultInverseDynamicProcessor();
+        if ((idp != nullptr) && !idp->run(&temp))
+        {
+          error("SkeletonHelper - Error during the computation of the inverse dynamics. Inverse dynamics computation skipped for the trial #%i", inc);
+          continue;
+        }
+      }
     }
     return true;
   };
@@ -157,7 +260,7 @@ namespace body
    * @fn virtual LandmarksTranslator* SkeletonHelper::defaultLandmarksTranslator() = 0;
    * Create a LandmarksTranslator adapted to the marker set used by the helper.
    * Because a landmarks translator is used in the calibrate() and reconstruct() methods, this method could parent the created translator to the helper.
-   * Thus, it will be created only one time in calibrate () and found as a child in reconstruct().
+   * Thus, it will be created only one time in calibrate() and found as a child in reconstruct().
    */
   
   /**
@@ -173,6 +276,7 @@ namespace body
     this->Node::copy(src);
     optr->Region = optr_src->Region;
     optr->Side = optr_src->Side;
+    optr->Gravity = optr_src->Gravity;
   };
 };
 };

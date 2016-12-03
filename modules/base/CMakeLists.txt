@@ -2,12 +2,14 @@ SET(OPENMA_BASE_SRCS
   src/any.cpp
   src/date.cpp
   src/event.cpp
+  src/hardware.cpp
   src/logger.cpp
   src/node.cpp
   src/object.cpp
   src/subject.cpp
   src/timesequence.cpp
   src/trial.cpp
+  src/typeid.cpp
 )
 
 ADD_LIBRARY(base ${OPENMA_LIBS_BUILD_TYPE} ${OPENMA_BASE_SRCS})

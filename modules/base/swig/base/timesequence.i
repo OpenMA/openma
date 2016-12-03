@@ -34,7 +34,7 @@
 
 namespace ma
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma, TimeSequence)
+  SWIG_TYPEMAP_NODE_OUT(ma, TimeSequence)
   SWIG_CREATE_TEMPLATE_HELPER_1(ma, TimeSequence, SWIGTYPE)
   
   %nodefaultctor;
@@ -42,7 +42,6 @@ namespace ma
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma, TimeSequence, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma, TimeSequence)
   
     %extend {
     enum class Type : int {

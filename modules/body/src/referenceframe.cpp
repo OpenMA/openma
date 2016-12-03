@@ -99,6 +99,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::ReferenceFrame);
+
 namespace ma
 {
 namespace body

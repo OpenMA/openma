@@ -39,13 +39,12 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, Joint, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
 {
   class Segment;
+  class Anchor;
   
   class JointPrivate;
   
@@ -55,7 +54,10 @@ namespace body
     OPENMA_DECLARE_NODEID(Joint, Node)
         
   public:
-    Joint(const std::string& name, Segment* proximal = nullptr, Segment* distal = nullptr, Node* parent = nullptr);
+    Joint(const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Anchor* da, Node* parent = nullptr);
+    Joint(const std::string& name, Segment* ps, Segment* ds, Anchor* da, Node* parent = nullptr);
+    Joint(const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Node* parent = nullptr);
+    Joint(const std::string& name, Segment* ps, Segment* ds, Node* parent = nullptr);
     ~Joint() _OPENMA_NOEXCEPT;
     
     Joint(const Joint& ) = delete;
@@ -64,18 +66,23 @@ namespace body
     Joint& operator=(Joint&& ) _OPENMA_NOEXCEPT = delete;
     
     Segment* proximalSegment() const _OPENMA_NOEXCEPT;
-    void setProximalSegment(Segment* value) _OPENMA_NOEXCEPT;
+    Anchor* proximalAnchor() const _OPENMA_NOEXCEPT;
+    // void setProximalConnection(Segment* ps, Anchor* pa = nullptr) _OPENMA_NOEXCEPT;
     
     Segment* distalSegment() const _OPENMA_NOEXCEPT;
-    void setDistalSegment(Segment* value) _OPENMA_NOEXCEPT;
+    Anchor* distalAnchor() const _OPENMA_NOEXCEPT;
+    // void setDistalConnection(Segment* ds, Anchor* da = nullptr) _OPENMA_NOEXCEPT;
     
     virtual Joint* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   private:
+    Joint(const std::string& name, Node* parent);
     Joint(JointPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::Joint, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_joint_h

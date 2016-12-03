@@ -32,7 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module io
+%module(package="ma.io") io
 
 %begin %{
 #include "openma/matlab/fixwinchar16.h"
@@ -44,7 +44,9 @@
 #include "openma/io.h"
 %}
 
-%import "base.i"
+%include "macros.i"
+
+%import "ma.i"
 
 // ========================================================================= //
 //                                INTERFACE
@@ -54,7 +56,7 @@ namespace ma
 {
 namespace io
 {
-  %newobject read;
   Node* read(const std::string& filepath, const std::string& format = std::string());
+  bool write(const Node* const root, const std::string& filepath, const std::string& format = std::string());
 };
 };

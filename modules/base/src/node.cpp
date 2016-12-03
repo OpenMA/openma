@@ -66,10 +66,10 @@ namespace ma
       };
     }
     // Deep child search
-    for (auto it = children.cbegin() ; it != children.cend() ; ++it)
+    for (const auto& child : children)
     {
       std::vector<const Node*> temp;
-      if (NodePrivate::retrievePath(temp,*it,stop))
+      if (NodePrivate::retrievePath(temp,child,stop))
       {
         path.push_back(current);
         path.insert(path.end(),temp.begin(),temp.end());
@@ -88,9 +88,9 @@ namespace ma
   {
     if (node == nullptr)
       return false;
-    for (auto it = this->Parents.cbegin() ; it != this->Parents.cend() ; ++it)
+    for (const auto& parent : this->Parents)
     {
-      if (*it == node)
+      if (parent == node)
       {
         warning("The parent '%s' was already attached to the node '%s'", node->name().c_str(), this->Name.c_str());
         return false;
@@ -128,9 +128,9 @@ namespace ma
   {
     if (node == nullptr)
       return false;
-    for (auto it = this->Children.cbegin() ; it != this->Children.cend() ; ++it)
+    for (const auto& child :this->Children)
     {
-      if (*it == node)
+      if (child == node)
         return false;
     }
     this->Children.push_back(node);
@@ -162,19 +162,7 @@ namespace ma
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-/**
- * @def OPENMA_EXPORT_NODE_CAST_1(ns, cn, en)
- * Convenient macro to export the static type ID associated with the new class @a cn in the namespace @a ns with the export symbol @a en.
- * @relates ma::Node
- * @ingroup openma_base
- */
-
-/**
- * @def OPENMA_EXPORT_NODE_CAST_2(ns, nns, cn, en)
- * Convenient macro to export the static type ID associated with the new class @a cn in the nested namespace @a ns::nns with the export symbol @a en.
- * @relates ma::Node
- * @ingroup openma_base
- */
+OPENMA_INSTANCE_STATIC_TYPEID(ma::Node);
 
 namespace ma
 {
@@ -226,15 +214,16 @@ namespace ma
    *
    * In the previous example, the remaining child of root (pointer to leafA) is a local variable and calling its destructor is incorrect. Thus, when the variable leafA goes out of scope, its destructor is called again. The same memory is freed two times that should crash the program.
    *
-   * Finally, to declare a custom node type (i.e. a new inheriting class), several macros can be used:
-   * - OPENMA_EXPORT_NODE_CAST_1() or OPENMA_EXPORT_NODE_CAST_2()
+   * Finally, to declare a custom node type (i.e. a new inheriting class), several macros must be used:
+   * - OPENMA_EXPORT_STATIC_TYPEID() and OPENMA_INSTANCE_STATIC_TYPEID()
    * - OPENMA_DECLARE_NODEID()
    * - OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED()
    *
    * For example if you want to add a class inside OpenMA (base mdoule), it is advised to do as following 
    * @code{.unparsed}
+   * // HEADER FILE (e.g MyNode.h)
+   *
    * // Public API
-   * OPENMA_EXPORT_NODE_CAST_1(ma, MyNode, OPENMA_BASE_EXPORT);
    *
    * namespace ma
    * {
@@ -247,6 +236,10 @@ namespace ma
    * public:
    *   // ...
    * }
+   *
+   * };
+   *
+   * OPENMA_EXPORT_STATIC_TYPEID(ma::MyNode, OPENMA_BASE_EXPORT);
    *
    * // PRIVATE API (declared for example in a private header file)
    * class MyNode;
@@ -264,6 +257,15 @@ namespace ma
    * }; 
    *
    * };
+   *
+   * // SOURCE FILE (e.g. MyNode.cpp)
+   *
+   * OPENMA_INSTANCE_STATIC_TYPEID(ma::MyNode);
+   *
+   * namespace ma
+   * {
+   * // Definition of the class MyNode...
+   *
    * @endcode
    *
    * For more details about properties you can read the documentation of the class Property.
@@ -545,19 +547,16 @@ namespace ma
    */
   Node* Node::clone(Node* parent) const
   {
-    auto dest = new Node(this->name());
-    dest->copy(this);
-    dest->addParent(parent);
-    return dest;
+    auto map = std::unordered_map<const Node*,Node*>();
+    return this->cloneContents(parent, map);
   };
   
   /**
    * Do a deep copy of the the given @a source. The previous content is replaced.
-   * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
    * @note This method does not copy the parent. If you need to copy the parent, you must use the method addParent() afterwards.
    * @code{.unparsed}
    * // Let's copy a node, and add a parent.
-   * auto node = Node("IAmNew");
+   * Node node("IAmNew");
    * node.copy(source); // 'source' is a pointer to a Node object
    * std::cout << node.hasParents() << std::endl; // The answer is 0
    * node.addParent(parent); // 'parent' is a pointer to a Node object
@@ -568,14 +567,9 @@ namespace ma
     if (source == nullptr)
       return;
     this->clear();
-    auto optr = this->pimpl();
-    auto optr_src = source->pimpl();
-    optr->Timestamp = optr_src->Timestamp;
-    optr->Name = optr_src->Name;
-    optr->Description = optr_src->Description;
-    optr->DynamicProperties = optr_src->DynamicProperties;
-    for (auto it = optr_src->Children.cbegin() ; it != optr_src->Children.cend() ; ++it)
-      (*it)->clone(this);
+    this->copyContents(source);
+    auto map = std::unordered_map<const Node*,Node*>{{source, this}};
+    source->cloneChildren(this, map);
   };
   
   /**
@@ -648,7 +642,7 @@ namespace ma
    */
   
   /**
-   * @fn template <typename T = Node*> std::vector<T> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
+   * @fn template <typename U = Node*> std::vector<U> Node::findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT
    * Returns the children with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
    * As with the method findChild(), you can explicitely or implicitely give the type and/or the name of the children. For example:
    * @code{.unparsed}
@@ -677,6 +671,12 @@ namespace ma
    */
   
   /**
+   * template <typename U> U Node::findChild(Node* node) const _OPENMA_NOEXCEPT
+   * Convenient method to find a child based on its node ID and its pointer address.
+   * This method is internally used for safeguard when an inheriting class store directly child adresses to quickly access to them (aka shortcuts). As a reminder, when a child is removed or replaced, the shorcut is not cleaned in consequence (there is no cleaning mechanisn propagation). Thus, the shortuct is invalid. The use of a safeguard is necessary to not return an invalid address.
+   */
+  
+  /**
    * Retrieves the first path existing between the current node and the given @a node.
    * If no path exists between both, then an empty vector is returned, 
    * The first node in the retrieved path is the current one, while the last is the node to search.
@@ -690,37 +690,120 @@ namespace ma
   };
   
   /**
+   * Retuns a new object allocated on the heap. The creation of the object can be done using a default constructor (if any).
+   * This method is used by cloneContents() method for the default cloned object.
+   * @note Each subclass must override this method to correctly create the correct object .
+   */
+  Node* Node::allocateNew() const
+  {
+    return new Node(this->name());
+  };
+  
+  
+  /**
+   * Internal method to copy private implementation member WITHOUT the children.
+   * @note Each subclass must override this method to correctly do the deep copy. Because the @a src is a Node object, each inheriting class must use the node_cast() function inside their copy() method to ensure the good type of the source.
+   */
+  void Node::copyContents(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    auto optr_src = source->pimpl();
+    optr->Timestamp = optr_src->Timestamp;
+    optr->Name = optr_src->Name;
+    optr->Description = optr_src->Description;
+    optr->DynamicProperties = optr_src->DynamicProperties;
+  };
+  
+  /**
+   * Internal method used to clone an object.
+   * This method clone an object using the following steps:
+   *  1. Allocate a new object on the heap using allocateNew()
+   *  2. Copy the member of the @c this object using copyContents()
+   *  3. Clone the children using cloneChildren()
+   *  4. Add @a parent to the cloned object as one parent.
+   * The use of @a map is necessary to determine children nodes shared inside the tree. 
+   */
+  Node* Node::cloneContents(Node* parent, std::unordered_map<const Node*,Node*>& map) const
+  {
+    auto dest = this->allocateNew();
+    map.emplace(this,dest);
+    this->cloneChildren(dest, map);
+    dest->copyContents(this);
+    dest->addParent(parent);
+    return dest;
+  };
+  
+  /**
+   * Clone children by managing shared children in the tree
+   */
+  void Node::cloneChildren(Node* parent, std::unordered_map<const Node*,Node*>& map) const
+  {
+    auto optr = this->pimpl();
+    for (const auto& child : optr->Children)
+    {
+      auto it = map.find(child);
+      if (it == map.cend())
+        child->cloneContents(parent, map);
+      else
+        it->second->addParent(parent);
+    }
+  };
+  
+  /**
    * Implementation of the findChild method.
    */
   Node* Node::findNode(typeid_t id, const std::string& name, std::unordered_map<std::string,Any>&& properties, bool recursiveSearch) const _OPENMA_NOEXCEPT
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *it;
-      if (node->isCastable(id) && (name.empty() || (node->name() == name)))
+      if (child->isCastable(id) && (name.empty() || (child->name() == name)))
       {
         bool found = true;
-        for (auto it2 = properties.cbegin() ; it2 != properties.cend() ; ++it2)
+        for (const auto& prop : properties)
         {
-          if (node->property(it2->first) != it2->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
         if (found)
-          return node;
+          return child;
       }
     }
     // In case no corresponding child was found and the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
+      for (const auto& child : optr->Children)
       {
-        Node* node = (*it)->findNode(id,name,std::move(properties),recursiveSearch);
+        Node* node = child->findNode(id,name,std::move(properties),recursiveSearch);
         if (node != nullptr)
+          return node;
+      }
+    }
+    return nullptr;
+  };
+  
+  /*
+   * Find a children based on its pointer address.
+   */
+  Node* Node::findNode(typeid_t id, Node* node) const _OPENMA_NOEXCEPT
+  {
+    if (node != nullptr)
+    {
+      // Search in the direct children
+      auto optr = this->pimpl();
+      for (const auto& child : optr->Children)
+      {
+        if (child->isCastable(id) && (child == node))
+          return child;
+      }
+      // In case no corresponding child was found and the recursive search is actived, let's go deeper
+      for (const auto& child : optr->Children)
+      {
+        if (child->findNode(id,node) != nullptr)
           return node;
       }
     }
@@ -734,29 +817,28 @@ namespace ma
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto itN = optr->Children.cbegin() ; itN != optr->Children.cend() ; ++itN)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *itN;
-      if (node->isCastable(id) && (name.empty() || (node->name() == name)))
+      if (child->isCastable(id) && (name.empty() || (child->name() == name)))
       {
         bool found = true;
-        for (auto itP = properties.cbegin() ; itP != properties.cend() ; ++itP)
+        for (const auto& prop : properties)
         {
-          if (node->property(itP->first) != itP->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
-        if (found) vector->emplace_back(node);
+        if (found) vector->emplace_back(child);
       }
         
     }
     // In case the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(vector,id,name,std::move(properties),recursiveSearch);
+      for (const auto& child : optr->Children)
+        child->findNodes(vector,id,name,std::move(properties),recursiveSearch);
     }
   };
   
@@ -767,28 +849,27 @@ namespace ma
   {
     // Search in the direct children
     auto optr = this->pimpl();
-    for (auto itN = optr->Children.cbegin() ; itN != optr->Children.cend() ; ++itN)
+    for (const auto& child : optr->Children)
     {
-      Node* node = *itN;
-      if (node->isCastable(id) && std::regex_match(node->name(),regexp))
+      if (child->isCastable(id) && std::regex_match(child->name(),regexp))
       {
         bool found = true;
-        for (auto itP = properties.cbegin() ; itP != properties.cend() ; ++itP)
+        for (const auto& prop : properties)
         {
-          if (node->property(itP->first) != itP->second)
+          if (child->property(prop.first) != prop.second)
           {
             found = false;
             break;
           }
         }
-        if (found) vector->emplace_back(node);
+        if (found) vector->emplace_back(child);
       }
     }
     // In case the recursive search is actived, let's go deeper
     if (recursiveSearch)
     {
-      for (auto it = optr->Children.cbegin() ; it != optr->Children.cend() ; ++it)
-        (*it)->findNodes(vector,id,regexp,std::move(properties),recursiveSearch);
+      for (const auto& child : optr->Children)
+        child->findNodes(vector,id,regexp,std::move(properties),recursiveSearch);
     }
   };
   
@@ -812,5 +893,15 @@ namespace ma
    * @endcode
    *
    * @note The type U must be a pointer type which inherit of the Node class. If this is not the case a compilation error will be thrown.
+   * @ingroup openma_base
+   */
+  
+  /**
+   * @fn template <typename T, typename... Args> inline std::vector<T> make_nodes(size_t num, Args&&... args)
+   * Convenient method to generate nodes based on the given template classname @a T and the required arguments (WITHTOUT THE NAME).
+   * The number of nodes to make is specified by @a num. The variadiac number of arugements @a args depends on the kind of nodes instanced.
+   * This function returns a list of pointer to objects' instance. The name of each instance is automatically generated and happened at the beginning of the arguments passed to the constructor of the class @a T. The generated name is "uname*" followed by a incremental number starting from 1.
+   * @important The generated nodes are allocated on the heap. This is the responsability of the developer to delete these objects if no parent was set in the given arguments.
+   * @ingroup openma_base
    */
 };

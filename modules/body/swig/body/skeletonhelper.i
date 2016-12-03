@@ -36,7 +36,7 @@ namespace ma
 {
 namespace body
 {
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma::body, SkeletonHelper)
+  SWIG_TYPEMAP_NODE_OUT(ma::body, SkeletonHelper)
   SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, SkeletonHelper, SWIGTYPE)
   
   %nodefaultctor;

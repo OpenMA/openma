@@ -88,8 +88,8 @@ namespace body
       Property<PluginGait, double, &PluginGait::leftKneeWidth,                   &PluginGait::setLeftKneeWidth>                 {"leftKneeWidth"},
       Property<PluginGait, double, &PluginGait::rightAnkleWidth,                 &PluginGait::setRightAnkleWidth>               {"rightAnkleWidth"},
       Property<PluginGait, double, &PluginGait::leftAnkleWidth,                  &PluginGait::setLeftAnkleWidth>                {"leftAnkleWidth"},
-      Property<PluginGait, bool,   &PluginGait::rightFootFlatEnabled,                   &PluginGait::setRightFootFlatEnabled>                 {"rightFootFlatEnabled"},
-      Property<PluginGait, bool,   &PluginGait::leftFootFlatEnabled,                    &PluginGait::setRightFootFlatEnabled>                 {"leftFootFlatEnabled"},
+      Property<PluginGait, bool,   &PluginGait::rightFootFlatEnabled,            &PluginGait::setRightFootFlatEnabled>          {"rightFootFlatEnabled"},
+      Property<PluginGait, bool,   &PluginGait::leftFootFlatEnabled,             &PluginGait::setLeftFootFlatEnabled>           {"leftFootFlatEnabled"},
       // Get only
       Property<PluginGait, double, &PluginGait::headOffset>                                                                     {"headOffset"},
       Property<PluginGait, double, &PluginGait::rightStaticPlantarFlexionOffset>                                                {"rightStaticPlantarFlexionOffset"},

@@ -61,6 +61,8 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Descriptor);
+
 namespace ma
 {
 namespace body
@@ -68,7 +70,7 @@ namespace body
   /**
    * @class Descriptor openma/body/descriptor.h
    * @brief Abstract class to describe a node or set of node
-   * To generalize the way to describe/measure Node's data, this class propose an evaluate() method. Internally, it calls prepare(), process() and finalize() methods. These three last methods have to be speciallized by each inheriting object.
+   * To generalize the way to describe/measure Node's data, this class proposes an evaluate() method. Internally, it calls prepare(), process() and finalize() methods. These three last methods have to be speciallized by each inheriting object.
    * @ingroup openma_body
    */
   
@@ -82,7 +84,7 @@ namespace body
   /**
    * Constructor to be used by inherited object which want to add informations (static properties, members, etc) into the private implementation.
    */
-  Descriptor::Descriptor(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
+  Descriptor::Descriptor(DescriptorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Node(pimpl, parent)
   {};
   

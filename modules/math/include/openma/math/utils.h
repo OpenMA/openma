@@ -74,7 +74,7 @@ namespace math
   /**
    * Extract from a TimeSequence @a ts a Map<Array>> where the number of columns of the resulting array is used as the number of components to extract.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @tparam N Number of columns to extract.
    * @relates Array
    * @ingroup openma_math
@@ -88,7 +88,7 @@ namespace math
   /**
    * Extract from a TimeSequence @a ts a Map<const Array>> where the number of columns of the resulting array is used as the number of components to extract.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @tparam N Number of columns to extract.
    * @relates Array
    * @ingroup openma_math
@@ -104,7 +104,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<Array> has 1 column.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -116,7 +116,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<const Array> has 1 column.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -130,7 +130,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<Array> has 3 columns.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -142,7 +142,7 @@ namespace math
   /**
    * Specialized extraction method where the resulting Map<const Array> has 3 columns.
    * It is possible to specify a possible @a offset to shift the data to extract.
-   * The use of @a type will verify if the TimeSequence has the requeted type.
+   * The use of @a type will verify if the TimeSequence has the requested type.
    * @relates Array
    * @ingroup openma_math
    */
@@ -154,7 +154,7 @@ namespace math
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the resulting Map<Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
    * @relates Array
    * @ingroup openma_math
    */
@@ -164,7 +164,7 @@ namespace math
   };
   
   /**
-   * Specialized extraction method where the resulting Map<const Array> has 3 columns (as well as the input - no possible offset) and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
    * @relates Array
    * @ingroup openma_math
    */
@@ -172,11 +172,11 @@ namespace math
   {
     return to_vector(ts,0,TimeSequence::Marker);
   };
-  
+ 
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the result is a Map<Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
+   * Specialized extraction method where the result is a Map<Pose> object. The input must have 12 columns and the type must be set to TimeSequence::Pose.
    * @relates Pose
    * @ingroup openma_math
    */
@@ -186,13 +186,35 @@ namespace math
   };
   
   /**
-   * Specialized extraction method where the result is a Map<const Pose> object (as well as the input - no possible offset) and the type must be set to TimeSequence::Pose.
+   * Specialized extraction method where the result is a Map<const Pose> object. The input must have 12 columns and the type must be set to TimeSequence::Pose.
    * @relates Pose
    * @ingroup openma_math
    */
   inline Map<const Pose> to_pose(const TimeSequence* ts)
   {
     return to_arraybase_derived<Map<const Pose>>(ts,12,0,TimeSequence::Pose);
+  };
+ 
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * Specialized extraction method where the result is a Map<Wrench> object. The input must have 9 columns and the type must be set to TimeSequence::Wrench.
+   * @relates Wrench
+   * @ingroup openma_math
+   */
+  inline Map<Wrench> to_wrench(TimeSequence* ts)
+  {
+    return to_arraybase_derived<Map<Wrench>>(ts,9,0,TimeSequence::Wrench);
+  };
+  
+  /**
+   * Specialized extraction method where the result is a Map<const Wrench> object. The input must have 9 columns and the type must be set to TimeSequence::Wrench.
+   * @relates Wrench
+   * @ingroup openma_math
+   */
+  inline Map<const Wrench> to_wrench(const TimeSequence* ts)
+  {
+    return to_arraybase_derived<Map<const Wrench>>(ts,9,0,TimeSequence::Wrench);
   };
   
   // ======================================================================= //
@@ -240,6 +262,63 @@ namespace math
     std::copy_n(o.values().data(), samples, ts->data() + 3 * samples);
     std::copy_n(residuals.data(), residuals.rows(), ts->data() + 4 * samples);
     return ts;
+  };
+  
+  /**
+   * Convenient method to export the forces F, the moments M, and position P (aka the content of math::Wrench) to a TimeSequence object
+   */
+  template <typename F, typename M, typename P>
+  inline TimeSequence* to_timesequence(const ArrayBase<F>& f,const ArrayBase<M>& m, const ArrayBase<P>& p, const std::string& name, double rate, double start, Node* parent)
+  {
+    static_assert(F::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(M::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    static_assert(P::ColsAtCompileTime == 3, "Only data with 3 columns (e.g to represent a vector) can be used with this function.");
+    assert(f.rows() == m.rows());
+    assert(m.rows() == p.rows());
+    auto ts = to_timesequence(10, f.rows(), nullptr, nullptr, name, rate, start, TimeSequence::Wrench, "", parent);
+    const Pose::Residuals residuals = generate_residuals((f.residuals() >= 0) && (m.residuals() >= 0) && (p.residuals() >= 0));
+    const unsigned samples = 3 * residuals.rows();
+    std::copy_n(f.values().data(), samples, ts->data());
+    std::copy_n(m.values().data(), samples, ts->data() + samples);
+    std::copy_n(p.values().data(), samples, ts->data() + 2 * samples);
+    std::copy_n(residuals.data(), residuals.rows(), ts->data() + 3 * samples);
+    return ts;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Out, typename In>
+  inline void prepare_window_processing(Out& resout, std::vector<std::array<unsigned,2>>& windows, const In& resin, unsigned mwlen)
+  {
+    if (resout.size() != 0)
+      return;
+    typename Traits<Array<In::ColsAtCompileTime>>::Residuals xprres = resin;
+    resout = xprres;
+    resout.setConstant(-1.0);
+    unsigned istart = 0, len = xprres.rows();
+    while (1)
+    {
+      // Beginning of the window
+      while ((istart < len) && (xprres.coeff(istart) < 0.))
+        ++istart;
+      // Check if the beginning of the window is valid
+      if (istart >= len)
+        break;
+      // End of the window
+      unsigned istop = istart;
+      while ((istop < len) && (xprres.coeff(istop) >= 0.))
+        ++istop;
+      // Compute the length of the window
+      unsigned ilen = istop - istart;
+      // If the window is large enough to be processed, register it
+      if (ilen >= mwlen)
+      {
+        windows.push_back({{istart,ilen}});
+        resout.segment(istart,ilen).setZero();
+      }
+      // Pass to the next window
+      istart = istop + 1;
+    }
   };
   
 };

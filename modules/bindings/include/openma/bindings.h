@@ -49,5 +49,6 @@ OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);
 OPENMA_BINDINGS_EXPORT int _ma_refcount_decr(ma::Node* node);
 
 #include "openma/bindings/templatehelper.h"
+#include "openma/bindings/loggerdevice.h"
 
 #endif // __openma_bindings_h

@@ -35,6 +35,7 @@
 #include "openma/body/joint.h"
 #include "openma/body/joint_p.h"
 #include "openma/body/segment.h"
+#include "openma/body/anchor.h"
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -48,8 +49,8 @@ namespace body
 {
   // Note: The member Proximal and Distal are used to simplify the mangement of the segment in case one of them is set to null (to represent the global frame).
   
-  JointPrivate::JointPrivate(Joint* pint, const std::string& name, Segment* proximal, Segment* distal)
-  : NodePrivate(pint,name), Proximal(proximal), Distal(distal)
+  JointPrivate::JointPrivate(Joint* pint, const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Anchor* da)
+  : NodePrivate(pint,name), ProximalSegment(ps), ProximalAnchor(pa), DistalSegment(ds), DistalAnchor(da)
   {};
   
   JointPrivate::~JointPrivate() = default;
@@ -61,6 +62,8 @@ namespace body
 // -------------------------------------------------------------------------- //
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
+
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::Joint);
 
 namespace ma
 {
@@ -100,14 +103,48 @@ namespace body
    * // No problem here because the Segment objects were allocated. The object 'joint' will delete them in its destructor.
    * @endcode
    */
-  Joint::Joint(const std::string& name, Segment* proximal, Segment* distal, Node* parent)
-  : Node(*new JointPrivate(this,name,proximal,distal), parent)
+  Joint::Joint(const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Anchor* da, Node* parent)
+  : Node(*new JointPrivate(this,name,ps,pa,ds,da), parent)
   {
-    if (proximal != nullptr)
-      proximal->addParent(this);
-    if (distal != nullptr)
-      distal->addParent(this);
+    // NOTE AN ANCHOR SHOULD HAVE ONLY ONE PARENT: THIS JOINT    
+    if (ps != nullptr)
+      ps->addParent(this);
+    if (pa != nullptr)
+    {
+      pa->addParent(this);
+      pa->setName(name + ".Anchor.Proximal");
+      if (pa->source() == nullptr)
+        pa->setSource(ps);
+    }
+    if (ds != nullptr)
+      ds->addParent(this);
+    if (da != nullptr)
+    {
+      da->addParent(this);
+      da->setName(name + ".Anchor.Distal");
+      if (da->source() == nullptr)
+        da->setSource(ds);
+    }
   };
+  
+  Joint::Joint(const std::string& name, Segment* ps, Segment* ds, Anchor* da, Node* parent)
+  : Joint(name, ps, Anchor::origin(ps), ds, da, parent)
+  {};
+  
+  Joint::Joint(const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Node* parent)
+  : Joint(name, ps, pa, ds, Anchor::origin(ds), parent)
+  {};
+  
+  Joint::Joint(const std::string& name, Segment* ps, Segment* ds, Node* parent)
+  : Joint(name, ps, Anchor::origin(ps), ds, Anchor::origin(ds), parent)
+  {};  
+  
+  /**
+   * Internal constructor (used by the clone() method).
+   */
+  Joint::Joint(const std::string& name, Node* parent)
+  : Joint(name, nullptr, nullptr, nullptr, nullptr, parent)
+  {};
   
   /**
    * Destructor
@@ -120,23 +157,32 @@ namespace body
   Segment* Joint::proximalSegment() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->Proximal;
+    return optr->ProximalSegment;
   };
   
   /**
-   * Sets the proximal segment associated with this joint.
-   * If the @a value is not the same than the stored one, the old proximal segment is replaced. If the previous proximal segment has no other parent, this one will be deleted.
+   * Returns the proximal anchor associated with this joint
    */
-  void Joint::setProximalSegment(Segment* value) _OPENMA_NOEXCEPT
+  Anchor* Joint::proximalAnchor() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (optr->Proximal != value)
-    {
-      this->replaceChild(optr->Proximal,value);
-      optr->Proximal = value;
-      this->modified();
-    }
+    return optr->ProximalAnchor;
   };
+    
+  // /**
+  //  * Sets the proximal segment associated with this joint.
+  //  * If the @a value is not the same than the stored one, the old proximal segment is replaced. If the previous proximal segment has no other parent, this one will be deleted.
+  //  */
+  // void Joint::setProximalSegment(Segment* value) _OPENMA_NOEXCEPT
+  // {
+  //   auto optr = this->pimpl();
+  //   if (optr->Proximal != value)
+  //   {
+  //     this->replaceChild(optr->Proximal,value);
+  //     optr->Proximal = value;
+  //     this->modified();
+  //   }
+  // };
   
   /**
    * Returns the distal segment associated with this joint.
@@ -144,30 +190,36 @@ namespace body
   Segment* Joint::distalSegment() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->Distal;
+    return optr->DistalSegment;
   };
   
-  /**
-   * Sets the distal segment associated with this joint.
-   * If the @a value is not the same than the stored one, the old distal segment is replaced. If the previous distal segment has no other parent, this one will be deleted.
-   */
-  void Joint::setDistalSegment(Segment* value) _OPENMA_NOEXCEPT
+  Anchor* Joint::distalAnchor() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (optr->Distal != value)
-    {
-      this->replaceChild(optr->Distal,value);
-      optr->Distal = value;
-      this->modified();
-    }
+    return optr->DistalAnchor;
   };
+  
+  // /**
+  //  * Sets the distal segment associated with this joint.
+  //  * If the @a value is not the same than the stored one, the old distal segment is replaced. If the previous distal segment has no other parent, this one will be deleted.
+  //  */
+  // void Joint::setDistalSegment(Segment* value) _OPENMA_NOEXCEPT
+  // {
+  //   auto optr = this->pimpl();
+  //   if (optr->Distal != value)
+  //   {
+  //     this->replaceChild(optr->Distal,value);
+  //     optr->Distal = value;
+  //     this->modified();
+  //   }
+  // };
   
   /**
    * Create a deep copy of the object and return it as another object.
    */
   Joint* Joint::clone(Node* parent) const
   {
-    auto dest = new Joint(this->name());
+    auto dest = new Joint(this->name(), nullptr);
     dest->copy(this);
     dest->addParent(parent);
     return dest;
@@ -184,10 +236,14 @@ namespace body
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->Node::copy(src);
-    if (optr_src->Proximal != nullptr)
-      optr->Proximal = this->findChild<Segment*>(optr_src->Proximal->name());
-    if (optr_src->Distal != nullptr)
-      optr->Distal = this->findChild<Segment*>(optr_src->Distal->name());
+    if (optr_src->ProximalSegment != nullptr)
+      optr->ProximalSegment = this->findChild<Segment*>(optr_src->ProximalSegment->name());
+    if (optr_src->ProximalAnchor != nullptr)
+      optr->ProximalAnchor = this->findChild<Anchor*>(optr_src->ProximalAnchor->name());
+    if (optr_src->DistalSegment != nullptr)
+      optr->DistalSegment = this->findChild<Segment*>(optr_src->DistalSegment->name());
+    if (optr_src->DistalAnchor != nullptr)
+      optr->DistalAnchor = this->findChild<Anchor*>(optr_src->DistalAnchor->name());
   };
 };
 };

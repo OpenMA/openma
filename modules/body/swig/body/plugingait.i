@@ -36,7 +36,7 @@ namespace ma
 {
 namespace body
 { 
-  SWIG_TYPEMAP_OUT_CONSTRUCTOR(ma::body, PluginGait)
+  SWIG_TYPEMAP_NODE_OUT(ma::body, PluginGait)
   SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, PluginGait, SWIGTYPE)
   
   %nodefaultctor;
@@ -44,7 +44,6 @@ namespace body
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, PluginGait, SWIGTYPE)
-    SWIG_EXTEND_DEEPCOPY(ma::body, PluginGait)
 
     PluginGait(int region, int side, Node* parent = nullptr);
     ~PluginGait();

@@ -40,6 +40,7 @@
 #include "openma/base/enums.h"
 #include "openma/base/event.h"
 #include "openma/base/exception.h"
+#include "openma/base/hardware.h"
 #include "openma/base/logger.h"
 #include "openma/base/node.h"
 #include "openma/base/object.h"

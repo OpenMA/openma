@@ -32,6 +32,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%define SWIG_SetType(swigtype)
+  #define SWIGTYPE swigtype
+  %begin %{ #define SWIGTYPE swigtype %}
+%enddef
+  
+#if defined(SWIGMATLAB)
+  SWIG_SetType(mxArray)
+  %{ #define SWIG_SendError(code, msg) mexErrMsgIdAndTxt(SWIG_ErrorType(code), msg) %}
+#elif defined(SWIGPYTHON)
+  SWIG_SetType(PyObject)
+  %{ #define SWIG_SendError(code, msg) SWIG_Error(code, msg) %}
+#else
+  #error Unsupported language
+#endif
+
 #define SWIG_CREATE_TEMPLATE_HELPER_1(ns, cn, st) \
   %{ \
     static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
@@ -44,15 +59,23 @@
   %} \
   %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##nns##_##cn;
 
-%define SWIG_TYPEMAP_OUT_CONSTRUCTOR(nspace, cname)
+%define SWIG_TYPEMAP_NODE_OUT(nspace, cname)
 // Need to verify if the generated object is not null before being added in the workspace.
-%typemap(check, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
+%typemap(out, noblock=1) nspace:: ## cname* nspace:: ## cname:: ## cname
 {
-  if (!result) {
+  if (!$1) {
     SWIG_exception_fail(SWIG_RuntimeError, "Impossible to create or cast an object of type 'nspace::cname' with given input(s)");
   }
-  _out = SWIG_NewPointerObj(SWIG_as_voidptr(result), $descriptor(nspace:: ## cname*), 1 | 0);
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, $owner);
 };
+%typemap(out, noblock=1) nspace:: ## cname*
+{
+  if ($1 == nullptr) SWIG_fail;
+  // The result is always owned because some language check this before decrease the reference counter.
+  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $1_descriptor, 1);
+  _ma_refcount_incr($1);
+};
+
 %enddef
 
 %define SWIG_EXTEND_CAST_CONSTRUCTOR(nspace, cname, swigtype)
@@ -67,32 +90,6 @@ cname(swigtype* other)
     return nullptr;
   }
   return ma::node_cast<nspace::## cname*>(reinterpret_cast<ma::Node*>(argp1));
-};
-};
-%enddef 
-
-%define SWIG_EXTEND_DEEPCOPY(nspace, cname)
-%extend {
-void copy(ma::Node* source)
-{
-  _ma_clear_node($self);
-  int count = _ma_refcount_get(source);
-  $self->copy(source);
-  _ma_refcount_reset($self, count, false);
-  auto& children = $self->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-};
-%newobject clone;
-nspace::## cname* clone(Node* parent = nullptr) const
-{
-  nspace::## cname* ptr = $self->clone(parent);
-  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
-  if (parent != nullptr) _ma_refcount_incr(ptr);
-  auto& children = ptr->children();
-  for (auto child : children)
-    _ma_refcount_reset(child, 0);
-  return ptr;
 };
 };
 %enddef 

@@ -57,7 +57,7 @@ namespace ma
 */    
 /*    template <typename U, typename> U cast() const;*/
     %extend {
-      SWIGTYPE* cast(const char* type = nullptr) const;
+      SWIGTYPE* cast(const char* type = "") const;
       void assign(const SWIGTYPE* value);
     };
     

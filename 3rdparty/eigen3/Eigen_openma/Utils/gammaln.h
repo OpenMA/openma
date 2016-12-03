@@ -37,6 +37,8 @@
 
 #include <limits>
 #include <cassert>
+#include <cmath>
+#include <complex>
 
 /**
  * Based on the Fortran function algama (http://www.netlib.org/specfun/algama)

@@ -38,12 +38,11 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_1(ma, Trial, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   class TimeSequence;
   class Event;
+  class Hardware;
   
   class TrialPrivate;
   
@@ -67,9 +66,14 @@ namespace ma
     Node* events();
     Event* event(unsigned idx) _OPENMA_NOEXCEPT;
     
-    virtual Trial* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    Node* hardwares();
+    Hardware* hardware(unsigned idx) _OPENMA_NOEXCEPT;
+    
+  protected:
+    virtual Node* allocateNew() const override;
   };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Trial, OPENMA_BASE_EXPORT);
 
 #endif // __openma_base_trial_h

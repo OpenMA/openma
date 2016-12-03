@@ -102,6 +102,11 @@ namespace math
     Array(const Values& values, const Residuals& residuals);
     
     /**
+     * Resize the array by the given number of @a rows
+     */
+    void resize(Index rows);
+    
+    /**
      * Constructor from an XprBase object (generaly used to store the result of a computation).
      * @code{.unparsed}
      * // a and b are other Array object.
@@ -142,6 +147,13 @@ namespace math
   : Array()
   {
     Array::assign(*this, other);
+  };
+  
+  template <int Cols>
+  inline void Array<Cols>::resize(Index rows)
+  {
+    this->values().resize(rows, Values::ColsAtCompileTime);
+    this->residuals().resize(rows, Residuals::ColsAtCompileTime);
   };
   
   template <int Cols>
@@ -222,7 +234,7 @@ namespace math
     const Eigen::Block<const Array<12>::Values> orientations() const _OPENMA_NOEXCEPT {return this->m_Values.topLeftCorner(this->rows(),Orientations::ColsAtCompileTime);};
     
     /**
-     * Returns the three last columns to access to the 3D orientation part.
+     * Returns the three last columns to access to the 3D position part.
      */
     const Eigen::Block<const Array<12>::Values> positions() const _OPENMA_NOEXCEPT {return this->m_Values.topRightCorner(this->rows(),Positions::ColsAtCompileTime);};
   };
@@ -242,9 +254,9 @@ namespace math
   {};
  
   /**
-   * Constructor from vectors (u,v,w,o).
+   * Constructor from vectors (@a u, @a v, @a w, @a o).
    * Internally, these vectors are joined into an array with 12 components. They represents a compact affine transformation.
-   * The storage order is the following u_x, u_y, u_z, v_x, v_x, v_y, v_z, w_x, w_y, w_z, o_x, o_y, o_z.
+   * The storage order is the following u_x, u_y, u_z, v_x, v_y, v_z, w_x, w_y, w_z, o_x, o_y, o_z.
    */
   template <typename U, typename V, typename W, typename O>
   inline Pose::Pose(const XprBase<U>& u, const XprBase<V>& v, const XprBase<W>& w, const XprBase<O>& o)
@@ -297,6 +309,117 @@ namespace math
   template <typename U>
   Pose::Pose(const XprBase<U>& other)
   : Array<12>(other)
+  {};
+  
+  // ----------------------------------------------------------------------- //
+  //                                    WRENCH
+  // ----------------------------------------------------------------------- //
+
+  template <>
+  struct Traits<Wrench> : Traits<Array<9>>
+  {};
+
+  // ----------------------------------------------------------------------- //
+  
+  /**
+   * @class Wrench openma/math/array.h
+   * @brief Define an Array with 9 columns to represent forces and moments at a specific position along a sequence.
+   * Convenient class with dedicated methods to construct/access wrenches.
+   * @relates Array
+   * @ingroup openma_math
+   */
+  class Wrench : public Array<9>
+  {
+  public:
+    using Forces = Array<3>::Values; ///< Type used for the force part of a wrench
+    using Moments = Array<3>::Values; ///< Type used for the moment part of a wrench
+    using Positions = Array<3>::Values; ///< Type used for the position part of a pose
+    
+    Wrench();
+    Wrench(Index rows);
+    template <typename F, typename M, typename P> Wrench(const XprBase<F>& f, const XprBase<M>& m, const XprBase<P>& p);
+    template <typename U> Wrench(const XprBase<U>& other);
+    
+    /**
+     * Returns the three first columns to access to the 3D force part.
+     */
+    const Eigen::Block<const Array<9>::Values> forces() const _OPENMA_NOEXCEPT {return this->m_Values.topLeftCorner(this->rows(),Forces::ColsAtCompileTime);};
+    
+    /**
+     * Returns the three middle columns to access to the 3D moment part.
+     */
+    const Eigen::Block<const Array<9>::Values> moments() const _OPENMA_NOEXCEPT {return this->m_Values.block(0,3,this->rows(),Moments::ColsAtCompileTime);};
+    
+    /**
+     * Returns the three last columns to access to the 3D position part.
+     */
+    const Eigen::Block<const Array<9>::Values> positions() const _OPENMA_NOEXCEPT {return this->m_Values.topRightCorner(this->rows(),Forces::ColsAtCompileTime);};
+
+  };
+  
+  /**
+   * Default constructor
+   */
+  inline Wrench::Wrench()
+  : Array<9>()
+  {};
+ 
+  /**
+   * Initialize a wrench with a number of samples (lines) equals to @a rows 
+   */
+  inline Wrench::Wrench(Index rows)
+  : Array<9>(rows)
+  {};
+ 
+  /**
+   * Constructor from forces (@a f), moments (@a m), and positions (@a p).
+   * Internally, these vectors are joined into an array with 9 components..
+   * The storage order is the following f_x, f_y, f_z, m_x, m_y, m_z, p_x, p_y, p_z.
+   */
+  template <typename F, typename M, typename P>
+  inline Wrench::Wrench(const XprBase<F>& f, const XprBase<M>& m, const XprBase<P>& p)
+  : Array<9>(static_cast<const F&>(f).rows())
+  {
+    static_assert(F::ColsAtCompileTime == 3, "The input 'f' must be an array with 3 columns (i.e. a Vector)");
+    static_assert(M::ColsAtCompileTime == 3, "The input 'm' must be an array with 3 columns (i.e. a Vector)");
+    static_assert(P::ColsAtCompileTime == 3, "The input 'p' must be an array with 3 columns (i.e. a Vector)");
+    const auto& xpr1 = static_cast<const F&>(f).derived();
+    const Vector::Values v1 = xpr1.values();
+    const Vector::Residuals r1 = xpr1.residuals();
+    const auto& xpr2 = static_cast<const M&>(m).derived();
+    const Vector::Values v2 = xpr2.values();
+    const Vector::Residuals r2 = xpr2.residuals();
+    const auto& xpr3 = static_cast<const P&>(p).derived();
+    const Vector::Values v3 = xpr3.values();
+    const Vector::Residuals r3 = xpr3.residuals();
+    assert(v1.rows() == v2.rows());
+    assert(v2.rows() == v3.rows());
+    assert(r1.rows() == r2.rows());
+    assert(r2.rows() == r3.rows());
+    const Eigen::Array<bool,Eigen::Dynamic,1> cond = (r1 >= 0.0) && (r2 >= 0.0) && (r3 >= 0.0);
+    for (Index i = 0 ; i < cond.rows() ; ++i)
+    {
+      if (cond.coeff(i))
+      {
+        this->m_Values.block<1,3>(i,0) = v1.row(i);
+        this->m_Values.block<1,3>(i,3) = v2.row(i);
+        this->m_Values.block<1,3>(i,6) = v3.row(i);
+        this->m_Residuals.coeffRef(i) = 0.0;
+      }
+      else
+      {
+        this->m_Values.row(i).setZero();
+        this->m_Residuals.coeffRef(i) = -1.0;  
+      }
+    }
+  };
+  
+  /**
+   * Convenient constructor to store the result of an expression.
+   */
+  template <typename U>
+  Wrench::Wrench(const XprBase<U>& other)
+  : Array<9>(other)
   {};
   
 };

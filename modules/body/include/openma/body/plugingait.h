@@ -39,8 +39,6 @@
 #include "openma/body/skeletonhelper.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, PluginGait, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -105,6 +103,9 @@ namespace body
     
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;
+    virtual InertialParametersEstimator* defaultInertialParametersEstimator() override;
+    virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() override;
+    virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() override;
     
     virtual PluginGait* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
@@ -115,5 +116,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::PluginGait, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_plugingait_h

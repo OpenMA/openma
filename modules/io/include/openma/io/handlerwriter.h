@@ -68,7 +68,7 @@ namespace io
     const std::string& format() const _OPENMA_NOEXCEPT;
     
     bool canWrite();
-    bool write(Node* root);
+    bool write(const Node* const root);
     
     Error errorCode() const _OPENMA_NOEXCEPT;
     const std::string& errorMessage() const _OPENMA_NOEXCEPT;

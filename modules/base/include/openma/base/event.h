@@ -38,8 +38,6 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_1(ma, Event, OPENMA_BASE_EXPORT);
-
 namespace ma
 {
   class EventPrivate;
@@ -66,10 +64,14 @@ namespace ma
     
     const std::string& subject() const _OPENMA_NOEXCEPT;
     void setSubject(const std::string& value) _OPENMA_NOEXCEPT;
+
+  protected:
+    virtual Node* allocateNew() const override;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
     
-    virtual Event* clone(Node* parent = nullptr) const override;
-    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::Event, OPENMA_BASE_EXPORT);
 
 #endif // __openma_base_event_h

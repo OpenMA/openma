@@ -42,8 +42,6 @@
 #include <vector>
 #include <string>
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, LandmarksTranslator, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
 namespace body
@@ -64,13 +62,17 @@ namespace body
     LandmarksTranslator& operator=(const LandmarksTranslator& ) = delete;
     LandmarksTranslator& operator=(LandmarksTranslator&& ) _OPENMA_NOEXCEPT = delete;
     
-    std::string convert(const std::string& name) const _OPENMA_NOEXCEPT;
+    const std::string& convert(const std::string& name) const _OPENMA_NOEXCEPT;
     std::string convertIfExists(const std::string& name) const _OPENMA_NOEXCEPT;
+    
+    const std::string& convertReverse(const std::string& name) const _OPENMA_NOEXCEPT;
     
   private:
     LandmarksTranslator(LandmarksTranslatorPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::LandmarksTranslator, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_landmarkstranslator_h

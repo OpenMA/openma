@@ -14,7 +14,7 @@ classdef NodeTest < matlab.unittest.TestCase
 
         function child0(testCase)
             root = ma.Node('root');
-            testCase.verifyError(@()root.child(0), 'SWIG:Node:child');
+            testCase.verifyError(@()root.child(0), 'SWIG:IndexError');
         end
 
         function child1(testCase)
@@ -95,5 +95,35 @@ classdef NodeTest < matlab.unittest.TestCase
             testCase.verifyEqual(root.child(1).name(),'child1');
             testCase.verifyEqual(other.child(1).name(),'Bar');
         end
+        
+        function addParent(testCase)
+            root = ma.Node('root');
+            child1 = ma.Node('child1');
+            child1.addParent(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 1);
+            testCase.verifyEqual(root.hasChildren, true);
+            testCase.verifyEqual(child1.hasParents, true);
+            testCase.verifyEqual(root.child(1).name, 'child1');
+            delete(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+        end
+        
+        function removeParent(testCase)
+            root = ma.Node('root');
+            child1 = ma.Node('child1', root);
+            child1.removeParent(root);
+            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(root.hasChildren, false);
+            testCase.verifyEqual(child1.hasParents, false);
+        end
+        
+        function setProperty(testCase)
+            root = ma.Node('root');
+            root.setProperty('foo',1)
+            testCase.verifyEqual(root.property('foo').cast(), 1)
+            root.setProperty('bar',ma.Any(10.0))
+            testCase.verifyEqual(root.property('bar').cast(), 10.0)
+        end
+        
     end
 end

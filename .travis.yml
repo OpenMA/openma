@@ -6,11 +6,6 @@ language: objective-c
 # To prepare the system to install prerequisites or dependencies
 before_install:
   - brew update 
-  - brew unlink cmake # By default, CMake 3.0 (or less) is used
-  
-# To install any prerequisites or dependencies necessary to run your build
-install:  
-  - brew install cmake # And we need at least CMake 3.1 (for the activation of C++11)
   
 # To prepare your build for testing
 before_script:
@@ -22,7 +17,7 @@ script:
   - rm -rf build
   - mkdir build
   - cd build
-  - if [ "$SELECTED_COMPILER" = "GCC" ]; then export CC=gcc-4.8 && export CXX=g++-4.8; fi
+  - if [ "$SELECTED_COMPILER" = "GCC" ]; then export CC=gcc-4.9 && export CXX=g++-4.9; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then cmake -DCMAKE_BUILD_TYPE:CHAR=$WITH_BUILD_TYPE -DBUILD_SHARED_LIBS:BOOL=$WITH_SHARED_LIBS -DWITH_COVERALLS_ENABLED:BOOL=$WITH_COVERALLS_ENABLED -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=$ROOT/data -G "Unix Makefiles" ..; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then make; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then ctest -VV; fi
@@ -37,8 +32,8 @@ env:
   
   matrix:
     - SELECTED_COMPILER=Clang WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=0
-    - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=0
-    - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=0 WITH_COVERITY_ENABLED=1 WITH_COVERALLS_ENABLED=0
+    # - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=0
+    # - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=0 WITH_COVERITY_ENABLED=1 WITH_COVERALLS_ENABLED=0
     - SELECTED_COMPILER=Clang WITH_BUILD_TYPE=Debug   WITH_SHARED_LIBS=0 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=1
       
 matrix:

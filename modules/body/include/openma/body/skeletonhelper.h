@@ -40,8 +40,7 @@
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 #include <string>
-
-OPENMA_EXPORT_NODE_CAST_2(ma, body, SkeletonHelper, OPENMA_BODY_EXPORT);
+#include <array>
 
 namespace ma
 {
@@ -54,6 +53,9 @@ namespace ma
 namespace body
 {
   class LandmarksTranslator;
+  class InertialParametersEstimator;
+  class ExternalWrenchAssigner;
+  class InverseDynamicProcessor;
   class Model;
   
   class SkeletonHelperPrivate;
@@ -71,9 +73,16 @@ namespace body
     SkeletonHelper& operator=(const SkeletonHelper& ) = delete;
     SkeletonHelper& operator=(SkeletonHelper&& ) _OPENMA_NOEXCEPT = delete;
     
+    void setGravity(const std::array<double,3>& g);
+    const std::array<double,3>& gravity() const _OPENMA_NOEXCEPT;
+    
     virtual bool calibrate(Node* trials, Subject* subject) = 0;
     bool reconstruct(Node* output, Node* trials);
+    
     virtual LandmarksTranslator* defaultLandmarksTranslator() = 0;
+    virtual InertialParametersEstimator* defaultInertialParametersEstimator() = 0;
+    virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() = 0;
+    virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() = 0;
         
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
@@ -86,5 +95,7 @@ namespace body
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::SkeletonHelper, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_skeletonhelper_h

@@ -39,10 +39,10 @@
 #include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-OPENMA_EXPORT_NODE_CAST_2(ma, body, Segment, OPENMA_BODY_EXPORT);
-
 namespace ma
 {
+  class TimeSequence;
+  
 namespace body
 {  
   class SegmentPrivate;
@@ -67,10 +67,14 @@ namespace body
     int side() const _OPENMA_NOEXCEPT;
     void setSide(int value) _OPENMA_NOEXCEPT;
     
+    TimeSequence* pose() const _OPENMA_NOEXCEPT;
+    
     virtual Segment* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };
 };
 };
+
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::Segment, OPENMA_BODY_EXPORT);
 
 #endif // __openma_body_segment_h

@@ -47,6 +47,7 @@ namespace ma
 namespace body
 {
   class Segment;
+  class Anchor;
   class Joint;
   
   class JointPrivate : public NodePrivate
@@ -54,11 +55,13 @@ namespace body
     OPENMA_DECLARE_PINT_ACCESSOR(Joint)
       
   public:
-    JointPrivate(Joint* pint, const std::string& name, Segment* proximal, Segment* distal);
+    JointPrivate(Joint* pint, const std::string& name, Segment* ps, Anchor* pa, Segment* ds, Anchor* da);
     ~JointPrivate();
     
-    Segment* Proximal;
-    Segment* Distal;
+    Segment* ProximalSegment;
+    Anchor* ProximalAnchor;
+    Segment* DistalSegment;
+    Anchor* DistalAnchor;
   };
 };
 };

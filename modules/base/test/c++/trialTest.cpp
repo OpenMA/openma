@@ -51,7 +51,7 @@ CXXTEST_SUITE(TrialTest)
     ma::Trial trial("trial");
     auto node1 = new ma::Node("leaf", trial.timeSequences());
     auto node2 = new ma::Node("leaf2", trial.events());
-    auto clone = trial.clone();
+    auto clone = static_cast<ma::Trial*>(trial.clone());
     TS_ASSERT_EQUALS(clone->children().size(), 2ul);
     TS_ASSERT_DIFFERS(clone->timeSequences(), trial.timeSequences());
     TS_ASSERT_DIFFERS(clone->events(), trial.events());

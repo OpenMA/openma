@@ -46,6 +46,7 @@ namespace math
   template <typename Derived> class ArrayBase;
   template <int Cols> class Array;
   class Pose;
+  class Wrench;
   template <typename Derived> class Map;
   
   template <typename Xpr, int Cols> class BlockOp;
@@ -57,12 +58,18 @@ namespace math
   template <typename XprOne, typename XprTwo> class DifferenceOp;
   template <typename XprOne, typename XprTwo> class SumOp;
   template <typename Xpr> class ScaleOp;
+  template <typename Xpr> class MinOp;
+  template <typename Xpr> class MaxOp;
   template <typename Xpr> class NormalizedOp;
   template <typename XprOne, typename XprTwo> class CrossOp;
+  template <typename Xpr> class TransposeOp;
   template <typename XprOne, typename XprTwo> class TransformOp;
-  template <typename U> class ReplicateOp;
+  template <typename Xpr> class ReplicateOp;
   template <typename Xpr> class InverseOp;
+  template <typename Xpr, typename U> class DownsampleOp;
   template <typename Xpr> class EulerAnglesOp;
+  template <typename Xpr, unsigned U> class DerivativeOp;
+  template <typename Xpr> class SkewReduxOp;
 };
 };
 
