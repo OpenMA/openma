@@ -149,10 +149,10 @@ namespace body
         return false;
       }
       // Reconstruct for each sample
-      long numSamples = std::numeric_limits<long>::max();
+      unsigned numSamples = std::numeric_limits<unsigned>::max();
       for (const auto& marker : globalMarkers)
       {
-        numSamples = std::min(numSamples, marker.second.rows());
+        numSamples = std::min<unsigned>(numSamples, marker.second.rows());
         if (marker.second.rows() != numSamples)
         {
           error("The number of samples for the markers used by the cluster '%s.Cluster' is not the same. Impossible to compute the TCS. Pose estimator aborted.", segment->name().c_str());
