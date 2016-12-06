@@ -23,7 +23,7 @@ ma::TimeSequence* make_marker(const std::string& name, double* data, ma::Trial* 
   const double start = 0.0;
   const std::string unit = "mm";
   auto marker = new ma::TimeSequence(name, components, samples, rate, start, ma::TimeSequence::Marker, unit, trial->timeSequences());
-  std::copy(data, data+4, marker->data());
+  std::copy_n(data, 4, marker->data());
   return marker;
 }
 
