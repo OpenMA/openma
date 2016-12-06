@@ -732,7 +732,7 @@ namespace io
         }
         size_t pointSamples = lastSampleIndex - firstSampleIndex + 1;
         double startTime = static_cast<double>(firstSampleIndex-1) / pointSampleRate;
-        auto points = make_nodes<TimeSequence*>(pointNumber,4,pointSamples,pointSampleRate,startTime,TimeSequence::Marker,pointUnits[0],trial->timeSequences());
+        auto points = make_nodes<TimeSequence*>(pointNumber,4,pointSamples,pointSampleRate,startTime,TimeSequence::Position,pointUnits[0],trial->timeSequences());
         auto analogs = make_nodes<TimeSequence*>(numAnalogs,1,pointSamples*numberSamplesPerAnalogChannel,pointSampleRate*numberSamplesPerAnalogChannel,startTime,TimeSequence::Analog,"V",trial->timeSequences());
         try
         {
@@ -1016,7 +1016,7 @@ namespace io
     std::vector<double> analogScales;
     // TODO: Manage the case where no "point" timesequence is provided => set default unit
     std::unordered_map<int,std::string> pointUnits{
-      {ma::TimeSequence::Marker,""},
+      {ma::TimeSequence::Position,""},
       {ma::TimeSequence::Angle,""},
       {ma::TimeSequence::Force,""},
       {ma::TimeSequence::Moment,""},
@@ -1304,7 +1304,7 @@ namespace io
     C3DHandlerPrivate::createProperties(props, "POINT:FRAMES", static_cast<float>(static_cast<int16_t>(frames > 65535 ? 65535 : frames)));
     C3DHandlerPrivate::createProperties(props, "POINT:LABELS", pointLabels);
     C3DHandlerPrivate::createProperties(props, "POINT:DESCRIPTIONS", pointDescs);
-    C3DHandlerPrivate::createProperties(props, "POINT:UNITS", pointUnits[TimeSequence::Marker]);
+    C3DHandlerPrivate::createProperties(props, "POINT:UNITS", pointUnits[TimeSequence::Position]);
     C3DHandlerPrivate::createProperties(props, "POINT:ANGLE_UNITS", pointUnits[TimeSequence::Angle]);
     C3DHandlerPrivate::createProperties(props, "POINT:FORCE_UNITS", pointUnits[TimeSequence::Force]);
     C3DHandlerPrivate::createProperties(props, "POINT:MOMENT_UNITS", pointUnits[TimeSequence::Moment]);

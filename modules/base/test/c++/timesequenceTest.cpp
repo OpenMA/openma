@@ -6,15 +6,15 @@ CXXTEST_SUITE(TimeSequenceTest)
 {
   CXXTEST_TEST(accessor)
   {
-    ma::TimeSequence foo("1D4C_Signal(markers)",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm");
-    ma::TimeSequence toto("1D4C_Signal(markers)",4,10,100.0,0.125,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence foo("1D4C_Signal(markers)",4,0,100.0,0.0,ma::TimeSequence::Position,"mm");
+    ma::TimeSequence toto("1D4C_Signal(markers)",4,10,100.0,0.125,ma::TimeSequence::Position,"mm");
     ma::TimeSequence bar("1D1C_Signal(analog)",1,100,1000.0,0.0,ma::TimeSequence::Analog,"V");
     ma::TimeSequence bar2("2D64x64C_Signal(pressure)",{32,32},2,200.0,0.0,ma::TimeSequence::Unknown,"Pa");
     
     TS_ASSERT_EQUALS(foo.data(),nullptr);
     TS_ASSERT_EQUALS(foo.name(),"1D4C_Signal(markers)");
     TS_ASSERT_EQUALS(foo.unit(),"mm");
-    TS_ASSERT_EQUALS(foo.type(),ma::TimeSequence::Marker);
+    TS_ASSERT_EQUALS(foo.type(),ma::TimeSequence::Position);
     TS_ASSERT_EQUALS(foo.sampleRate(),100.0);
     TS_ASSERT_EQUALS(foo.startTime(),0.0);
     TS_ASSERT_EQUALS(foo.dimensions().size(),1ul);
@@ -35,7 +35,7 @@ CXXTEST_SUITE(TimeSequenceTest)
     TS_ASSERT_EQUALS(bar2.components(),1024u);
     TS_ASSERT_EQUALS(bar2.elements(),2048u);
     
-    TS_ASSERT_EQUALS(foo.property("type").cast<int>(),ma::TimeSequence::Marker);
+    TS_ASSERT_EQUALS(foo.property("type").cast<int>(),ma::TimeSequence::Position);
     
     // Eigen::Matrix<double,Eigen::Dynamic,3> rv = Eigen::Matrix<double,Eigen::Dynamic,3>::Random(10,3);
     // Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,3>> values(toto.data(),toto.samples(),3);
@@ -50,17 +50,17 @@ CXXTEST_SUITE(TimeSequenceTest)
   CXXTEST_TEST(findWithType)
   {
     ma::Node root("root");
-    ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
+    ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Position,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
     ma::TimeSequence bar("bar",4,0,100.0,0.0,ma::TimeSequence::Angle,"degree",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
-    ma::TimeSequence toto("toto",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
+    ma::TimeSequence toto("toto",4,0,100.0,0.0,ma::TimeSequence::Position,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
     
     TS_ASSERT_EQUALS(root.children().size(),3ul);
 
-    TS_ASSERT_EQUALS(root.findChild<ma::TimeSequence*>("foo",{{"type",ma::TimeSequence::Marker}},false),&foo);
-    TS_ASSERT_EQUALS(root.findChild<ma::TimeSequence*>("toto",{{"type",ma::TimeSequence::Marker}},false),&toto);
+    TS_ASSERT_EQUALS(root.findChild<ma::TimeSequence*>("foo",{{"type",ma::TimeSequence::Position}},false),&foo);
+    TS_ASSERT_EQUALS(root.findChild<ma::TimeSequence*>("toto",{{"type",ma::TimeSequence::Position}},false),&toto);
     TS_ASSERT_EQUALS(root.findChild<ma::TimeSequence*>("bar",{{"type",ma::TimeSequence::Angle}},false),&bar);
 
-    TS_ASSERT_EQUALS(root.findChildren<ma::TimeSequence*>({},{{"type",ma::TimeSequence::Marker}},false).size(),2ul);
+    TS_ASSERT_EQUALS(root.findChildren<ma::TimeSequence*>({},{{"type",ma::TimeSequence::Position}},false).size(),2ul);
     TS_ASSERT_EQUALS(root.findChildren<ma::TimeSequence*>({},{{"type",ma::TimeSequence::Angle}},false).size(),1ul);
   };
   
@@ -121,7 +121,7 @@ CXXTEST_SUITE(TimeSequenceTest)
   CXXTEST_TEST(copy)
   {
     ma::Node root("root");
-    ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
+    ma::TimeSequence foo("foo",4,0,100.0,0.0,ma::TimeSequence::Position,"mm",1.0,0.0,ma::TimeSequence::InfinityRange,&root);
     ma::TimeSequence bar("1D1C_Signal(analog)",1,100,1000.0,2.39,ma::TimeSequence::Analog,"V", -1.0,234,{{-10.0,10.0}});
     for (unsigned i = 0 ; i < 100 ; ++i)
       bar.data()[i] = double(i);
@@ -149,11 +149,11 @@ CXXTEST_SUITE(TimeSequenceTest)
   CXXTEST_TEST(checkCommonProperties)
   {
     std::vector<ma::TimeSequence*> tss;
-    ma::TimeSequence foo1("foo1",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence foo1("foo1",4,5,100.0,1.0,ma::TimeSequence::Position,"mm");
     tss.push_back(&foo1);
-    ma::TimeSequence foo2("foo2",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence foo2("foo2",4,5,100.0,1.0,ma::TimeSequence::Position,"mm");
     tss.push_back(&foo2);
-    ma::TimeSequence foo3("foo3",4,5,100.0,1.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence foo3("foo3",4,5,100.0,1.0,ma::TimeSequence::Position,"mm");
     tss.push_back(&foo3);
     double sampleRate = 0., startTime = 0.;
     unsigned samples = 0;

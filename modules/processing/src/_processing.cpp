@@ -75,7 +75,7 @@ namespace processing
    * Internally, this function does two filtering passes (one forward followed by one backward). To respect the given final cut-off frequency (@a fc) and the final order (@a fn), these ones are adapted in consequence (see Robertson & Dowling [1] and Winter [2]).
    * This function manage each component independently. In case the type of a time sequence is tagged ma::TimeSequence::Reconstructed, the filtering is managed in consequence and realized by window.
    *
-   * @important This is the responsability of the developer to use correctly this function. It is not intended to verify if the passed time sequence(s) is(are) physically adapted to this filter. For example, the filter is adapted for time sequence with the types TimeSequence::Marker and TimeSequence::Analog but might not with the types TimeSequence::Pose and TimeSequence::Wrench. 
+   * @important This is the responsability of the developer to use correctly this function. It is not intended to verify if the passed time sequence(s) is(are) physically adapted to this filter. For example, the filter is adapted for time sequence with the types TimeSequence::Position and TimeSequence::Analog but might not with the types TimeSequence::Pose and TimeSequence::Wrench. 
    *
    * @par References
    * 1. Robertson D.G., Dowling J.J., <em>Design and responses of Butterworth and critically damped digital filters</em>, Journal of Electromyography and Kinesiology, 2003.

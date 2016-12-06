@@ -116,7 +116,7 @@ namespace body
       return nullptr;
     }
     // NOTE The unit must be set later
-    return math::to_timesequence(pos, this->pint()->name()+".Position.Cache", ts->sampleRate(), ts->startTime(), TimeSequence::Marker, "", this->pint());
+    return math::to_timesequence(pos, this->pint()->name()+".Position.Cache", ts->sampleRate(), ts->startTime(), TimeSequence::Position, "", this->pint());
   };
   
   // ----------------------------------------------------------------------- //
@@ -166,7 +166,7 @@ namespace body
       return nullptr;
     }
     // NOTE The unit must be set later
-    return math::to_timesequence(pos, this->pint()->name()+".Position.Cache", ts->sampleRate(), ts->startTime(), TimeSequence::Marker, "", this->pint());
+    return math::to_timesequence(pos, this->pint()->name()+".Position.Cache", ts->sampleRate(), ts->startTime(), TimeSequence::Position, "", this->pint());
   }
 };
 };

@@ -88,7 +88,7 @@ CXXTEST_SUITE(MixTest)
   
   CXXTEST_TEST(toArray)
   {
-    ma::TimeSequence marker("MARKER",4,10,100.0,0.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence marker("MARKER",4,10,100.0,0.0,ma::TimeSequence::Position,"mm");
     
     auto data = Eigen::Map<ma::math::Array<4>::Values>(marker.data(),10,4);
     data.setRandom();
@@ -114,11 +114,11 @@ CXXTEST_SUITE(MixTest)
   
   CXXTEST_TEST(toArrayBis)
   {
-    ma::TimeSequence marker("MARKER",4,1,100.0,0.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence marker("MARKER",4,1,100.0,0.0,ma::TimeSequence::Position,"mm");
     ma::TimeSequence angle("ANGLE",4,2,100.0,0.0,ma::TimeSequence::Angle,"degree");
     ma::TimeSequence analog("ANALOG",1,1,1000.0,0.0,ma::TimeSequence::Analog,"V");
     
-    auto a = ma::math::to_array<3>(&marker,0,ma::TimeSequence::Marker);
+    auto a = ma::math::to_array<3>(&marker,0,ma::TimeSequence::Position);
     TS_ASSERT_EQUALS(a.isValid(), true);
     TS_ASSERT_EQUALS(a.rows(), 1);
     TS_ASSERT_EQUALS(a.cols(), 3);
