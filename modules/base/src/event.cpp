@@ -160,7 +160,7 @@ namespace ma
   void Event::setTime(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->Time) < std::numeric_limits<double>::epsilon())
+    if (value == optr->Time)
       return;
     optr->Time = value;
     this->modified();

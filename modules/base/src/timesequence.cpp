@@ -295,7 +295,7 @@ namespace ma
   void TimeSequence::setSampleRate(double value)_OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->SampleRate) < std::numeric_limits<double>::epsilon())
+    if (value == optr->SampleRate)
       return;
     optr->SampleRate = value;
     this->modified();
@@ -409,7 +409,7 @@ namespace ma
   void TimeSequence::setStartTime(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->StartTime) < std::numeric_limits<double>::epsilon())
+    if (value == optr->StartTime)
       return;
     optr->StartTime = value;
     this->modified();
@@ -430,7 +430,7 @@ namespace ma
   void TimeSequence::setScale(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->Scale) < std::numeric_limits<double>::epsilon())
+    if (value == optr->Scale)
       return;
     optr->Scale = value;
     this->modified();
@@ -451,7 +451,7 @@ namespace ma
   void TimeSequence::setOffset(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->Offset) < std::numeric_limits<double>::epsilon())
+    if (value == optr->Offset)
       return;
     optr->Offset = value;
     this->modified();
@@ -472,8 +472,7 @@ namespace ma
   void TimeSequence::setRange(const std::array<double,2>& value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if ((std::fabs(value[0] - optr->Range[0]) < std::numeric_limits<double>::epsilon())
-     && (std::fabs(value[1] - optr->Range[1]) < std::numeric_limits<double>::epsilon()))
+    if (value == optr->Range)
       return;
     optr->Range = value;
     this->modified();
