@@ -3,7 +3,7 @@ import ma.io
 import unittest
 from test_file_path import openma_tdd_path_in
 
-class LandmarksTranslatorTest(unittest.TestCase):
+class PluginGaitTest(unittest.TestCase):
   def test_fix_crash_old_refcount_mechanism(self):
     # Note: The following code crashed with the old reference count mechanism
     #       The problem was related to the inclusion of trial and translator   
