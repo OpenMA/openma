@@ -108,7 +108,6 @@ namespace ma
     Node(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     
     template<typename U = Node*> U findChild(Node* node) const _OPENMA_NOEXCEPT;
-    void replaceChild(Node* current, Node* substitute);
     
     virtual Node* allocateNew() const;
     virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT;

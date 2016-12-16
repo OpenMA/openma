@@ -589,25 +589,7 @@ namespace ma
   {
     this->addParent(parent);
   };
-  
-  /**
-   * Replace the child @a current, by a @a substitute.
-   * The node @a current will be deleted if it has no more parent.
-   */
-  void Node::replaceChild(Node* current, Node* substitute)
-  {
-    if (current == substitute)
-      return;
-    if (current != nullptr)
-    {
-      current->removeParent(this);
-      if (!current->hasParents())
-        delete current;
-    }
-    substitute->addParent(this);
-    // removeParent() and addParent() internally call modified(). No need to call it explicitely
-  };
-  
+
   /**
    * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
    * Returns the child with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
