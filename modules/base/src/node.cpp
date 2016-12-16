@@ -47,6 +47,9 @@ namespace ma
   NodePrivate::NodePrivate(Node* pint, const std::string& name)
   : ObjectPrivate(),
     Name(name), Description(), DynamicProperties(), Parents(), Children(),
+#if defined(USE_REFCOUNT_MECHANISM)
+    ReferenceCounter(0),
+#endif
     mp_Pint(pint)
   {};
   
@@ -97,6 +100,7 @@ namespace ma
       }
     }
     this->Parents.push_back(node);
+    this->ReferenceCounter += 1;
     return true;
   };
   
@@ -113,6 +117,7 @@ namespace ma
       if (*it == node)
       {
         this->Parents.erase(it);
+        this->ReferenceCounter -= 1;
         return true;
       }
     }
@@ -531,7 +536,11 @@ namespace ma
     for (auto it = optr->Children.begin() ; it != optr->Children.end() ; ++it)
     {
       (*it)->pimpl()->detachParent(this);
-      if (!(*it)->hasParents())
+#if defined(USE_REFCOUNT_MECHANISM)
+      if (!(*it)->hasParents() && ((*it)->pimpl()->ReferenceCounter < 1))
+#else
+      if (!(*it)->hasParents())   
+#endif
         delete *it;
     }
     optr->Children.clear();
@@ -880,6 +889,26 @@ namespace ma
   {
     return (static_typeid<Node>() == id);
   };
+  
+#if defined(USE_REFCOUNT_MECHANISM)
+  /**
+   * Returns the number of objects linked to this object
+   */
+  int Node::refcount() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->ReferenceCounter;
+  };
+  
+  /**
+   * Returns a reference to the counter used to know the number of objects linked to this object
+   */
+  int& Node::refcount() _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->ReferenceCounter;
+  };
+#endif
   
   /**
    * @fn template <typename U> U node_cast(Node* node) _OPENMA_NOEXCEPT
