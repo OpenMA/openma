@@ -38,15 +38,8 @@
 #include "openma/bindings_export.h"
 #include "openma/base/node.h"
 
-#define _MA_REF_COUNTER "_MA_REF_COUNTER"
-
-OPENMA_BINDINGS_EXPORT void _ma_clear_node(ma::Node* self);
-
-OPENMA_BINDINGS_EXPORT ma::Any _ma_refcount_get(ma::Node* node);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_set(ma::Node* node, const ma::Any& value);
-OPENMA_BINDINGS_EXPORT void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive = true);
 OPENMA_BINDINGS_EXPORT void _ma_refcount_incr(ma::Node* node);
-OPENMA_BINDINGS_EXPORT int _ma_refcount_decr(ma::Node* node);
+OPENMA_BINDINGS_EXPORT void _ma_refcount_decr(ma::Node* node);
 
 #include "openma/bindings/templatehelper.h"
 #include "openma/bindings/loggerdevice.h"
