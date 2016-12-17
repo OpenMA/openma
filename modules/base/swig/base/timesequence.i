@@ -47,7 +47,7 @@ namespace ma
     enum class Type : int {
       Unknown = TimeSequence::Unknown,
       Reconstructed = TimeSequence::Reconstructed,
-      Marker = TimeSequence::Marker,
+      Position = TimeSequence::Position,
       Angle = TimeSequence::Angle,
       Force = TimeSequence::Force,
       Moment = TimeSequence::Moment,

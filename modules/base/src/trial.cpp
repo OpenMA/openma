@@ -89,7 +89,7 @@ namespace ma
    * // Create a trial
    * auto trial = ma::Trial("myTrial");
    * // Add a time sequence in the trial by setting its parent to 'trial->timeSequences()'.
-   * auto ts = ma::TimeSequence("RHEL", 4, 100, 100.0, 0.0, ma::TimeSequence::Marker, "mm", trial->timeSequences());
+   * auto ts = ma::TimeSequence("RHEL", 4, 100, 100.0, 0.0, ma::TimeSequence::Position, "mm", trial->timeSequences());
    * // Next line will display true
    * std::cout <<  std::boolalpha << trial->findChild<ma::TimeSequence*>("RHEL") != nullptr << std::endl;
    * // This is the same for the next line. The differences is in the research time which might be shorter below.

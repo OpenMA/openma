@@ -1,0 +1,33 @@
+## Customize the test machine
+machine:
+  timezone:
+    America/Montreal
+  environment:
+    PATH: "/home/ubuntu/cmake-3.7.1-Linux-x86_64/bin:$PATH"
+
+## Customize checkout
+checkout:
+  pre:
+    - git clone https://github.com/OpenMA/openma-data.git data
+
+## Customize dependencies
+dependencies:
+  cache_directories:
+    - ~/cmake-3.7.1-Linux-x86_64
+  pre:
+    - >
+      if [ ! -d ~/cmake-3.7.1-Linux-x86_64 ]; then
+        echo "No cache - installing CMake"
+        cd ~ && wget --quiet https://cmake.org/files/v3.7/cmake-3.7.1-Linux-x86_64.tar.gz && tar -xvf cmake-3.7.1-Linux-x86_64.tar.gz
+      else
+        echo "Cached CMake found"
+      fi
+  override:
+    - mkdir build && cd build
+    - cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data -G "Unix Makefiles" /home/ubuntu/openma
+    - make
+
+## Customize test commands
+test:
+  override:
+    - make test

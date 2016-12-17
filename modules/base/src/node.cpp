@@ -47,6 +47,9 @@ namespace ma
   NodePrivate::NodePrivate(Node* pint, const std::string& name)
   : ObjectPrivate(),
     Name(name), Description(), DynamicProperties(), Parents(), Children(),
+#if defined(USE_REFCOUNT_MECHANISM)
+    ReferenceCounter(0),
+#endif
     mp_Pint(pint)
   {};
   
@@ -97,6 +100,9 @@ namespace ma
       }
     }
     this->Parents.push_back(node);
+#if defined(USE_REFCOUNT_MECHANISM)
+    this->ReferenceCounter += 1;
+#endif
     return true;
   };
   
@@ -113,6 +119,9 @@ namespace ma
       if (*it == node)
       {
         this->Parents.erase(it);
+#if defined(USE_REFCOUNT_MECHANISM)
+        this->ReferenceCounter -= 1;
+#endif
         return true;
       }
     }
@@ -531,7 +540,11 @@ namespace ma
     for (auto it = optr->Children.begin() ; it != optr->Children.end() ; ++it)
     {
       (*it)->pimpl()->detachParent(this);
-      if (!(*it)->hasParents())
+#if defined(USE_REFCOUNT_MECHANISM)
+      if (!(*it)->hasParents() && ((*it)->pimpl()->ReferenceCounter < 1))
+#else
+      if (!(*it)->hasParents())   
+#endif
         delete *it;
     }
     optr->Children.clear();
@@ -580,25 +593,7 @@ namespace ma
   {
     this->addParent(parent);
   };
-  
-  /**
-   * Replace the child @a current, by a @a substitute.
-   * The node @a current will be deleted if it has no more parent.
-   */
-  void Node::replaceChild(Node* current, Node* substitute)
-  {
-    if (current == substitute)
-      return;
-    if (current != nullptr)
-    {
-      current->removeParent(this);
-      if (!current->hasParents())
-        delete current;
-    }
-    substitute->addParent(this);
-    // removeParent() and addParent() internally call modified(). No need to call it explicitely
-  };
-  
+
   /**
    * @fn template <typename U = Node*> U Node::findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const _OPENMA_NOEXCEPT;
    * Returns the child with the given @a name and which can be casted to the type T. You can refine the search by adding @a properties to match. The search can be done recursively (by default) or only in direct children. The latter is available by setting @a recursiveSearch to false.
@@ -880,6 +875,26 @@ namespace ma
   {
     return (static_typeid<Node>() == id);
   };
+  
+#if defined(USE_REFCOUNT_MECHANISM)
+  /**
+   * Returns the number of objects linked to this object
+   */
+  int Node::refcount() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return static_cast<int>(optr->ReferenceCounter);
+  };
+  
+  /**
+   * Returns a reference to the counter used to know the number of objects linked to this object
+   */
+  std::atomic<int>& Node::refcount() _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->ReferenceCounter;
+  };
+#endif
   
   /**
    * @fn template <typename U> U node_cast(Node* node) _OPENMA_NOEXCEPT

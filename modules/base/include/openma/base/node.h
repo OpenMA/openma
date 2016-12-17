@@ -35,6 +35,7 @@
 #ifndef __openma_base_node_h
 #define __openma_base_node_h
 
+#include "openma/config.h" // USE_REFCOUNT_MECHANISM
 #include "openma/base/object.h"
 #include "openma/base/any.h"
 #include "openma/base/typeid.h"
@@ -44,6 +45,7 @@
 #include <unordered_map>
 #include <string>
 #include <regex>
+#include <atomic>
 
 namespace ma
 {
@@ -98,11 +100,15 @@ namespace ma
     
     virtual bool isCastable(typeid_t id) const _OPENMA_NOEXCEPT;
     
+#if defined(USE_REFCOUNT_MECHANISM)
+    int refcount() const _OPENMA_NOEXCEPT;
+    std::atomic<int>& refcount() _OPENMA_NOEXCEPT;
+#endif
+    
   protected:
     Node(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
     
     template<typename U = Node*> U findChild(Node* node) const _OPENMA_NOEXCEPT;
-    void replaceChild(Node* current, Node* substitute);
     
     virtual Node* allocateNew() const;
     virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT;

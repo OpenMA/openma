@@ -12,14 +12,14 @@ classdef TimeSequenceTest < matlab.unittest.TestCase
         end
     
         function range(testCase)
-            a = ma.TimeSequence('ba',4,10,200,0.0,ma.TimeSequence.Type_Marker,'mm');
+            a = ma.TimeSequence('ba',4,10,200,0.0,ma.TimeSequence.Type_Position,'mm');
             testCase.verifyEqual(a.range(), [-Inf Inf]);
             a.setRange([-10,10]);
             testCase.verifyEqual(a.range(), [-10 10]);
         end
         
         function data(testCase)
-            a = ma.TimeSequence('ba',4,10,200,0.0,ma.TimeSequence.Type_Marker,'mm');
+            a = ma.TimeSequence('ba',4,10,200,0.0,ma.TimeSequence.Type_Position,'mm');
             temp = rand(10,4);
             a.setData(temp);
             testCase.verifyEqual(a.data(), temp);

@@ -34,51 +34,14 @@
 
 #include "openma/bindings.h"
 
-ma::Any _ma_refcount_get(ma::Node* node)
-{
-  return node->property(_MA_REF_COUNTER);
-};
-
-void _ma_refcount_set(ma::Node* node, const ma::Any& value)
-{
-  node->setProperty(_MA_REF_COUNTER, value);
-};
-
-void _ma_refcount_reset(ma::Node* node, const ma::Any& value, bool recursive)
-{
-  _ma_refcount_set(node, value);
-  if (recursive)
-  {
-    auto& children = node->children();
-    for (auto child : children)
-      _ma_refcount_reset(child, value, recursive);
-  }
-};
-
 void _ma_refcount_incr(ma::Node* node)
 {
-  const auto& prop = _ma_refcount_get(node);
-  if (prop.isValid())
-    _ma_refcount_set(node, static_cast<int>(prop) + 1);
-  else
-    _ma_refcount_set(node, static_cast<int>(node->parents().size()));
+  node->refcount() += 1;
 };
 
-int _ma_refcount_decr(ma::Node* node)
+void _ma_refcount_decr(ma::Node* node)
 {
-  int count = _ma_refcount_get(node);
-  count -= 1;
-  if (count < 0)
-  {
-    auto children = node->children();
-    for (auto child : children)
-    {
-      child->removeParent(node);
-      _ma_refcount_decr(child);
-    }
+  node->refcount() -= 1;
+  if (node->refcount() < 1)
     delete node;
-  }
-  else
-    _ma_refcount_set(node, count);
-  return count;
 };

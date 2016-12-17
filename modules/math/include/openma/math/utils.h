@@ -154,23 +154,23 @@ namespace math
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Position.
    * @relates Array
    * @ingroup openma_math
    */
   inline Map<Position> to_position(TimeSequence* ts)
   {
-    return to_vector(ts,0,TimeSequence::Marker);
+    return to_vector(ts,0,TimeSequence::Position);
   };
   
   /**
-   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Position.
    * @relates Array
    * @ingroup openma_math
    */
   inline Map<const Position> to_position(const TimeSequence* ts)
   {
-    return to_vector(ts,0,TimeSequence::Marker);
+    return to_vector(ts,0,TimeSequence::Position);
   };
  
   // ----------------------------------------------------------------------- //

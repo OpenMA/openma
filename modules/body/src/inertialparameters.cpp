@@ -221,8 +221,8 @@ namespace body
     auto optr_src = src->pimpl();
     this->Node::copy(src);
     optr->Mass = optr_src->Mass;
-    std::copy(optr_src->CenterOfMass, optr_src->CenterOfMass+3, optr->CenterOfMass);
-    std::copy(optr_src->Inertia, optr_src->Inertia+9, optr->Inertia);
+    std::copy_n(optr_src->CenterOfMass, 3, optr->CenterOfMass);
+    std::copy_n(optr_src->Inertia, 9, optr->Inertia);
  };
 };
 };

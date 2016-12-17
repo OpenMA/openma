@@ -56,17 +56,17 @@ namespace ma
     typedef enum : int {
       Unknown = 0x00,
       Reconstructed = 0x01,
-      Marker = 0x02  | Reconstructed,
-      Angle  = 0x04  | Reconstructed,
-      Force  = 0x08  | Reconstructed,
-      Moment = 0x10  | Reconstructed,
-      Power  = 0x20  | Reconstructed,
-      Scalar = 0x40  | Reconstructed,
-      Pose   = 0x80  | Reconstructed,
-      Wrench = 0x100 | Reconstructed,
+      Position = 0x02  | Reconstructed,
+      Angle    = 0x04  | Reconstructed,
+      Force    = 0x08  | Reconstructed,
+      Moment   = 0x10  | Reconstructed,
+      Power    = 0x20  | Reconstructed,
+      Scalar   = 0x40  | Reconstructed,
+      Pose     = 0x80  | Reconstructed,
+      Wrench   = 0x100 | Reconstructed,
       Velocity = 0x200,
-      Analog = 0x1000,
-      Other  = 0x10000
+      Analog   = 0x1000,
+      Other    = 0x10000
     } Type;
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
     static _OPENMA_CONSTEXPR std::array<double,2> InfinityRange;
