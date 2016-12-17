@@ -100,7 +100,9 @@ namespace ma
       }
     }
     this->Parents.push_back(node);
+#if defined(USE_REFCOUNT_MECHANISM)
     this->ReferenceCounter += 1;
+#endif
     return true;
   };
   
@@ -117,7 +119,9 @@ namespace ma
       if (*it == node)
       {
         this->Parents.erase(it);
+#if defined(USE_REFCOUNT_MECHANISM)
         this->ReferenceCounter -= 1;
+#endif
         return true;
       }
     }
