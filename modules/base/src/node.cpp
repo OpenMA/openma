@@ -879,13 +879,13 @@ namespace ma
   int Node::refcount() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    return optr->ReferenceCounter;
+    return static_cast<int>(optr->ReferenceCounter);
   };
   
   /**
    * Returns a reference to the counter used to know the number of objects linked to this object
    */
-  int& Node::refcount() _OPENMA_NOEXCEPT
+  std::atomic<int>& Node::refcount() _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->ReferenceCounter;

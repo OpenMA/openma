@@ -45,6 +45,7 @@
 #include <unordered_map>
 #include <string>
 #include <regex>
+#include <atomic>
 
 namespace ma
 {
@@ -101,7 +102,7 @@ namespace ma
     
 #if defined(USE_REFCOUNT_MECHANISM)
     int refcount() const _OPENMA_NOEXCEPT;
-    int& refcount() _OPENMA_NOEXCEPT;
+    std::atomic<int>& refcount() _OPENMA_NOEXCEPT;
 #endif
     
   protected:

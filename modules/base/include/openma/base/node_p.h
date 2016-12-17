@@ -49,6 +49,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <atomic>
 
 namespace ma
 {
@@ -85,7 +86,7 @@ namespace ma
     std::vector<Node*> Parents;
     std::vector<Node*> Children;
 #if defined(USE_REFCOUNT_MECHANISM)
-    int ReferenceCounter;
+    std::atomic<int> ReferenceCounter;
 #endif
     
   protected:
