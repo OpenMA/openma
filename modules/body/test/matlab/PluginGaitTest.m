@@ -34,13 +34,23 @@ classdef PluginGaitTest < matlab.unittest.TestCase
                   {'RTOE', 'R.MTH2'}, ...
                   {'LHEE', 'L.HEE'}, ...
                   {'RHEE', 'R.HEE'}}, skeletonhelper);
+          delete(ans);
           trials = ma.io.read(calibration_filename);
           ma.body.calibrate(skeletonhelper, trials, subject);
           models = ma.body.reconstruct(skeletonhelper, trials);
+          testCase.verifyEqual(double(trials.child(1).refcount()), 3);
+          testCase.verifyEqual(double(models.findChild(ma.T_Trial).refcount()),3)
+          testCase.verifyEqual(double(models.findChild(ma.body.T_LandmarksTranslator).refcount()), 3);
           trials = ma.io.read(dynamic_filename);
           models = ma.body.reconstruct(skeletonhelper, trials);
+          testCase.verifyEqual(double(trials.child(1).refcount()), 3);
+          testCase.verifyEqual(double(models.findChild(ma.T_Trial).refcount()),3)
+          testCase.verifyEqual(double(models.findChild(ma.body.T_LandmarksTranslator).refcount()), 3);
           % Crash due to the next line
           models = ma.body.reconstruct(skeletonhelper, trials);
+          testCase.verifyEqual(double(trials.child(1).refcount()), 3);
+          testCase.verifyEqual(double(models.findChild(ma.T_Trial).refcount()),3)
+          testCase.verifyEqual(double(models.findChild(ma.body.T_LandmarksTranslator).refcount()), 3);
           end
           
     end

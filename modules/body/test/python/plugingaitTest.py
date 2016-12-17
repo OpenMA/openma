@@ -54,3 +54,6 @@ class PluginGaitTest(unittest.TestCase):
     self.assertEqual(models.findChild(ma.body.T_LandmarksTranslator).refcount(),3)
     # Could potentialy crash due to the repetition of the reconstruction
     models = ma.body.reconstruct(skeletonhelper, trials)
+    self.assertEqual(trials.child(0).refcount(),3)
+    self.assertEqual(models.findChild(ma.T_Trial).refcount(),3)
+    self.assertEqual(models.findChild(ma.body.T_LandmarksTranslator).refcount(),3)
