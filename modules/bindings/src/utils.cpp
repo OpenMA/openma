@@ -38,7 +38,7 @@
 
 void _ma_clear_node(ma::Node* self)
 {
-  int count = 0;
+  int count = 1;
   // Unref parents
   auto p1 = self->parents();
   for (auto parent : p1)

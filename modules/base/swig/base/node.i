@@ -79,24 +79,21 @@ namespace ma
   /*
     template <typename U = Node*> U child(unsigned index) const;
   */
-  
     %extend {
       Node* child(unsigned index) const;
       SWIGTYPE* findChild(const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true);
       SWIGTYPE* findChildren(const ma::bindings::TemplateHelper* id, const std::string& regexp = ".*", std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true);
-      void clear() {_ma_clear_node($self);};
     }
-  
+
     const std::vector<Node*>& children() const;
     bool hasChildren() const;
     const std::vector<Node*>& parents() const;
     bool hasParents() const;
-    %extend {
-      void addParent(Node* node);
-      void removeParent(Node* node);
-      void copy(Node* source);
-      ma::Node* clone(Node* parent = nullptr) const;
-    }
+    void addParent(Node* node);
+    void removeParent(Node* node);
+    void copy(Node* source);
+    ma::Node* clone(Node* parent = nullptr) const;
+    void clear();
   /*
     template <typename U = Node*> U findChild(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
     template <typename U = Node*> std::vector<U> findChildren(const std::string& name = std::string{}, std::unordered_map<std::string,Any>&& properties = std::unordered_map<std::string,Any>{}, bool recursiveSearch = true) const;
@@ -104,6 +101,7 @@ namespace ma
     std::vector<const Node*> retrievePath(const Node* node) const;
   */
     virtual void modified();
+    int refcount() const;
   };
   %clearnodefaultctor;
 };
@@ -124,22 +122,6 @@ ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
     SWIG_SendError(SWIG_IndexError, "Index out of range");
     return nullptr;
   }
-};
-  
-void ma_Node_addParent(ma::Node* self, ma::Node* parent)
-{
-  size_t num = self->parents().size();
-  self->addParent(parent);
-  if (num != self->parents().size())
-    _ma_refcount_incr(self);
-};
-
-void ma_Node_removeParent(ma::Node* self, ma::Node* parent)
-{
-  size_t num = self->parents().size();
-  self->removeParent(parent);
-  if (num != self->parents().size())
-    _ma_refcount_decr(self);
 };
 
 void ma_Node_setProperty(ma::Node* self, const std::string& key, const ma::Any& value)
@@ -163,17 +145,17 @@ void ma_Node_copy(ma::Node* self, ma::Node* source)
   _ma_refcount_reset(self, count, false);
   auto& children = self->children();
   for (auto child : children)
-    _ma_refcount_reset(child, 0);
+    _ma_refcount_reset(child, 1);
 };
 
 ma::Node* ma_Node_clone(const ma::Node* self, ma::Node* parent = nullptr)
 {
   ma::Node* ptr = self->clone(parent);
-  _ma_refcount_reset(ptr, -1, false); // -1: because the SWIG generated code will take the ownership
+  _ma_refcount_reset(ptr, 0, false); // 0: because the SWIG generated code will take the ownership
   if (parent != nullptr) _ma_refcount_incr(ptr);
   auto& children = ptr->children();
   for (auto child : children)
-    _ma_refcount_reset(child, 0);
+    _ma_refcount_reset(child, 1);
   return ptr;
 };
 
