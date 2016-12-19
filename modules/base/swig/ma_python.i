@@ -37,7 +37,7 @@
 %{
 #include <numpy/arrayobject.h>
 %}
-%include "openmapython.swg"
+%include "openma/python.swg"
 %fragment("OpenMA_TemplateHelper");
 
 %init

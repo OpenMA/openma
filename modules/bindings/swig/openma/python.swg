@@ -32,7 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%include "openma.swg"
+%include "openma/common.swg"
 
 %fragment("OpenMA", "header", fragment="OpenMA_ToList")
 %{
