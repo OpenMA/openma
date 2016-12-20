@@ -1,4 +1,5 @@
 SET(OPENMA_IO_ELITEPLUGIN_SRCS
+  plugins/trialformats/elite/eliteemghandler.cpp
   plugins/trialformats/elite/eliteplugin.cpp
 )
 
