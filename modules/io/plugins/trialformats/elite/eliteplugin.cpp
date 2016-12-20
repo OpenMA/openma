@@ -33,6 +33,7 @@
  */
 
 #include "eliteplugin.h"
+#include "eliteemghandler.h"
 #include "openma/io/enums.h"
 
 #define _OPENMA_IO_HANDLER_BTS_ANG_FORMAT "bts.ang"
@@ -80,15 +81,25 @@ namespace io
 
   Signature ElitePlugin::detectSignature(const Device* const device, std::string* format) const _OPENMA_NOEXCEPT
   {
-    Signature detected = Signature::Invalid;
     // TODO implement the parsers for the Elite file formats
+    Signature detected = Signature::Invalid;
+    if ((detected = EliteEmgHandler::verifySignature(device)) == Signature::Valid)
+    {
+      if (format != nullptr)
+        *format = _OPENMA_IO_HANDLER_BTS_EMx_FORMAT;
+    }
     return detected;
   };
 
   Handler* ElitePlugin::create(Device* device, const std::string& format)
   {
     // TODO implement the selection of the good handler based on the given format
-    return nullptr;
+    Handler* handler = nullptr;
+    if (format.compare(_OPENMA_IO_HANDLER_BTS_EMx_FORMAT) == 0)
+      handler = new EliteEmgHandler;
+    if (handler != nullptr)
+      handler->setDevice(device);
+    return handler;
   };
 };
 };
