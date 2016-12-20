@@ -81,6 +81,30 @@ namespace io
     trim_string(&str_, c);
     return str_;
   };
+
+  /**
+   * This function removes the string before and after the character @a c.
+   * By default the character used is '\0'.
+   * @warning The input is directly modified and returned.
+   * @ingroup openma_io
+   */
+  inline void crop_string(std::string* str, const char c = '\0')
+  {
+    *str = str->erase(0, str->find_first_not_of(c));
+    *str = str->erase(str->find_first_of(c));
+  };
+  
+  /**
+   * This function removes the string before and after the character @a c.
+   * By default the character removed is '\0'.
+   * @ingroup openma_io
+   */
+  inline std::string crop_string(const std::string& str, const char c = '\0')
+  {
+    std::string str_ = str;
+    trim_string(&str_, c);
+    return str_;
+  };
 };
 };
 
