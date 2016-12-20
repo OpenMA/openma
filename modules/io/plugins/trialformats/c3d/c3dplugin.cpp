@@ -33,6 +33,7 @@
  */
 
 #include "c3dplugin.h"
+#include "c3dhandler.h"
 #include "openma/io/enums.h"
 
 #define _OPENMA_IO_HANDLER_ORG_C3D_FORMAT "org.c3d"
