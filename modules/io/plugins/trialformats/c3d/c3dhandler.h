@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_io_c3dandler_h
-#define __openma_io_c3dandler_h
+#ifndef __openma_io_c3dhandler_h
+#define __openma_io_c3dhandler_h
 
 #include "openma/io/handler.h"
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
@@ -67,4 +67,4 @@ namespace io
 };
 };
 
-#endif // __openma_io_c3dandler_h
+#endif // __openma_io_c3dhandler_h
