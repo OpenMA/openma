@@ -56,7 +56,7 @@ namespace body
     DempsterTable& operator=(const DempsterTable& ) = delete;
     DempsterTable& operator=(DempsterTable&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual bool generate(Node* inout) final;
+    virtual bool run(Node* inout) final;
   };
 };
 };

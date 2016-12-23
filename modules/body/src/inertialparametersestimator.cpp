@@ -47,9 +47,9 @@ namespace body
   /**
    * @class InertialParametersEstimator openma/body/inertialparametersestimator.h
    * @brief Abstract class to generate body segment inertial parameters
-   * To generalize the way to compute body segment inertial parameters (BSIP), this class proposes a generate() method to overload. Each inheriting class must overload this method.
+   * To generalize the way to compute body segment inertial parameters (BSIP), this class proposes a run() method to overload. Each inheriting class must overload this method.
    *
-   * @TODO Give an example on the implementation of the method generate().
+   * @TODO Give an example on the implementation of the method run().
    *
    * @ingroup openma_body
    */
@@ -78,7 +78,7 @@ namespace body
   };
   
   /**
-   * @fn virtual bool InertialParametersEstimator::generate(Node* input) = 0;
+   * @fn virtual bool InertialParametersEstimator::run(Node* input) = 0;
    * Compute BSIP for known segments
    * @note The implementation of this method is up to the choice of the developer.
    * However, it is important to verify if the required reference(s) frame(s) exists.
