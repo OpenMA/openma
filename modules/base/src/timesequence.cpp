@@ -37,6 +37,7 @@
 
 #include <cassert>
 #include <algorithm> // std::copy_n
+#include <cmath>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
