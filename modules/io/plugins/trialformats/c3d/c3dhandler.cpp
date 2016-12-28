@@ -61,6 +61,7 @@
 #include <memory> // std::unique_ptr
 #include <functional> // std::function
 #include <cassert>
+#include <cmath>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //

@@ -38,6 +38,7 @@
 #include <cassert>
 #include <algorithm> // std::copy_n
 #include <limits> // std::numeric_limits::epsilon
+#include <cmath>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //

@@ -162,7 +162,7 @@ namespace body
         continue;
       }
       const double modelMass = massProp.cast<double>();
-      if (isnan(modelMass))
+      if (std::isnan(modelMass))
       {
         error("Mass information is not a number (NaN) and is invalid for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());
         continue;
