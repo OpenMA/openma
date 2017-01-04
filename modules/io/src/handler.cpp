@@ -245,7 +245,6 @@ namespace io
    * Returns the supported formats by this handler. Each format must be constructed as following: "<company_name>.<ext>".
    */
 
-
   /**
    * Method to overload to read data from the current set device.
    */

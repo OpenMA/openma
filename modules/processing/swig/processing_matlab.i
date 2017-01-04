@@ -32,28 +32,4 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%include "openma.swg"
-
-%fragment("OpenMA", "header", fragment="OpenMA_ToList")
-%{
-%};
-
-%fragment("OpenMA_ToList", "header")
-%{
-  template <typename T>
-  PyObject* to_list(const std::vector<T*>* in, swig_type_info* type)
-  {
-    PyObject* out = PyList_New(in->size());
-    if (out != nullptr)
-    {
-      for (size_t i = 0, len = in->size() ; i < len ; ++i)
-      {
-        PyObject* elt = SWIG_NewPointerObj(SWIG_as_voidptr(in->operator[](i)), type, 1 |  0 );
-        if (elt == nullptr) break;
-        _ma_refcount_incr(in->operator[](i));
-        PyList_SetItem(out, i, elt);
-      }
-    }
-    return out;
-  };
-%}
+%rename(filter_butterworth_zero_lag) filterButterworthZeroLag;

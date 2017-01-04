@@ -34,7 +34,7 @@
 
 // Specific code for Matlab (typemaps, etc.)
 
-%include "openmamatlab.swg"
+%include "openma/matlab.swg"
 %fragment("OpenMA_TemplateHelper");
 
 // Convert std::vector<Node*> to MATLAB cell array

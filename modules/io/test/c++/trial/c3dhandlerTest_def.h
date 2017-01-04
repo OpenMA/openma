@@ -59,7 +59,7 @@ inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename
   TSM_ASSERT_EQUALS(msgid, tss[28]->description(), "FORCE Z-COMP 1");
   TSM_ASSERT_EQUALS(msgid, tss[41]->name(), "CH16");
   
-  auto points = trial->timeSequences()->findChildren<const ma::TimeSequence*>({},{{"type",ma::TimeSequence::Marker},{"components",4}},false);
+  auto points = trial->timeSequences()->findChildren<const ma::TimeSequence*>({},{{"type",ma::TimeSequence::Position},{"components",4}},false);
   TSM_ASSERT_EQUALS(msgid, points.size(), 26u);
   auto analogs = trial->timeSequences()->findChildren<const ma::TimeSequence*>({},{{"type",ma::TimeSequence::Analog},{"components",1}},false);
   TSM_ASSERT_EQUALS(msgid, analogs.size(), 16u);

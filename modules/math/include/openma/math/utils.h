@@ -154,23 +154,23 @@ namespace math
   // ----------------------------------------------------------------------- //
   
   /**
-   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a  Map<Position> object. The input must have 3 columns and the type must be set to TimeSequence::Position.
    * @relates Array
    * @ingroup openma_math
    */
   inline Map<Position> to_position(TimeSequence* ts)
   {
-    return to_vector(ts,0,TimeSequence::Marker);
+    return to_vector(ts,0,TimeSequence::Position);
   };
   
   /**
-   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Marker.
+   * Specialized extraction method where the result is a Map<const Position> object. The input must have 3 columns and the type must be set to TimeSequence::Position.
    * @relates Array
    * @ingroup openma_math
    */
   inline Map<const Position> to_position(const TimeSequence* ts)
   {
-    return to_vector(ts,0,TimeSequence::Marker);
+    return to_vector(ts,0,TimeSequence::Position);
   };
  
   // ----------------------------------------------------------------------- //
@@ -283,6 +283,42 @@ namespace math
     std::copy_n(p.values().data(), samples, ts->data() + 2 * samples);
     std::copy_n(residuals.data(), residuals.rows(), ts->data() + 3 * samples);
     return ts;
+  };
+  
+  // ----------------------------------------------------------------------- //
+  
+  template <typename Out, typename In>
+  inline void prepare_window_processing(Out& resout, std::vector<std::array<unsigned,2>>& windows, const In& resin, unsigned mwlen)
+  {
+    if (resout.size() != 0)
+      return;
+    typename Traits<Array<In::ColsAtCompileTime>>::Residuals xprres = resin;
+    resout = xprres;
+    resout.setConstant(-1.0);
+    unsigned istart = 0, len = xprres.rows();
+    while (1)
+    {
+      // Beginning of the window
+      while ((istart < len) && (xprres.coeff(istart) < 0.))
+        ++istart;
+      // Check if the beginning of the window is valid
+      if (istart >= len)
+        break;
+      // End of the window
+      unsigned istop = istart;
+      while ((istop < len) && (xprres.coeff(istop) >= 0.))
+        ++istop;
+      // Compute the length of the window
+      unsigned ilen = istop - istart;
+      // If the window is large enough to be processed, register it
+      if (ilen >= mwlen)
+      {
+        windows.push_back({{istart,ilen}});
+        resout.segment(istart,ilen).setZero();
+      }
+      // Pass to the next window
+      istart = istop + 1;
+    }
   };
   
 };

@@ -648,6 +648,66 @@ CXXTEST_SUITE(ArrayTest)
    TS_ASSERT_EIGEN_DELTA(acc.residuals(), rref, 1e-15);
   };
   
+  CXXTEST_TEST(derivativebis)
+  {
+    ma::math::Scalar temp(1000), derivate;
+    double dt = 0.01;
+    temp.values().setRandom();
+    // No hole
+    temp.residuals().setZero();
+    derivate = temp.derivative<1>(dt);
+    TS_ASSERT_EQUALS((derivate.residuals() == 0).all(), true);
+    // Front hole
+    temp.residuals().segment(0,100).setConstant(-1.0);
+    derivate = temp.derivative<1>(dt);
+    TS_ASSERT_DIFFERS((derivate.residuals() == 0).all(), true);
+    // Back hole
+    temp.residuals().setZero();
+    temp.residuals().segment(920,80).setConstant(-1.0);
+    derivate = temp.derivative<1>(dt);
+    for (int i = 0 ; i < 920 ; ++i)
+      TS_ASSERT_EQUALS(temp.residuals().coeff(i),0.);
+    for (int i = 920 ; i < 1000 ; ++i)
+      TS_ASSERT_EQUALS(temp.residuals().coeff(i),-1.);
+    // Front and Back hole
+    temp.residuals().setZero();
+    temp.residuals().segment(0,100).setConstant(-1.0);
+    temp.residuals().segment(920,80).setConstant(-1.0);
+    derivate = temp.derivative<1>(dt);
+    for (int i = 0 ; i < 100 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.);
+    for (int i = 100 ; i < 920 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),0.);
+    for (int i = 920 ; i < 1000  ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.0);
+    // Front, Mid, and Back hole
+    temp.residuals().segment(500,50).setConstant(-1.0);
+    derivate = temp.derivative<1>(dt);
+    for (int i = 0 ; i < 100 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.);
+    for (int i = 100 ; i < 500 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),0.);
+    for (int i = 500 ; i < 550 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.);
+    for (int i = 550 ; i < 920 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),0.);
+    for (int i = 920 ; i < 1000  ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.0);
+    // Front, Mid (creating a window too small to be derivated), and Back hole
+    temp.residuals().segment(552,2).setConstant(-1.0);
+    derivate = temp.derivative<1>(dt);
+    for (int i = 0 ; i < 100 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.);
+    for (int i = 100 ; i < 500 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),0.);
+    for (int i = 500 ; i < 554 ; ++i)
+      TSM_ASSERT_EQUALS(std::to_string(i).c_str(),derivate.residuals().coeff(i),-1.);
+    for (int i = 554 ; i < 920 ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),0.);
+    for (int i = 920 ; i < 1000  ; ++i)
+      TS_ASSERT_EQUALS(derivate.residuals().coeff(i),-1.0);
+  }
+  
   CXXTEST_TEST(skewRedux)
   {
     ma::math::Array<9> skew(3);
@@ -708,6 +768,7 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, compoundAssignmentOperators)
 CXXTEST_TEST_REGISTRATION(ArrayTest, minmax)
 CXXTEST_TEST_REGISTRATION(ArrayTest, derivative)
+CXXTEST_TEST_REGISTRATION(ArrayTest, derivativebis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
 CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)
 CXXTEST_TEST_REGISTRATION(ArrayTest, resize)

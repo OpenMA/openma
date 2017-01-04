@@ -43,6 +43,9 @@
 // Compiled with a 64-bit compiler?
 #cmakedefine HAVE_64_BIT_COMPILER
 
+// Integrate the reference counting mechanism (used by the bindings)
+#cmakedefine USE_REFCOUNT_MECHANISM
+
 // Looking for mmap
 #cmakedefine HAVE_SYS_MMAP
 

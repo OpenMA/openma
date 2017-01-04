@@ -79,7 +79,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ewa->run(&rootModel);
     // Compute BSIPs
     auto ipe = helper.defaultInertialParametersEstimator();
-    ipe->generate(&rootModel);
+    ipe->run(&rootModel);
     // Compute inverse dynamics in the global frame
     auto idp = helper.defaultInverseDynamicProcessor();
     idp->run(&rootModel);
@@ -158,7 +158,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     
     const std::string str = "FP1.Wrench.Global.COP";
     auto cop = model->findChild<ma::TimeSequence*>(str,{{"type",ma::TimeSequence::Wrench}});
-    ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
+    ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Position,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test.c3d");
 #endif
     */
@@ -217,7 +217,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ewa->run(&rootModel);
     // Compute BSIPs
     auto ipe = helper.defaultInertialParametersEstimator();
-    ipe->generate(&rootModel);
+    ipe->run(&rootModel);
     // Compute inverse dynamics in the global frame
     auto idp = helper.defaultInverseDynamicProcessor();
     idp->run(&rootModel);
@@ -296,7 +296,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     
     const std::string str = "FP1.Wrench.Global.COP";
     auto cop = model->findChild<ma::TimeSequence*>(str,{{"type",ma::TimeSequence::Wrench}});
-    ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Marker,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
+    ma::math::to_timesequence(ma::math::to_vector(cop,6),str,cop->sampleRate(),cop->startTime(),ma::TimeSequence::Position,"mm",rootDynamic.child<ma::Trial*>(0)->timeSequences());
     ma::io::write(&rootDynamic,"/Users/alzathar/Downloads/test2.c3d");
 #endif
     */

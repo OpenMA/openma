@@ -220,10 +220,10 @@ namespace instrument
   //     && (optr->ReferenceFrame[6] == w[0]) && (optr->ReferenceFrame[7] == w[1]) && (optr->ReferenceFrame[8] == w[2])
   //     && (optr->ReferenceFrame[9] == o[0]) && (optr->ReferenceFrame[10]== o[1]) && (optr->ReferenceFrame[11]== o[2]))
   //     return;
-  //   std::copy(u, u+3, optr->ReferenceFrame);
-  //   std::copy(v, v+3, optr->ReferenceFrame+3);
-  //   std::copy(w, w+3, optr->ReferenceFrame+6);
-  //   std::copy(o, o+3, optr->ReferenceFrame+9);
+  //   std::copy_n(u, 3, optr->ReferenceFrame);
+  //   std::copy_n(v, 3, optr->ReferenceFrame+3);
+  //   std::copy_n(w, 3, optr->ReferenceFrame+6);
+  //   std::copy_n(o, 3, optr->ReferenceFrame+9);
   //   this->modified();
   // };
   
@@ -247,10 +247,10 @@ namespace instrument
   //     && (optr->SurfaceCorners[6] == c3[0]) && (optr->SurfaceCorners[7] == c3[1]) && (optr->SurfaceCorners[8] == c3[2])
   //     && (optr->SurfaceCorners[9] == c4[0]) && (optr->SurfaceCorners[10]== c4[1]) && (optr->SurfaceCorners[11]== c4[2]))
   //     return;
-  //   std::copy(c1, c1+3, optr->SurfaceCorners);
-  //   std::copy(c2, c2+3, optr->SurfaceCorners+3);
-  //   std::copy(c3, c3+3, optr->SurfaceCorners+6);
-  //   std::copy(c4, c4+3, optr->SurfaceCorners+9);
+  //   std::copy_n(c1, 3, optr->SurfaceCorners);
+  //   std::copy_n(c2, 3, optr->SurfaceCorners+3);
+  //   std::copy_n(c3, 3, optr->SurfaceCorners+6);
+  //   std::copy_n(c4, 3, optr->SurfaceCorners+9);
   // };
   
   /**
@@ -482,7 +482,7 @@ namespace instrument
       // For explanations of the PWA calculation, see Shimba T. (1984), 
       // "An estimation of center of gravity from force platform data", 
       // Journal of Biomechanics 17(1), 53–60.
-      math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum().sqrt();
+      math::Array<1>::Values sNF = W.values().block(0,0,W.rows(),3).square().rowwise().sum();
       Px = (Fy * Mz - Fz * My) / sNF - (Fx.square() * My - Fx * (Fy * Mx)) / (sNF * Fz);
       Py = (Fz * Mx - Fx * Mz) / sNF - (Fx * (Fy * My) - Fy.square() * Mx) / (sNF * Fz);
     }

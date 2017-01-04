@@ -32,31 +32,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%module(package="ma.processing") processing
+
+%{
+#include "openma/base.h"
+#include "openma/processing.h"
 #include "openma/bindings.h"
+%}
 
-#include <cassert>
+%include "openma/macros.i"
 
-void _ma_clear_node(ma::Node* self)
+%import "ma.i"
+
+// ========================================================================= //
+//                                INTERFACE
+// ========================================================================= //
+
+#if defined(SWIGMATLAB)
+%include "ma_matlab.i"
+#elif defined(SWIGPYTHON)
+%include "ma_python.i"
+#endif
+
+%include "../include/openma/processing/enums.h"
+
+namespace ma
 {
-  int count = 0;
-  // Unref parents
-  auto p1 = self->parents();
-  for (auto parent : p1)
-  {
-    count = _ma_refcount_decr(self);
-    self->removeParent(parent);
-  }
-  assert(count >= 0);
-  // Unref children
-  auto c1 = self->children();
-  for (auto child : c1)
-    _ma_refcount_decr(child);
-  // Detach remaining children (still in the workspace)
-  auto c2 = self->children();
-  for (auto child : c2)
-    child->removeParent(self);
-  // Node clear
-  self->clear();
-  // Reset the reference counter
-  _ma_refcount_reset(self, count);
+namespace processing
+{
+  bool filter_butterworth_zero_lag(const std::vector<TimeSequence*>& tss, Response type, double fc, int fn);
+};
 };

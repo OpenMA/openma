@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_processing ma::processing
+ * @brief Data processing algorithms.
+ *
+ * This module corresponds to the library @c openma_processing. It uses the nested namespace @c processing. As a consequence all the types proposed in this module use the @c ma::processing namespace.
+ *
+ * The main goal of this module is to gives high level functions and classes to process data (e.g Butterworth zero lag filter).
+ *
+ * @todo Details the goal and usage or ma::processing.
+ */

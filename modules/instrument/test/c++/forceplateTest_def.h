@@ -4,6 +4,7 @@
 #include <openma/instrument/forceplate.h>
 #include <openma/instrument/forceplatetype3.h>
 #include <openma/base/timesequence.h>
+#include <openma/math.h>
 
 static unsigned sample10_fpsamples = 22;
 static unsigned gait1_fpsamples = 17;
@@ -146,27 +147,38 @@ const std::array<double,2> fp3offsets{{120., 200.}};
 
 // COMPARISON FUNCTIONS
 
+void forceplatetest_cross_verification_pwa(ma::instrument::ForcePlate* fp, std::vector<double> eps = {})
+{
+  eps.resize(3,1e-15);
+  auto wcop = ma::math::to_wrench(fp->wrench(ma::instrument::Location::CentreOfPressure));
+  auto wpwa = ma::math::to_wrench(fp->wrench(ma::instrument::Location::PointOfApplication));
+  ma::math::Array<9>::Values rmsd = (wcop.values() - wpwa.values()).square().colwise().mean().sqrt();
+  TSM_ASSERT_EQUALS("RMSD Force (max: " + std::to_string(rmsd.block<1,3>(0,0).maxCoeff()) + ")",(rmsd.block<1,3>(0,0) < eps[0]).all(), true);
+  TSM_ASSERT_EQUALS("RMSD Moment (max: " + std::to_string(rmsd.block<1,3>(0,3).maxCoeff()) + ")",(rmsd.block<1,3>(0,3) < eps[1]).all(), true);
+  TSM_ASSERT_EQUALS("RMSD Position (max: " + std::to_string(rmsd.block<1,3>(0,6).maxCoeff()) + ")",(rmsd.block<1,3>(0,6) < eps[2]).all(), true);
+};
+
 void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* data)
 {
   double rate = 60.0;
   double start = 0.0;
   auto fx = new ma::TimeSequence("FX1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(data   , data+22, fx->data());
+  std::copy_n(data   , 22, fx->data());
   fp->setChannel("Fx", fx);
   auto fy = new ma::TimeSequence("FY1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(data+22, data+44, fy->data());
+  std::copy_n(data+22, 22, fy->data());
   fp->setChannel("Fy", fy);
   auto fz = new ma::TimeSequence("FZ1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(data+44, data+66, fz->data());
+  std::copy_n(data+44, 22, fz->data());
   fp->setChannel("Fz", fz);
   auto mx = new ma::TimeSequence("MX1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
-  std::copy(data+66, data+88, mx->data());
+  std::copy_n(data+66, 22, mx->data());
   fp->setChannel("Mx", mx);
   auto my = new ma::TimeSequence("MY1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
-  std::copy(data+88, data+110, my->data());
+  std::copy_n(data+88, 22, my->data());
   fp->setChannel("My", my);
   auto mz = new ma::TimeSequence("MZ1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
-  std::copy(data+110, data+132, mz->data());
+  std::copy_n(data+110, 22, mz->data());
   fp->setChannel("Mz", mz);
 };
 
@@ -189,28 +201,28 @@ void forceplatetest_fill_gait1_type5(ma::instrument::ForcePlate* fp)
   double rate = 1000.0;
   double start = 0.0;
   auto p1 = new ma::TimeSequence("Pin1",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain   , fp5datain+17, p1->data());
+  std::copy_n(fp5datain   , 17, p1->data());
   fp->setChannel("Fz1", p1);
   auto p2 = new ma::TimeSequence("Pin2",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+17, fp5datain+34, p2->data());
+  std::copy_n(fp5datain+17, 17, p2->data());
   fp->setChannel("Fz2", p2);
   auto p3 = new ma::TimeSequence("Pin3",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+34, fp5datain+51, p3->data());
+  std::copy_n(fp5datain+34, 17, p3->data());
   fp->setChannel("Fz3", p3);
   auto p4 = new ma::TimeSequence("Pin4",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+51, fp5datain+68, p4->data());
+  std::copy_n(fp5datain+51, 17, p4->data());
   fp->setChannel("Fz4", p4);
   auto p5 = new ma::TimeSequence("Pin5",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+68, fp5datain+85, p5->data());
+  std::copy_n(fp5datain+68, 17, p5->data());
   fp->setChannel("Fx12", p5);
   auto p6 = new ma::TimeSequence("Pin6",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+85, fp5datain+102, p6->data());
+  std::copy_n(fp5datain+85, 17, p6->data());
   fp->setChannel("Fx34", p6);
   auto p7 = new ma::TimeSequence("Pin7",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+102, fp5datain+119, p7->data());
+  std::copy_n(fp5datain+102, 17, p7->data());
   fp->setChannel("Fy14", p7);
   auto p8 = new ma::TimeSequence("Pin8",1,gait1_fpsamples,rate,start,ma::TimeSequence::Analog,"N");
-  std::copy(fp5datain+119, fp5datain+136, p8->data());
+  std::copy_n(fp5datain+119, 17, p8->data());
   fp->setChannel("Fy23", p8);
   fp->setGeometry(fp5rso, fp5sc1, fp5sc2, fp5sc3, fp5sc4);
   std::vector<double> fp5cal_(fp5cal, fp5cal+48);

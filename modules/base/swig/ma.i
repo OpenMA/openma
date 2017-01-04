@@ -48,7 +48,7 @@
   ma::Logger::setDevice(new ma::bindings::LoggerDevice);
 %}
 
-%include "macros.i"
+%include "openma/macros.i"
 
 %include <std_string.i>
 

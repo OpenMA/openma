@@ -37,6 +37,7 @@
 
 #include <cassert>
 #include <algorithm> // std::copy_n
+#include <cmath>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -104,7 +105,7 @@ namespace ma
    * // - starting at 0.0 second of the beginning of the acqusition
    * // - typed as a Marker
    * // - where the main unit (i.e. for the coordinates) is the millimeter.
-   * auto marker = ma::TimeSequence("LHEE",4,1000,100.0,0.0,ma::TimeSequence::Marker,"mm");
+   * auto marker = ma::TimeSequence("LHEE",4,1000,100.0,0.0,ma::TimeSequence::Position,"mm");
    * // Check if the object stores reconstructed data
    * std::cout << marker.type() & ma::TimeSequence::Reconstructed << std::endl;
    * @endcode
@@ -140,7 +141,7 @@ namespace ma
    * Internal flag to indicated if these data are reconstructed data. The usage of this flag shall mean that some components are resevred for reconstruction residuals. For example if a TimeSequence is set to the Type Marker (predefined value included the Reconstructed flag), the given dimension should be set to 4. Three of them are for the coordinates and the later is for the reconstruction residuals.
    */
   /**
-   * @var TimeSequence::Type TimeSequence::Marker
+   * @var TimeSequence::Type TimeSequence::Position
    * Should be used to represent a reconstructed/computed 3D trajectory. Data sample shall be represented by an 1D array with 4 components: X, Y, Z coordinates and valid/reconstruction residuals. The associated unit shall be millimeter ("mm").
    */
   /**
@@ -295,7 +296,7 @@ namespace ma
   void TimeSequence::setSampleRate(double value)_OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->SampleRate) < std::numeric_limits<double>::epsilon())
+    if (value == optr->SampleRate)
       return;
     optr->SampleRate = value;
     this->modified();
@@ -409,7 +410,7 @@ namespace ma
   void TimeSequence::setStartTime(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->StartTime) < std::numeric_limits<double>::epsilon())
+    if (value == optr->StartTime)
       return;
     optr->StartTime = value;
     this->modified();
@@ -430,7 +431,7 @@ namespace ma
   void TimeSequence::setScale(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->Scale) < std::numeric_limits<double>::epsilon())
+    if (value == optr->Scale)
       return;
     optr->Scale = value;
     this->modified();
@@ -451,7 +452,7 @@ namespace ma
   void TimeSequence::setOffset(double value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(value - optr->Offset) < std::numeric_limits<double>::epsilon())
+    if (value == optr->Offset)
       return;
     optr->Offset = value;
     this->modified();
@@ -472,8 +473,7 @@ namespace ma
   void TimeSequence::setRange(const std::array<double,2>& value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if ((std::fabs(value[0] - optr->Range[0]) < std::numeric_limits<double>::epsilon())
-     && (std::fabs(value[1] - optr->Range[1]) < std::numeric_limits<double>::epsilon()))
+    if (value == optr->Range)
       return;
     optr->Range = value;
     this->modified();

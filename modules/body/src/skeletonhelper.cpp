@@ -252,7 +252,7 @@ namespace body
         InertialParametersEstimator* ipe = this->findChild<InertialParametersEstimator*>({},{},false);
         if (ipe == nullptr)
           ipe = this->defaultInertialParametersEstimator();
-        if ((ipe != nullptr) && !ipe->generate(&temp))
+        if ((ipe != nullptr) && !ipe->run(&temp))
         {
           error("SkeletonHelper - Error during the estimation of the segment inertial parameters. Inverse dynamics computation skipped for the trial #%i", inc);
           continue;

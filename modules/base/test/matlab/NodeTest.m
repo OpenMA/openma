@@ -11,7 +11,7 @@ classdef NodeTest < matlab.unittest.TestCase
             delete(root);
             testCase.verifyEqual(child.hasParents(), false);
         end
-
+        
         function child0(testCase)
             root = ma.Node('root');
             testCase.verifyError(@()root.child(0), 'SWIG:IndexError');
@@ -44,21 +44,21 @@ classdef NodeTest < matlab.unittest.TestCase
             % Still exist?
             testCase.verifyEqual(children{1}.name(), 'child1');
             testCase.verifyEqual(children{2}.name(), 'child2');
-            testCase.verifyEqual(children{1}.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(children{2}.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(children{1}.refcount()), 1);
+            testCase.verifyEqual(double(children{2}.refcount()), 1);
         end
 
         function clearNode(testCase)
             root = ma.Node('root');
             child1 = ma.Node('child1', root);
             child2 = ma.Node('child2', root);
-            testCase.verifyEqual(root.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 1);
-            testCase.verifyEqual(child2.property('_MA_REF_COUNTER').cast, 1);
+            testCase.verifyEqual(double(root.refcount()), 1);
+            testCase.verifyEqual(double(child1.refcount()), 2);
+            testCase.verifyEqual(double(child2.refcount()), 2);
             root.clear();
-            testCase.verifyEqual(root.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(child2.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(root.refcount()), 1);
+            testCase.verifyEqual(double(child1.refcount()), 1);
+            testCase.verifyEqual(double(child2.refcount()), 1);
         end
 
         function copyNode(testCase)
@@ -69,11 +69,11 @@ classdef NodeTest < matlab.unittest.TestCase
             sub1 = ma.Node('sub1', other);
             other.copy(root);
             testCase.verifyEqual(sub1.hasParents, false);
-            testCase.verifyEqual(root.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 1);
-            testCase.verifyEqual(child2.property('_MA_REF_COUNTER').cast, 1);
-            testCase.verifyEqual(other.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(sub1.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(root.refcount()), 1);
+            testCase.verifyEqual(double(child1.refcount()), 2);
+            testCase.verifyEqual(double(child2.refcount()), 2);
+            testCase.verifyEqual(double(other.refcount()), 1);
+            testCase.verifyEqual(double(sub1.refcount()), 1);
             other.child(1).setName('Goal');
             other.child(1).child(1).setName('Goal2');
             testCase.verifyEqual(child1.name(),'child1');
@@ -88,35 +88,35 @@ classdef NodeTest < matlab.unittest.TestCase
             other.child(1).setName('Bar');
             testCase.verifyEqual(root.hasChildren, true);
             testCase.verifyEqual(other.hasChildren, true);
-            testCase.verifyEqual(root.property('_MA_REF_COUNTER').cast, 0);
-            testCase.verifyEqual(other.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(root.refcount()), 1);
+            testCase.verifyEqual(double(other.refcount()), 1);
             testCase.verifyEqual(root.name(),'root');
             testCase.verifyEqual(other.name(),'Foo');
             testCase.verifyEqual(root.child(1).name(),'child1');
             testCase.verifyEqual(other.child(1).name(),'Bar');
         end
-        
+
         function addParent(testCase)
             root = ma.Node('root');
             child1 = ma.Node('child1');
             child1.addParent(root);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 1);
+            testCase.verifyEqual(double(child1.refcount()), 2);
             testCase.verifyEqual(root.hasChildren, true);
             testCase.verifyEqual(child1.hasParents, true);
             testCase.verifyEqual(root.child(1).name, 'child1');
             delete(root);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(child1.refcount()), 1);
         end
-        
+
         function removeParent(testCase)
             root = ma.Node('root');
             child1 = ma.Node('child1', root);
             child1.removeParent(root);
-            testCase.verifyEqual(child1.property('_MA_REF_COUNTER').cast, 0);
+            testCase.verifyEqual(double(child1.refcount()), 1);
             testCase.verifyEqual(root.hasChildren, false);
             testCase.verifyEqual(child1.hasParents, false);
         end
-        
+
         function setProperty(testCase)
             root = ma.Node('root');
             testCase.verifyEqual(root.property('name').cast('char'), 'root')

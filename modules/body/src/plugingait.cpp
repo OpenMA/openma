@@ -1280,9 +1280,8 @@ namespace body
       const math::Vector v = (L_ASIS - R_ASIS).normalized();
       const math::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
       const math::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
-      math::to_timesequence(pelvis, seg->name()+".TCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       seg->setProperty("length", this->property(seg->name()+".length"));
-      pelvisSCS = math::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", relframe);
+      pelvisSCS = math::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------

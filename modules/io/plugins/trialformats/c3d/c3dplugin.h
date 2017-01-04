@@ -35,7 +35,6 @@
 #ifndef __openma_io_c3dplugin_h
 #define __openma_io_c3dplugin_h
 
-#include "c3dhandler.h"
 #include "openma/io/handlerplugin.h"
 
 namespace ma

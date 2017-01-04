@@ -33,8 +33,8 @@
 #include "openma/math/map.h"
 #include "openma/math/returnbyvalue.h"
 #include "openma/math/blockop.h"
+#include "openma/math/utils.h" // Must be included before the operations
 #include "openma/math/unaryop.h"
 #include "openma/math/binaryop.h"
-#include "openma/math/utils.h"
 
 #endif // __openma_math_h

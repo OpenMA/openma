@@ -41,6 +41,7 @@
  */
 
 #include "openma/base/object_p.h"
+#include "openma/config.h" // USE_REFCOUNT_MECHANISM
 #include "openma/base/typeid.h"
 #include "openma/base/property.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
@@ -48,6 +49,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <atomic>
 
 namespace ma
 {
@@ -83,6 +85,9 @@ namespace ma
     std::unordered_map<std::string,Any> DynamicProperties;
     std::vector<Node*> Parents;
     std::vector<Node*> Children;
+#if defined(USE_REFCOUNT_MECHANISM)
+    std::atomic<int> ReferenceCounter;
+#endif
     
   protected:
     Node* mp_Pint;

@@ -44,7 +44,7 @@
 #include "openma/instrument.h"
 %}
 
-%include "macros.i"
+%include "openma/macros.i"
 
 %import "ma.i"
 

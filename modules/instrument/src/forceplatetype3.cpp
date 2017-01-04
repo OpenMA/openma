@@ -112,8 +112,7 @@ namespace instrument
   void ForcePlateType3::setSensorOffsets(const std::array<double,2>& value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
-    if (std::fabs(optr->SensorOffsets[0] - value[0]) < std::numeric_limits<double>::epsilon()
-      && std::fabs(optr->SensorOffsets[1] - value[1]) < std::numeric_limits<double>::epsilon())
+    if (optr->SensorOffsets == value)
       return;
     optr->SensorOffsets = value;
     this->modified();

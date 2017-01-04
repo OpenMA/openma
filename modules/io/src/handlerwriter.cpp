@@ -35,6 +35,7 @@
 #include "openma/io/handlerwriter.h"
 #include "openma/io/handlerplugin.h"
 #include "openma/io/device.h"
+#include "openma/io/enums.h"
 #include "openma/io/handler.h"
 
 // -------------------------------------------------------------------------- //
@@ -47,8 +48,6 @@ namespace ma
 {
 namespace io
 {
-  enum class Error;
-  
   class HandlerWriterPrivate
   {
   public:
