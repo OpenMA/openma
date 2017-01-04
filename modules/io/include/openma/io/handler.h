@@ -40,11 +40,8 @@
 #include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 #include "openma/base/exception.h"
 
-#include <list>
 #include <string>
 #include <memory> // std::unique_ptr
-#include <vector>
-#include <type_traits> // std::is_same
 
 namespace ma
 {
