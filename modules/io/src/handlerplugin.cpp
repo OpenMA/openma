@@ -78,15 +78,19 @@ namespace io
    */
   
   /**
-   * Default constructor
+   * Constructor (default)
    */
-  HandlerPlugin::HandlerPlugin()
-  {};
+  HandlerPlugin::HandlerPlugin() = default;
   
   /**
    * Destructor (default)
    */
   HandlerPlugin::~HandlerPlugin() = default;
+  
+  /**
+   * @fn virtual std::string HandlerPlugin::name() const _OPENMA_NOEXCEPT = 0;
+   * Returns the name of the plugin
+   */
   
   /**
    * @fn virtual std::vector<std::string> supportedFormats() const _OPENMA_NOEXCEPT = 0;
