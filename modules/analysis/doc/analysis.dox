@@ -1,0 +1,10 @@
+/**
+ * @defgroup openma_analysis ma::analysis
+ * @brief Data analysis tools.
+ *
+ * This module corresponds to the library @c openma_analysis. It uses the nested namespace @c analysis. As a consequence all the types proposed in this module use the @c ma::analysis namespace.
+ *
+ * The main goal of this module is to gives high level functions and classes to analyze data (e.g task-related event detection, spatio-temporal parameters, etc.).
+ *
+ * @todo Details the goal and usage of ma::analysis.
+ */
