@@ -5,14 +5,14 @@ class EventTest(unittest.TestCase):
     
     def test_constructor(self):
         evt = ma.Event('Foot Strike', 0., 'Right', 'Anonymous')
-        self.assertEqual(evt.name, 'Foot Strike')
-        self.assertEqual(evt.time, 0.)
-        self.assertEqual(evt.context, 'Right')
-        self.assertEqual(evt.subject, 'Anonymous')
-        self.assertEqual(evt.property('name').cast('char'), 'Foot Strike')
+        self.assertEqual(evt.name(), 'Foot Strike')
+        self.assertEqual(evt.time(), 0.)
+        self.assertEqual(evt.context(), 'Right')
+        self.assertEqual(evt.subject(), 'Anonymous')
+        self.assertEqual(evt.property('name').cast('string'), 'Foot Strike')
         self.assertEqual(evt.property('time').cast(), 0.)
-        self.assertEqual(evt.property('context').cast('char'), 'Right')
-        self.assertEqual(evt.property('subject').cast('char'), 'Anonymous')
+        self.assertEqual(evt.property('context').cast('string'), 'Right')
+        self.assertEqual(evt.property('subject').cast('string'), 'Anonymous')
     
     def test_find_Children(self):
         root = ma.Node('Root')

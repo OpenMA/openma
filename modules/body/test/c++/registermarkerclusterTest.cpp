@@ -13,7 +13,7 @@ CXXTEST_SUITE(RegisterMarkerClusterTest)
   {
     ma::Node root("root");
     ma::Trial trial("trial",&root);
-    auto tss = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Marker,"mm",trial.timeSequences());
+    auto tss = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Position,"mm",trial.timeSequences());
     set_pt_data(tss[0], 10.0, 10.0, 10.0);
     set_pt_data(tss[1], 10.0, 20.0, 10.0);
     set_pt_data(tss[2], 20.0, 20.0, 10.0);

@@ -60,7 +60,7 @@ namespace ma
 namespace body
 {
   OPENMA_BODY_EXPORT bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  OPENMA_BODY_EXPORT bool register_marker_cluster(SkeletonHelper* helper, Node* trials)
+  OPENMA_BODY_EXPORT bool register_marker_cluster(SkeletonHelper* helper, Node* trials);
   OPENMA_BODY_EXPORT bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
   OPENMA_BODY_EXPORT Node* reconstruct(SkeletonHelper* helper, Node* trials);
   OPENMA_BODY_EXPORT bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);

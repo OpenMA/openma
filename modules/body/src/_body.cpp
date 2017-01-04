@@ -85,7 +85,7 @@ namespace body
     Node tmrfsr("tmrfsr"); // Temporary Models Root for Segments Reconstruction
     Node ttrfsr("ttrfsr"); // Temporary Trials Root for Segments Reconstruction
     Trial ttfsr("ttfsr",&ttrfsr); // Temporary Trial for Segments Reconstruction
-    auto markers = trial[0]->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Marker}});
+    auto markers = trial[0]->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Position}});
     // Average markers along the time
     for (const auto& m : markers)
       average_marker(m, ttfsr.timeSequences());

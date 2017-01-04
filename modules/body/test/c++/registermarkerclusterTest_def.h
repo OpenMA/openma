@@ -2,6 +2,7 @@
 #define registermarkerclusterTest_def_h
 
 #include <openma/body.h>
+#include <openma/base/trial.h>
 
 // Util functions
 

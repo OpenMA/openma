@@ -163,7 +163,7 @@ namespace body
       Eigen::Matrix<double,3,3> M;
       Eigen::Matrix<double,4,4> N;
       Eigen::Matrix<double,3,Eigen::Dynamic> ps1, ps2;
-      for (int i = 0 ; i < numSamples ; ++i)
+      for (unsigned i = 0 ; i < numSamples ; ++i)
       {
         int inc = 0;
         ps1.setZero(3,static_cast<int>(globalMarkers.size()));

@@ -22,7 +22,7 @@ CXXTEST_SUITE(LandmarksRegistrarTest)
   {
     ma::body::LandmarksRegistrar reg("reg",{"uname*1","uname*2","uname*3","pt4"});
     ma::Node root("root");
-    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",&root);
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,0,100.0,0.0,ma::TimeSequence::Position,"mm",&root);
     auto lmks = reg.retrieveLandmarks(nullptr,&root);
     TS_ASSERT_EQUALS(lmks.size(),3u);
     TS_ASSERT_EQUALS(lmks[0],tss[0]);
@@ -41,7 +41,7 @@ CXXTEST_SUITE(LandmarksRegistrarTest)
       {"uname*4", "pt4"}
     });
     ma::Node root("root");
-    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,0,100.0,0.0,ma::TimeSequence::Marker,"mm",&root);
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,0,100.0,0.0,ma::TimeSequence::Position,"mm",&root);
     auto lmks = reg.retrieveLandmarks(&lt,&root);
     TS_ASSERT_EQUALS(lmks.size(),4u);
     TS_ASSERT_EQUALS(lmks[0],tss[0]);

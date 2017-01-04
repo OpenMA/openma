@@ -143,7 +143,7 @@ namespace body
    * ma::body::InertialParameters object attached to the segment and named as the segment plus the suffix ".BSIP".
    * @important Compared to the data published in the original article, CoMs and Inertia tensors are expressed in the Body inertial Coordinate System (BCS) and not in the Segmental Coordinate System (SCS). The reason is to have BSP usable for any model.
    */
-  bool DumasMcConvilleYoungTable::generate(Node* inout)
+  bool DumasMcConvilleYoungTable::run(Node* inout)
   {
     auto models = inout->findChildren<Model*>({},{},false);
     for (auto& model : models)

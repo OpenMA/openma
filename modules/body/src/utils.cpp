@@ -64,7 +64,7 @@ namespace body
     // No defined translator? Let's use the one embedded within the helper (if any)
     if (lt == nullptr)
       lt = helper->defaultLandmarksTranslator();
-    const auto& markers = trial->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Marker},{"components",4}},false);
+    const auto& markers = trial->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Position},{"components",4}},false);
     return extract_landmark_positions(lt,markers,rate,start,ok);
   };
   

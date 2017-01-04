@@ -13,7 +13,7 @@ CXXTEST_SUITE(UnitQuaternionPoseEstimatorTest)
   {
     ma::Node root("root"), models("models");
     ma::Trial trial("trial",&root);
-    auto tss = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Marker,"mm",trial.timeSequences());
+    auto tss = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Position,"mm",trial.timeSequences());
     set_pt_data(tss[0], 10.0, 10.0, 10.0);
     set_pt_data(tss[1], 10.0, 20.0, 10.0);
     set_pt_data(tss[2], 20.0, 20.0, 10.0);
@@ -60,7 +60,7 @@ CXXTEST_SUITE(UnitQuaternionPoseEstimatorTest)
   {
     ma::Node rootCalibration("rootCalibration");
     ma::Trial trialCalibration("trialCalibration",&rootCalibration);
-    auto tsscal = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Marker,"mm",trialCalibration.timeSequences());
+    auto tsscal = ma::make_nodes<ma::TimeSequence*>(8,4,1,100.0,0.0,ma::TimeSequence::Position,"mm",trialCalibration.timeSequences());
     set_pt_data(tsscal[0], 10.0, 10.0, 10.0);
     set_pt_data(tsscal[1], 10.0, 20.0, 10.0);
     set_pt_data(tsscal[2], 20.0, 20.0, 10.0);
@@ -71,7 +71,7 @@ CXXTEST_SUITE(UnitQuaternionPoseEstimatorTest)
     set_pt_data(tsscal[7], 20.0, 10.0,  0.0);
     ma::Node rootDynamic("rootDynamic");
     ma::Trial trialDynamic("trialDynamic",&rootDynamic);
-    auto tssdyn = ma::make_nodes<ma::TimeSequence*>(8,4,2,100.0,0.0,ma::TimeSequence::Marker,"mm",trialDynamic.timeSequences());
+    auto tssdyn = ma::make_nodes<ma::TimeSequence*>(8,4,2,100.0,0.0,ma::TimeSequence::Position,"mm",trialDynamic.timeSequences());
     // Frame #0 - Rotated by 180 degrees around axis X
     set_pt_data(tssdyn[5], 10.0, 10.0, 10.0, 0);
     set_pt_data(tssdyn[4], 10.0, 20.0, 10.0, 0);

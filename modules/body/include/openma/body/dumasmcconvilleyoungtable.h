@@ -56,7 +56,7 @@ namespace body
     DumasMcConvilleYoungTable& operator=(const DumasMcConvilleYoungTable& ) = delete;
     DumasMcConvilleYoungTable& operator=(DumasMcConvilleYoungTable&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual bool generate(Node* inout) final;
+    virtual bool run(Node* inout) final;
   };
 };
 };

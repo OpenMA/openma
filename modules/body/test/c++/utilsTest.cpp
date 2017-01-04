@@ -167,7 +167,7 @@ CXXTEST_SUITE(UtilsTest)
       {"uname*4", "pt4"}
     });
     ma::Node root("root");
-    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,1,100.0,0.0,ma::TimeSequence::Marker,"mm",&root);
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,1,100.0,0.0,ma::TimeSequence::Position,"mm",&root);
     auto lmks = ma::body::extract_landmark_positions(&lt, tss, &rate, &start, &ok);
     TS_ASSERT_EQUALS(rate,100.0);
     TS_ASSERT_EQUALS(start,0.0);
@@ -185,7 +185,7 @@ CXXTEST_SUITE(UtilsTest)
   
   CXXTEST_TEST(averageMarker)
   {
-    ma::TimeSequence ts("foo",4,10,100.0,0.0,ma::TimeSequence::Marker,"mm");
+    ma::TimeSequence ts("foo",4,10,100.0,0.0,ma::TimeSequence::Position,"mm");
     ma::Node root("root");
     auto map = ma::math::to_position(&ts);
     map.values() << 0., 1.,	2.,
