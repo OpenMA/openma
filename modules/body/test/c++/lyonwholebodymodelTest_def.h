@@ -1,12 +1,12 @@
-#ifndef internationalsocietybiomechanicsTest_def_h
-#define internationalsocietybiomechanicsTest_def_h
+#ifndef lyonwholebodymodelTest_def_h
+#define lyonwholebodymodelTest_def_h
 
 #include <openma/body.h>
 #include <openma/base.h>
 #include <openma/io.h>
 #include <openma/math.h>
 
-void set_isb_custom_landmarks_translator(ma::body::InternationalSocietyBiomechanics* helper)
+void set_isb_custom_landmarks_translator(ma::body::LyonWholeBodyModel* helper)
 {
   new ma::body::LandmarksTranslator("LandmarksTranslator",{
     {"C7"          , "C7"},
@@ -32,7 +32,7 @@ void set_isb_custom_landmarks_translator(ma::body::InternationalSocietyBiomechan
   }, helper);
 };
 
-void set_isb_custom_landmarks_translator2(ma::body::InternationalSocietyBiomechanics* helper)
+void set_isb_custom_landmarks_translator2(ma::body::LyonWholeBodyModel* helper)
 {
   new ma::body::LandmarksTranslator("LandmarksTranslator",{
     {"C7"         , "C7"},
@@ -129,4 +129,4 @@ void compare_joint_kinematics(ma::Node* kinematics, const std::string& name, int
   TSM_ASSERT_DELTA(name.c_str(), data[2*num+idx], refdata[2], 1e-5);
 };
 
-#endif // internationalsocietybiomechanicsTest_def_h
+#endif // lyonwholebodymodelTest_def_h

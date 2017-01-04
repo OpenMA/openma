@@ -36,17 +36,17 @@ namespace ma
 {
 namespace body
 { 
-  SWIG_TYPEMAP_NODE_OUT(ma::body, InternationalSocietyBiomechanics)
-  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, InternationalSocietyBiomechanics, SWIGTYPE)
+  SWIG_TYPEMAP_NODE_OUT(ma::body, LyonWholeBodyModel)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, LyonWholeBodyModel, SWIGTYPE)
   
   %nodefaultctor;
-  class InternationalSocietyBiomechanics : public SkeletonHelper
+  class LyonWholeBodyModel : public SkeletonHelper
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, InternationalSocietyBiomechanics, SWIGTYPE)
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, LyonWholeBodyModel, SWIGTYPE)
 
-    InternationalSocietyBiomechanics(int region, int side, Node* parent = nullptr);
-    ~InternationalSocietyBiomechanics();
+    LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
+    ~LyonWholeBodyModel();
     
     Sex sex() const;
     void setSex(Sex value);

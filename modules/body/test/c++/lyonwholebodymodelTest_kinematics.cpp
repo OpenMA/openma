@@ -2,20 +2,20 @@
 
 #define _TEST_BODY_USE_IO
 
-#include "internationalsocietybiomechanicsTest_def.h"
+#include "lyonwholebodymodelTest_def.h"
 #include "test_file_path.h"
 
-CXXTEST_SUITE(InternationalSocietyBiomechanicsKinematicsTest)
+CXXTEST_SUITE(LyonWholeBodyModelKinematicsTest)
 {
   CXXTEST_TEST(kinematicsUpperLimbBothWithCustomTranslator)
   {
     ma::Subject subject("Anonymous", {{"sex", ma::Sex::Male}});
     ma::Node statictrials("statictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
     // Static trial
-    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/UpperLimbStatic.c3d")), true);
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/UpperLimbStatic.c3d")), true);
     TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::InternationalSocietyBiomechanics skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::LyonWholeBodyModel skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
     set_isb_custom_landmarks_translator(&skeletonhelper);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
@@ -47,15 +47,15 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsKinematicsTest)
     ma::Subject subject("Anonymous", {{"sex", ma::Sex::Male}});
     ma::Node rootStaticTrials("rootStaticTrials"), rootDynamicTrials("rootDynamicTrials"), rootModels("rootModels"), rootKinematicsanalyses("rootKinematicsanalyses");
     // Static trial
-    generate_trial_from_c3d_file(&rootStaticTrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/SprintCalib.c3d"));
+    generate_trial_from_c3d_file(&rootStaticTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintCalib.c3d"));
     TS_ASSERT_EQUALS(rootStaticTrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::InternationalSocietyBiomechanics skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::LyonWholeBodyModel skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
     set_isb_custom_landmarks_translator2(&skeletonhelper);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &rootStaticTrials, &subject), true);
     // Dynamic trial
-    generate_trial_from_c3d_file(&rootDynamicTrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/SprintMotion.c3d"));
+    generate_trial_from_c3d_file(&rootDynamicTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintMotion.c3d"));
     TS_ASSERT_EQUALS(rootDynamicTrials.children().size(), 1u);
     // Model reconstruction
     TS_ASSERT_EQUALS(ma::body::reconstruct(&rootModels, &skeletonhelper, &rootDynamicTrials), true);
@@ -81,6 +81,6 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsKinematicsTest)
   };
 };
 
-CXXTEST_SUITE_REGISTRATION(InternationalSocietyBiomechanicsKinematicsTest)  
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsKinematicsTest, kinematicsUpperLimbBothWithCustomTranslator)
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsKinematicsTest, kinematicsFullBodyBothWithCustomTranslator)
+CXXTEST_SUITE_REGISTRATION(LyonWholeBodyModelKinematicsTest)  
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelKinematicsTest, kinematicsUpperLimbBothWithCustomTranslator)
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelKinematicsTest, kinematicsFullBodyBothWithCustomTranslator)

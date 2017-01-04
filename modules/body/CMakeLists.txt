@@ -10,7 +10,7 @@ SET(OPENMA_BODY_SRCS
   src/externalwrenchassigner.cpp
   src/inertialparameters.cpp
   src/inertialparametersestimator.cpp
-  src/internationalsocietybiomechanics.cpp
+  src/lyonwholebodymodel.cpp
   src/inversedynamicsmatrix.cpp
   src/inversedynamicsprocessor.cpp
   src/joint.cpp

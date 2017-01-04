@@ -32,40 +32,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_internationalsocietybiomechanics_p_h
-#define __openma_body_internationalsocietybiomechanics_p_h
+#ifndef __openma_body_lyonwholebodymodel_h
+#define __openma_body_lyonwholebodymodel_h
 
-#include "openma/body/skeletonhelper_p.h"
-#include "openma/base/enums.h"
+#include "openma/body_export.h"
+#include "openma/body/skeletonhelper.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 namespace ma
 {
+  enum class Sex : char;
+  
 namespace body
 {
-  class Model;
-  class InternationalSocietyBiomechanics;
+  class LyonWholeBodyModelPrivate;
   
-  class InternationalSocietyBiomechanicsPrivate : public SkeletonHelperPrivate
+  class OPENMA_BODY_EXPORT LyonWholeBodyModel : public SkeletonHelper
   {
-    OPENMA_DECLARE_PINT_ACCESSOR(InternationalSocietyBiomechanics)
-    
-    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(InternationalSocietyBiomechanics, SkeletonHelper,
-      Property<InternationalSocietyBiomechanics, Sex, &InternationalSocietyBiomechanics::sex, &InternationalSocietyBiomechanics::setSex>{"sex"}
-    )
+    OPENMA_DECLARE_PIMPL_ACCESSOR(LyonWholeBodyModel)
+    OPENMA_DECLARE_NODEID(LyonWholeBodyModel, SkeletonHelper)
     
   public:
-    InternationalSocietyBiomechanicsPrivate(InternationalSocietyBiomechanics* pint, const std::string& name, int region, int side);
-    ~InternationalSocietyBiomechanicsPrivate() _OPENMA_NOEXCEPT;
+    LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
     
-    bool calibrateUpperLimb(int side, math::Pose* torso, TaggedPositions* landmarks);
-    bool calibrateLowerLimb(int side, const math::Position* HJC, TaggedPositions* landmarks);
+    Sex sex() const _OPENMA_NOEXCEPT;
+    void setSex(Sex value) _OPENMA_NOEXCEPT;
     
-    bool reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
-    bool reconstructLowerLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    virtual bool calibrate(Node* trials, Subject* subject) override;
+    virtual LandmarksTranslator* defaultLandmarksTranslator() override;
+    virtual PoseEstimator* defaultPoseEstimator() override;
+    virtual InertialParametersEstimator* defaultInertialParametersEstimator() override;
+    virtual ExternalWrenchAssigner* defaultExternalWrenchAssigner() override;
+    virtual InverseDynamicProcessor* defaultInverseDynamicProcessor() override;
     
-    Sex Sex_;
+    virtual LyonWholeBodyModel* clone(Node* parent = nullptr) const override;
+    virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
+    
+  protected:
+    virtual bool setupModel(Model* model) const override;
+    virtual bool reconstructModel(Model* model, Trial* trial) override;
   };
 };
 };
 
-#endif // __openma_body_internationalsocietybiomechanics_p_h
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::LyonWholeBodyModel, OPENMA_BODY_EXPORT);
+
+#endif // __openma_body_lyonwholebodymodel_h

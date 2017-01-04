@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "openma/body/internationalsocietybiomechanics.h"
-#include "openma/body/internationalsocietybiomechanics_p.h"
+#include "openma/body/lyonwholebodymodel.h"
+#include "openma/body/lyonwholebodymodel_p.h"
 #include "openma/body/anchor.h"
 #include "openma/body/chain.h"
 #include "openma/body/dumasmcconvilleyoungtable.h"
@@ -68,16 +68,16 @@ namespace ma
 {
 namespace body
 {
-  InternationalSocietyBiomechanicsPrivate::InternationalSocietyBiomechanicsPrivate(InternationalSocietyBiomechanics* pint, const std::string& name, int region, int side)
+  LyonWholeBodyModelPrivate::LyonWholeBodyModelPrivate(LyonWholeBodyModel* pint, const std::string& name, int region, int side)
   : SkeletonHelperPrivate(pint,name,region,side),
     // All the options are null by default
     Sex_(Sex::Unknown)
   {};
   
-  InternationalSocietyBiomechanicsPrivate::~InternationalSocietyBiomechanicsPrivate() _OPENMA_NOEXCEPT = default;
+  LyonWholeBodyModelPrivate::~LyonWholeBodyModelPrivate() _OPENMA_NOEXCEPT = default;
   
   
-  bool InternationalSocietyBiomechanicsPrivate::calibrateUpperLimb(int side, math::Pose* torso, TaggedPositions* landmarks)
+  bool LyonWholeBodyModelPrivate::calibrateUpperLimb(int side, math::Pose* torso, TaggedPositions* landmarks)
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -103,7 +103,7 @@ namespace body
     const auto& LHE = (*landmarks)[prefix+"LHE"];
     if (!AC.isValid() || !GH.isValid() || !MHE.isValid() || !LHE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the arm. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the arm. Calibration aborted.");
       return false;
     }
     math::Position SJC(1); ; SJC.residuals().setZero();
@@ -161,7 +161,7 @@ namespace body
     const auto& RS = (*landmarks)[prefix+"RS"];
     if (!US.isValid() || !RS.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the forearm. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the forearm. Calibration aborted.");
       return false;
     }
     math::Position WJC = (US + RS) / 2.0;
@@ -176,7 +176,7 @@ namespace body
     const auto& MH5 = (*landmarks)[prefix+"MH5"];
     if (!MH2.isValid() || !MH5.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the hand. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the hand. Calibration aborted.");
       return false;
     }
     math::Position MH = (MH2 + MH5) / 2.0;
@@ -186,7 +186,7 @@ namespace body
     return true;
   };
   
-  bool InternationalSocietyBiomechanicsPrivate::calibrateLowerLimb(int side, const math::Position* HJC, TaggedPositions* landmarks)
+  bool LyonWholeBodyModelPrivate::calibrateLowerLimb(int side, const math::Position* HJC, TaggedPositions* landmarks)
   {
     auto pptr = this->pint();
     math::Vector u, v, w;
@@ -214,7 +214,7 @@ namespace body
     const auto& MFE = (*landmarks)[prefix+"MFE"];
     if (!GT.isValid() || !LFE.isValid() || !MFE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the thigh. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the thigh. Calibration aborted.");
       return false;
     }
     //  - Technical frame
@@ -248,7 +248,7 @@ namespace body
     const auto& MTM = (*landmarks)[prefix+"MTM"];
     if (!LTM.isValid() || !MTM.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the shank. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the shank. Calibration aborted.");
       return false;
     }
     math::Position AJC = (LTM + MTM) / 2.0;
@@ -264,7 +264,7 @@ namespace body
     const auto& HEE = (*landmarks)[prefix+"HEE"];
     if (!MTH1.isValid() || !MTH5.isValid() || !HEE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the foot. Calibration aborted.");
+      error("LyonWholeBodyModel - Missing landmarks to define the foot. Calibration aborted.");
       return false;
     }
     segLength = (((MTH1 + MTH5) / 2.0) - HEE).norm();
@@ -273,7 +273,7 @@ namespace body
     return true;
   };
   
-  bool InternationalSocietyBiomechanicsPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool LyonWholeBodyModelPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -302,13 +302,13 @@ namespace body
     const auto& LHE = (*landmarks)[prefix+"LHE"];
     if (!GH.isValid() || !MHE.isValid() || !LHE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the arm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the arm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     ReferenceFrame* relframe = nullptr;
     if ((relframe = pptr->findChild<ReferenceFrame*>(prefix+"Arm.SCS",{},false)) == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Relative arm segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Relative arm segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Arm}},false);
@@ -327,7 +327,7 @@ namespace body
     const auto& RS = (*landmarks)[prefix+"RS"];
     if (!MHE.isValid() || !LHE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the forearm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the forearm. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Forearm}},false);
@@ -345,7 +345,7 @@ namespace body
     const auto& MH5 = (*landmarks)[prefix+"MH5"];
     if (!MH2.isValid() || !MH5.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the hand. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the hand. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Hand}},false);
@@ -357,7 +357,7 @@ namespace body
     return true;
   };
   
-  bool InternationalSocietyBiomechanicsPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool LyonWholeBodyModelPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -386,13 +386,13 @@ namespace body
     const auto& MFE = (*landmarks)[prefix+"MFE"];
     if (!GT.isValid() || !LFE.isValid() || !MFE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the thigh. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the thigh. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     ReferenceFrame* relframe = nullptr;
     if ((relframe = pptr->findChild<ReferenceFrame*>(prefix+"Thigh.SCS",{},false)) == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Relative thigh segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Relative thigh segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
@@ -411,7 +411,7 @@ namespace body
     const auto& MTM = (*landmarks)[prefix+"MTM"];
     if (!FH.isValid() || !LTM.isValid() || !MTM.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
@@ -431,7 +431,7 @@ namespace body
     const auto& HEE = (*landmarks)[prefix+"HEE"];
     if (!MTH1.isValid() || !MTH5.isValid() || !HEE.isValid())
     {
-      error("InternationalSocietyBiomechanics - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - Missing landmarks to define the shank. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
@@ -451,15 +451,17 @@ namespace body
 //                                 PUBLIC API                                 //
 // -------------------------------------------------------------------------- //
 
-OPENMA_INSTANCE_STATIC_TYPEID(body::InternationalSocietyBiomechanics);
+OPENMA_INSTANCE_STATIC_TYPEID(body::LyonWholeBodyModel);
 
 namespace ma
 {
 namespace body
 {
   /**
-   * @class InternationalSocietyBiomechanics openma/body/internationalsocietybiomechanics.h
-   * @brief Helper class to create and reconstruct a model based on the International Society of Biomechanics (ISB) recommendations.
+   * @class LyonWholeBodyModel openma/body/lyonwholebodymodel.h
+   * @brief Helper class to create and reconstruct a model based on the works of Dumas et al. (2007)
+   *
+   * The Lyon Whole Body Model (LWBM) is a practival variant of the recommendation proposed by the International Society Biomechanics (ISB).
    *
    * @todo Add a detailed description on possible configurations, segments, joints, and coordinate systems definition. 
    * @todo Add the required and optional parameters used by this helper.
@@ -472,7 +474,7 @@ namespace body
   
 #ifdef DOXYGEN_SHOULD_TAKE_THIS
   /** * @brief Fake structure to create node's properties */
-  struct InternationalSocietyBiomechanics::__Doxygen_Properties
+  struct LyonWholeBodyModel::__Doxygen_Properties
   {
   /**
    * [Required] This property holds the subject's sex used in the computation of default hip joint centre and shoulder joint centre. By default, this property contains the value Sex::Unknown.
@@ -483,16 +485,16 @@ namespace body
 #endif
  
   /**
-   * Constructor. The name is set to "InternationalSocietyBiomechanics".
+   * Constructor. The name is set to "LyonWholeBodyModel".
    */
-  InternationalSocietyBiomechanics::InternationalSocietyBiomechanics(int region, int side, Node* parent)
-  : SkeletonHelper(*new InternationalSocietyBiomechanicsPrivate(this, "InternationalSocietyBiomechanics", region, side), parent)
+  LyonWholeBodyModel::LyonWholeBodyModel(int region, int side, Node* parent)
+  : SkeletonHelper(*new LyonWholeBodyModelPrivate(this, "LyonWholeBodyModel", region, side), parent)
   {};
   
   /**
    * Create segments and joints according to the region and side given to the constructor.
    */
-  bool InternationalSocietyBiomechanics::setupModel(Model* model) const
+  bool LyonWholeBodyModel::setupModel(Model* model) const
   {
     if (model == nullptr)
     {
@@ -502,7 +504,7 @@ namespace body
     auto optr = this->pimpl();
     if (optr->Side == Side::Center)
     {
-      error("Impossible to have a 'centre' side for the InternationalSocietyBiomechanics helper. Only the enumerators Side::Right, Side::Left, and Side::Both are available for this helper. Setup aborted.");
+      error("Impossible to have a 'centre' side for the LyonWholeBodyModel helper. Only the enumerators Side::Right, Side::Left, and Side::Both are available for this helper. Setup aborted.");
       return false;
     }
     if (optr->Sex_ == Sex::Unknown)
@@ -626,24 +628,24 @@ namespace body
    * Calibrate this helper based on the first Trial object found in @a trials. If @a subject is not a null pointer, its dynamic properties are copied to this object.
    * @todo Explain how to set custom hip joint centre
    */
-  bool InternationalSocietyBiomechanics::calibrate(Node* trials, Subject* subject)
+  bool LyonWholeBodyModel::calibrate(Node* trials, Subject* subject)
   {
     if (trials == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Null trials passed. Calibration aborted.");
+      error("LyonWholeBodyModel - Null trials passed. Calibration aborted.");
       return false;
     }
     auto trial = trials->findChild<Trial*>();
     if (trial == nullptr)
     {
-       error("InternationalSocietyBiomechanics - No trial found. Calibration aborted.");
+       error("LyonWholeBodyModel - No trial found. Calibration aborted.");
       return false;
     }
     bool ok = false;
     auto lmks = extract_landmark_positions(this, trial, nullptr, nullptr, &ok);
     if (!ok)
     {
-      error("InternationalSocietyBiomechanics - The sampling information is not consistent between required landmarks (sampling rates or start times are not the same). Calibration aborted.");
+      error("LyonWholeBodyModel - The sampling information is not consistent between required landmarks (sampling rates or start times are not the same). Calibration aborted.");
       return false;
     }
     
@@ -658,13 +660,13 @@ namespace body
     auto sexProp = this->property("sex");
     if (!sexProp.isValid())
     {
-      error("InternationalSocietyBiomechanics - The sex of the subject is required to set correctly the model. Calibration aborted.");
+      error("LyonWholeBodyModel - The sex of the subject is required to set correctly the model. Calibration aborted.");
       return false;
     }
     auto sex = sexProp.cast<Sex>();
     if ((sex != Sex::Male) && (sex != Sex::Female))
     {
-      error("InternationalSocietyBiomechanics - Unrecognized subject's sex. Calibration aborted.");
+      error("LyonWholeBodyModel - Unrecognized subject's sex. Calibration aborted.");
       return false;
     }
     
@@ -719,13 +721,13 @@ namespace body
       math::Position SC = landmarks["SC"];
       if (!L_ASIS.isValid() || !R_ASIS.isValid())
       {
-        error("InternationalSocietyBiomechanics - Missing landmarks (ASISs) to define the pelvis. Calibration aborted.");
+        error("LyonWholeBodyModel - Missing landmarks (ASISs) to define the pelvis. Calibration aborted.");
         return false;
       }
       
       if (!SC.isValid() && (!L_PSIS.isValid() || !R_PSIS.isValid()))
       {
-        error("InternationalSocietyBiomechanics - Missing landmarks (SC or PSISs) to define the pelvis. Calibration aborted.");
+        error("LyonWholeBodyModel - Missing landmarks (SC or PSISs) to define the pelvis. Calibration aborted.");
         return false;
       }
       if (!SC.isValid())
@@ -813,7 +815,7 @@ namespace body
       const auto& T8 = landmarks["T8"];
       if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
       {
-        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Calibration aborted.");
+        error("LyonWholeBodyModel - Missing landmarks to define the torso. Calibration aborted.");
         return false;
       }
       math::Vector u = (SS - C7).normalized();
@@ -884,16 +886,16 @@ namespace body
    * Reconstruct @a model segments' movement based on the content of the given @a trial.
    * @a todo Explain that exported segment frame corresponds to the segmental coordinate system (SCS).
    */
-  bool InternationalSocietyBiomechanics::reconstructModel(Model* model, Trial* trial)
+  bool LyonWholeBodyModel::reconstructModel(Model* model, Trial* trial)
   {
     if (model == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Null model passed. Movement reconstruction aborted.");
+      error("LyonWholeBodyModel - Null model passed. Movement reconstruction aborted.");
       return false;
     }
     if (trial == nullptr)
     {
-      error("InternationalSocietyBiomechanics - Null trial passed. Movement reconstruction aborted.");
+      error("LyonWholeBodyModel - Null trial passed. Movement reconstruction aborted.");
       return false;
     }
     model->setName(model->name() + "_" + trial->name());
@@ -903,7 +905,7 @@ namespace body
     auto landmarks = extract_landmark_positions(this, trial, &sampleRate, &startTime, &ok);
     if (!ok)
     {
-      error("InternationalSocietyBiomechanics - The sampling information are no consistent (sampling rate or start time not the same) between required landmarks. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+      error("LyonWholeBodyModel - The sampling information are no consistent (sampling rate or start time not the same) between required landmarks. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
       return false;
     }
     auto optr = this->pimpl();
@@ -925,13 +927,13 @@ namespace body
       const auto& T8 = landmarks["T8"];
       if (!SS.isValid() || !C7.isValid() || !XP.isValid() || !T8.isValid())
       {
-        error("InternationalSocietyBiomechanics - Missing landmarks to define the torso. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
+        error("LyonWholeBodyModel - Missing landmarks to define the torso. Movement reconstruction aborted for trial '%s'.", trial->name().c_str());
         return false;
       }
       ReferenceFrame* relframe = nullptr;
       if ((relframe = this->findChild<ReferenceFrame*>(seg->name()+".SCS",{},false)) == nullptr)
       {
-        error("InternationalSocietyBiomechanics - Relative torso segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("LyonWholeBodyModel - Relative torso segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       relframe = relframe->clone(seg);
@@ -979,7 +981,7 @@ namespace body
       ReferenceFrame* relframe = nullptr;
       if ((relframe = this->findChild<ReferenceFrame*>("Pelvis.SCS",{},false)) == nullptr)
       {
-        error("InternationalSocietyBiomechanics - Relative pelvis segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
+        error("LyonWholeBodyModel - Relative pelvis segment coordinate system not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
       relframe = relframe->clone(seg);
@@ -1009,7 +1011,7 @@ namespace body
   /**
    * Returns the internal parameter LeftStaticPlantarFlexionOffset.
    */
-  Sex InternationalSocietyBiomechanics::sex() const _OPENMA_NOEXCEPT
+  Sex LyonWholeBodyModel::sex() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     return optr->Sex_;
@@ -1018,7 +1020,7 @@ namespace body
   /**
    * Returns the internal parameter LeftStaticRotationOffset.
    */
-  void InternationalSocietyBiomechanics::setSex(Sex value) _OPENMA_NOEXCEPT
+  void LyonWholeBodyModel::setSex(Sex value) _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
     if (optr->Sex_ == value)
@@ -1030,8 +1032,8 @@ namespace body
   // ----------------------------------------------------------------------- //
   
   /*
-   * Generate a landmarks translator for the InternationalSocietyBiomechanics model.
-   * The following list presents the label used in the InternationalSocietyBiomechanics helper. The default translation uses the same internal and external names as this model was developed within OpenMA and not by a third-party company.
+   * Generate a landmarks translator for the LyonWholeBodyModel model.
+   * The following list presents the label used in the LyonWholeBodyModel helper. The default translation uses the same internal and external names as this model was developed within OpenMA and not by a third-party company.
    *  - C7:     C7     (Seventh cervical vertebra: also named vertebra)
    *  - T8:     T8     (Spinous Process of the 8th thoracic vertebrae)
    *  - SS:     SS     (Suprasternal notch: superior border of the manubrium of the sternum, also known as the jugular notch)
@@ -1076,7 +1078,7 @@ namespace body
    *  - R.MTH5: R.MTH5 (Right head of the fifth metatarsal)
    *  - R.HEE:  R.HEE  (Right heel marker - Calcaneous)
    */
-  LandmarksTranslator* InternationalSocietyBiomechanics::defaultLandmarksTranslator()
+  LandmarksTranslator* LyonWholeBodyModel::defaultLandmarksTranslator()
   {
     return new LandmarksTranslator(
       "LandmarksTranslator", 
@@ -1144,15 +1146,15 @@ namespace body
   /*
    * Returns a SkeletonHelperPoseEstimator node
    */
-  PoseEstimator* InternationalSocietyBiomechanics::defaultPoseEstimator()
+  PoseEstimator* LyonWholeBodyModel::defaultPoseEstimator()
   {
-    return new SkeletonHelperPoseEstimator("InternationalSocietyBiomechanicsPoseEstimator",this);
+    return new SkeletonHelperPoseEstimator("LyonWholeBodyModelPoseEstimator",this);
   };
   
   /**
    * Returns a DumasMcConvilleYoungTable node
    */
-  InertialParametersEstimator* InternationalSocietyBiomechanics::defaultInertialParametersEstimator()
+  InertialParametersEstimator* LyonWholeBodyModel::defaultInertialParametersEstimator()
   {
     return new DumasMcConvilleYoungTable(this);
   };
@@ -1160,7 +1162,7 @@ namespace body
   /**
    * Retuns a null pointer. This means that the developer must create and parent a wrench assigner to correctly compute the inverse dynamics.
    */
-  ExternalWrenchAssigner* InternationalSocietyBiomechanics::defaultExternalWrenchAssigner()
+  ExternalWrenchAssigner* LyonWholeBodyModel::defaultExternalWrenchAssigner()
   {
     return nullptr;
   };
@@ -1168,7 +1170,7 @@ namespace body
   /**
    * Returns a InverseDynamicMatrix node
    */
-  InverseDynamicProcessor* InternationalSocietyBiomechanics::defaultInverseDynamicProcessor()
+  InverseDynamicProcessor* LyonWholeBodyModel::defaultInverseDynamicProcessor()
   {
     return new InverseDynamicMatrix(this);
   };
@@ -1176,9 +1178,9 @@ namespace body
   /**
    * Create a deep copy of the object and return it as another object.
    */
-  InternationalSocietyBiomechanics* InternationalSocietyBiomechanics::clone(Node* parent) const
+  LyonWholeBodyModel* LyonWholeBodyModel::clone(Node* parent) const
   {
-    auto dest = new InternationalSocietyBiomechanics(0,0);
+    auto dest = new LyonWholeBodyModel(0,0);
     dest->copy(this);
     dest->addParent(parent);
     return dest;
@@ -1187,9 +1189,9 @@ namespace body
   /**
    * Do a deep copy of the the given @a source. The previous content is replaced.
    */
-  void InternationalSocietyBiomechanics::copy(const Node* source) _OPENMA_NOEXCEPT
+  void LyonWholeBodyModel::copy(const Node* source) _OPENMA_NOEXCEPT
   {
-    auto src = node_cast<const InternationalSocietyBiomechanics*>(source);
+    auto src = node_cast<const LyonWholeBodyModel*>(source);
     if (src == nullptr)
       return;
     auto optr = this->pimpl();

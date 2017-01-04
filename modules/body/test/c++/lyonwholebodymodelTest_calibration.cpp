@@ -2,16 +2,16 @@
 
 #define _TEST_BODY_USE_IO
 
-#include "internationalsocietybiomechanicsTest_def.h"
+#include "lyonwholebodymodelTest_def.h"
 #include "test_file_path.h"
 
-CXXTEST_SUITE(InternationalSocietyBiomechanicsCalibrationTest)
+CXXTEST_SUITE(LyonWholeBodyModelCalibrationTest)
 {
   CXXTEST_TEST(calibrateUpperLimbBothWithCustomTranslator)
   {
     ma::Node root("root");
-    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/UpperLimbStatic.c3d"));
-    ma::body::InternationalSocietyBiomechanics helper(ma::body::Region::Upper, ma::body::Side::Both);
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/UpperLimbStatic.c3d"));
+    ma::body::LyonWholeBodyModel helper(ma::body::Region::Upper, ma::body::Side::Both);
     helper.setSex(ma::Sex::Male);
     set_isb_custom_landmarks_translator(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&root, nullptr), true);
@@ -22,8 +22,8 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsCalibrationTest)
   CXXTEST_TEST(calibrateFullBodyWithCustomTranslator)
   {
     ma::Node root("root");
-    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/SprintCalib.c3d"));
-    ma::body::InternationalSocietyBiomechanics helper(ma::body::Region::Full, ma::body::Side::Both);
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintCalib.c3d"));
+    ma::body::LyonWholeBodyModel helper(ma::body::Region::Full, ma::body::Side::Both);
     helper.setSex(ma::Sex::Male);
     set_isb_custom_landmarks_translator2(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&root, nullptr), true);
@@ -41,6 +41,6 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsCalibrationTest)
   }
 };
 
-CXXTEST_SUITE_REGISTRATION(InternationalSocietyBiomechanicsCalibrationTest)  
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsCalibrationTest, calibrateUpperLimbBothWithCustomTranslator)
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsCalibrationTest, calibrateFullBodyWithCustomTranslator)
+CXXTEST_SUITE_REGISTRATION(LyonWholeBodyModelCalibrationTest)  
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelCalibrationTest, calibrateUpperLimbBothWithCustomTranslator)
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelCalibrationTest, calibrateFullBodyWithCustomTranslator)

@@ -62,7 +62,7 @@
 %include "body/landmarkstranslator.i"
 %include "body/skeletonhelper.i"
 %include "body/plugingait.i"
-%include "body/internationalsocietybiomechanics.i"
+%include "body/lyonwholebodymodel.i"
 
 namespace ma
 {

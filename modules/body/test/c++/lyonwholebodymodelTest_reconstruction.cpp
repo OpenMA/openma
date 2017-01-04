@@ -2,16 +2,16 @@
 
 #define _TEST_BODY_USE_IO
 
-#include "internationalsocietybiomechanicsTest_def.h"
+#include "lyonwholebodymodelTest_def.h"
 #include "test_file_path.h"
 
-CXXTEST_SUITE(InternationalSocietyBiomechanicsReconstructionTest)
+CXXTEST_SUITE(LyonWholeBodyModelReconstructionTest)
 {
   CXXTEST_TEST(reconstructUpperLimbBothWithCustomTranslator)
   {
     ma::Node rootTrials("rootTrials"), rootModels("rootModels");
-    generate_trial_from_c3d_file(&rootTrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/UpperLimbStatic.c3d"));
-    ma::body::InternationalSocietyBiomechanics helper(ma::body::Region::Upper, ma::body::Side::Both);
+    generate_trial_from_c3d_file(&rootTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/UpperLimbStatic.c3d"));
+    ma::body::LyonWholeBodyModel helper(ma::body::Region::Upper, ma::body::Side::Both);
     helper.setSex(ma::Sex::Male);
     set_isb_custom_landmarks_translator(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&rootTrials, nullptr), true);
@@ -33,12 +33,12 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsReconstructionTest)
   CXXTEST_TEST(reconstructFullBodyBothWithCustomTranslator)
   {
     ma::Node rootStaticTrials("rootStaticTrials"), rootDynamicTrials("rootDynamicTrials"), rootModels("rootModels");
-    generate_trial_from_c3d_file(&rootStaticTrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/SprintCalib.c3d"));
-    ma::body::InternationalSocietyBiomechanics helper(ma::body::Region::Lower, ma::body::Side::Both);
+    generate_trial_from_c3d_file(&rootStaticTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintCalib.c3d"));
+    ma::body::LyonWholeBodyModel helper(ma::body::Region::Lower, ma::body::Side::Both);
     helper.setSex(ma::Sex::Male);
     set_isb_custom_landmarks_translator2(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&rootStaticTrials, nullptr), true);
-    generate_trial_from_c3d_file(&rootDynamicTrials, OPENMA_TDD_PATH_IN("c3d/internationalsocietybiomechanics/SprintMotion.c3d"));
+    generate_trial_from_c3d_file(&rootDynamicTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintMotion.c3d"));
     TS_ASSERT_EQUALS(helper.reconstruct(&rootModels, &rootDynamicTrials), true);
     auto model = rootModels.findChild<ma::body::Model*>();
     // NOTE: There is no test on the shanks due to a difference in the computation of the U-axis in the original data.
@@ -65,6 +65,6 @@ CXXTEST_SUITE(InternationalSocietyBiomechanicsReconstructionTest)
   };
 };
 
-CXXTEST_SUITE_REGISTRATION(InternationalSocietyBiomechanicsReconstructionTest)  
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsReconstructionTest, reconstructUpperLimbBothWithCustomTranslator)
-CXXTEST_TEST_REGISTRATION(InternationalSocietyBiomechanicsReconstructionTest, reconstructFullBodyBothWithCustomTranslator)
+CXXTEST_SUITE_REGISTRATION(LyonWholeBodyModelReconstructionTest)  
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelReconstructionTest, reconstructUpperLimbBothWithCustomTranslator)
+CXXTEST_TEST_REGISTRATION(LyonWholeBodyModelReconstructionTest, reconstructFullBodyBothWithCustomTranslator)

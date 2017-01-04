@@ -1,6 +1,6 @@
 SET_SOURCE_FILES_PROPERTIES("body.i" PROPERTIES CPLUSPLUS ON)
 SET(SWIG_MODULE_body_EXTRA_SRCS
-  "BODY/internationalsocietybiomechanics.i"
+  "body/lyonwholebodymodel.i"
   "body/landmarkstranslator.i"
   "body/plugingait.i"
   "body/skeletonhelper.i")
