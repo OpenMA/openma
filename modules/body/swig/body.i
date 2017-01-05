@@ -69,6 +69,7 @@ namespace ma
 namespace body
 {
   void calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
+  bool register_marker_cluster(SkeletonHelper* helper, Node* trials);
   Node* reconstruct(SkeletonHelper* helper, Node* trials);
   Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
   Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, ma::body::RepresentationFrame frame = ma::body::RepresentationFrame::Distal);

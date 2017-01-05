@@ -32,6 +32,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%rename(registerMarkerCluster) register_marker_cluster;
 %rename(extractJointKinematics) extract_joint_kinematics;
 %rename(extractJointKinetics) extract_joint_kinetics;
 
