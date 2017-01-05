@@ -315,7 +315,7 @@ namespace body
     relframe = relframe->clone(seg);
     const math::Position EJC = (LHE + MHE) / 2.0;;
     v = (GH - EJC).normalized();
-    u = v .cross(s * (LHE - MHE));
+    u = v.cross(s * (LHE - MHE)).normalized();
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),GH)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -418,7 +418,7 @@ namespace body
     const math::Position KJC = (LFE + MFE) / 2.0;
     const math::Position AJC = (LTM + MTM) / 2.0;
     v = (KJC - AJC).normalized();
-    u = v.cross(s * (FH - AJC));
+    u = v.cross(s * (FH - AJC)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),KJC), prefix+"Shank.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -523,14 +523,15 @@ namespace body
       model->setName(this->name() + "_UpperLimb");
       Segment* head = new Segment("Head", Part::Head, Side::Center, segments);
       torso = new Segment("Torso", Part::Torso, Side::Center, segments);
+      new LandmarksRegistrar("Torso.Landmarks", {{"SS","C7","XP","T8","T12"}}, torso);
       if (optr->Side & Side::Left)
       {
         Segment* leftArm = new Segment("L.Arm", Part::Arm, Side::Left, segments);
         Segment* leftForearm = new Segment("L.Forearm", Part::Forearm, Side::Left, segments);
         Segment* leftHand = new Segment("L.Hand", Part::Hand, Side::Left, segments);
         new LandmarksRegistrar("L.Arm.Landmarks", {{"L.GH","L.MHE","L.LHE"}}, leftArm);
-        new LandmarksRegistrar("L.Forearm.Landmarks", {{"L.US","L.RS","L.LTM"}}, leftForearm);
-        new LandmarksRegistrar("L.Hand.Landmarks", {{"L.MTH1","L.MTH5","L.HEE"}}, leftHand);
+        new LandmarksRegistrar("L.Forearm.Landmarks", {{"L.US","L.RS","L.LHE"}}, leftForearm);
+        new LandmarksRegistrar("L.Hand.Landmarks", {{"L.MH2","L.MH5","L.US", "L.RS", "L.MBH"}}, leftHand);
         std::vector<Joint*> leftUpperLimbJoints(3);
         jnt = new Joint("L.Shoulder", torso, leftArm, joints);
         leftUpperLimbJoints[0] = jnt;
@@ -548,9 +549,9 @@ namespace body
         Segment* rightArm = new Segment("R.Arm", Part::Arm, Side::Right, segments);
         Segment* rightForearm = new Segment("R.Forearm", Part::Forearm, Side::Right, segments);
         Segment* rightHand = new Segment("R.Hand", Part::Hand, Side::Right, segments);
-        new LandmarksRegistrar("R.Arm.Landmarks", {{"L.GH","L.MHE","L.LHE"}}, rightArm);
-        new LandmarksRegistrar("R.Forearm.Landmarks", {{"L.US","L.RS","L.LTM"}}, rightForearm);
-        new LandmarksRegistrar("R.Hand.Landmarks", {{"L.MTH1","L.MTH5","L.HEE"}}, rightHand);
+        new LandmarksRegistrar("R.Arm.Landmarks", {{"R.GH","R.MHE","R.LHE"}}, rightArm);
+        new LandmarksRegistrar("R.Forearm.Landmarks", {{"R.US","R.RS","R.LHE"}}, rightForearm);
+        new LandmarksRegistrar("R.Hand.Landmarks", {{"R.MH2","R.MH5","R.US", "R.RS", "R.MBH"}}, rightHand);
         std::vector<Joint*> rightUpperLimbJoints(3);
         jnt = new Joint("R.Shoulder", torso, rightArm, joints);
         rightUpperLimbJoints[0] = jnt;
@@ -568,6 +569,7 @@ namespace body
     {
       model->setName(this->name() + "_LowerLimb");
       pelvis = new Segment("Pelvis", Part::Pelvis, Side::Center, segments);
+      new LandmarksRegistrar("Pelvis.Landmarks", {{"L.ASIS","R.ASIS","L.PSIS","R.PSIS","SC"}}, pelvis);
       if (optr->Side & Side::Left)
       {
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
@@ -598,7 +600,7 @@ namespace body
         Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
         new LandmarksRegistrar("R.Thigh.Landmarks", {{"R.GT","R.LFE","R.MFE"}}, rightThigh);
         new LandmarksRegistrar("R.Shank.Landmarks", {{"R.FH","R.MTM","R.LTM"}}, rightShank);
-        new LandmarksRegistrar("R.Foot.Landmarks", {{"L.MTH1","R.MTH5","R.HEE"}}, rightFoot);
+        new LandmarksRegistrar("R.Foot.Landmarks", {{"R.MTH1","R.MTH5","R.HEE"}}, rightFoot);
         std::vector<Joint*> rightLowerLimbJoints(3);
         jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, joints);
         rightLowerLimbJoints[0] = jnt;
