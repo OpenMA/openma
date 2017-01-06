@@ -101,7 +101,6 @@ namespace io
     {
       std::string label = stream.readString(8);
       trim_string(&label);
-      trim_string(&label, 0x20);
       crop_string(&label);
       analog->setName(label);
     }
@@ -114,7 +113,6 @@ namespace io
     {
       std::string unit = stream.readString(4);
       trim_string(&unit);
-      trim_string(&unit, 0x20);
       crop_string(&unit);
       analog->setUnit(unit);
       if (unit.compare("mV") == 0)
