@@ -34,6 +34,7 @@
 
 #include "gaitzeni2008coordinate.h"
 #include "openma/analysis/enums.h"
+#include "openma/base/event.h"
 #include "openma/base/logger.h"
 #include "openma/base/subject.h"
 #include "openma/base/timesequence.h"
@@ -43,28 +44,37 @@
 
 #include <Eigen_openma/SignalProcessing/DetectPeaks.h>
 
-void _gaitzeni2008coordinateDetectEvent(ma::Node* output, const ma::math::Position* SC, const ma::math::Map<ma::math::Position>* HEE, const ma::math::Map<ma::math::Position>* MTH2, const ma::math::Pose* progression, double sampleRate, double startTime, const std::string& prefix, const std::string& subjectName)
+void _gaitzeni2008coordinateDetectEvent(ma::Node* output, const ma::math::Position* SC, const ma::math::Map<ma::math::Position>* HEE, const ma::math::Map<ma::math::Position>* MTH2, const ma::math::Pose* progression, double sampleRate, double startTime, const std::string& context, const std::string& subjectName)
 {
-  // if (!HEE->isValid() || !MTH2->isValid())
-  // {
-  //   ma::warning("Missing '%sHEE' or '%sMTH2' markers. Event detection not possible for this given side.", prefix.c_str(), prefix.c_str());
-  //   return;
-  // }
-  // _OPENMA_CONSTEXPR double mph = 50.; // Minimum height to detect events
-  // _OPENMA_CONSTEXPR int mpd = 20; // Distance minimum between 2 events
-  // // Foot strike
-  // ma::math::Scalar heelDisplacement = progression->transform(*HEE - *SC).block<1>(0);
-  // heelDisplacement.values() = (heelDisplacement.residuals() >= 0.).select(heelDisplacement.values(), std::nan(""));
-  // ma::math::Scalar::Values footStrikeTimes = Eigen::detect_peaks(heelDisplacement.values(), mph, mpd) / sampleRate + startTime;
-  // // if (footStrikeTimes.rows() != 0)
-  // // {
-  // //   new Event(prefix+"FootStrike", output);
-  // //   for
-  // // }
-  // // Foot off
-  // ma::math::Scalar toeDisplacement = progression->transform(*MTH2 - *SC).block<1>(0);
-  // toeDisplacement.values() = (toeDisplacement.residuals() >= 0.).select(toeDisplacement.values(), std::nan(""));
-  // ma::math::Scalar::Values footOffTimes = Eigen::detect_peaks(toeDisplacement.values(), mph, mpd) / sampleRate + startTime;
+  if (!HEE->isValid() || !MTH2->isValid())
+  {
+    ma::warning("Missing 'HEE' or 'MTH2' markers for the %s side. Event detection not possible for this given side.", context.c_str());
+    return;
+  }
+  _OPENMA_CONSTEXPR double mph = 50.; // Minimum height to detect events
+  _OPENMA_CONSTEXPR int mpd = 20; // Distance minimum between 2 events
+  using Index = typename ma::math::Scalar::Values::Index;
+  ma::math::Vector temp;
+  // Foot strike
+  temp = progression->transform(*HEE - *SC);
+  ma::math::Scalar heelDisplacement = temp.block<1>(0);
+  heelDisplacement.values() = (heelDisplacement.residuals() >= 0.).select(heelDisplacement.values(), std::nan(""));
+  ma::math::Scalar::Values footStrikeTimes = Eigen::detect_peaks(heelDisplacement.values(), mph, mpd).cast<double>() / sampleRate + startTime;
+  if (footStrikeTimes.rows() != 0)
+  {
+    for (Index i = 0 ; i < footStrikeTimes.rows() ; ++i)
+      new ma::Event("FootStrike", footStrikeTimes.coeff(i), subjectName, context, output);
+  }
+  // Foot off
+  temp = progression->transform(*MTH2 - *SC);
+  ma::math::Scalar toeDisplacement = temp.block<1>(0);
+  toeDisplacement.values() = (toeDisplacement.residuals() >= 0.).select(toeDisplacement.values(), std::nan(""));
+  ma::math::Scalar::Values footOffTimes = Eigen::detect_peaks(toeDisplacement.values(), mph, mpd).cast<double>() / sampleRate + startTime;
+  if (footOffTimes.rows() != 0)
+  {
+    for (Index i = 0 ; i < footOffTimes.rows() ; ++i)
+      new ma::Event("FootOff", footOffTimes.coeff(i), subjectName, context, output);
+  }
 };
 
 namespace ma
@@ -169,8 +179,8 @@ namespace analysis
     if (!SC.isValid())
       SC = (L_PSIS + R_PSIS) / 2.0;
     // 2. Do the computation
-    _gaitzeni2008coordinateDetectEvent(output, &SC, &L_HEE, &L_MTH2, &progression, rate, start, "L.", subjectName);
-    _gaitzeni2008coordinateDetectEvent(output, &SC, &R_HEE, &R_MTH2, &progression, rate, start, "R.", subjectName);
+    _gaitzeni2008coordinateDetectEvent(output, &SC, &L_HEE, &L_MTH2, &progression, rate, start, "Left", subjectName);
+    _gaitzeni2008coordinateDetectEvent(output, &SC, &R_HEE, &R_MTH2, &progression, rate, start, "Right", subjectName);
     return true;
   };
   
