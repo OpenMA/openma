@@ -90,8 +90,11 @@ namespace io
    */
   inline void crop_string(std::string* str, const char c = '\0')
   {
-    *str = str->erase(0, str->find_first_not_of(c));
-    *str = str->erase(str->find_first_of(c));
+    size_t pos;
+    if ((pos = str->find_first_not_of(c)) != std::string::npos)
+      *str = str->erase(0, pos);
+    if ((pos = str->find_first_of(c)) != std::string::npos)
+      *str = str->erase(pos);
   };
   
   /**
