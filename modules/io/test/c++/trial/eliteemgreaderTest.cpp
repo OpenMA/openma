@@ -218,6 +218,37 @@ CXXTEST_SUITE(EliteEmgReaderTest)
     TS_ASSERT_EQUALS(analogs[6]->name(), "L_TA");
     TS_ASSERT_EQUALS(analogs[7]->name(), "L_GAL");
   };
+  
+  CXXTEST_TEST(file22XXXC0B)
+  {
+    ma::io::File file;
+    file.open(OPENMA_TDD_PATH_IN("elite/22XXX/22XXXC0B.EMG"), ma::io::Mode::In);
+    ma::io::HandlerReader reader(&file);
+    ma::Node root("root");
+    TS_ASSERT_EQUALS(reader.read(&root), true);
+    TS_ASSERT_EQUALS(reader.errorCode(), ma::io::Error::None);
+    TS_ASSERT_EQUALS(reader.errorMessage(), std::string{});
+    TS_ASSERT_EQUALS(root.children().size(), 1u);
+    
+    auto analogs = root.findChildren<ma::TimeSequence*>();
+    TS_ASSERT_EQUALS(analogs.size(), 8u);
+    for (auto analog : analogs)
+    {
+      TS_ASSERT_EQUALS(analog->startTime(), 0.0);
+      TS_ASSERT_EQUALS(analog->sampleRate(), 500.0);
+      TS_ASSERT_EQUALS(analog->components(), 1u);
+      TS_ASSERT_EQUALS(analog->samples(), 4522u);
+      TS_ASSERT_EQUALS(analog->unit(), "mV");
+    }
+    TS_ASSERT_EQUALS(analogs[0]->name(), "L_RF");
+    TS_ASSERT_EQUALS(analogs[1]->name(), "L_SM");
+    TS_ASSERT_EQUALS(analogs[2]->name(), "L_TA");
+    TS_ASSERT_EQUALS(analogs[3]->name(), "L_GAM");
+    TS_ASSERT_EQUALS(analogs[4]->name(), "R_RF");
+    TS_ASSERT_EQUALS(analogs[5]->name(), "R_SM");
+    TS_ASSERT_EQUALS(analogs[6]->name(), "R_TA");
+    TS_ASSERT_EQUALS(analogs[7]->name(), "R_GAM");
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(EliteEmgReaderTest)
@@ -236,3 +267,4 @@ CXXTEST_TEST_REGISTRATION(EliteEmgReaderTest, detectVariantEmf)
 CXXTEST_TEST_REGISTRATION(EliteEmgReaderTest, file1123xa01G)
 CXXTEST_TEST_REGISTRATION(EliteEmgReaderTest, file1123xa01F)
 CXXTEST_TEST_REGISTRATION(EliteEmgReaderTest, file1123xa01R)
+CXXTEST_TEST_REGISTRATION(EliteEmgReaderTest, file22XXXC0B)

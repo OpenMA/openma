@@ -34,6 +34,7 @@
 
 #include "eliteemghandler.h"
 #include "openma/io/binarystream.h"
+#include "openma/io/buffer.h"
 #include "openma/io/device.h"
 #include "openma/io/enums.h"
 #include "openma/io/utils.h"
@@ -56,17 +57,23 @@ namespace io
   {
     // NOTE There is no known signature for the Elite EMG/EMR/EMF format
     //      Instead the verification is realized on the name of the device
-    //      Moreover, the 2 first bytes seems to be equal to 0x00 everytime.
-    //      They will be also verified.
+    //      Moreover, the 4 first bytes represent the delay time for the first
+    //      and last samples. The byte #1 and #3 can have a maximum value equals
+    //      999. These values will be tested.
     std::string lowercase = device->name();
     std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(), tolower);
     std::string::size_type pos = std::string::npos;
     if ((((pos = lowercase.rfind(".emg")) == std::string::npos) && ((pos = lowercase.rfind(".emf")) == std::string::npos) && ((pos = lowercase.rfind(".emr")) == std::string::npos)) || (pos != (lowercase.length() - 4))) 
       return Signature::Invalid;
-    char signature[2] = {0};
-    if ((device->peek(signature,sizeof(signature)) != 2) || (signature[0] != 0x00) || (signature[1] != 0x00))
+    char delays[8] = {0};
+    if ((device->peek(delays,sizeof(delays)) != 8))
       return Signature::Invalid;
-    return Signature::Valid;
+    Buffer buffer;
+    buffer.open(delays,8);
+    BinaryStream stream(&buffer, ByteOrder::IEEELittleEndian);
+    uint16_t times[4] = {0};
+    stream.readU16(4, times);
+    return ((times[0] <= 999) && (times[2] <= 999)) ? Signature::Valid : Signature::Invalid;
   };
 
   Signature EliteEmgHandler::verifySignature() const _OPENMA_NOEXCEPT
@@ -78,18 +85,23 @@ namespace io
   {
     BinaryStream stream(this->device(), ByteOrder::IEEELittleEndian);
     this->device()->setExceptions(State::End | State::Fail | State::Error);
-    // Bytes 1-2: 0x0000
-    this->device()->seek(4, Origin::Begin);
-    int numSamples = stream.readU16() + stream.readU16() * 1000;
+    uint16_t times[4] = {0};
+    stream.readU16(4, times);
+    double startTime = static_cast<double>(times[0] + times[1] * 1000) / 1000.;
+    double stopTime = static_cast<double>(times[2] + times[3] * 1000) / 1000.;
+    if (stopTime < startTime)
+      throw(FormatError("Stop time less than start time."));
     int numAnalogs = stream.readU16();
     double sampleRate = static_cast<double>(stream.readU16());
+    unsigned numSamples = static_cast<unsigned>(std::floor((stopTime - startTime) * sampleRate));
     Trial* trial = new Trial(strip_path(this->device()->name()),output);
-    auto analogs = make_nodes<TimeSequence*>(numAnalogs,1,numSamples,sampleRate,0.0,TimeSequence::Analog,"V",trial->timeSequences());
+    auto analogs = make_nodes<TimeSequence*>(numAnalogs,1,numSamples,sampleRate,startTime,TimeSequence::Analog,"V",trial->timeSequences());
     // Labels (max: 32 labels)
     for (auto& analog : analogs)
     {
       std::string label = stream.readString(8);
       trim_string(&label);
+      trim_string(&label, 0x20);
       crop_string(&label);
       analog->setName(label);
     }
@@ -102,6 +114,7 @@ namespace io
     {
       std::string unit = stream.readString(4);
       trim_string(&unit);
+      trim_string(&unit, 0x20);
       crop_string(&unit);
       analog->setUnit(unit);
       if (unit.compare("mV") == 0)
@@ -124,7 +137,7 @@ namespace io
       scales[i] *= 20.0 / (4096.0 * adcGain * static_cast<double>(stream.readU16()));
     // Scaled values
     this->device()->seek(1024, Origin::Begin);
-    for (int i = 0 ; i < numSamples ; ++i)
+    for (unsigned i = 0 ; i < numSamples ; ++i)
     {
       int inc = 0;
       for (auto& analog : analogs)
