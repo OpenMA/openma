@@ -85,6 +85,7 @@ namespace io
   {
     BinaryStream stream(this->device(), ByteOrder::IEEELittleEndian);
     this->device()->setExceptions(State::End | State::Fail | State::Error);
+    // First block
     uint16_t times[4] = {0};
     stream.readU16(4, times);
     double startTime = static_cast<double>(times[0] + times[1] * 1000) / 1000.;
@@ -118,22 +119,29 @@ namespace io
       if (unit.compare("mV") == 0)
         scales[i] = 1000.0;
     }
-    // General ADC gain?
-    this->device()->seek((32 - numAnalogs) * 4, Origin::Current);
-    double adcGain = static_cast<double>(stream.readU16());
-    // Others unknown data ...
-    this->device()->seek(114, Origin::Current);
-    // Analog channel settings
-    // First parameter ... What is it?
-    this->device()->seek(32*2, Origin::Current);
-    // Second parameter ... What is it?
-    this->device()->seek(32*2, Origin::Current);
-    // Third parameter ... What is it?
-    this->device()->seek(32*2, Origin::Current);
+    // Second block
+    this->device()->seek(512, Origin::Begin);
+    // Conversion factor
+    int16_t adcConversionFactor[32] = {0};
+    stream.readI16(32, adcConversionFactor);
     // Gain
+    int16_t adcGain[32] = {0};
+    stream.readI16(32, adcGain);
     for (int i = 0 ; i < numAnalogs ; ++i)
-      scales[i] *= 20.0 / (4096.0 * adcGain * static_cast<double>(stream.readU16()));
-    // Scaled values
+      scales[i] *= 20.0 / (4096.0 * static_cast<double>(adcGain[i]) * static_cast<double>(adcConversionFactor[i]));
+    // High pass filter cut frequencies
+    int16_t highCutFrequency[32] = {0};
+    stream.readI16(32, highCutFrequency);
+    // Low pass filter cut frequencies
+    int16_t lowCutFrequency[32] = {0};
+    stream.readI16(32, lowCutFrequency);
+    // Rectified flag
+    int16_t rectifiedFlag[32] = {0};
+    stream.readI16(32, rectifiedFlag);
+    // Integral signal
+    int16_t integralSignal[32] = {0};
+    stream.readI16(32, integralSignal);
+    // Data block
     this->device()->seek(1024, Origin::Begin);
     for (unsigned i = 0 ; i < numSamples ; ++i)
     {
