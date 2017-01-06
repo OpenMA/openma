@@ -91,10 +91,11 @@ namespace Eigen
    * [2] https://blog.ytotech.com/2015/11/01/findpeaks-in-python/
    */
   template <typename T>
-  inline Array<double,Eigen::Dynamic,1> detect_peaks(const T& data, double mph = std::nan(""), int mpd = 1, double threshold = 0., Edge edge = Edge::Rising, bool kpsh = false, bool valley = false)
+  inline Array<typename T::Index,Eigen::Dynamic,1> detect_peaks(const T& data, double mph = std::nan(""), int mpd = 1, double threshold = 0., Edge edge = Edge::Rising, bool kpsh = false, bool valley = false)
   {
     static_assert(T::ColsAtCompileTime == 1, "The function accepts only column vector.");
-    Array<double,Eigen::Dynamic,1> ind;
+    using Index = typename T::Index;
+    Array<Index,Eigen::Dynamic,1> ind;
     if (data.rows() < 3)
       return ind;
     T x = data;
@@ -103,10 +104,10 @@ namespace Eigen
     // Find indices of all peaks
     Array<double,Eigen::Dynamic,1> dx = x.tail(x.rows()-1) - x.head(x.rows()-1);
     // Remove NaN's
-    std::vector<size_t> indnan_;
+    std::vector<typename T::Index> indnan_;
     size_t gg  = x.rows() / 2; // gross guess of possible nan
     indnan_.reserve(gg);
-    for (typename T::Size i = 0 ; i < x.rows() ; ++i)
+    for (Index i = 0 ; i < x.rows() ; ++i)
     {
       if (std::isnan(x.coeff(i)))
         indnan_.push_back(i);
@@ -117,19 +118,19 @@ namespace Eigen
       {
         x.coeffRef(i) = std::numeric_limits<double>::infinity();
       }
-      for (typename T::Index i = 0 ; i < dx.rows() ; ++i)
+      for (Index i = 0 ; i < dx.rows() ; ++i)
       {
         if (std::isnan(dx.coeff(i)))
           dx.coeffRef(i) = std::numeric_limits<double>::infinity();
       }
     }
     // Manage flat peaks
-    std::vector<size_t> ind_;
+    std::vector<Index> ind_;
     ind_.reserve(gg);
     if ((edge & Edge::None) == Edge::None)
     {
       // np.where((np.hstack((dx, 0)) < 0) & (np.hstack((0, dx)) > 0))
-      for (typename T::Index i = 0, len = dx.rows()-1 ; i < len ; ++i)
+      for (Index i = 0, len = dx.rows()-1 ; i < len ; ++i)
       {
         if ((dx.coeff(i+1) < 0.) && (dx.coeff(i) > 0.))
           ind_.push_back(i);
@@ -139,8 +140,8 @@ namespace Eigen
     if ((edge & Edge::Rising) == Edge::Rising)
     {
       // np.where((np.hstack((dx, 0)) <= 0) & (np.hstack((0, dx)) > 0))
-      typename T::Index last = dx.rows();
-      for (typename T::Index i = 1 ; i < last ; ++i)
+      Index last = dx.rows();
+      for (Index i = 1 ; i < last ; ++i)
       {
         if ((dx.coeff(i) <= 0.) && (dx.coeff(i-1) > 0.))
           ind_.push_back(i);
@@ -152,9 +153,9 @@ namespace Eigen
     {
       // np.where((np.hstack((dx, 0)) < 0) & (np.hstack((0, dx)) >= 0))
       if (dx.coeff(0) < 0.)
-        ind_.insert(ind_.cbegin(), 0);
+        ind_.insert(ind_.begin(), 0);
       auto it = ind_.begin();
-      for (typename T::Index i = 1 ; i < dx.rows() ; ++i)
+      for (Index i = 1 ; i < dx.rows() ; ++i)
       {
         if ((dx.coeff(i) < 0.) && (dx.coeff(i-1) >= 0.))
         {
@@ -176,7 +177,7 @@ namespace Eigen
       {
         while ((begin != end) && (*begin < (i-1)))
           ++begin;
-        end = std::remove_if(begin, end, [i](const size_t a){return ((a >= (i-1)) && (a <= (i+1)));});
+        end = std::remove_if(begin, end, [i](const Index a){return ((a >= (i-1)) && (a <= (i+1)));});
       }
       ind_.erase(end, ind_.end());
     }
@@ -189,7 +190,7 @@ namespace Eigen
     if (!ind_.empty() && !std::isnan(mph))
     {
       ind_.erase(
-        std::remove_if(ind_.begin(), ind_.end(), [mph, &x](const size_t a){return (x[a] < mph);}),
+        std::remove_if(ind_.begin(), ind_.end(), [mph, &x](const Index a){return (x[a] < mph);}),
         ind_.end()
       );
     }
@@ -197,14 +198,14 @@ namespace Eigen
     if (!ind_.empty() && (threshold > 0.))
     {
       ind_.erase(
-        std::remove_if(ind_.begin(), ind_.end(), [threshold, &x](const size_t a){return (std::min( x[a] - x[a-1], x[a] - x[a+1] ) < threshold);}),
+        std::remove_if(ind_.begin(), ind_.end(), [threshold, &x](const Index a){return (std::min( x[a] - x[a-1], x[a] - x[a+1] ) < threshold);}),
         ind_.end()
       );
     }
     // Detect small peaks closer than minimum peak distance
     if (!ind_.empty() && (mpd > 1))
     {
-      std::sort(ind_.begin(), ind_.end(), [&x](size_t a, size_t b){return (x[a] > x[b]);});
+      std::sort(ind_.begin(), ind_.end(), [&x](const Index a, const Index b){return (x[a] > x[b]);});
       std::vector<bool> idel_(ind_.size(), false);
       for (size_t i = 0 ; i < ind_.size() ; ++i)
       {
@@ -215,7 +216,7 @@ namespace Eigen
           //        & (x[ind[i]] > x[ind] if kpsh else True)
           for (size_t j = 0 ; j < idel_.size() ; ++j)
           {
-            idel_[j] |= (!kpsh ? true : (ind_[j] >= (ind[i] - mpd)) & (ind_[j] <= (ind[i]+- mpd))
+            idel_[j] = idel_[j] | (!kpsh ? true : (ind_[j] >= (ind[i] - mpd)) & (ind_[j] <= (ind[i]+- mpd))
                      & (x[ind[i]] > x[ind[j]]));
           }
           // Keep current peak
@@ -234,9 +235,8 @@ namespace Eigen
       std::sort(ind_.begin(), ind_.end());
     }
     // Generate the output
-    ind.resize(ind_.size());
-    for (size_t i = 0 ; i < ind_.size() ; ++i)
-      ind.coeffRef(i) = static_cast<double>(ind_[i]);
+    ind = Eigen::Map<Array<typename T::Index,Eigen::Dynamic,1>>(ind_.data(),ind_.size(),1);
+    return ind;
   };
 };
 
