@@ -35,9 +35,11 @@
 #ifndef __openma_base_utils_h
 #define __openma_base_utils_h
 
+#include "openma/base_export.h"
+
 #include <string>
 
-bool _ma_strcmpi(unsigned char a, unsigned char b);
+OPENMA_BASE_EXPORT bool _ma_strcmpi(unsigned char a, unsigned char b);
 
 namespace ma
 {
