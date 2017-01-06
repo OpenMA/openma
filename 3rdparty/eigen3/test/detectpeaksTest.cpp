@@ -45,11 +45,11 @@ CXXTEST_SUITE(DetectPeaksTest)
     fill_vector(&data);
     auto indexes = Eigen::detect_peaks(data,std::nan(""),2);
     TS_ASSERT_EQUALS(indexes.rows(),5);
-    // TS_ASSERT_EQUALS(indexes[0],2);
-    // TS_ASSERT_EQUALS(indexes[1],6);
-    // TS_ASSERT_EQUALS(indexes[2],9);
-    // TS_ASSERT_EQUALS(indexes[3],17);
-    // TS_ASSERT_EQUALS(indexes[4],22);
+    TS_ASSERT_EQUALS(indexes[0],2);
+    TS_ASSERT_EQUALS(indexes[1],6);
+    TS_ASSERT_EQUALS(indexes[2],9);
+    TS_ASSERT_EQUALS(indexes[3],17);
+    TS_ASSERT_EQUALS(indexes[4],22);
   };
   
   CXXTEST_TEST(vectorWithMiniHeightAndDistanceFilters)
@@ -59,9 +59,9 @@ CXXTEST_SUITE(DetectPeaksTest)
     auto indexes = Eigen::detect_peaks(data,7.,2);
     TS_ASSERT_EQUALS(indexes.rows(),4);
     TS_ASSERT_EQUALS(indexes[0],2);
-    // TS_ASSERT_EQUALS(indexes[1],6);
-    // TS_ASSERT_EQUALS(indexes[2],17);
-    // TS_ASSERT_EQUALS(indexes[3],22);
+    TS_ASSERT_EQUALS(indexes[1],6);
+    TS_ASSERT_EQUALS(indexes[2],17);
+    TS_ASSERT_EQUALS(indexes[3],22);
   };
 };
 

@@ -215,10 +215,7 @@ namespace Eigen
           // idel = idel | (ind >= ind[i] - mpd) & (ind <= ind[i] + mpd) \
           //        & (x[ind[i]] > x[ind] if kpsh else True)
           for (size_t j = 0 ; j < idel_.size() ; ++j)
-          {
-            idel_[j] = idel_[j] | (!kpsh ? true : (ind_[j] >= (ind[i] - mpd)) & (ind_[j] <= (ind[i]+- mpd))
-                     & (x[ind[i]] > x[ind[j]]));
-          }
+            idel_[j] = idel_[j] | (ind_[j] >= (ind_[i] - mpd)) & (ind_[j] <= (ind_[i] + mpd)) & (!kpsh ? true : x[ind_[i]] > x[ind_[j]]);
           // Keep current peak
           idel_[i] = false;
         }
