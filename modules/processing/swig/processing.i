@@ -53,9 +53,9 @@
 // ========================================================================= //
 
 #if defined(SWIGMATLAB)
-%include "ma_matlab.i"
+%include "processing_matlab.i"
 #elif defined(SWIGPYTHON)
-%include "ma_python.i"
+%include "processing_python.i"
 #endif
 
 %include "../include/openma/processing/enums.h"
