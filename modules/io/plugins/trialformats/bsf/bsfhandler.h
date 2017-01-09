@@ -32,14 +32,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_h
-#define __openma_instrument_h
+#ifndef __openma_io_bsfandler_h
+#define __openma_io_bsfandler_h
 
-#include "openma/instrument/enums.h"
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplatetype2.h"
-#include "openma/instrument/forceplatetype3.h"
-#include "openma/instrument/forceplatetype4.h"
-#include "openma/instrument/forceplatetype5.h"
+#include "openma/io/handler.h"
+#include "openma/base/macros.h" // _OPENMA_CONSTEXPR, _OPENMA_NOEXCEPT
 
-#endif // __openma_instrument_h
+namespace ma
+{
+namespace io
+{
+  class BSFHandlerPrivate;
+  
+  class BSFHandler : public Handler
+  {
+  public:
+    BSFHandler();
+    ~BSFHandler() _OPENMA_NOEXCEPT;
+    
+    BSFHandler(const BSFHandler& ) = delete;
+    BSFHandler(BSFHandler&& ) _OPENMA_NOEXCEPT = delete;
+    BSFHandler& operator=(const BSFHandler& ) = delete;
+    BSFHandler& operator=(const BSFHandler&& ) _OPENMA_NOEXCEPT = delete;
+    
+    static Signature verifySignature(const Device* const device) _OPENMA_NOEXCEPT;
+
+  protected:
+    virtual Signature verifySignature() const _OPENMA_NOEXCEPT final;
+    virtual void readDevice(ma::Node* output) final;
+  };
+};
+};
+
+#endif // __openma_io_bsfandler_h

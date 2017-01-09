@@ -32,14 +32,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_h
-#define __openma_instrument_h
+#ifndef __openma_io_bsfplugin_h
+#define __openma_io_bsfplugin_h
 
-#include "openma/instrument/enums.h"
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplatetype2.h"
-#include "openma/instrument/forceplatetype3.h"
-#include "openma/instrument/forceplatetype4.h"
-#include "openma/instrument/forceplatetype5.h"
+#include "bsfhandler.h"
+#include "openma/io/handlerplugin.h"
 
-#endif // __openma_instrument_h
+namespace ma
+{
+namespace io
+{
+  class BSFPlugin : public HandlerPlugin
+  {
+  public:
+    BSFPlugin() : HandlerPlugin() {};
+    
+    virtual std::string name() const _OPENMA_NOEXCEPT final;
+  
+    virtual std::vector<std::string> supportedFormats() const _OPENMA_NOEXCEPT final;
+  
+    virtual Capability capabilities(const std::string& format) const _OPENMA_NOEXCEPT final;
+    virtual Signature detectSignature(const Device* const device, std::string* format = nullptr) const _OPENMA_NOEXCEPT final;
+  
+    virtual Handler* create(Device* device, const std::string& format) final;
+  };
+};
+};
+
+#endif // __openma_io_bsfplugin_h
