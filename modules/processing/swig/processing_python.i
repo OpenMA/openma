@@ -31,3 +31,26 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+// Convert Python list to std::vector<ma::TimeSequence*>
+%typemap(in) const std::vector<ma::TimeSequence*>& (std::vector<ma::TimeSequence*> temp)
+{
+  if (!PyList_Check($input)) {
+    SWIG_exception_fail(SWIG_TypeError, "Only Python list argument is accepted in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+  }
+  $1 = &temp;
+  Py_ssize_t numelts = PyList_Size($input);
+  temp.resize(numelts);
+  for (Py_ssize_t i = 0 ; i < numelts ; ++i)
+  {
+    void* value = nullptr;
+    auto ts = PyList_GetItem($input,i);
+    if (!SWIG_IsOK(SWIG_ConvertPtr(ts, &value, SWIGTYPE_p_ma__TimeSequence, 0))) {
+      SWIG_exception_fail(SWIG_ValueError, "conversion failed for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    if (!value) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    temp[i] = reinterpret_cast<ma::TimeSequence*>(value);
+  }
+}

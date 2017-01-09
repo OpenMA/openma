@@ -31,3 +31,28 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+// Convert Python list to std::vector<ma::TimeSequence*>
+%typemap(in) const std::vector<ma::TimeSequence*>& (std::vector<ma::TimeSequence*> temp)
+{
+  if (mxGetClassID($input) != mxCELL_CLASS) {
+    SWIG_exception_fail(SWIG_TypeError, "Only Matlab cell argument is accepted in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+  }
+  $1 = &temp;
+  mwSize numelts = mxGetNumberOfElements($input);
+  temp.resize(numelts);
+  for (mwSize i = 0 ; i < numelts ; ++i)
+  {
+    void* value = nullptr;
+    auto ts = mxGetCell($input,i);
+    if (!SWIG_IsOK(SWIG_ConvertPtr(ts, &value, SWIGTYPE_p_ma__TimeSequence, 0))) {
+      SWIG_exception_fail(SWIG_ValueError, "conversion failed for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    if (!value) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    temp[i] = reinterpret_cast<ma::TimeSequence*>(value);
+  }
+  
+  
+}
