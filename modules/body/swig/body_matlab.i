@@ -32,10 +32,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%rename(registerMarkerCluster) register_marker_cluster;
-%rename(extractJointKinematics) extract_joint_kinematics;
-%rename(extractJointKinetics) extract_joint_kinetics;
-
 // Convert MATLAB cell to std::unordered_map<std::string, std::string>
 %typemap(typecheck, noblock=1) std::unordered_map<std::string, std::string> const &
 {
