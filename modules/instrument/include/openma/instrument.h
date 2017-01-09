@@ -32,8 +32,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_instrument_h
+#define __openma_instrument_h
 
 #include "openma/instrument/enums.h"
 #include "openma/instrument/forceplate.h"
@@ -42,4 +42,4 @@
 #include "openma/instrument/forceplatetype4.h"
 #include "openma/instrument/forceplatetype5.h"
 
-#endif // __openma_body_h
+#endif // __openma_instrument_h
