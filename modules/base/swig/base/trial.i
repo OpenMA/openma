@@ -81,10 +81,10 @@ ma::Hardware* ma_Trial_hardware(ma::Trial* self, unsigned index)
 {
 #if defined(SWIGMATLAB)
   if ((index > 0) && (index <= self->hardwares()->children().size()))
-    return self->hardwares(index-1);
+    return self->hardware(index-1);
 #else
   if (index < self->hardwares()->children().size())
-    return self->hardwares(index);
+    return self->hardware(index);
 #endif
   else
   {
