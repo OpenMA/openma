@@ -5,6 +5,7 @@
 #include "openma/base/trial.h"
 #include "openma/base/timesequence.h"
 #include "openma/base/event.h"
+#include "openma/instrument/forceplate.h"
 
 inline bool c3dhandlertest_read(const char* msgid, const char* filepath, ma::Node* root)
 {
@@ -73,7 +74,13 @@ inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename
   TSM_ASSERT_EQUALS(msgid, evts[2]->name(), "RTO");
   TSM_ASSERT_DELTA(msgid, evts[2]->time(), 7.32, 1e-4);
   
-  TS_WARN("Add assertions regarding force plates extraction.");
+  auto forceplates = trial->hardwares()->findChildren<ma::instrument::ForcePlate*>();
+  TSM_ASSERT_EQUALS(msgid, forceplates.size(), 2u);
+  TSM_ASSERT_EQUALS(msgid, forceplates[0]->type(), 2);
+  TSM_ASSERT_EQUALS(msgid, forceplates[1]->type(), 2);
+  auto zero = std::array<int,2>{{0,9}};
+  TSM_ASSERT_EQUALS(msgid, forceplates[0]->softResetSamples(), zero);
+  TSM_ASSERT_EQUALS(msgid, forceplates[1]->softResetSamples(), zero);
 };
 
 inline void c3dhandlertest_read_sample01(const char* msgid, const char* filename, const char* filepath)
