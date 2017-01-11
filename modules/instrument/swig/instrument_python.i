@@ -35,6 +35,37 @@
 // Specific code for Python (typemaps, etc.)
 
 // Convert std::array<unsigned,2>& to Python list
+%typemap(out, noblock=1) std::array<int,2> const &
+{
+  $result = PyList_New(2);
+  PyList_SetItem($result, 0, PyInt_FromLong($1->operator[](0)));
+  PyList_SetItem($result, 1, PyInt_FromLong($1->operator[](1)));
+}; 
+
+// Convert Python list to std::array<int,2>
+%typemap(in) std::array<int,2> const & (std::array<int,2> temp)
+{
+  bool ok = PyList_Check($input) && (PyList_Size($input) == 2);
+  if (ok)  
+  {
+    for (Py_ssize_t i = 0 ; i < 2 ; ++i)
+    {
+      auto value = PyList_GetItem($input,i);
+      if ((PyInt_Check(value) == 0) && (PyLong_Check(value) == 0) && (PyFloat_Check(value) == 0))
+      {
+        ok = false;
+        break;
+      }
+    }
+  }
+  if (!ok)
+    SWIG_exception_fail(SWIG_ValueError, "input must be a list of 2 numbers in 'const std::array<int,2>&' typemap (in)");
+  temp[0] = static_cast<int>(PyInt_AsLong(PyList_GetItem($input,0)));
+  temp[1] = static_cast<int>(PyInt_AsLong(PyList_GetItem($input,1)));
+  $1 = &temp;
+};
+
+// Convert std::array<unsigned,2>& to Python list
 %typemap(out, noblock=1) std::array<unsigned,2> const &
 {
   $result = PyList_New(2);
@@ -68,7 +99,7 @@
     }
   }
   if (!ok)
-    SWIG_exception_fail(SWIG_ValueError, "input must be a list of 3 numbers in 'const std::array<double,3>&' typemap (in)");   
+    SWIG_exception_fail(SWIG_ValueError, "input must be a list of 3 numbers in 'const std::array<double,3>&' typemap (in)");
   temp[0] = PyFloat_AsDouble(PyList_GetItem($input,0));
   temp[1] = PyFloat_AsDouble(PyList_GetItem($input,1));
   temp[2] = PyFloat_AsDouble(PyList_GetItem($input,2));
