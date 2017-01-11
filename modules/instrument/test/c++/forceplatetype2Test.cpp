@@ -37,6 +37,24 @@ CXXTEST_SUITE(ForcePlateType2Test)
     ma::instrument::ForcePlateType2 fp("FP", &root);
     TS_ASSERT_EQUALS(root.findChild<ma::instrument::ForcePlateType2*>(), &fp);
   };
+  
+  CXXTEST_TEST(softReset)
+  {
+    ma::instrument::ForcePlateType2 fp("FP");
+    forceplatetest_fill_sample10_type2(&fp);
+    fp.setSoftResetEnabled(true);
+    auto w = fp.wrench(ma::instrument::Location::Origin,false);
+    for (unsigned i = 0 ; i < sample10_fpsamples ; ++i)
+    {
+      const std::string s = std::to_string(i);
+      TSM_ASSERT_DELTA(s, w->data()[i],                      fp2data[i]                      - -35.56109, 1e-4);
+      TSM_ASSERT_DELTA(s, w->data()[i+  sample10_fpsamples], fp2data[i+  sample10_fpsamples] - -53.75195, 1e-4);
+      TSM_ASSERT_DELTA(s, w->data()[i+2*sample10_fpsamples], fp2data[i+2*sample10_fpsamples] - -209.09763, 1e-4);
+      TSM_ASSERT_DELTA(s, w->data()[i+3*sample10_fpsamples], fp2data[i+3*sample10_fpsamples] - -17279.31169, 1e-4);
+      TSM_ASSERT_DELTA(s, w->data()[i+4*sample10_fpsamples], fp2data[i+4*sample10_fpsamples] - -8614.09473, 1e-4);
+      TSM_ASSERT_DELTA(s, w->data()[i+5*sample10_fpsamples], fp2data[i+5*sample10_fpsamples] - -4563.57997, 1e-4);
+    }
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(ForcePlateType2Test)
@@ -44,3 +62,4 @@ CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, wrench)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, pointOfApplicationCrossVerification)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, clone)
 CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, nodeid)
+CXXTEST_TEST_REGISTRATION(ForcePlateType2Test, softReset)
