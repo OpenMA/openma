@@ -57,7 +57,7 @@ namespace instrument
     void setSensorOffsets(const std::array<double,2>& value) _OPENMA_NOEXCEPT;
     
   protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
+    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
     virtual Node* allocateNew() const override;
     virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
   };

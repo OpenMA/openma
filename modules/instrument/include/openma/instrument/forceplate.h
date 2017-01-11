@@ -97,6 +97,11 @@ namespace instrument
     const std::vector<double>& calibrationMatrixData() const _OPENMA_NOEXCEPT;
     void setCalibrationMatrixData(const std::vector<double>& value);
     
+    void setSoftResetEnabled(bool value) _OPENMA_NOEXCEPT;
+    bool isSoftResetEnabled() const _OPENMA_NOEXCEPT;
+    void setSoftResetSamples(const std::array<int,2>& value) _OPENMA_NOEXCEPT;
+    const std::array<int,2>& softResetSamples() const _OPENMA_NOEXCEPT;
+    
     TimeSequence* wrench(Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
     
   protected:
@@ -104,7 +109,8 @@ namespace instrument
     
     std::string stringifyLocation(Location loc) const _OPENMA_NOEXCEPT;
     std::vector<TimeSequence*> retrieveChannels() const _OPENMA_NOEXCEPT;
-    virtual bool computeWrenchAtOrigin(TimeSequence* w) = 0;
+    bool removeBaseline(std::vector<TimeSequence*>& cpts, Node* tempRoot);
+    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) = 0;
     bool resampleWrench(TimeSequence* w, double factor);
     bool computePosition(TimeSequence* w, Location loc, double threshold);
     bool transformToGlobal(TimeSequence* w);

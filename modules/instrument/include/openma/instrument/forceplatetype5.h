@@ -51,7 +51,7 @@ namespace instrument
     ~ForcePlateType5() _OPENMA_NOEXCEPT;
     
   protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w) final;
+    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
     virtual Node* allocateNew() const final;
   };
 };
