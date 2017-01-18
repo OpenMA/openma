@@ -166,7 +166,7 @@ ADD_SUBDIRECTORY(doc)
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-EXPORT(PACKAGE OPENMA)
+# EXPORT(PACKAGE OPENMA)
 
 # Create the OPENMAConfig.cmake and OPENMAConfigVersion.cmake files
 
@@ -193,19 +193,15 @@ EXPORT(EXPORT OpenMATargets
 # Install tree
 # ============
 
-SET(INCLUDE_INSTALL_DIR "${OPENMA_INSTALL_DIR}/include")
+SET(INCLUDE_INSTALL_DIR "/include")
 
 CONFIGURE_PACKAGE_CONFIG_FILE("cmake/templates/OpenMAConfig.cmake.in" "${OPENMA_BINARY_DIR}/cmake/OpenMAConfig.cmake"
-  INSTALL_DESTINATION "${OPENMA_BINARY_DIR}/cmake"
+  INSTALL_DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake"
   PATH_VARS INCLUDE_INSTALL_DIR)
 
-WRITE_BASIC_PACKAGE_VERSION_FILE(
-  "${OPENMA_BINARY_DIR}/cmake/OpenMAConfigVersion.cmake"
-  VERSION ${OPENMA_VERSION}
-  COMPATIBILITY SameMajorVersion
-)
-
-EXPORT(EXPORT OpenMATargets
-  FILE "${OPENMA_BINARY_DIR}/cmake/OpenMATargets.cmake"
-  NAMESPACE openma::
-)
+INSTALL(DIRECTORY ${OPENMA_BINARY_DIR}/include
+        DESTINATION .)
+INSTALL(FILES ${OPENMA_BINARY_DIR}/cmake/OpenMAConfig.cmake
+              ${OPENMA_BINARY_DIR}/OpenMAConfigVersion.cmake
+        DESTINATION lib/cmake )
+INSTALL(EXPORT OpenMATargets NAMESPACE openma:: DESTINATION lib/cmake)
