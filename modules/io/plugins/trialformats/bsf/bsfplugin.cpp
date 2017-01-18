@@ -32,31 +32,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_forceplatetype2_h
-#define __openma_instrument_forceplatetype2_h
+#include "bsfplugin.h"
+#include "openma/io/enums.h"
 
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplate_p.h"
+#define _OPENMA_IO_HANDLER_AMTI_BSF_FORMAT "amti.bsf"
 
 namespace ma
 {
-namespace instrument
+namespace io
 {
-  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
+  std::string BSFPlugin::name() const _OPENMA_NOEXCEPT
   {
-    OPENMA_DECLARE_NODEID(ForcePlateType2, ForcePlate)
-    
-  public:
-    ForcePlateType2(const std::string& name, Node* parent = nullptr);
-    ~ForcePlateType2() _OPENMA_NOEXCEPT;
-    
-  protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
-    virtual Node* allocateNew() const final;
+    return "BSFPlugin";
+  }
+  
+  std::vector<std::string> BSFPlugin::supportedFormats() const _OPENMA_NOEXCEPT
+  {
+    return {_OPENMA_IO_HANDLER_AMTI_BSF_FORMAT};
+  };
+
+  Capability BSFPlugin::capabilities(const std::string& format) const _OPENMA_NOEXCEPT
+  {
+    if (format.compare(_OPENMA_IO_HANDLER_AMTI_BSF_FORMAT) != 0)
+      return Capability::None;
+    return Capability::CanRead;
+  };
+
+  Signature BSFPlugin::detectSignature(const Device* const device, std::string* format) const _OPENMA_NOEXCEPT
+  {
+    Signature detected = Signature::Invalid;
+    if ((detected = BSFHandler::verifySignature(device)) == Signature::Valid)
+    {
+      if (format != nullptr)
+        *format = _OPENMA_IO_HANDLER_AMTI_BSF_FORMAT;
+    }
+    return detected;
+  };
+
+  Handler* BSFPlugin::create(Device* device, const std::string& format)
+  {
+    OPENMA_UNUSED(format)
+    Handler* handler = new BSFHandler;
+    handler->setDevice(device);
+    return handler;
   };
 };
 };
-
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType2, OPENMA_INSTRUMENT_EXPORT);
-
-#endif

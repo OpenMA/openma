@@ -1,13 +1,18 @@
 function out = test_@_TEST_NAME@()
     
+    out = 0;
+    if (verLessThan('matlab','8,1'))
+        warning('OpenMAUnitTest:MatlabVersionTooOld','At least Matlab 8.1 (R2013a) is required to use the matlab.unittest framework.');
+        return;
+    end
+    
     import matlab.unittest.TestSuite;
 
     test_include_paths = {@_TEST_INCLUDE_PATHS@};
     for i = 1:length(test_include_paths)
         addpath(test_include_paths{i});
     end
-
-    out = 0;
+    
     test_file_paths = {@_TEST_SOURCE_FILES@};
     for i = 1:length(test_file_paths)
         suiteFile = TestSuite.fromFile(test_file_paths{i});

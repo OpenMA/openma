@@ -32,31 +32,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_forceplatetype2_h
-#define __openma_instrument_forceplatetype2_h
+#ifndef __openma_base_utils_h
+#define __openma_base_utils_h
 
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplate_p.h"
+#include <string>
+
+bool _ma_strcmpi(unsigned char a, unsigned char b);
 
 namespace ma
 {
-namespace instrument
-{
-  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
+  inline bool strcmpi(const std::string& a, const std::string& b)
   {
-    OPENMA_DECLARE_NODEID(ForcePlateType2, ForcePlate)
-    
-  public:
-    ForcePlateType2(const std::string& name, Node* parent = nullptr);
-    ~ForcePlateType2() _OPENMA_NOEXCEPT;
-    
-  protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
-    virtual Node* allocateNew() const final;
-  };
+    return (a.length() == b.length()) && std::equal(b.begin(), b.end(), a.begin(), _ma_strcmpi);
+  }
 };
-};
-
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType2, OPENMA_INSTRUMENT_EXPORT);
 
 #endif

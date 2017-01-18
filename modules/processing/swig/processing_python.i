@@ -32,31 +32,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_forceplatetype2_h
-#define __openma_instrument_forceplatetype2_h
-
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplate_p.h"
-
-namespace ma
+// Convert Python list to std::vector<ma::TimeSequence*>
+%typemap(in) const std::vector<ma::TimeSequence*>& (std::vector<ma::TimeSequence*> temp)
 {
-namespace instrument
-{
-  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
+  if (!PyList_Check($input)) {
+    SWIG_exception_fail(SWIG_TypeError, "Only Python list argument is accepted in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+  }
+  $1 = &temp;
+  Py_ssize_t numelts = PyList_Size($input);
+  temp.resize(numelts);
+  for (Py_ssize_t i = 0 ; i < numelts ; ++i)
   {
-    OPENMA_DECLARE_NODEID(ForcePlateType2, ForcePlate)
-    
-  public:
-    ForcePlateType2(const std::string& name, Node* parent = nullptr);
-    ~ForcePlateType2() _OPENMA_NOEXCEPT;
-    
-  protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
-    virtual Node* allocateNew() const final;
-  };
-};
-};
-
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType2, OPENMA_INSTRUMENT_EXPORT);
-
-#endif
+    void* value = nullptr;
+    auto ts = PyList_GetItem($input,i);
+    if (!SWIG_IsOK(SWIG_ConvertPtr(ts, &value, SWIGTYPE_p_ma__TimeSequence, 0))) {
+      SWIG_exception_fail(SWIG_ValueError, "conversion failed for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    if (!value) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::TimeSequence' in 'std::<ma::TimeSequence*> & const' typemap (in)"); 
+    }
+    temp[i] = reinterpret_cast<ma::TimeSequence*>(value);
+  }
+}

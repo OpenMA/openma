@@ -61,8 +61,13 @@ namespace instrument
     SurfaceCorners{{0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}},
     RelativeSurfaceOrigin{{0.,0.,0.}},
     CalibrationMatrixDimensions{{rows,cols}},
+    CalibrationMatrixData(),
+    SoftResetEnabled(false),
+    SoftResetBaselineSamples{{0,0}}
+#else
+    CalibrationMatrixData(),
+    SoftResetEnabled(false)
 #endif
-    CalibrationMatrixData()
   {
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
     this->ReferenceFrame[0] = 1.;
@@ -94,6 +99,8 @@ namespace instrument
     this->RelativeSurfaceOrigin[2] = 0.;
     this->CalibrationMatrixDimensions[0] = rows;
     this->CalibrationMatrixDimensions[1] = cols;
+    this->SoftResetBaselineSamples[0] = 0;
+    this->SoftResetBaselineSamples[1] = 0;
 #endif
 
     if ((rows != 0) && (cols != 0))
@@ -296,21 +303,53 @@ namespace instrument
   void ForcePlate::setCalibrationMatrixData(const std::vector<double>& value)
   {
     auto optr = this->pimpl();
-    int num = optr->CalibrationMatrixDimensions[0] * optr->CalibrationMatrixDimensions[1];
-    bool isEqual = true;
-    for (int i = 0 ; i < num ; ++i)
-    {
-      if (optr->CalibrationMatrixData[i] != value[i])
-      {
-        isEqual = false;
-        break;
-      }
-    }
-    if (!isEqual)
-    {
-      optr->CalibrationMatrixData = value;
-      this->modified();
-    }
+    if (optr->CalibrationMatrixData == value)
+      return;
+    optr->CalibrationMatrixData = value;
+    this->modified();
+  };
+  
+  /**
+   * Enable/disable the usage of the soft reset.
+   * When enabled, the wrench computation will compute channels baseline and remove it.
+   */
+  void ForcePlate::setSoftResetEnabled(bool value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (optr->SoftResetEnabled == value)
+      return;
+    optr->SoftResetEnabled = value;
+    this->modified();
+  };
+
+  /**
+   * Returns the state of the usage of the soft reset.
+   */
+  bool ForcePlate::isSoftResetEnabled() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->SoftResetEnabled;
+  };
+  
+  /**
+   * Sets the sample indices that will be taked into account to compute channels' baseline.
+   */  
+  void ForcePlate::setSoftResetSamples(const std::array<int,2>& value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (optr->SoftResetBaselineSamples == value)
+      return;
+    optr->SoftResetBaselineSamples = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns an array of two integers corresponding to the range of samples that will be taken into account to compute channels' baseline. 
+   */
+  const std::array<int,2>& ForcePlate::softResetSamples() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->SoftResetBaselineSamples;
   };
   
   /**
@@ -347,18 +386,27 @@ namespace instrument
     auto w = this->outputs()->findChild<TimeSequence*>(name,{{"type",ma::TimeSequence::Wrench},{"components",10},{"sampleRate",rate}},false);
     if (w == nullptr)
       w = new TimeSequence(name, 10, samples, rate, startTime, ma::TimeSequence::Wrench,"",this->outputs());
+    Node* tempChannelsRoot;
+    if ((tempChannelsRoot = this->findChild("TempChannels")) == nullptr)
+      tempChannelsRoot = new Node("TempChannels", this);
+    std::vector<TimeSequence*> cpts;
     // Is it necessary to do the computation or the cache is still up to date?
     if (w->timestamp() < this->timestamp())
     {
-      if (!this->computeWrenchAtOrigin(w)
-        || !this->resampleWrench(w, factor)
-          || !this->computePosition(w, loc, threshold)
-            || (global && !this->transformToGlobal(w)))
+      if (!this->removeBaseline(channels, tempChannelsRoot)
+          || !this->computeWrenchAtOrigin(w, channels)
+            || !this->resampleWrench(w, factor)
+              || !this->computePosition(w, loc, threshold)
+                || (global && !this->transformToGlobal(w)))
       {
         // An error message should aready be displayed by other used methods
         delete w;
         w = nullptr;
       }
+      // Delete temporary channels where baseline was removed
+      auto tempChannels = tempChannelsRoot->children();
+      for (auto channel : tempChannels)
+        delete channel;
     }
     return w;
   };
@@ -403,8 +451,8 @@ namespace instrument
   {
     auto optr = this->pimpl();
     std::vector<TimeSequence*> channels;
-    channels.reserve(optr->CalibrationMatrixDimensions[1]);
-    for (const auto& mappedChannel: optr->MappedChannels)
+    channels.reserve(optr->MappedChannels.size());
+    for (const auto& mappedChannel : optr->MappedChannels)
     {
       if (mappedChannel.second == nullptr)
       {
@@ -414,6 +462,35 @@ namespace instrument
       channels.push_back(mappedChannel.second);
     }
     return channels;
+  };
+  
+  /**
+   * Compute the baseline for each channel and remove it. Internally, the baseline is not directly removed from the raw data of the mapped channels. Instead, new temporary TimeSequence objects are created and will be used to compute the wrench..
+   */
+  bool ForcePlate::removeBaseline(std::vector<TimeSequence*>& cpts, Node* tempRoot)
+  {
+    auto optr = this->pimpl();
+    if (optr->SoftResetEnabled)
+    {
+      if ((optr->SoftResetBaselineSamples[0] < 0) || (optr->SoftResetBaselineSamples[1] < optr->SoftResetBaselineSamples[0]) || (static_cast<unsigned>(optr->SoftResetBaselineSamples[1]) >= cpts[0]->samples()))
+      {
+        error("The sample indices to remove channels' baseline for the forceplate '%s' are corrupted.", optr->Name.c_str());
+        return false;
+      }
+      if (tempRoot == nullptr)
+      {
+        error("Temporary node to store channels with baseline removed was not found.");
+        return false;
+      }
+      for (size_t i = 0 ; i < cpts.size() ; ++i)
+      {
+        auto cpt = static_cast<TimeSequence*>(cpts[i]->clone(tempRoot));
+        auto value = math::Map<math::Array<1>>::Values(cpt->data(), cpt->samples(), 1);
+        value -= value.block(optr->SoftResetBaselineSamples[0],0,optr->SoftResetBaselineSamples[1]-optr->SoftResetBaselineSamples[0]+1,1).mean();
+        cpts[i] = cpt;
+      }
+    }
+    return true;
   };
   
   /**
@@ -539,7 +616,8 @@ namespace instrument
     optr->SurfaceCorners = optr_src->SurfaceCorners;
     optr->RelativeSurfaceOrigin = optr_src->RelativeSurfaceOrigin;
     optr->CalibrationMatrixData = optr_src->CalibrationMatrixData;
-    
+    optr->SoftResetEnabled = optr_src->SoftResetEnabled;
+    optr->SoftResetBaselineSamples = optr_src->SoftResetBaselineSamples;
   };
 };
 };

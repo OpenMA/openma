@@ -64,17 +64,17 @@ namespace instrument
   /**
    * Compute forces and moments from analog channel data associated with this force plate.
    */
-  bool ForcePlateType5::computeWrenchAtOrigin(TimeSequence* w)
+  bool ForcePlateType5::computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts)
   {
     // Compute the force at the FP origin
-    auto cFz1  = this->channel("Fz1")->data();
-    auto cFz2  = this->channel("Fz2")->data();
-    auto cFz3  = this->channel("Fz3")->data();
-    auto cFz4  = this->channel("Fz4")->data();
-    auto cFx12 = this->channel("Fx12")->data();
-    auto cFx34 = this->channel("Fx34")->data();
-    auto cFy14 = this->channel("Fy14")->data();
-    auto cFy23 = this->channel("Fy23")->data();
+    auto cFz1  = cpts[0]->data();
+    auto cFz2  = cpts[1]->data();
+    auto cFz3  = cpts[2]->data();
+    auto cFz4  = cpts[3]->data();
+    auto cFx12 = cpts[4]->data();
+    auto cFx34 = cpts[5]->data();
+    auto cFy14 = cpts[6]->data();
+    auto cFy23 = cpts[7]->data();
     auto W = math::to_wrench(w);
     const Eigen::Map<const Eigen::Matrix<double,6,8>> X(this->calibrationMatrixData().data());
     Eigen::Matrix<double,8,1> c;

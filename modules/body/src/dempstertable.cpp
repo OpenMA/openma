@@ -150,7 +150,7 @@ namespace body
    * For each segment found, the mass, center of mass and tensor of inertia are computed. They are stored in a
    * ma::body::InertialParameters object attached to the segment and named as the segment plus the suffix ".BSIP".
    */
-  bool DempsterTable::generate(Node* inout)
+  bool DempsterTable::run(Node* inout)
   {
     auto models = inout->findChildren<Model*>({},{},false);
     for (auto& model : models)
@@ -162,7 +162,7 @@ namespace body
         continue;
       }
       const double modelMass = massProp.cast<double>();
-      if (isnan(modelMass))
+      if (std::isnan(modelMass))
       {
         error("Mass information is not a number (NaN) and is invalid for the model '%s'. Impossible to compute the Dempster BSIPs", model->name().c_str());
         continue;

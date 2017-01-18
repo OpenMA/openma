@@ -32,31 +32,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_forceplatetype2_h
-#define __openma_instrument_forceplatetype2_h
+#ifndef __openma_io_bsfplugin_h
+#define __openma_io_bsfplugin_h
 
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplate_p.h"
+#include "bsfhandler.h"
+#include "openma/io/handlerplugin.h"
 
 namespace ma
 {
-namespace instrument
+namespace io
 {
-  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
+  class BSFPlugin : public HandlerPlugin
   {
-    OPENMA_DECLARE_NODEID(ForcePlateType2, ForcePlate)
-    
   public:
-    ForcePlateType2(const std::string& name, Node* parent = nullptr);
-    ~ForcePlateType2() _OPENMA_NOEXCEPT;
+    BSFPlugin() : HandlerPlugin() {};
     
-  protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
-    virtual Node* allocateNew() const final;
+    virtual std::string name() const _OPENMA_NOEXCEPT final;
+  
+    virtual std::vector<std::string> supportedFormats() const _OPENMA_NOEXCEPT final;
+  
+    virtual Capability capabilities(const std::string& format) const _OPENMA_NOEXCEPT final;
+    virtual Signature detectSignature(const Device* const device, std::string* format = nullptr) const _OPENMA_NOEXCEPT final;
+  
+    virtual Handler* create(Device* device, const std::string& format) final;
   };
 };
 };
 
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType2, OPENMA_INSTRUMENT_EXPORT);
-
-#endif
+#endif // __openma_io_bsfplugin_h

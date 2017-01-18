@@ -47,11 +47,13 @@ namespace ma
     ~Trial();
     Node* timeSequences();
     Node* events();
+    Node* hardwares();
     
     %extend
     {
       TimeSequence* timeSequence(unsigned idx);
       Event* event(unsigned idx);
+      Hardware* hardware(unsigned idx);
     };
   };
   %clearnodefaultctor;
@@ -67,6 +69,22 @@ ma::Event* ma_Trial_event(ma::Trial* self, unsigned index)
 #else
   if (index < self->events()->children().size())
     return self->event(index);
+#endif
+  else
+  {
+    SWIG_SendError(SWIG_IndexError, "Index out of range");
+    return nullptr;
+  }
+};
+
+ma::Hardware* ma_Trial_hardware(ma::Trial* self, unsigned index)
+{
+#if defined(SWIGMATLAB)
+  if ((index > 0) && (index <= self->hardwares()->children().size()))
+    return self->hardware(index-1);
+#else
+  if (index < self->hardwares()->children().size())
+    return self->hardware(index);
 #endif
   else
   {

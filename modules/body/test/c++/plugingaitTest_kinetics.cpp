@@ -79,7 +79,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ewa->run(&rootModel);
     // Compute BSIPs
     auto ipe = helper.defaultInertialParametersEstimator();
-    ipe->generate(&rootModel);
+    ipe->run(&rootModel);
     // Compute inverse dynamics in the global frame
     auto idp = helper.defaultInverseDynamicProcessor();
     idp->run(&rootModel);
@@ -217,7 +217,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
     ewa->run(&rootModel);
     // Compute BSIPs
     auto ipe = helper.defaultInertialParametersEstimator();
-    ipe->generate(&rootModel);
+    ipe->run(&rootModel);
     // Compute inverse dynamics in the global frame
     auto idp = helper.defaultInverseDynamicProcessor();
     idp->run(&rootModel);

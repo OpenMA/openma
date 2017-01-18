@@ -56,7 +56,7 @@ namespace body
     InertialParametersEstimator& operator=(const InertialParametersEstimator& ) = delete;
     InertialParametersEstimator& operator=(InertialParametersEstimator&& ) _OPENMA_NOEXCEPT = delete;
     
-    virtual bool generate(Node* inout) = 0;
+    virtual bool run(Node* inout) = 0;
     
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
   };

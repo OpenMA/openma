@@ -10,6 +10,7 @@ SET(OPENMA_BASE_SRCS
   src/timesequence.cpp
   src/trial.cpp
   src/typeid.cpp
+  src/utils.cpp
 )
 
 ADD_LIBRARY(base ${OPENMA_LIBS_BUILD_TYPE} ${OPENMA_BASE_SRCS})

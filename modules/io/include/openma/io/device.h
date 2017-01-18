@@ -49,6 +49,8 @@ namespace ma
 namespace io
 {
   class DevicePrivate;
+  enum class State;
+  enum class Mode;
   
   class OPENMA_IO_EXPORT Device
   {

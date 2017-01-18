@@ -64,15 +64,16 @@ namespace instrument
   /**
    * Compute forces and moments from analog channel data associated with this force plate.
    */
-  bool ForcePlateType2::computeWrenchAtOrigin(TimeSequence* w)
+  bool ForcePlateType2::computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts)
   {
     auto W = math::to_wrench(w);
-    W.values().col(0) = math::Map<const math::Array<1>>::Values(this->channel("Fx")->data(), W.rows(), 1);
-    W.values().col(1) = math::Map<const math::Array<1>>::Values(this->channel("Fy")->data(), W.rows(), 1);
-    W.values().col(2) = math::Map<const math::Array<1>>::Values(this->channel("Fz")->data(), W.rows(), 1);
-    W.values().col(3) = math::Map<const math::Array<1>>::Values(this->channel("Mx")->data(), W.rows(), 1);
-    W.values().col(4) = math::Map<const math::Array<1>>::Values(this->channel("My")->data(), W.rows(), 1);
-    W.values().col(5) = math::Map<const math::Array<1>>::Values(this->channel("Mz")->data(), W.rows(), 1);
+    using MapAnalog = math::Map<const math::Array<1>>::Values;
+    W.values().col(0) = MapAnalog(cpts[0]->data(), W.rows(), 1); // Fx
+    W.values().col(1) = MapAnalog(cpts[1]->data(), W.rows(), 1); // Fy
+    W.values().col(2) = MapAnalog(cpts[2]->data(), W.rows(), 1); // Fz
+    W.values().col(3) = MapAnalog(cpts[3]->data(), W.rows(), 1); // Mx
+    W.values().col(4) = MapAnalog(cpts[4]->data(), W.rows(), 1); // My
+    W.values().col(5) = MapAnalog(cpts[5]->data(), W.rows(), 1); // Mz
     return true;
   };
   

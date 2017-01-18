@@ -180,6 +180,7 @@ void forceplatetest_fill_sample10(ma::instrument::ForcePlate* fp, const double* 
   auto mz = new ma::TimeSequence("MZ1",1,sample10_fpsamples,rate,start,ma::TimeSequence::Analog,"Nmm");
   std::copy_n(data+110, 22, mz->data());
   fp->setChannel("Mz", mz);
+  fp->setSoftResetSamples({{0,9}});
 };
 
 void forceplatetest_fill_sample10_type2(ma::instrument::ForcePlate* fp)
@@ -295,6 +296,11 @@ void forceplatetest_compare_fp_clone(ma::instrument::ForcePlate* ref, ma::instru
   auto d2 = clone->calibrationMatrixData();
   for (unsigned i = 1 ; i < s1 ; ++i)
     TS_ASSERT_DELTA(d1[i], d2[i], 1e-5)
+  TS_ASSERT_EQUALS(ref->isSoftResetEnabled(), clone->isSoftResetEnabled())
+  auto arr5 = ref->softResetSamples();
+  auto arr6 = clone->softResetSamples();
+  for (unsigned i = 1 ; i < 2 ; ++i)
+    TS_ASSERT_EQUALS(arr5[i], arr6[i])
 };
 
 void forceplatetest_compare_fp2_clone(ma::instrument::ForcePlate* ref, ma::instrument::ForcePlate* clone)

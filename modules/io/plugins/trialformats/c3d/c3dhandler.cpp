@@ -61,6 +61,7 @@
 #include <memory> // std::unique_ptr
 #include <functional> // std::function
 #include <cassert>
+#include <cmath>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
@@ -898,6 +899,7 @@ namespace io
           const Any& origin = trial->property("FORCE_PLATFORM:ORIGIN");
           const Any& channel = trial->property("FORCE_PLATFORM:CHANNEL");
           const Any& calmatrix = trial->property("FORCE_PLATFORM:CAL_MATRIX");
+          const Any& zero = trial->property("FORCE_PLATFORM:ZERO");
           if (type.isValid() && corners.isValid() && origin.isValid() && channel.isValid())
           {
             // const auto& dimType = type.dimensions();
@@ -910,6 +912,8 @@ namespace io
             auto valOrigin = origin.cast<std::vector<double>>();
             auto valChannel = channel.cast<std::vector<int>>();
             auto valCalMatrix = calmatrix.cast<std::vector<double>>();
+            auto valZero = zero.cast<std::array<int,2>>();
+            valZero[0] -= 1; valZero[1] -= 1; // C3D format is 1-based index
             if ((valType.size() >= numfps) && (valCorners.size() >= (12 * numfps)) && (valOrigin.size() == (3 * numfps)) && (dimChannel.size() >= 2) && (dimChannel[1] >= numfps))
             {
               int maxType = *std::max_element(valType.cbegin(), valType.cend());
@@ -969,6 +973,7 @@ namespace io
                     break;
                   }
                   C3DHandlerPrivate::extractForcePlatformData(fp, analogs, o, c, ch, channelStep, cm, dimCalMatrix.data());
+                  fp->setSoftResetSamples(valZero);
                 }
               }
               else

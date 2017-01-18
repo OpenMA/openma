@@ -32,31 +32,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_instrument_forceplatetype2_h
-#define __openma_instrument_forceplatetype2_h
+%module(package="ma.processing") processing
 
-#include "openma/instrument/forceplate.h"
-#include "openma/instrument/forceplate_p.h"
+%begin %{
+#include "openma/matlab/fixwinchar16.h"
+%}
+
+%{
+#include "openma/base.h"
+#include "openma/processing.h"
+#include "openma/bindings.h"
+%}
+
+%include "openma/macros.i"
+
+%import "ma.i"
+
+// ========================================================================= //
+//                                INTERFACE
+// ========================================================================= //
+
+#if defined(SWIGMATLAB)
+%include "processing_matlab.i"
+#elif defined(SWIGPYTHON)
+%include "processing_python.i"
+#endif
+
+%include "../include/openma/processing/enums.h"
 
 namespace ma
 {
-namespace instrument
+namespace processing
 {
-  class OPENMA_INSTRUMENT_EXPORT ForcePlateType2 : public ForcePlate
-  {
-    OPENMA_DECLARE_NODEID(ForcePlateType2, ForcePlate)
-    
-  public:
-    ForcePlateType2(const std::string& name, Node* parent = nullptr);
-    ~ForcePlateType2() _OPENMA_NOEXCEPT;
-    
-  protected:
-    virtual bool computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts) final;
-    virtual Node* allocateNew() const final;
-  };
+  bool filter_butterworth_zero_lag(const std::vector<TimeSequence*>& tss, Response type, double fc, int fn);
 };
 };
-
-OPENMA_EXPORT_STATIC_TYPEID(ma::instrument::ForcePlateType2, OPENMA_INSTRUMENT_EXPORT);
-
-#endif

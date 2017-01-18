@@ -70,6 +70,8 @@ namespace instrument
     std::array<double,3> RelativeSurfaceOrigin;
     std::array<unsigned,2> CalibrationMatrixDimensions;
     std::vector<double> CalibrationMatrixData;
+    bool SoftResetEnabled;
+    std::array<int,2> SoftResetBaselineSamples;
   };
 };
 };
