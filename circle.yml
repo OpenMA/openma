@@ -35,7 +35,7 @@ dependencies:
     - cd build && cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data  -G "Unix Makefiles" ..
     - cd build && make
   post:
-    - make doxygen_cpp
+    - cd build && make doxygen_cpp
     - mkdir $CIRCLE_ARTIFACTS/doxygen
     - mv build/doxy-* $CIRCLE_ARTIFACTS/doxygen
     - tar -czvf $CIRCLE_ARTIFACTS/doxygen/cpp_xml.tar.gz build/doc/_doxygen
