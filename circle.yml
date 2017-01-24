@@ -31,7 +31,8 @@ dependencies:
         echo "Cached Doxygen found"
       fi
   override:
-    - mkdir build && cd build
+    - mkdir build
+    - cd build
     - cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data  -G "Unix Makefiles" ..
     - make
   post:
