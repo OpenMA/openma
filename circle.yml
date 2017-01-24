@@ -32,16 +32,15 @@ dependencies:
       fi
   override:
     - mkdir build
-    - cd build
-    - cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data  -G "Unix Makefiles" ..
-    - make
+    - cd build && cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data  -G "Unix Makefiles" ..
+    - cd build && make
   post:
     - make doxygen_cpp
     - mkdir $CIRCLE_ARTIFACTS/doxygen
-    - mv doxy-* $CIRCLE_ARTIFACTS/doxygen
-    - tar -czvf $CIRCLE_ARTIFACTS/doxygen/cpp_xml.tar.gz /home/ubuntu/openma/build/doc/_doxygen
+    - mv build/doxy-* $CIRCLE_ARTIFACTS/doxygen
+    - tar -czvf $CIRCLE_ARTIFACTS/doxygen/cpp_xml.tar.gz build/doc/_doxygen
     
 ## Customize test commands
 test:
   override:
-    - ctest -VV
+    - cd build && ctest -VV
