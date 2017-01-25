@@ -60,7 +60,7 @@ This part verifies the quality of the implementation (i.e. no lexical, syntactic
 
 To be sure that unit tests executed in the *continuous integration* part covers all the classes/functions proposed in OpenMA, a coverage analysis is realized. It gives a metrics regarding the number of calls used in the unit tests for each methods/functions.
 
-###API documentation [![Doxygen Coverage Status](http://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.svg)](http://drone.io/github.com/OpenMA/openma/files/build/doxy-coverage.resume.txt)###
+###API documentation [![Doxygen Coverage Status](https://circleci.com/api/v1/project/openma/openma/latest/artifacts/0/$CIRCLE_ARTIFACTS/doxygen/doxy-coverage.svg)](https://circleci.com/api/v1/project/openma/openma/latest/artifacts/0/$CIRCLE_ARTIFACTS/doxygen/doxy-coverage.resume.txt)###
 The documentation of the API is built each time a commit is sent on the server. Internally, [Doxygen](http://www.doxygen.org) is used to verify and generate documentation of the C++ code (classes, methods, etc.). Then, a custom engine is used to generate the online documentation available on [openma.org](http://openma.org).
 
 ##License##
