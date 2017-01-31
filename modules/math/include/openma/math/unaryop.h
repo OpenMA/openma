@@ -375,11 +375,21 @@ namespace math
   //                               REPLICATEOP
   // ----------------------------------------------------------------------- //
   
-  template <typename Xpr>
-  struct Traits<ReplicateOp<Xpr>>
+  template <typename Xpr, int U>
+  struct Traits<ReplicateOp<Xpr,U>>
   {
     static _OPENMA_CONSTEXPR int Processing = None;
   };
+  
+  template <typename Xpr, int U>
+  struct Traits<UnaryOp<ReplicateOp<Xpr,U>,Xpr>>
+  {
+    using Values = typename Traits<Xpr>::Values;
+    using Residuals = typename Traits<Xpr>::Residuals;
+    using Index = typename Values::Index;
+    static _OPENMA_CONSTEXPR int ColsAtCompileTime = Traits<Xpr>::ColsAtCompileTime * U;
+    static _OPENMA_CONSTEXPR int Processing = Traits<ReplicateOp<Xpr,U>>::Processing;
+  }; 
   
   // ----------------------------------------------------------------------- //
   
@@ -390,10 +400,10 @@ namespace math
    * Template expression to replicate the rows and generate the associated residuals.
    * @ingroup openma_math
    */
-  template <typename Xpr>
-  class ReplicateOp : public UnaryOp<ReplicateOp<Xpr>,Xpr>
+  template <typename Xpr, int U>
+  class ReplicateOp : public UnaryOp<ReplicateOp<Xpr,U>,Xpr>
   {
-    using Index = typename Traits<UnaryOp<ReplicateOp<Xpr>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
+    using Index = typename Traits<UnaryOp<ReplicateOp<Xpr,U>, Xpr>>::Index; ///< Type used to access elements in Values or Residuals.
     
     Index m_Rows;
     
@@ -402,7 +412,7 @@ namespace math
      * Constructor
      */
     ReplicateOp(const XprBase<Xpr>& x, Index rows)
-    : UnaryOp<ReplicateOp<Xpr>,Xpr>(x), m_Rows(rows)
+    : UnaryOp<ReplicateOp<Xpr,U>,Xpr>(x), m_Rows(rows)
     {};
     
     /**
@@ -418,7 +428,7 @@ namespace math
      */
     auto values() const _OPENMA_NOEXCEPT -> Eigen::Replicate<typename std::decay<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>::type, Eigen::Dynamic, Eigen::Dynamic>
     {
-      return this->m_Xpr.values().replicate(this->m_Rows,1);
+      return this->m_Xpr.values().replicate(this->m_Rows,U);
     };
 
     /**
@@ -432,9 +442,10 @@ namespace math
   
   // Defined here due to the declaration order of the classes. The associated documentation is in the header of the XprBase class.
   template <typename Derived>
-  inline const ReplicateOp<Derived> XprBase<Derived>::replicate(Index rows) const _OPENMA_NOEXCEPT
+  template <int U>
+  inline const ReplicateOp<Derived,U> XprBase<Derived>::replicate(Index rows) const _OPENMA_NOEXCEPT
   {
-    return ReplicateOp<Derived>(*this,rows);
+    return ReplicateOp<Derived,U>(*this,rows);
   };
   
   // ----------------------------------------------------------------------- //

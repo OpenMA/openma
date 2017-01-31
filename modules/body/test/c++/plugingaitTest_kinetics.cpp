@@ -23,7 +23,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
 {
   CXXTEST_TEST(inverseDynamicsBothLowerBodyOneFrame)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setGravity(std::array<double,3>{{0,0,-9.81}}); // m/s^2
     helper.setMarkerDiameter(16.0); // mm
     helper.setLeftFootFlatEnabled(true);
@@ -166,7 +166,7 @@ CXXTEST_SUITE(PluginGaitKineticsTest)
   
   CXXTEST_TEST(inverseDynamicsBothLowerBodyFullFramesHeadOffsetDisabled)
   {
-    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     helper.setGravity(std::array<double,3>{{0,0,-9.81}}); // m/s^2
     helper.setMarkerDiameter(14.0); // mm
     helper.setLeftLegLength(780.0); // mm

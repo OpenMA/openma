@@ -33,7 +33,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -78,7 +78,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -125,7 +125,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -170,7 +170,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Hole.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Upper, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -227,7 +227,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -286,7 +286,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -330,7 +330,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_FF_N18.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -372,7 +372,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion3_noFF.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -423,7 +423,7 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d")), true);
     TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
     // Skeleton helper creation
-    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     // Skeleton helper calibration
     TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
     // Model reconstruction
@@ -461,6 +461,190 @@ CXXTEST_SUITE(PluginGaitKinematicsTest)
     compare_joint_kinematics(kinematics, trial, "R.Head.Progress.Angle", "RViconHeadAngles");
     compare_joint_kinematics(kinematics, trial, "L.Head.Progress.Angle", "LViconHeadAngles");
   };
+  
+  CXXTEST_TEST(kinematicsFullBodyKAD)
+  {
+    ma::Subject subject("Anonymous",
+      {{"markerDiameter", 14.0},
+       {"leftLegLength", 860.0},
+       {"leftKneeWidth", 102.0},
+       {"leftAnkleWidth", 75.3},
+       {"rightLegLength", 865.0},
+       {"rightKneeWidth", 103.4},
+       {"rightAnkleWidth", 72.9}});
+    
+    ma::Node statictrials("statictrials"), dynamictrials("dynamictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
+    // Static trial
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration.c3d")), true);
+    TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
+    // Dynamic trial
+    TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Motion.c3d")), true);
+    TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
+    // Skeleton helper creation
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
+    // Skeleton helper calibration
+    TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
+    // Model reconstruction
+    TS_ASSERT_EQUALS(ma::body::reconstruct(&models, &skeletonhelper, &dynamictrials), true);
+    TS_ASSERT_EQUALS(models.children().size(), 1u);
+    // Joint kinematics
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinematics(&kinematicsanalyses, &models, true), true);
+    TS_ASSERT_EQUALS(kinematicsanalyses.children().size(), 1u);
+
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinematics = kinematicsanalyses.child(0);
+  
+    compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.5e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{3.5e-4,8e-4,1.2e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles",{{1.9e-4,1e-4,1.2e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{3e-4,5.5e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{1.6e-4,1e-4,8e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1e-4,3.1e-4,1.1e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.5e-4}});
+  };
+  
+  CXXTEST_TEST(kinematicsFullBodyKADFF)
+  {
+    ma::Subject subject("Anonymous",
+      {{"markerDiameter", 14.0},
+       {"leftLegLength", 860.0},
+       {"leftKneeWidth", 102.0},
+       {"leftAnkleWidth", 75.3},
+       {"leftFootFlatEnabled", true},
+       {"rightLegLength", 865.0},
+       {"rightKneeWidth", 103.4},
+       {"rightAnkleWidth", 72.9},
+       {"rightFootFlatEnabled", true}});
+    
+    ma::Node statictrials("statictrials"), dynamictrials("dynamictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
+    // Static trial
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Calibration_FootFlat.c3d")), true);
+    TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
+    // Dynamic trial
+    TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKad_Motion_FootFlat.c3d")), true);
+    TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
+    // Skeleton helper creation
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KAD);
+    // Skeleton helper calibration
+    TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
+    // Model reconstruction
+    TS_ASSERT_EQUALS(ma::body::reconstruct(&models, &skeletonhelper, &dynamictrials), true);
+    TS_ASSERT_EQUALS(models.children().size(), 1u);
+    // Joint kinematics
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinematics(&kinematicsanalyses, &models, true), true);
+    TS_ASSERT_EQUALS(kinematicsanalyses.children().size(), 1u);
+
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinematics = kinematicsanalyses.child(0);
+  
+    compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.6e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{3.5e-4,8.8e-4,1.2e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{2.1e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{3e-4,6e-4,1.11e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{1.6e-4,1e-4,7.7e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1.1e-4,2.5e-4,1.3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{1.2e-4,3.4e-4}});
+  };
+  
+  CXXTEST_TEST(kinematicsFullBodyKADMed)
+  {
+    ma::Subject subject("Anonymous",
+      {{"markerDiameter", 14.0},
+       {"leftLegLength", 860.0},
+       {"leftKneeWidth", 102.0},
+       {"leftAnkleWidth", 75.3},
+       {"rightLegLength", 865.0},
+       {"rightKneeWidth", 103.4},
+       {"rightAnkleWidth", 72.9}});
+
+    ma::Node statictrials("statictrials"), dynamictrials("dynamictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
+    // Static trial
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration.c3d")), true);
+    TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
+    // Dynamic trial
+    TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Motion.c3d")), true);
+    TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
+    // Skeleton helper creation
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    skeletonhelper.setProperty("_ma_debug_vicon_original_foot_frame", true);
+    // Skeleton helper calibration
+    TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
+    // Model reconstruction
+    TS_ASSERT_EQUALS(ma::body::reconstruct(&models, &skeletonhelper, &dynamictrials), true);
+    TS_ASSERT_EQUALS(models.children().size(), 1u);
+    // Joint kinematics
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinematics(&kinematicsanalyses, &models, true), true);
+    TS_ASSERT_EQUALS(kinematicsanalyses.children().size(), 1u);
+
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinematics = kinematicsanalyses.child(0);
+
+    compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{1.6e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{5e-4,8.8e-4,1.3e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{1.2e-4,1e-4,8e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{4e-4,6e-4,1.11e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");    
+#if !defined(NDEBUG)
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles", {{5e-4,5e-4,3e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles", {{3e-4,1.25e-4,9e-4}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{1.1e-3,3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{2.5e-3,5e-4,2e-4}});
+#endif
+  };
+  
+  CXXTEST_TEST(kinematicsFullBodyKADMed2)
+  {
+    ma::Subject subject("Anonymous",
+      {{"markerDiameter", 25.0},
+       {"leftLegLength", 775.0},
+       {"leftKneeWidth", 105.1},
+       {"leftAnkleWidth", 68.4},
+       {"rightLegLength", 770.0},
+       {"rightKneeWidth", 107.0},
+       {"rightAnkleWidth", 68.6}});
+
+    ma::Node statictrials("statictrials"), dynamictrials("dynamictrials"), models("models"), kinematicsanalyses("kinematicsanalyses");
+    // Static trial
+    TS_ASSERT_EQUALS(ma::io::read(&statictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Calibration2.c3d")), true);
+    TS_ASSERT_EQUALS(statictrials.children().size(), 1u);
+    // Dynamic trial
+    TS_ASSERT_EQUALS(ma::io::read(&dynamictrials, OPENMA_TDD_PATH_IN("c3d/plugingait/PiGKadMed_Motion2.c3d")), true);
+    TS_ASSERT_EQUALS(dynamictrials.children().size(), 1u);
+    // Skeleton helper creation
+    ma::body::PluginGait skeletonhelper(ma::body::Region::Lower, ma::body::Side::Both, ma::body::PluginGait::KADMed);
+    skeletonhelper.setProperty("_ma_debug_vicon_original_foot_frame", true);
+    // Skeleton helper calibration
+    TS_ASSERT_EQUALS(ma::body::calibrate(&skeletonhelper, &statictrials, &subject), true);
+    // Model reconstruction
+    TS_ASSERT_EQUALS(ma::body::reconstruct(&models, &skeletonhelper, &dynamictrials), true);
+    TS_ASSERT_EQUALS(models.children().size(), 1u);
+    // Joint kinematics
+    TS_ASSERT_EQUALS(ma::body::extract_joint_kinematics(&kinematicsanalyses, &models, true), true);
+    TS_ASSERT_EQUALS(kinematicsanalyses.children().size(), 1u);
+
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinematics = kinematicsanalyses.child(0);
+
+    compare_joint_kinematics(kinematics, trial, "L.Hip.Angle", "LHipAngles", {{3e-4,1e-4,1.6e-3}});
+    compare_joint_kinematics(kinematics, trial, "L.Knee.Angle", "LKneeAngles", {{8e-4,1.5e-3,1.3e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Hip.Angle", "RHipAngles", {{2.1e-4,1e-4,1.1e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Knee.Angle", "RKneeAngles", {{4.1e-4,8.1e-4,1.3e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Pelvis.Progress.Angle", "RPelvisAngles");
+    compare_joint_kinematics(kinematics, trial, "L.Pelvis.Progress.Angle", "LPelvisAngles");
+#if !defined(NDEBUG)
+    compare_joint_kinematics(kinematics, trial, "L.Ankle.Angle", "LAnkleAngles",{{6e-4,6e-4,2e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Ankle.Angle", "RAnkleAngles",{{5e-4,3e-4,1.7e-3}});
+    compare_joint_kinematics(kinematics, trial, "R.Foot.Progress.Angle", "RFootProgressAngles",{{3e-4,3e-4,3e-4}});
+    compare_joint_kinematics(kinematics, trial, "L.Foot.Progress.Angle", "LFootProgressAngles",{{3e-4,4e-4,3e-4}});
+#endif
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(PluginGaitKinematicsTest)
@@ -473,3 +657,7 @@ CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyFF_N18)
 CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematics3BothLowerBodyNoFF)
 CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsBothFullBodyFullFramesHeadOffsetDisabled)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKAD)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADFF)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADMed)
+CXXTEST_TEST_REGISTRATION(PluginGaitKinematicsTest, kinematicsFullBodyKADMed2)

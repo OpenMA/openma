@@ -51,7 +51,9 @@ namespace body
     OPENMA_DECLARE_NODEID(PluginGait, SkeletonHelper)
     
   public:
-    PluginGait(int region, int side, Node* parent = nullptr);
+    typedef enum {Basic = 0x00, KAD, KADMed} Variant;
+    
+    PluginGait(int region, int side, Variant variant, Node* parent = nullptr);
     
     double markerDiameter() const _OPENMA_NOEXCEPT;
     void setMarkerDiameter(double value) _OPENMA_NOEXCEPT;
@@ -83,6 +85,18 @@ namespace body
     void setRightAsisTrochanterAPDistance(double value) _OPENMA_NOEXCEPT;
     double leftAsisTrochanterAPDistance() const _OPENMA_NOEXCEPT;
     void setLeftAsisTrochanterAPDistance(double value) _OPENMA_NOEXCEPT;
+    double rightTibialTorsionOffset() const _OPENMA_NOEXCEPT;
+    void setRightTibialTorsionOffset(double value) _OPENMA_NOEXCEPT;
+    double leftTibialTorsionOffset() const _OPENMA_NOEXCEPT;
+    void setLeftTibialTorsionOffset(double value) _OPENMA_NOEXCEPT;
+    double rightThighRotationOffset() const _OPENMA_NOEXCEPT;
+    void setRightThighRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double leftThighRotationOffset() const _OPENMA_NOEXCEPT;
+    void setLeftThighRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double rightShankRotationOffset() const _OPENMA_NOEXCEPT;
+    void setRightShankRotationOffset(double value) _OPENMA_NOEXCEPT;
+    double leftShankRotationOffset() const _OPENMA_NOEXCEPT;
+    void setLeftShankRotationOffset(double value) _OPENMA_NOEXCEPT;
     double rightKneeWidth() const _OPENMA_NOEXCEPT;
     void setRightKneeWidth(double value) _OPENMA_NOEXCEPT;
     double leftKneeWidth() const _OPENMA_NOEXCEPT;
@@ -100,6 +114,8 @@ namespace body
     double rightStaticRotationOffset() const _OPENMA_NOEXCEPT;
     double leftStaticPlantarFlexionOffset() const _OPENMA_NOEXCEPT;
     double leftStaticRotationOffset() const _OPENMA_NOEXCEPT;
+    double rightAnkleAbAddOffset() const _OPENMA_NOEXCEPT;
+    double leftAnkleAbAddOffset() const _OPENMA_NOEXCEPT;
     
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;

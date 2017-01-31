@@ -136,7 +136,7 @@ namespace math
     /**
      * Returns an object representing a replicated version of this @a rows time.
      */
-    const ReplicateOp<Derived> replicate(Index rows) const _OPENMA_NOEXCEPT;
+    template <int U = 1> const ReplicateOp<Derived,U> replicate(Index rows = 1) const _OPENMA_NOEXCEPT;
     
     // Next method is defined after the declaration of the class TransformOp
     
@@ -193,6 +193,20 @@ namespace math
      * Returns an object representing an euler angles operation using the given order @a a0, @a a1, @a a2 for the sequence order.
      */
     const EulerAnglesOp<Derived> eulerAngles(Index a0, Index a1, Index a2) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class DotOp
+    
+    /**
+     * Returns an object representing a dot product operator between @a this object and the @a other object.
+     */
+    template <typename OtherDerived> const DotOp<Derived,OtherDerived> dot(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
+    
+    // Next method is defined after the declaration of the class ArcTangent2Op
+    
+    /**
+     * Returns an object representing a function operator between @a this object and the @a other object.
+     */
+    template <typename OtherDerived> const ArcTangent2Op<Derived,OtherDerived> atan2(const XprBase<OtherDerived>& other) const _OPENMA_NOEXCEPT;
   };
   
   // ----------------------------------------------------------------------- //
@@ -266,6 +280,17 @@ namespace math
   {
     assert(fabs(x2) >= std::numeric_limits<double>::epsilon());
     return ScaleOp<Xpr>(1.0/x2,x1);
+  };
+  
+  /**
+   * Convenient multiplication operator to create a coefficient-wise product of @a x1 and @a x2.
+   * @relates XprBase
+   * @relates ArrayBase
+   */
+  template <typename XprOne, typename XprTwo>
+  const CoefficientProductOp<XprOne,XprTwo> operator* (const XprBase<XprOne>& x1, const XprBase<XprTwo>& x2)
+  {
+    return CoefficientProductOp<XprOne,XprTwo>(x1,x2);
   };
 };
 };

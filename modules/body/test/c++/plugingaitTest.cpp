@@ -6,7 +6,7 @@ CXXTEST_SUITE(PluginGaitTest)
 {   
   CXXTEST_TEST(clone)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
     fill_parameters_with_fake_value(&helper);
     ma::Node root("root");
     auto clonedhelper = helper.clone(&root);
@@ -16,8 +16,8 @@ CXXTEST_SUITE(PluginGaitTest)
   
   CXXTEST_TEST(copy)
   {
-    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both);
-    ma::body::PluginGait copyhelper(ma::body::Region::Lower, ma::body::Side::Right);
+    ma::body::PluginGait helper(ma::body::Region::Full, ma::body::Side::Both, ma::body::PluginGait::Basic);
+    ma::body::PluginGait copyhelper(ma::body::Region::Lower, ma::body::Side::Right, ma::body::PluginGait::Basic);
     fill_parameters_with_fake_value(&helper);
     copyhelper.setMarkerDiameter(16.0);
     copyhelper.setHeadOffsetEnabled(false);

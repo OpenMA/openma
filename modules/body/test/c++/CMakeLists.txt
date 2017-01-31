@@ -20,3 +20,6 @@ ADD_CXXTEST_TESTDRIVER(openma_body_segment segmentTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_simplegaitforceplatetofeetassigner simplegaitforceplatetofeetassignerTest.cpp INCLUDES ${_TEST_IO_CPP_DIR} LIBRARIES body io)
 ADD_CXXTEST_TESTDRIVER(openma_body_skeletonhelper skeletonhelperTest.cpp body)
 ADD_CXXTEST_TESTDRIVER(openma_body_utils utilsTest.cpp body)
+
+# To have access to the symbol M_PI
+SET_TARGET_PROPERTIES(test_openma_body_plugingait_calibration PROPERTIES COMPILE_DEFINITIONS "_USE_MATH_DEFINES")

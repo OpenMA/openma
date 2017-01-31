@@ -62,13 +62,159 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+static _OPENMA_CONSTEXPR int PartShankTorsioned = ma::body::Part::User+1;
+
+void _ma_plugingait_construct_thigh_pose(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* LFE, const ma::math::Position* HJC, const ma::math::Position* KJC, double s)
+{
+  *w = (*HJC - *KJC).normalized();
+  *u = s * w->cross(*LFE - *KJC).normalized();
+  *v = w->cross(*u);
+};
+
+void _ma_plugingait_construct_shank_pose(ma::math::Vector* u, ma::math::Vector* v, ma::math::Vector* w, const ma::math::Map<ma::math::Position>* LTM, const ma::math::Position* KJC, const ma::math::Position* AJC, double s)
+{
+  *w = (*KJC - *AJC).normalized();
+  *u = s * w->cross(*LTM - *AJC).normalized();
+  *v = w->cross(*u);
+};
+
+void _ma_plugingait_compute_shank_rotation_offset(double* offset, const ma::math::Position* AJC, const ma::math::Position* KJC, const ma::math::Map<ma::math::Position>* LS, const ma::math::Map<ma::math::Position>* LTM, double s)
+{
+  ma::math::Vector u, v, w;
+  _ma_plugingait_construct_shank_pose(&u, &v, &w, LTM, KJC, AJC, s);
+  v *= -s;
+  ma::math::Vector LS_proj_trans_unit = ((*LS - (*LS - *AJC).dot(w).replicate<3>() * w) - *AJC).normalized();
+  ma::math::Vector cross = LS_proj_trans_unit.cross(v);
+  ma::math::Scalar dot = LS_proj_trans_unit.dot(v);
+  const double ss = s * sign(static_cast<double>(cross.dot(w).mean()));
+  *offset = ss * cross.norm().atan2(dot).mean();
+};
+
+bool _ma_plugingait_calibrate_kjc_basic(ma::math::Position* KJC, ma::math::Position* /**/, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double kneeWidth, const ma::math::Position* HJC)
+{
+  const auto& ITB = (*landmarks)[prefix+"ITB"];
+  const auto& LFE = (*landmarks)[prefix+"LFE"];
+  if (!ITB.isValid() || !LFE.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    return false;
+  }
+  // Compute the knee joint centre (KJC)
+  *KJC = ma::math::compute_chord((optr->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
+  return true;
+};
+
+bool _ma_plugingait_calibrate_kjc_kad(ma::math::Position* KJC, ma::math::Position* VLFE, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double kneeWidth, const ma::math::Position* HJC)
+{
+  // Required landmarks: *.ITB, *.LFE
+  const auto& KAX = (*landmarks)[prefix+"KAX"];
+  const auto& KD1 = (*landmarks)[prefix+"KD1"];
+  const auto& KD2 = (*landmarks)[prefix+"KD2"];
+  const auto& ITB = (*landmarks)[prefix+"ITB"];
+  if (!KAX.isValid() || !KD1.isValid() || !KD2.isValid() || !ITB.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    return false;
+  }
+  // Compute the virtual lateral femoral epicondyle (VLFE)
+  double dist = ((KAX - KD1).norm() + (KAX - KD2).norm() + (KD1 - KD2).norm()) / sqrt(2.0) / 3.0;
+  auto n = -s * (KD2 - KD1).cross(KAX - KD1).normalized();
+  auto I = (KD1 + KAX) / 2.0;
+  auto PP1 = (2.0 /3.0 * (I - KD2)) + KD2;
+  *VLFE = PP1 - (n * sqrt(3.0) * dist / 3.0);
+  // Compute the knee joint centre (KJC)
+  *KJC = ma::math::compute_chord((optr->MarkerDiameter + kneeWidth) / 2.0, *VLFE, *HJC, KAX);
+  // Compute the thigh marker rotation offset
+  ma::math::Vector w = (*HJC - *KJC).normalized();
+  ma::math::Vector ITB_proj_trans_unit = ((ITB - (ITB - *KJC).dot(w).replicate<3>() * w) - *KJC).normalized();
+  ma::math::Vector v = (*VLFE - *KJC).normalized();
+  ma::math::Vector cross = ITB_proj_trans_unit.cross(v);
+  ma::math::Scalar dot = ITB_proj_trans_unit.dot(v);
+  const double ss = s * sign(static_cast<double>(cross.dot(w).mean()));
+  *offsets[0] = ss * cross.norm().atan2(dot).mean();
+  return true;
+};
+
+bool _ma_plugingait_calibrate_ajc_basic(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& /*offsets*/, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double /*s*/, double ankleWidth, const ma::math::Position* KJC)
+{
+  const auto& LTM = (*landmarks)[prefix+"LTM"];
+  const auto& LS = (*landmarks)[prefix+"LS"];
+  if (!LTM.isValid() || !LS.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    return false;
+  }
+  // Compute the ankle joint centre (AJC)
+  *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, LS);
+  return true;
+};
+
+bool _ma_plugingait_calibrate_ajc_kad(ma::math::Position* AJC, ma::math::Position* /**/, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double ankleWidth, const ma::math::Position* KJC)
+{
+  const auto& LTM = (*landmarks)[prefix+"LTM"];
+  const auto& KAX = (*landmarks)[prefix+"KAX"];
+  const auto& LS = (*landmarks)[prefix+"LS"];
+  if (!LTM.isValid() || !KAX.isValid() || !LS.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    return false;
+  }
+  // Compute the ankle joint centre (AJC)
+  *AJC = ma::math::compute_chord((optr->MarkerDiameter + ankleWidth) / 2.0, LTM, *KJC, KAX);
+  // Compute the shank marker rotation offset
+  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM, s);
+  return true;
+};
+
+bool _ma_plugingait_calibrate_ajc_kadmed(ma::math::Position* AJC, ma::math::Position* VLFE, std::vector<double*>& offsets, ma::body::PluginGaitPrivate* optr, ma::body::ummp* landmarks, const std::string& prefix, double s, double ankleWidth, const ma::math::Position* KJC)
+{
+  const auto& LTM = (*landmarks)[prefix+"LTM"];
+  const auto& MTM = (*landmarks)[prefix+"MTM"];
+  const auto& LS = (*landmarks)[prefix+"LS"];
+  if (!LTM.isValid() || !MTM.isValid() || !LS.isValid())
+  {
+    ma::error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    return false;
+  }
+  // Compute the ankle joint centre (AJC)
+  *AJC = LTM + (optr->MarkerDiameter + ankleWidth) * 0.5 * (MTM - LTM).normalized();
+  // Compute the shank marker rotation offset
+  _ma_plugingait_compute_shank_rotation_offset(offsets[1], AJC, KJC, &LS, &LTM, s);
+  // Compute the tibial torsion offset
+  ma::math::Vector u, v, w;
+  // 1. Construct the shank SCS
+  _ma_plugingait_construct_shank_pose(&u, &v, &w, &LTM, KJC, AJC, s);
+  // 2. Construct the ML axis of the thigh SCS
+  ma::math::Vector temp = -s * (*VLFE - *KJC).normalized();
+  // 3. Express this axis in the shank SCS
+  //    NOTE: The following lines are a simplication of the transformation R_shank.transpose().transform(v_thigh);
+  ma::math::Vector temp_local_shank(KJC->rows());
+  temp_local_shank.residuals().setZero();
+  temp_local_shank.x() = u.dot(temp);
+  temp_local_shank.y() = v.dot(temp);
+  temp_local_shank.z() = w.dot(temp);
+  // 4. Project it on XY plane and normalize the result
+  temp_local_shank.values().col(2).setZero();
+  ma::math::Vector v_thigh_local_shank = temp_local_shank.normalized();
+  // 5. Compute the angle between v_shank and the projected v_thigh_local_shank
+  //    NOTE: v_shank is equal to [0 1 0]. The dot product and crossnorm are  simplified
+  *offsets[2] = s * v_thigh_local_shank.x().atan2(v_thigh_local_shank.y()).mean();
+  // Compute the adduction / abduction ankle joint offset
+  temp = -s * (LTM - * AJC).normalized();
+  ma::math::Scalar dot = v.dot(temp);
+  ma::math::Scalar crossnorm = v.cross(temp).norm();
+  *offsets[3] = crossnorm.atan2(dot).mean();
+  return true;
+};
+  
 namespace ma
 {
 namespace body
 {
-  PluginGaitPrivate::PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side)
+  PluginGaitPrivate::PluginGaitPrivate(PluginGait* pint, const std::string& name, int region, int side, int variant)
   : SkeletonHelperPrivate(pint,name,region,side),
     // All the options are null by default
+    Variant(variant),
     MarkerDiameter(0.0),
     HeadOffsetEnabled(false),
     RightShoulderOffset(0.0),
@@ -84,6 +230,12 @@ namespace body
     LeftLegLength(0.0),
     RightAsisTrochanterAPDistance(0.0),
     LeftAsisTrochanterAPDistance(0.0),
+    RightTibialTorsionOffset(0.0),
+    LeftTibialTorsionOffset(0.0),
+    RightThighRotationOffset(0.0),
+    LeftThighRotationOffset(0.0),
+    RightShankRotationOffset(0.0),
+    LeftShankRotationOffset(0.0),
     RightKneeWidth(0.0),
     LeftKneeWidth(0.0),
     RightAnkleWidth(0.0),
@@ -94,9 +246,13 @@ namespace body
     RightStaticPlantarFlexionOffset(0.0),
     RightStaticRotationOffset(0.0),
     LeftStaticPlantarFlexionOffset(0.0),
-    LeftStaticRotationOffset(0.0)
+    LeftStaticRotationOffset(0.0),
+    RightAnkleAbAddOffset(0.0),
+    LeftAnkleAbAddOffset(0.0),
+    CalibrateKneeJointCentre(nullptr),
+    CalibrateAnkleJointCentre(nullptr)
   {};
-    
+  
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
   
   bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
@@ -104,7 +260,9 @@ namespace body
     auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0, seglength = 0.0;
-    double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr;
+    double *staticPlantarFlexionOffset = nullptr, *staticRotationOffset = nullptr,
+           *tibialTorsionOffset = nullptr, *thighRotationOffset = nullptr,
+           *shankRotationOffset = nullptr, *ankleAbAddOffset = nullptr;
     bool footFlat = false;
     if (side == Side::Left)
     {
@@ -115,6 +273,10 @@ namespace body
       footFlat = this->LeftFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->LeftStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->LeftStaticRotationOffset);
+      tibialTorsionOffset = &(this->LeftTibialTorsionOffset);
+      thighRotationOffset = &(this->LeftThighRotationOffset);
+      shankRotationOffset = &(this->LeftShankRotationOffset);
+      ankleAbAddOffset = &(this->LeftAnkleAbAddOffset);
     }
     else if (side == Side::Right)
     {
@@ -125,25 +287,25 @@ namespace body
       footFlat = this->RightFootFlatEnabled;
       staticPlantarFlexionOffset = &(this->RightStaticPlantarFlexionOffset);
       staticRotationOffset = &(this->RightStaticRotationOffset);
+      tibialTorsionOffset = &(this->RightTibialTorsionOffset);
+      thighRotationOffset = &(this->RightThighRotationOffset);
+      shankRotationOffset = &(this->RightShankRotationOffset);
+      ankleAbAddOffset = &(this->RightAnkleAbAddOffset);
     }
     else
     {
       error("PluginGait - Unknown side for the lower limb. Calibration aborted.");
       return false;
     }
+    
+    std::vector<double*> offsets{thighRotationOffset, shankRotationOffset, tibialTorsionOffset, ankleAbAddOffset};
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
-    // Required landmarks: *.ITB, *.LFE
-    const auto& ITB = (*landmarks)[prefix+"ITB"];
-    const auto& LFE = (*landmarks)[prefix+"LFE"];
-    if (!ITB.isValid() || !LFE.isValid())
-    {
-      error("PluginGait - Missing landmarks to define the thigh. Calibration aborted.");
+    math::Position KJC, VLFE;
+    // NOTE: VLFE is only computed for the KAD and KADMed variants.
+    if (!this->CalibrateKneeJointCentre(&KJC, &VLFE, offsets, this, landmarks, prefix, s, kneeWidth, HJC))
       return false;
-    }
-    // Compute the knee joint centre (KJC)
-    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
     // Set the segment length
     seglength = (KJC - *HJC).norm().mean();
     pptr->setProperty(prefix+"Thigh.length", seglength);
@@ -158,16 +320,10 @@ namespace body
     // -----------------------------------------
     // Shank
     // -----------------------------------------
-    // Required landmarks: *.LTM, *.LS
-    const auto& LTM = (*landmarks)[prefix+"LTM"];
-    const auto& LS = (*landmarks)[prefix+"LS"];
-    if (!LTM.isValid() || !LS.isValid())
-    {
-      error("PluginGait - Missing landmarks to define the shank. Calibration aborted.");
+    math::Position AJC;
+    // NOTE: VLFE is only used by the KADMed variant.
+    if (!this->CalibrateAnkleJointCentre(&AJC, &VLFE, offsets, this, landmarks, prefix, s, ankleWidth, &KJC))
       return false;
-    }
-    // Compute the ankle joint centre (AJC)
-    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
     // Set the segment length
     seglength = (AJC - KJC).norm().mean();
     pptr->setProperty(prefix+"Shank.length", seglength);
@@ -178,10 +334,12 @@ namespace body
     // -----------------------------------------
     // Foot
     // -----------------------------------------
-    // Required landmarks: *.MTH2, *.HEE
+    // Required landmarks: *.MTH2, *.HEE, *.LS, *.LTM
     const auto& MTH2 = (*landmarks)[prefix+"MTH2"];
     math::Position HEE = (*landmarks)[prefix+"HEE"]; // Copy instead of a map due to possible modification on its coordinates if the foot flat option is activated
-    if (!MTH2.isValid() || !HEE.isValid())
+    const auto& LS = (*landmarks)[prefix+"LS"];
+    const auto& LTM = (*landmarks)[prefix+"LTM"];
+    if (!MTH2.isValid() || !HEE.isValid() || !LS.isValid() || !LTM.isValid())
     {
       error("PluginGait - Missing landmarks to define the foot. Calibration aborted.");
       return false;
@@ -205,9 +363,8 @@ namespace body
       HEE.block<1>(2) = MTH2.block<1>(2);
     }
     // - Shank axes
-    math::Vector w = (KJC - AJC).normalized();
-    math::Vector u = s * w.cross(LS - AJC).normalized();
-    math::Vector v_shank = w.cross(u);
+    math::Vector u, v_shank, w;
+    _ma_plugingait_construct_shank_pose(&u, &v_shank, &w, &LTM, &KJC, &AJC, s);
     // - Foot reference
     w = (HEE - MTH2).normalized();
     u = v_shank.cross(w).normalized();
@@ -329,15 +486,22 @@ namespace body
     auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
-           staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0;
+           thighRotationOffset = 0.0, 
+           shankRotationOffset = 0.0, tibialTorsionOffset = 0.0,
+           staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0,
+           ankleAbAddOffset = 0.0;
     if (side == Side::Left)
     {
       prefix = "L.";
       s = -1.0;
       ankleWidth = this->LeftAnkleWidth;
       kneeWidth = this->LeftKneeWidth;
+      thighRotationOffset = -this->LeftThighRotationOffset;
+      shankRotationOffset = -this->LeftShankRotationOffset;
+      tibialTorsionOffset = -this->LeftTibialTorsionOffset;
       staticPlantarFlexionOffset = -this->LeftStaticPlantarFlexionOffset;
       staticRotationOffset = -this->LeftStaticRotationOffset;
+      ankleAbAddOffset = this->LeftAnkleAbAddOffset;
     }
     else if (side == Side::Right)
     {
@@ -345,8 +509,12 @@ namespace body
       s = 1.0;
       ankleWidth = this->RightAnkleWidth;
       kneeWidth = this->RightKneeWidth;
+      thighRotationOffset = this->RightThighRotationOffset;
+      shankRotationOffset = this->RightShankRotationOffset;
+      tibialTorsionOffset = this->RightTibialTorsionOffset;
       staticPlantarFlexionOffset = -this->RightStaticPlantarFlexionOffset;
       staticRotationOffset = this->RightStaticRotationOffset;
+      ankleAbAddOffset = -this->RightAnkleAbAddOffset;
     }
     else
     {
@@ -369,10 +537,8 @@ namespace body
       return false;
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Thigh}},false);
-    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB);
-    u = s * (*HJC - LFE).cross(ITB - LFE).normalized();
-    w = (*HJC - KJC).normalized();
-    v = w.cross(u);
+    const math::Position KJC = compute_chord((this->MarkerDiameter + kneeWidth) / 2.0, LFE, *HJC, ITB, thighRotationOffset);
+    _ma_plugingait_construct_thigh_pose(&u, &v, &w, &LFE, HJC, &KJC, s);
     math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
@@ -389,11 +555,35 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Shank}},false);
     // Compute the ankle joint centre (AJC)
-    const math::Position AJC = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS);
-    w = (KJC - AJC).normalized();
-    u = s * w.cross(LS - AJC).normalized();
-    math::Vector v_shank = w.cross(u);
-    math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
+    math::Position AJC_ = compute_chord((this->MarkerDiameter + ankleWidth) / 2.0, LTM, KJC, LS, shankRotationOffset);
+    _ma_plugingait_construct_shank_pose(&u, &v, &w, &LTM, &KJC, &AJC_, s);
+    math::Position ajc_trans = AJC_ - LTM;
+    math::Position tmp(AJC_.rows());
+    tmp.residuals().setZero();
+    tmp.x() = u.dot(ajc_trans);
+    math::Scalar y = v.dot(ajc_trans);
+    math::Scalar z = w.dot(ajc_trans);
+    const double co = cos(ankleAbAddOffset);
+    const double so = sin(ankleAbAddOffset);
+    tmp.y() =  co * y + so * z;
+    tmp.z() = -so * y + co * z;
+    math::Position AJC(AJC_.rows());
+    AJC.residuals().setZero();
+    AJC.x() = u.x() * tmp.x() + v.x() * tmp.y() + w.x() * tmp.z();
+    AJC.y() = u.y() * tmp.x() + v.y() * tmp.y() + w.y() * tmp.z();
+    AJC.z() = u.z() * tmp.x() + v.z() * tmp.y() + w.z() * tmp.z();
+    AJC += LTM;
+    // Compute the torsioned shank reference frame
+    math::Vector v_shank_torsioned;
+    _ma_plugingait_construct_shank_pose(&u, &v_shank_torsioned, &w, &LTM, &KJC, &AJC, s);
+    auto shankTorsioned = model->segments()->findChild<Segment*>({},{{"side",side},{"part",PartShankTorsioned}},false);
+    math::to_timesequence(u, v_shank_torsioned, w, AJC, shankTorsioned->name()+".SCS", sampleRate, startTime, shankTorsioned);
+    // Compute the untorsioned shank reference frame
+    const double ct = cos(tibialTorsionOffset);
+    const double st = sin(tibialTorsionOffset);
+    math::Vector u_shank = ct * u - st * v_shank_torsioned;
+    math::Vector v_shank = st * u + ct * v_shank_torsioned;
+    math::to_timesequence(u_shank, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
     seg->setProperty("length", pptr->property(seg->name()+".length"));
     if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
@@ -408,7 +598,15 @@ namespace body
     }
     seg = model->segments()->findChild<Segment*>({},{{"side",side},{"part",Part::Foot}},false);
     w = (AJC - MTH2).normalized();
-    u = v_shank.cross(w).normalized();
+    // NOTE: IT WAS DISCOVERED THAT THE ORIGINAL PLUGIN GAIT CODE USES THE WRONG ML AXIS. INDEED, THE FOOT OFFSETS ARE DEFINED BASED ON THE TORSIONED SHANK BUT, THE ORIGINAL MODEL USES THE UNTORTIONED SHANK FOR THE RECONSTRUCTION
+#if defined(NDEBUG)
+    u = v_shank_torsioned.cross(w).normalized();
+#else
+    if (pptr->property("_ma_debug_vicon_original_foot_frame").cast<bool>())
+      u = v_shank.cross(w).normalized();
+    else
+      u = v_shank_torsioned.cross(w).normalized();
+#endif
     v = w.cross(u);
     const double cx = cos(staticRotationOffset), sx = sin(staticRotationOffset),
                  cy = cos(staticPlantarFlexionOffset), sy = sin(staticPlantarFlexionOffset);
@@ -771,6 +969,36 @@ namespace body
    */
   double LeftAsisTrochanterAPDistance;
   /**
+   * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. In case the KADMed variant is used, this offset is automatically computed.
+   * @sa rightTibialTorsionOffset() setRightTibialTorsionOffset()
+   */
+  double RightTibialTorsionOffset;
+  /**
+   * [Optional] This property holds the angle between projection of knee Flexion Axis (Y) with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. In case the KADMed variant is used, this offset is automatically computed.
+   * @sa leftTibialTorsionOffset() setLeftTibialTorsionOffset()
+   */
+  double LeftTibialTorsionOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Thigh wand marker with the projection of the knee Flexion Axis (Y) onto the plane perpendicular to the longitudinal thigh axis. By default, this property contains the value 0.0.
+   * @sa rightThighRotationOffset() setRightThighRotationOffset()
+   */
+  double RightThighRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Thigh wand marker with the projection of the knee Flexion Axis (Y) onto the plane perpendicular to the longitudinal thigh axis. By default, this property contains the value 0.0.
+   * @sa leftThighRotationOffset() setLeftThighRotationOffset()
+   */
+  double LeftThighRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Shank wand marker with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa rightShankRotationOffset() setRightShankRotationOffset()
+   */
+  double RightShankRotationOffset;
+  /**
+   * [Optional] This property holds the angle between projection of Shank wand marker with projection of the ankle Flexion Axis (Y) onto the plane perpendicular to the longitudinal shank axis. By default, this property contains the value 0.0.
+   * @sa leftShankRotationOffset() setLeftShankRotationOffset()
+   */
+  double LeftShankRotationOffset;
+  /**
    * [Required] This property holds the distance between femoral epycondyles. By default, this property contains the value 0.0.
    * @sa rightKneeWidth() setRightKneeWidth()
    */
@@ -825,16 +1053,43 @@ namespace body
    * @sa leftStaticRotationOffset()
    */
   double LeftStaticRotationOffset;
+  /**
+   * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
+   * @sa rightAnkleAbAddOffset()
+   */
+  double RightAnkleAbAddOffset;
+  /**
+   * [Calculated] This property holds the projection of the ankle flexion axis with projection of the vector delimited by AJC and ANK onto the plane defined by the shank axis. By default, this property contains the value 0.0.
+   * @sa leftAnkleAbAddOffset()
+   */
+  double LeftAnkleAbAddOffset;
   };
 #endif
   
   /**
    * Constructor. The name is set to "PluginGait".
    */
-  PluginGait::PluginGait(int region, int side, Node* parent)
-  : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side), parent)
-  {};
-
+  PluginGait::PluginGait(int region, int side, Variant variant, Node* parent)
+  : SkeletonHelper(*new PluginGaitPrivate(this, "PluginGait", region, side, variant), parent)
+  {
+    auto optr = this->pimpl();
+    if (variant == Basic)
+    {
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_basic;
+      optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_basic;
+    }
+    else if (variant == KAD)
+    {
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_kad;
+      optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kad;
+    }
+    else
+    {
+      optr->CalibrateKneeJointCentre = &_ma_plugingait_calibrate_kjc_kad;
+      optr->CalibrateAnkleJointCentre = &_ma_plugingait_calibrate_ajc_kadmed;
+    }
+  };
+  
   /**
    * Create segments and joints according to the region and side given to the constructor.
    */
@@ -915,6 +1170,7 @@ namespace body
       {
         Segment* leftThigh = new Segment("L.Thigh", Part::Thigh, Side::Left, segments);
         Segment* leftShank = new Segment("L.Shank", Part::Shank, Side::Left, segments);
+        Segment* leftShankTorsioned = new Segment("L.Shank.Torsioned", PartShankTorsioned, Side::Left, segments);
         Segment* leftFoot = new Segment("L.Foot", Part::Foot, Side::Left, segments);
         std::vector<Joint*> leftLowerLimbJoints(3);
         jnt = new Joint("L.Hip", pelvis, Anchor::point("L.HJC"), leftThigh, Anchor::point("L.HJC", pelvis), joints);
@@ -925,9 +1181,11 @@ namespace body
         leftLowerLimbJoints[1] = jnt;
         new EulerDescriptor("L.Knee.Angle", EulerDescriptor::YXZ, {{1.0, -1.0, -1.0}}, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,1.,1.,1.,1.,-1.}}, jnt);
+        jnt = new Joint("L.Ankle", leftShankTorsioned, leftFoot, Anchor::origin(leftShankTorsioned), joints);
+        new PluginGaitLeftAnkleDescriptor(jnt);
+        // YES THERE IS TWO JOINTS FOR THE ANKLE DUE TO THE USE OF THE "UNTORSIONED" SHANK AS PROXIMAL FRAME FOR THE ANKLE FORCES AND MOMENTS
         jnt = new Joint("L.Ankle", leftShank, leftFoot, Anchor::origin(leftShank), joints);
         leftLowerLimbJoints[2] = jnt;
-        new PluginGaitLeftAnkleDescriptor(jnt);
         new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,-1.,1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("L.Foot.Progress", progression, leftFoot, joints);
         jnt->setDescription("Left foot relative to progression frame");
@@ -938,7 +1196,8 @@ namespace body
       {
         Segment* rightThigh = new Segment("R.Thigh", Part::Thigh, Side::Right, segments);
         Segment* rightShank = new Segment("R.Shank", Part::Shank, Side::Right, segments);
-        Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right,segments);
+        Segment* rightShankTorsioned = new Segment("R.Shank.Torsioned", PartShankTorsioned, Side::Right, segments);
+        Segment* rightFoot = new Segment("R.Foot", Part::Foot, Side::Right, segments);
         std::vector<Joint*> rightLowerLimbJoints(3);
         jnt = new Joint("R.Hip", pelvis, Anchor::point("R.HJC"), rightThigh, Anchor::point("R.HJC", pelvis), joints);
         rightLowerLimbJoints[0] = jnt;
@@ -948,9 +1207,11 @@ namespace body
         rightLowerLimbJoints[1] = jnt;
         new EulerDescriptor("R.Knee.Angle", EulerDescriptor::YXZ, jnt);
         new DynamicDescriptor({{0,1,2,1,0,2,0,1,2}}, {{1.,1.,1.,-1.,-1.,-1.,1.,1.,-1.}}, jnt);
+        jnt = new Joint("R.Ankle", rightShankTorsioned, rightFoot, Anchor::origin(rightShankTorsioned), joints);
+        new PluginGaitRightAnkleDescriptor(jnt);
+        // YES THERE IS TWO JOINTS FOR THE ANKLE DUE TO THE USE OF THE "UNTORSIONED" SHANK AS PROXIMAL FRAME FOR THE ANKLE FORCES AND MOMENTS
         jnt = new Joint("R.Ankle", rightShank, rightFoot, Anchor::origin(rightShank), joints);
         rightLowerLimbJoints[2] = jnt;
-        new PluginGaitRightAnkleDescriptor(jnt);
         new DynamicDescriptor({{0,1,2,1,2,0,0,1,2}}, {{-1.,1.,-1.,1.,1.,-1.,1.,1.,-1.}}, jnt);
         jnt = new Joint("R.Foot.Progress", progression, rightFoot, joints);
         jnt->setDescription("Right foot relative to progression frame");
@@ -1054,10 +1315,11 @@ namespace body
         optr->RightAsisTrochanterAPDistance = 0.1288 * rightLegLength - 48.56;
       // - hip joint centre
       Point *leftHJCH = nullptr, *rightHJCH = nullptr;
+      double meanLegLength = (leftLegLength + rightLegLength) / 2.0;
       //   - Left
       if ((leftHJCH = this->findChild<Point*>("L.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCenter(_L_HJC.data(), -1.0,  leftLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_L_HJC.data(), -1.0,  meanLegLength * 0.115 - 15.3, optr->LeftAsisTrochanterAPDistance);
         new Point("L.HJC", _L_HJC.data(), this);
       }
       else
@@ -1065,7 +1327,7 @@ namespace body
       //   - Right
       if ((rightHJCH = this->findChild<Point*>("R.HJC",{},false)) == nullptr)
       {
-        optr->computeHipJointCenter(_R_HJC.data(),  1.0, rightLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
+        optr->computeHipJointCentre(_R_HJC.data(),  1.0, meanLegLength * 0.115 - 15.3, optr->RightAsisTrochanterAPDistance);
         new Point("R.HJC", _R_HJC.data(), this);
       }
       else
@@ -1748,9 +2010,135 @@ namespace body
     this->modified();
   };
   
- /**
+  /**
+   * Returns the internal parameter RightTibialTorsionOffset.
+   */
+  double PluginGait::rightTibialTorsionOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightTibialTorsionOffset;
+  };
+  
+  /**
+   * Sets the internal parameter RightTibialTorsion.
+   */
+  void PluginGait::setRightTibialTorsionOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightTibialTorsionOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightTibialTorsionOffset = value;
+    this->modified();
+  };
+ 
+  /**
+   * Returns the internal parameter LeftTibialTorsionOffset.
+   */
+  double PluginGait::leftTibialTorsionOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftTibialTorsionOffset;
+  };
+  
+  /**
+   * Sets the internal parameter LeftTibialTorsionOffset.
+   */
+  void PluginGait::setLeftTibialTorsionOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftTibialTorsionOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftTibialTorsionOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter RighThighRotation.
+   */
+  double PluginGait::rightThighRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightThighRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter RighThighRotation.
+   */ 
+  void PluginGait::setRightThighRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightThighRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightThighRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter LeftThighRotationOffset.
+   */
+  double PluginGait::leftThighRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftThighRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter LeftThighRotationOffset.
+   */
+  void PluginGait::setLeftThighRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftThighRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftThighRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter RighShankRotationOffset.
+   */
+  double PluginGait::rightShankRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightShankRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter RighShankRotationOffset.
+   */
+  void PluginGait::setRightShankRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->RightShankRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->RightShankRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
+   * Returns the internal parameter LeftShankRotationOffset.
+   */
+  double PluginGait::leftShankRotationOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftShankRotationOffset;
+  };
+  
+  /**
+   * Sets the internal parameter LeftShankRotationOffset.
+   */
+  void PluginGait::setLeftShankRotationOffset(double value) _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    if (fabs(value - optr->LeftShankRotationOffset) < std::numeric_limits<double>::epsilon())
+      return;
+    optr->LeftShankRotationOffset = value;
+    this->modified();
+  };
+  
+  /**
    * Returns the internal parameter RightKneeWidth.
-  */
+   */
   double PluginGait::rightKneeWidth() const _OPENMA_NOEXCEPT
   {
     auto optr = this->pimpl();
@@ -1910,11 +2298,29 @@ namespace body
     return optr->LeftStaticRotationOffset;
   };
   
+  /**
+   * Returns the internal parameter RightAnkleAbAddOffset.
+   */
+  double PluginGait::rightAnkleAbAddOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->RightAnkleAbAddOffset;
+  };
+  
+  /**
+   * Returns the internal parameter LeftAnkleAbAddOffset.
+   */
+  double PluginGait::leftAnkleAbAddOffset() const _OPENMA_NOEXCEPT
+  {
+    auto optr = this->pimpl();
+    return optr->LeftAnkleAbAddOffset;
+  };
+  
   // ----------------------------------------------------------------------- //
   
   /*
    * Generate a landmarks translator for the PiG model.
-   * The following list presents the label used in the PluginGait helper and its translation in OpenMA:
+   * The following list presents the label used in the PluginGait helper (Basic variant) and its translation in OpenMA:
    *  - LFHD: L.HF   (Left front head: approximately over the left)
    *  - LBHD: L.HB   (Left back head: on the back of the head)
    *  - RFHD: R.HF   (Right front head: approximately over the)
@@ -1950,12 +2356,25 @@ namespace body
    *  - RTOE: R.MTH2 (Head of the second metatarsal for the right)
    *  - LHEE: L.HEE  (Left heel marker)
    *  - RHEE: R.HEE  (Right heel marker)
+   *
+   * Supplementary markers are used in the KAD variant:
+   *  - LKAX: L.KAX  (Left knee axis)
+   *  - LKD1: L.KD1  (Left knee device 1)
+   *  - LKD2: L.KD2  (Left knee device 2)
+   *  - RKAX: R.KAX  (Right knee axis)
+   *  - RKD1: R.KD1  (Right knee device 1)
+   *  - RKD2: R.KD2  (Right knee device 2)
+   *
+   * The variant KADMed uses the markers of the Basic and KAD variants as well as two additional markers:
+   *  - RMED:  R.MTM (Right medial malleolus of the tibia)
+   *  - LMED:  L.MTM (Left medial malleolus of the tibia)
    */
   LandmarksTranslator* PluginGait::defaultLandmarksTranslator()
   {
     return new LandmarksTranslator(
       "LandmarksTranslator", 
       {
+        // Basic markers
         {"LFHD", "L.HF"},
         {"LBHD", "L.HB"},
         {"RFHD", "R.HF"},
@@ -1991,6 +2410,16 @@ namespace body
         {"RTOE", "R.MTH2"},
         {"LHEE", "L.HEE"},
         {"RHEE", "R.HEE"},
+        // KAD markers
+        {"LKAX", "L.KAX"},
+        {"LKD1", "L.KD1"},
+        {"LKD2", "L.KD2"},
+        {"RKAX", "R.KAX"},
+        {"RKD1", "R.KD1"},
+        {"RKD2", "R.KD2"},
+        // Medial markers for the knee and the shank
+        {"RMED", "R.MTM"},
+        {"LMED", "L.MTM"},
       }, this);
   };
   
@@ -2014,7 +2443,7 @@ namespace body
    */
   PluginGait* PluginGait::clone(Node* parent) const
   {
-    auto dest = new PluginGait(0,0);
+    auto dest = new PluginGait(0,0,Basic);
     dest->copy(this);
     dest->addParent(parent);
     return dest;
@@ -2031,6 +2460,7 @@ namespace body
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->SkeletonHelper::copy(src);
+    optr->Variant = optr_src->Variant;
     optr->MarkerDiameter = optr_src->MarkerDiameter;
     optr->HeadOffsetEnabled = optr_src->HeadOffsetEnabled;
     optr->RightShoulderOffset = optr_src->RightShoulderOffset;
@@ -2046,6 +2476,12 @@ namespace body
     optr->LeftLegLength = optr_src->LeftLegLength;
     optr->RightAsisTrochanterAPDistance = optr_src->RightAsisTrochanterAPDistance;
     optr->LeftAsisTrochanterAPDistance = optr_src->LeftAsisTrochanterAPDistance;
+    optr->RightTibialTorsionOffset = optr_src->RightTibialTorsionOffset;
+    optr->LeftTibialTorsionOffset = optr_src->LeftTibialTorsionOffset;
+    optr->RightThighRotationOffset = optr_src->RightThighRotationOffset;
+    optr->LeftThighRotationOffset = optr_src->LeftThighRotationOffset;
+    optr->RightShankRotationOffset = optr_src->RightShankRotationOffset;
+    optr->LeftShankRotationOffset = optr_src->LeftShankRotationOffset;
     optr->RightKneeWidth = optr_src->RightKneeWidth;
     optr->LeftKneeWidth = optr_src->LeftKneeWidth;
     optr->RightAnkleWidth = optr_src->RightAnkleWidth;
@@ -2057,6 +2493,8 @@ namespace body
     optr->RightStaticRotationOffset = optr_src->RightStaticRotationOffset;
     optr->LeftStaticPlantarFlexionOffset = optr_src->LeftStaticPlantarFlexionOffset;
     optr->LeftStaticRotationOffset = optr_src->LeftStaticRotationOffset;
+    optr->RightAnkleAbAddOffset = optr_src->RightAnkleAbAddOffset;
+    optr->LeftAnkleAbAddOffset = optr_src->LeftAnkleAbAddOffset;
   };
 };
 };

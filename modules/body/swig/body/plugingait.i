@@ -44,8 +44,16 @@ namespace body
   {
   public:
     SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, PluginGait, SWIGTYPE)
+    
+    %extend {
+    enum class Variant : int {
+      Basic = PluginGait::Basic,
+      KAD = PluginGait::KAD,
+      KADMed = PluginGait::KADMed
+    };
+    };
 
-    PluginGait(int region, int side, Node* parent = nullptr);
+    PluginGait(int region, int side, Variant variant, Node* parent = nullptr);
     ~PluginGait();
     
     double markerDiameter() const;
@@ -76,6 +84,18 @@ namespace body
     void setRightAsisTrochanterAPDistance(double value);
     double leftAsisTrochanterAPDistance() const;
     void setLeftAsisTrochanterAPDistance(double value);
+    double rightTibialTorsionOffset() const;
+    void setRightTibialTorsionOffset(double value);
+    double leftTibialTorsionOffset() const;
+    void setLeftTibialTorsionOffset(double value);
+    double rightThighRotationOffset() const;
+    void setRightThighRotationOffset(double value);
+    double leftThighRotationOffset() const;
+    void setLeftThighRotationOffset(double value);
+    double rightShankRotationOffset() const;
+    void setRightShankRotationOffset(double value);
+    double leftShankRotationOffset() const;
+    void setLeftShankRotationOffset(double value);
     double rightKneeWidth() const;
     void setRightKneeWidth(double value);
     double leftKneeWidth() const;
@@ -93,6 +113,8 @@ namespace body
     double rightStaticRotationOffset() const;
     double leftStaticPlantarFlexionOffset() const;
     double leftStaticRotationOffset() const;
+    double rightAnkleAbAddOffset() const;
+    double leftAnkleAbAddOffset() const;
   };
   %clearnodefaultctor;
 };

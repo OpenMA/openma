@@ -341,6 +341,44 @@ CXXTEST_SUITE(ArrayTest)
     TS_ASSERT_DELTA(br.coeff(5), 0.0, 1e-15);
   };
   
+  CXXTEST_TEST(replicateTer)
+  {
+    ma::math::Scalar::Values av(2,1);
+    av << -1.0, 1.0;
+           
+    ma::math::Position b = ma::math::Scalar(av,ma::math::Position::Residuals::Zero(av.rows())).replicate<3>(3);
+    const ma::math::Position::Values& bv = b.values();
+    const ma::math::Position::Residuals& br = b.residuals();
+    TS_ASSERT_EQUALS(b.rows(), 6);
+    TS_ASSERT_EQUALS(b.cols(), 3);
+    
+    TS_ASSERT_DELTA(bv.coeff(0,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(0,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(0,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(1,2),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(2,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(3,2),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,0),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,1),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(4,2),  -1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,0),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,1),   1.0, 1e-15);
+    TS_ASSERT_DELTA(bv.coeff(5,2),   1.0, 1e-15);
+    
+    TS_ASSERT_DELTA(br.coeff(0), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(3), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(4), 0.0, 1e-15);
+    TS_ASSERT_DELTA(br.coeff(5), 0.0, 1e-15);
+  };
+  
   CXXTEST_TEST(transpose)
   {
     ma::math::Array<9> O(2);
@@ -748,7 +786,69 @@ CXXTEST_SUITE(ArrayTest)
   CXXTEST_TEST(resize)
   {
     TS_WARN("TODO");
-  }
+  };
+  
+  CXXTEST_TEST(dot)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero();
+    ma::math::Array<1> dd = d1.dot(d2);
+    const auto& ddv = dd.values();
+    ma::math::Array<1>::Values ref = d1.values().col(0) * d2.values().col(0) + d1.values().col(1) * d2.values().col(1) + d1.values().col(2) * d2.values().col(2);
+    for (unsigned i = 0 ; i < 10 ; ++i)
+      TS_ASSERT_DELTA(ddv.coeff(i), ref.coeff(i), 1e-15);
+  };
+  
+  CXXTEST_TEST(dotReplicate)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero();
+    ma::math::Array<3> dd = d1.dot(d2).replicate<3>();
+    const auto& ddv = dd.values();
+    ma::math::Array<1>::Values ref = d1.values().col(0) * d2.values().col(0) + d1.values().col(1) * d2.values().col(1) + d1.values().col(2) * d2.values().col(2);
+    for (unsigned i = 0 ; i < 10 ; ++i)
+    {
+      TS_ASSERT_DELTA(ddv.coeff(i,0), ref.coeff(i), 1e-15);
+      TS_ASSERT_DELTA(ddv.coeff(i,1), ref.coeff(i), 1e-15);
+      TS_ASSERT_DELTA(ddv.coeff(i,2), ref.coeff(i), 1e-15);
+    }
+  };
+  
+  CXXTEST_TEST(coefficientProduct)
+  {
+    ma::math::Array<3> d1(10), d2(10);
+    d1.values().setRandom(); d1.residuals().setZero();
+    d2.values().setRandom(); d2.residuals().setZero(); d2.residuals().coeffRef(9) = -1.;
+    ma::math::Array<3> dd = d1  * d2;
+    const auto& ddv = dd.values();
+    ma::math::Array<3>::Values ref = d1.values() * d2.values();
+    for (unsigned i = 0 ; i < 9 ; ++i)
+      TS_ASSERT_DELTA(ddv.coeff(i), ref.coeff(i), 1e-15);
+    TS_ASSERT_DELTA(ddv.coeff(9), 0.0, 1e-15);
+  };
+  
+  CXXTEST_TEST(atan2)
+  {
+    ma::math::Array<1> x(6), y(6);
+    x.residuals().setZero(); y.residuals().setZero(); y.residuals().coeffRef(0) = -1.;
+    x.values() << 0.12312, 0., -0., 0., -0., -0.;
+    y.values() << 0.24232, 0.,  0., 7.,  7., -7.;
+    ma::math::Array<1> arc = y.atan2(x);
+    TS_ASSERT_DELTA(arc.values().coeff(0), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.residuals().coeff(0), -1.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.residuals().coeff(1), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(2), 3.14159, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(2), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(3), 1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(3), 0., 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(4), 1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(4), 0.0, 1e-15);
+    TS_ASSERT_DELTA(arc.values().coeff(5), -1.5708, 1e-4);
+    TS_ASSERT_DELTA(arc.residuals().coeff(5), 0.0, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(ArrayTest)
@@ -762,6 +862,7 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, crossBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, operatorDouble)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicate)
 CXXTEST_TEST_REGISTRATION(ArrayTest, replicateBis)
+CXXTEST_TEST_REGISTRATION(ArrayTest, replicateTer)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transpose)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeBis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, transposeTer)
@@ -772,3 +873,7 @@ CXXTEST_TEST_REGISTRATION(ArrayTest, derivativebis)
 CXXTEST_TEST_REGISTRATION(ArrayTest, skewRedux)
 CXXTEST_TEST_REGISTRATION(ArrayTest, downsample)
 CXXTEST_TEST_REGISTRATION(ArrayTest, resize)
+CXXTEST_TEST_REGISTRATION(ArrayTest, dot)
+CXXTEST_TEST_REGISTRATION(ArrayTest, dotReplicate)
+CXXTEST_TEST_REGISTRATION(ArrayTest, coefficientProduct)
+CXXTEST_TEST_REGISTRATION(ArrayTest, atan2)
