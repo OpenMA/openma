@@ -29,5 +29,19 @@ classdef TrialTest < matlab.unittest.TestCase
             testCase.verifyEqual(double(ts.refcount()), 1);
         end
         
+        function hardwares(testCase)
+            t = ma.Trial('trial');
+            hws = t.hardwares();
+            testCase.verifyEqual(t.hasChildren(), true);
+            testCase.verifyEqual(hws.hasParents(), true);
+            testCase.verifyEqual(t.name(), 'trial');
+            testCase.verifyEqual(hws.name(), 'Hardwares');
+            testCase.verifyEqual(double(t.refcount()), 1);
+            testCase.verifyEqual(double(hws.refcount()), 2);
+            delete(t);
+            testCase.verifyEqual(hws.hasParents(), false);
+            testCase.verifyEqual(double(hws.refcount()), 1);
+        end
+        
     end
 end
