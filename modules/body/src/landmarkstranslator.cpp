@@ -66,7 +66,7 @@ namespace ma
 namespace body
 {
   /**
-   * @class LandmarksTranslator openma/body/landmarkstranslator
+   * @class LandmarksTranslator openma/body/landmarkstranslator.h
    * @brief Map labels to other labels
    * No acquisition system and protocol uses the same label for same (bony) landmarks. However, to build the same model in each case, this one needs to use an internal landmarks convention. The translation between external and internal label is realized by a LandmarksTranslator.
    * @ingroup openma_body
@@ -109,7 +109,7 @@ namespace body
   };
   
   /**
-   * Return the external name found in the stored conversion table. If @a name (internal lavel) is not found, then a copy of itself is returned.
+   * Return the external name found in the stored conversion table. If @a name (internal level) is not found, then a copy of itself is returned.
    */
   const std::string& LandmarksTranslator::convertReverse(const std::string& name) const _OPENMA_NOEXCEPT
   {
@@ -119,6 +119,41 @@ namespace body
     if (it != optr->ConversionTable.end())
       return it->first;
     return name;
+  };
+  
+  /**
+   * Return the external name found in the stored conversion table. If @a name (internal level) is not found, then an empty string is returned.
+   */
+  std::string LandmarksTranslator::convertReverseIfExists(const std::string& name) const _OPENMA_NOEXCEPT
+  {
+    using mvt = std::unordered_map<std::string,std::string>::value_type;
+    auto optr = this->pimpl();
+    auto it = std::find_if(optr->ConversionTable.begin(), optr->ConversionTable.end(), [&](const mvt& v){return v.second == name;});
+    if (it != optr->ConversionTable.end())
+      return it->first;
+    return std::string{};
+  }
+  
+  /**
+   * Create a new LandmarksTranslator object on the heap
+   */
+  Node* LandmarksTranslator::allocateNew() const
+  {
+    return new LandmarksTranslator(this->name(),{});
+  };
+  
+  /**
+   * Copy the content of the @a source
+   */
+  void LandmarksTranslator::copyContents(const Node* source) _OPENMA_NOEXCEPT
+  {
+    auto src = node_cast<const LandmarksTranslator*>(source);
+    if (src == nullptr)
+      return;
+    auto optr = this->pimpl();
+    auto optr_src = src->pimpl();
+    this->Node::copyContents(src);
+    optr->ConversionTable = optr_src->ConversionTable;
   };
 };
 };

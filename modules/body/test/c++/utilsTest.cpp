@@ -1,5 +1,6 @@
 #include <cxxtest/TestDrive.h>
 
+#include <openma/body/landmarkstranslator.h>
 #include <openma/body/referenceframe.h>
 #include <openma/body/point.h>
 #include <openma/body/segment.h>
@@ -152,9 +153,69 @@ CXXTEST_SUITE(UtilsTest)
   CXXTEST_TEST(transformInvalid)
   {
     TS_WARN("What about the transformation of a relative frame using an invalid pose and then extract the position?");
-  }
+  };
+  
+  CXXTEST_TEST(extractLandmarkPositions)
+  {
+    double rate = 0., start = 0.;
+    bool ok = false;
+    ma::body::LandmarksTranslator lt("lt",{
+      {"uname*1", "pt1"},
+      {"uname*2", "pt2"},
+      {"uname*3", "pt3"},
+      {"C7"     , "C7" },
+      {"uname*4", "pt4"}
+    });
+    ma::Node root("root");
+    auto tss = ma::make_nodes<ma::TimeSequence*>(4,4,1,100.0,0.0,ma::TimeSequence::Position,"mm",&root);
+    auto lmks = ma::body::extract_landmark_positions(&lt, tss, &rate, &start, &ok);
+    TS_ASSERT_EQUALS(rate,100.0);
+    TS_ASSERT_EQUALS(start,0.0);
+    TS_ASSERT_EQUALS(ok,true);
+    TS_ASSERT_EQUALS(lmks.size(),4u);
+    lmks["pt1"].values().setRandom();
+    lmks["pt2"].values().setRandom();
+    lmks["pt3"].values().setRandom();
+    lmks["pt4"].values().setRandom();
+    TS_ASSERT_DELTA(lmks["pt1"].values().coeff(0),tss[0]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt2"].values().coeff(0),tss[1]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt3"].values().coeff(0),tss[2]->data()[0],1e-15);
+    TS_ASSERT_DELTA(lmks["pt4"].values().coeff(0),tss[3]->data()[0],1e-15);
+  };
+  
+  CXXTEST_TEST(averageMarker)
+  {
+    ma::TimeSequence ts("foo",4,10,100.0,0.0,ma::TimeSequence::Position,"mm");
+    ma::Node root("root");
+    auto map = ma::math::to_position(&ts);
+    map.values() << 0., 1.,	2.,
+                    1., 1.,	4.,
+                    2., 1.,	6.,
+                    3., 1.,	8.,
+                    4., 1.,	0.,
+                    5., 1.,	1.,
+                    6., 1.,	3.,
+                    7., 1.,	5.,
+                    8., 1.,	7.,
+                    9., 1.,	9.;
+    map.residuals().setZero(); map.residuals().coeffRef(2) = -1.0;
+    auto ats = ma::body::average_marker(&ts,&root);
+    TS_ASSERT_EQUALS(ats->name(),ts.name());
+    TS_ASSERT_EQUALS(ats->components(),ts.components());
+    TS_ASSERT_EQUALS(ats->samples(),1u);
+    TS_ASSERT_EQUALS(ats->unit(),ts.unit());
+    TS_ASSERT_EQUALS(ats->startTime(),ts.startTime());
+    TS_ASSERT_EQUALS(ats->sampleRate(),ts.sampleRate());
+    TS_ASSERT_EQUALS(ats->type(),ts.type());
+    TS_ASSERT_DELTA(ats->data()[0],4.777777777777778, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[1],1.0, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[2],4.333333333333333, 1e-15);
+    TS_ASSERT_DELTA(ats->data()[3],0.0, 1e-15);
+  };
 };
 
 CXXTEST_SUITE_REGISTRATION(UtilsTest)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformRelative)
 CXXTEST_TEST_REGISTRATION(UtilsTest, transformInvalid)
+CXXTEST_TEST_REGISTRATION(UtilsTest, extractLandmarkPositions)
+CXXTEST_TEST_REGISTRATION(UtilsTest, averageMarker)

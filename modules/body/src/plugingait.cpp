@@ -48,6 +48,7 @@
 #include "openma/body/segment.h"
 #include "openma/body/utils.h"
 #include "openma/body/inversedynamicsmatrix.h"
+#include "openma/body/skeletonhelperposeestimator.h"
 #include "openma/base/logger.h"
 #include "openma/base/subject.h"
 #include "openma/base/trial.h"
@@ -99,7 +100,7 @@ namespace body
     
   PluginGaitPrivate::~PluginGaitPrivate() _OPENMA_NOEXCEPT = default;
   
-  bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::calibrateLowerLimb(int side, const math::Position* HJC, TaggedMappedPositions* landmarks) _OPENMA_NOEXCEPT
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -228,7 +229,7 @@ namespace body
     return true;
   };
   
-  bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -324,7 +325,7 @@ namespace body
     return true;
   };
   
-  bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Position* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
+  bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Position* HJC, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
     auto pptr = this->pint();
     std::string prefix;
@@ -1249,7 +1250,7 @@ namespace body
         error("PluginGait - Right relative hip joint centre not found. Did you calibrate first the helper? Movement reconstruction aborted.");
         return false;
       }
-      // - Construct the relative segment coordinate systme for the pelvis
+      // - Construct the relative segment coordinate system for the pelvis
       auto relframe = new ReferenceFrame("SCS", nullptr, seg);
       relframe->o()[0] = (leftHJCH->data()[0] + rightHJCH->data()[0]) / 2.0;
       relframe->o()[1] = (leftHJCH->data()[1] + rightHJCH->data()[1]) / 2.0;
@@ -1994,16 +1995,33 @@ namespace body
       }, this);
   };
   
+  /*
+   * Returns a SkeletonHelperPoseEstimator node
+   */
+  PoseEstimator* PluginGait::defaultPoseEstimator()
+  {
+    return new SkeletonHelperPoseEstimator("PluginGaitPoseEstimator", this);
+  };
+
+  /*
+   * Returns a DempsterTable node
+   */
   InertialParametersEstimator* PluginGait::defaultInertialParametersEstimator()
   {
     return new DempsterTable(this);
   };
   
+  /*
+   * Returns a SimpleGaitForcePlateToFeetAssigner node
+   */
   ExternalWrenchAssigner* PluginGait::defaultExternalWrenchAssigner()
   {
     return new SimpleGaitForcePlateToFeetAssigner(this);
   };
   
+  /*
+   * Returns a InverseDynamicMatrix node
+   */
   InverseDynamicProcessor* PluginGait::defaultInverseDynamicProcessor()
   {
     return new InverseDynamicMatrix(this);

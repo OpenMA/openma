@@ -17,8 +17,8 @@
  *       of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written
  *       permission.
- *  
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT  HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -31,43 +31,55 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#ifndef __openma_body_utils_h
-#define __openma_body_utils_h
+
+#ifndef __openma_body_landmarksregistrar_h
+#define __openma_body_landmarksregistrar_h
 
 #include "openma/body_export.h"
+#include "openma/base/node.h"
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
-#include "openma/math.h"
 
-#include <unordered_map>
+#include <vector>
 #include <string>
 
 namespace ma
 {
-  class Trial;
-};
-
-namespace ma
-{
+  class TimeSequence;
+  
 namespace body
 {
-  class Point;
-  class ReferenceFrame;
-  class InertialParameters;
   class LandmarksTranslator;
-  class Segment;
-  class SkeletonHelper;
+  class LandmarksRegistrarPrivate;
   
-  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(LandmarksTranslator* lt, const std::vector<TimeSequence*>& tss, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
-  
-  OPENMA_BODY_EXPORT TimeSequence* average_marker(const TimeSequence* marker, Node* parent = nullptr);
-  
-  OPENMA_BODY_EXPORT math::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Position transform_relative_point(const Point* relpoint, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Array<9> transform_relative_inertia(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Position transform_relative_com(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
+  class OPENMA_BODY_EXPORT LandmarksRegistrar : public Node
+  {
+    OPENMA_DECLARE_PIMPL_ACCESSOR(LandmarksRegistrar)
+    OPENMA_DECLARE_NODEID(LandmarksRegistrar, Node)
+        
+  public:
+    LandmarksRegistrar(const std::string& name, const std::vector<std::string>& labels, Node* parent = nullptr);
+    ~LandmarksRegistrar() _OPENMA_NOEXCEPT;
+    
+    LandmarksRegistrar(const LandmarksRegistrar& ) = delete;
+    LandmarksRegistrar(LandmarksRegistrar&& ) _OPENMA_NOEXCEPT = delete;
+    LandmarksRegistrar& operator=(const LandmarksRegistrar& ) = delete;
+    LandmarksRegistrar& operator=(LandmarksRegistrar&& ) _OPENMA_NOEXCEPT = delete;
+    
+    const std::vector<std::string>& labels() const _OPENMA_NOEXCEPT;
+    void setLabels(const std::vector<std::string>& value) _OPENMA_NOEXCEPT;
+    
+    std::vector<TimeSequence*> retrieveLandmarks(LandmarksTranslator* lt, Node* node) const;
+
+  protected:
+    virtual Node* allocateNew() const override;
+    virtual void copyContents(const Node* source) _OPENMA_NOEXCEPT override;
+    
+  private:
+    LandmarksRegistrar(LandmarksRegistrarPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
+  };
 };
 };
 
-#endif // __openma_body_utils_h
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::LandmarksRegistrar, OPENMA_BODY_EXPORT);
+
+#endif // __openma_body_landmarksregistrar_h

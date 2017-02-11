@@ -39,6 +39,7 @@
 #include "openma/body/inertialparametersestimator.h"
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
+#include "openma/body/poseestimator.h"
 #include "openma/base/trial.h"
 
 // -------------------------------------------------------------------------- //
@@ -85,6 +86,24 @@ namespace ma
 {
 namespace body
 {
+  /**
+   * @typedef TaggedPositions
+   * List of math::Position tagged with a name. This typedef is for example used to represented landmarks averaged along the trial.
+   * A quick way to average a TaggedMappedPositions object is to use the following code:
+   * @code{.unparsed}
+   * // Object 'lmks' is an instance of the class TaggedMappedPositions.
+   * std::unordered_map<std::string,math::Vector> landmarks;
+   * for (const auto& pos : lmks)
+   *   landmarks.emplace(pos.first, pos.second.mean());
+   * @endcode
+   */
+  
+  /**
+   * @typedef TaggedMappedPositions
+   * List of math::Map<math::Position> tagged with a name. This typedef is for example used to retrieve landmarks for a model.
+   * @sa extract_landmark_positions()
+   */
+  
   /**
    * @class SkeletonHelper openma/body/skeletonhelper.h
    * @brief Helper class to create a multi-segment model and recontruct its motion.
@@ -168,6 +187,14 @@ namespace body
       error("SkeletonHelper - Null trials passed. Movement reconstruction aborted.");
       return false;
     }
+    auto estimator = this->findChild<PoseEstimator*>({},{},false);
+    if (estimator == nullptr)
+      estimator = this->defaultPoseEstimator();
+    if (estimator == nullptr)
+    {
+      error("SkeletonHelper - No pose estimator found. Movement reconstruction aborted.");
+      return false;
+    }
     int inc = -1;
     auto _trials = trials->findChildren<Trial*>({},{},false);
     for (auto trial : _trials)
@@ -185,7 +212,7 @@ namespace body
         delete model;
         continue;
       }
-      if (!this->reconstructModel(model, trial))
+      if (!estimator->run(model, this, trial))
       {
         error("SkeletonHelper - Error in the model reconstruction. Movement reconstruction skipped for the trial #%i", inc);
         delete model;
@@ -261,6 +288,30 @@ namespace body
    * Create a LandmarksTranslator adapted to the marker set used by the helper.
    * Because a landmarks translator is used in the calibrate() and reconstruct() methods, this method could parent the created translator to the helper.
    * Thus, it will be created only one time in calibrate() and found as a child in reconstruct().
+   */
+  
+  /**
+   * @fn virtual PoseEstimator* SkeletonHelper::defaultPoseEstimator() = 0;
+   * Create a PoseEstimator node used by the SkeletonHelper object to reconstruct the model.
+   * This method is called by the method SkeletonHelper::reconstruct() if no other esimator was found.
+   */  
+  
+  /**
+   * @fn virtual InertialParametersEstimator* SkeletonHelper::defaultInertialParametersEstimator() = 0;
+   * Create a InertialParametersEstimator node used by the SkeletonHelper object to generate segment inertial parameters.
+   * This method is called is used by the method SkeletonHelper::reconstruct() if no other estimator was found.
+   */
+  
+  /**
+   * @fn virtual ExternalWrenchAssigner* SkeletonHelper::defaultExternalWrenchAssigner() = 0;
+   * Create a ExternalWrenchAssigner node used by the SkeletonHelper object to assign external wrench with segment.
+   * This method is called by the method SkeletonHelper::reconstruct() if no other assigner was found.
+   */
+   
+  /**
+   * @fn virtual InverseDynamicProcessor* SkeletonHelper::defaultInverseDynamicProcessor() = 0;
+   * Create a InverseDynamicProcessor node used by the SkeletonHelper object to compoute joint kinetics.
+   * This method is called by the method SkeletonHelper::reconstruct() if no other processor was found.
    */
   
   /**

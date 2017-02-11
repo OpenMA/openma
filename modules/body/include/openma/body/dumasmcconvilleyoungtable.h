@@ -32,42 +32,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
+#ifndef __openma_body_dumasmcconvilleyoungtable_h
+#define __openma_body_dumasmcconvilleyoungtable_h
 
 #include "openma/body_export.h"
-#include "openma/body/descriptor.h"
-#include "openma/body/dynamicdescriptor.h"
-#include "openma/body/enums.h"
-#include "openma/body/eulerdescriptor.h"
-#include "openma/body/lyonwholebodymodel.h"
-#include "openma/body/joint.h"
-#include "openma/body/landmarksregistrar.h"
-#include "openma/body/landmarkstranslator.h"
-#include "openma/body/model.h"
-#include "openma/body/point.h"
-#include "openma/body/poseestimator.h"
-#include "openma/body/plugingait.h"
-#include "openma/body/referenceframe.h"
-#include "openma/body/segment.h"
-#include "openma/body/skeletonhelper.h"
-#include "openma/body/skeletonhelperposeestimator.h"
-#include "openma/body/utils.h"
-#include "openma/body/unitquaternionposeestimator.h"
+#include "openma/body/inertialparametersestimator.h"
+#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
 namespace ma
 {
 namespace body
 {
-  OPENMA_BODY_EXPORT bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  OPENMA_BODY_EXPORT bool register_marker_cluster(SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);
-  OPENMA_BODY_EXPORT Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  OPENMA_BODY_EXPORT bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
-  OPENMA_BODY_EXPORT Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
+  class OPENMA_BODY_EXPORT DumasMcConvilleYoungTable : public InertialParametersEstimator
+  {
+    OPENMA_DECLARE_NODEID(DumasMcConvilleYoungTable, InertialParametersEstimator)
+        
+  public:
+    DumasMcConvilleYoungTable(Node* parent = nullptr);
+    ~DumasMcConvilleYoungTable() _OPENMA_NOEXCEPT;
+    
+    DumasMcConvilleYoungTable(const DumasMcConvilleYoungTable& ) = delete;
+    DumasMcConvilleYoungTable(DumasMcConvilleYoungTable&& ) _OPENMA_NOEXCEPT = delete;
+    DumasMcConvilleYoungTable& operator=(const DumasMcConvilleYoungTable& ) = delete;
+    DumasMcConvilleYoungTable& operator=(DumasMcConvilleYoungTable&& ) _OPENMA_NOEXCEPT = delete;
+    
+    virtual bool run(Node* inout) final;
+  };
 };
 };
 
-#endif // __openma_body_h
+OPENMA_EXPORT_STATIC_TYPEID(ma::body::DumasMcConvilleYoungTable, OPENMA_BODY_EXPORT);
+
+#endif // __openma_body_dumasmcconvilleyoungtable_h

@@ -91,6 +91,8 @@ namespace body
     EulerDescriptor& operator=(const EulerDescriptor& ) = delete;
     EulerDescriptor& operator=(EulerDescriptor&& ) _OPENMA_NOEXCEPT = delete;
     
+    void configure(const std::array<int,3>& sequence, const std::array<double,3>& scale = {{1.,1.,1.}}, const std::array<double,3>& offset = {{0.,0.,0.}}) _OPENMA_NOEXCEPT;
+    
     virtual EulerDescriptor* clone(Node* parent = nullptr) const override;
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     

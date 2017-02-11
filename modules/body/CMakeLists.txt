@@ -4,22 +4,28 @@ SET(OPENMA_BODY_SRCS
   src/chain.cpp
   src/dempstertable.cpp
   src/descriptor.cpp
+  src/dumasmcconvilleyoungtable.cpp
   src/dynamicdescriptor.cpp
   src/eulerdescriptor.cpp
   src/externalwrenchassigner.cpp
-  src/simplegaitforceplatetofeetassigner.cpp
   src/inertialparameters.cpp
   src/inertialparametersestimator.cpp
+  src/lyonwholebodymodel.cpp
   src/inversedynamicsmatrix.cpp
   src/inversedynamicsprocessor.cpp
   src/joint.cpp
+  src/landmarksregistrar.cpp
   src/landmarkstranslator.cpp
   src/model.cpp
   src/plugingait.cpp
   src/point.cpp
+  src/poseestimator.cpp
   src/referenceframe.cpp
   src/segment.cpp
+  src/simplegaitforceplatetofeetassigner.cpp
   src/skeletonhelper.cpp
+  src/skeletonhelperposeestimator.cpp
+  src/unitquaternionposeestimator.cpp
   src/utils.cpp
 )
 

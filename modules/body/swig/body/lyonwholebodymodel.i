@@ -17,7 +17,7 @@
  *       of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written
  *       permission.
- *  
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -31,43 +31,26 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#ifndef __openma_body_utils_h
-#define __openma_body_utils_h
-
-#include "openma/body_export.h"
-#include "openma/base/macros.h" // _OPENMA_NOEXCEPT
-#include "openma/math.h"
-
-#include <unordered_map>
-#include <string>
-
-namespace ma
-{
-  class Trial;
-};
 
 namespace ma
 {
 namespace body
-{
-  class Point;
-  class ReferenceFrame;
-  class InertialParameters;
-  class LandmarksTranslator;
-  class Segment;
-  class SkeletonHelper;
+{ 
+  SWIG_TYPEMAP_NODE_OUT(ma::body, LyonWholeBodyModel)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, LyonWholeBodyModel, SWIGTYPE)
   
-  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(SkeletonHelper* helper, Trial* trial, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT std::unordered_map<std::string,math::Map<math::Vector>> extract_landmark_positions(LandmarksTranslator* lt, const std::vector<TimeSequence*>& tss, double* rate = nullptr, double* start = nullptr, bool* ok = nullptr) _OPENMA_NOEXCEPT;
-  
-  OPENMA_BODY_EXPORT TimeSequence* average_marker(const TimeSequence* marker, Node* parent = nullptr);
-  
-  OPENMA_BODY_EXPORT math::Pose transform_relative_frame(const ReferenceFrame* relframe, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Position transform_relative_point(const Point* relpoint, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Array<9> transform_relative_inertia(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-  OPENMA_BODY_EXPORT math::Position transform_relative_com(InertialParameters* relbsip, const Segment* seg, const math::Pose& pose) _OPENMA_NOEXCEPT;
-};
-};
+  %nodefaultctor;
+  class LyonWholeBodyModel : public SkeletonHelper
+  {
+  public:
+    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, LyonWholeBodyModel, SWIGTYPE)
 
-#endif // __openma_body_utils_h
+    LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
+    ~LyonWholeBodyModel();
+    
+    Sex sex() const;
+    void setSex(Sex value);
+  };
+  %clearnodefaultctor;
+};
+};

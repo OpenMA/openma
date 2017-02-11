@@ -61,8 +61,6 @@ namespace body
   class Model;
   class PluginGait;
   
-  using ummp = std::unordered_map<std::string,math::Map<math::Position>>;
-  
   class PluginGaitPrivate : public SkeletonHelperPrivate
   {
     OPENMA_DECLARE_PINT_ACCESSOR(PluginGait)
@@ -103,9 +101,9 @@ namespace body
     ~PluginGaitPrivate() _OPENMA_NOEXCEPT;
     
     void computeHipJointCenter(double* HJC, double S, double C, double xdis) const _OPENMA_NOEXCEPT;
-    bool calibrateLowerLimb(int side, const math::Position* HJC, ummp* landmarks) _OPENMA_NOEXCEPT;
-    bool reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
-    bool reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Vector* HJC, ummp* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    bool calibrateLowerLimb(int side, const math::Position* HJC, TaggedMappedPositions* landmarks) _OPENMA_NOEXCEPT;
+    bool reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
+    bool reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Vector* HJC, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     
     double MarkerDiameter;
     

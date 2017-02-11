@@ -419,7 +419,7 @@ void _ma_Any_assign<std::string>(ma::Any* out, const mxArray* in)
     delete[] buffer;
     mexErrMsgIdAndTxt("SWIG:Any:assign","Internal error during string extraction");
   }
-  std::string dataout(buffer, num);
+  std::string dataout(buffer, num-1);
   delete[] buffer;
   out->assign(dataout);
 };
@@ -497,32 +497,6 @@ void ma_Any_assign(ma::Any* self, const mxArray* value)
   default:
     mexErrMsgIdAndTxt("SWIG:Any:assign","Only logical, numerical, and string types are supported");
   }
-};
-
-%};
-
-//-------------------------------------------------------------------------- //
-//                                     Node
-//-------------------------------------------------------------------------- //
-
-%{
-
-mxArray* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
-{
-  mxArray* out = nullptr;
-  id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
-  if (out == nullptr)
-    mexErrMsgIdAndTxt("SWIG:Node:findChild","No child found");
-  return out;
-};
-
-mxArray* ma_Node_findChildren(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& regexp = ".*", std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
-{
-  mxArray* out = nullptr;
-  id->findChildren(&out, *(id->SwigType), self, regexp, std::move(properties), recursiveSearch);
-  if (out == nullptr)
-    mexErrMsgIdAndTxt("SWIG:Node:findChildren","Internal error during cell allocation");
-  return out;
 };
 
 %};

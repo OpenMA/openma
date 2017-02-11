@@ -9,11 +9,7 @@
 
 #if defined(_TEST_BODY_USE_IO)
 
-#include <openma/io/handlerreader.h>
-#include <openma/io/file.h>
 #include <openma/math.h>
-
-#include <cassert>
 
 ma::TimeSequence* make_marker(const std::string& name, double* data, ma::Trial* trial)
 {
@@ -77,17 +73,6 @@ void generate_static_trial_oneframe(ma::Node* root)
     make_marker(labels[i], raw+i*4, trial);
 };
 
-void generate_trial_from_file(ma::Node* root, const char* filename)
-{
-  ma::io::File file;
-  file.open(filename, ma::io::Mode::In);
-  ma::io::HandlerReader reader(&file, "org.c3d");
-  TS_ASSERT_EQUALS(reader.read(root),true);
-  TS_ASSERT_EQUALS(reader.errorCode(), ma::io::Error::None);
-  TS_ASSERT_EQUALS(reader.errorMessage(), "");
-  assert(root->children().size() == 1u);
-};
-
 void compare_segment_motion(ma::body::Model* model, ma::Trial* trial, const std::string& frame, const std::vector<std::string>& markers, std::vector<double> precision = std::vector<double>(4,1e-5))
 {
   assert(markers.size() == 4);
@@ -118,7 +103,6 @@ void compare_joint_kinematics(ma::Node* kinematics, ma::Trial* trial, const std:
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 1st axis", d.block<1>(0).values(), a.block<1>(0).values(), precision[0]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 2nd axis", d.block<1>(1).values(), a.block<1>(1).values(), precision[1]);
   TSM_ASSERT_EIGEN_DELTA(descriptor+": 3rd axis", d.block<1>(2).values(), a.block<1>(2).values(), precision[2]);
-  
 }
 
 #endif

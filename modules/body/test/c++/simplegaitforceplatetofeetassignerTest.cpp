@@ -22,9 +22,9 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
     helper.setRightKneeWidth(95.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion4_noFF_noHO.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     ma::body::SimpleGaitForcePlateToFeetAssigner assigner;
     TS_ASSERT(assigner.run(&rootModel));
@@ -53,9 +53,9 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
     helper.setRightKneeWidth(105.0); // mm
     helper.setRightAnkleWidth(55.0); // mm
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-Full.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     ma::body::SimpleGaitForcePlateToFeetAssigner assigner;
     TS_ASSERT(assigner.run(&rootModel));
@@ -84,9 +84,9 @@ CXXTEST_SUITE(SimpleGaitForceplateToFeetAssignerTest)
     helper.setRightKneeWidth(120.0); // mm
     helper.setRightAnkleWidth(70.0); // mm
     ma::Node rootCalibration("rootCalibration"), rootDynamic("rootDynamic"), rootModel("rootModel");
-    generate_trial_from_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootCalibration, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-One.c3d"));
     TS_ASSERT(helper.calibrate(&rootCalibration, nullptr));
-    generate_trial_from_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
+    generate_trial_from_c3d_file(&rootDynamic, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Motion-FlatFoot-One.c3d"));
     TS_ASSERT(helper.reconstruct(&rootModel, &rootDynamic));
     ma::body::SimpleGaitForcePlateToFeetAssigner assigner;
     TS_ASSERT(assigner.run(&rootModel));

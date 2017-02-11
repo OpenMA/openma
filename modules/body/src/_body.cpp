@@ -38,6 +38,14 @@
 #include "openma/base/subject.h"
 #include "openma/base/logger.h"
 
+#include "openma/base/logger.h"
+#include "openma/base/node.h"
+#include "openma/base/subject.h"
+#include "openma/base/trial.h"
+
+#include "openma/math.h"
+#include <Eigen/SVD> // Eigen::JacobiSVD
+
 namespace ma
 {
 namespace body
@@ -56,6 +64,132 @@ namespace body
       return false;
     }
     return helper->calibrate(trials, subject);
+  };
+  
+  /**
+   * Convenient function to compute and register markers local coordinates in the TCS as well as to compute the segments TCS -> SCS transformation
+   */
+  bool register_marker_cluster(SkeletonHelper* helper, Node* trials)
+  {
+    if (helper == nullptr)
+    {
+      error("A null pointer to a SkeletonHelper object was passed. Registration aborted.");
+      return false;
+    }
+    auto trial = trials->findChildren<Trial*>();
+    if (trial.size() > 1)
+    {
+      error("The registration process supports only the use of one trial. Registration aborted.");
+      return false;
+    }
+    Node tmrfsr("tmrfsr"); // Temporary Models Root for Segments Reconstruction
+    Node ttrfsr("ttrfsr"); // Temporary Trials Root for Segments Reconstruction
+    Trial ttfsr("ttfsr",&ttrfsr); // Temporary Trial for Segments Reconstruction
+    auto markers = trial[0]->timeSequences()->findChildren<TimeSequence*>({},{{"type",TimeSequence::Position}});
+    // Average markers along the time
+    for (const auto& m : markers)
+      average_marker(m, ttfsr.timeSequences());
+    // TODO DISABLE INVERSE DYNAMICS COMPUTATION
+    // Delete the existing pose estimators (if any) to use the default one
+    auto estimators = helper->findChildren<PoseEstimator*>({},{},false);
+    for (auto e : estimators)
+    {
+      e->removeParent(helper);
+      if (!e->hasParents())
+        delete e;
+    }
+    // Reconstruct segments' SCS using the default pose estimator
+    auto defaultEstimator = helper->defaultPoseEstimator();
+    bool reconstructed = helper->reconstruct(&tmrfsr, &ttrfsr);
+    delete defaultEstimator;
+    if (!reconstructed || (tmrfsr.children().empty()))
+    {
+      error("An error occurred during the reconstruction of segments SCS used by the registration process. Registration aborted.");
+      return false;
+    }
+    // Compute segments' TCS
+    const auto& model = node_cast<Model*>(tmrfsr.child(0));
+    if (model == nullptr)
+    {
+      error("Internal error, the first child is not a model! Registration aborted.");
+      return false;
+    }
+    const auto& lt = helper->findChild<LandmarksTranslator*>({},{},false);
+    auto mcr = helper->findChild("MarkerClusterRegistration",{},false);
+    if (mcr == nullptr)
+      mcr = new Node("MarkerClusterRegistration", helper);
+    const auto& segments = model->segments()->findChildren<Segment*>({},{},false);
+    for (const auto& segment : segments)
+    {
+      const auto& lr = segment->findChild<LandmarksRegistrar*>({},{},false);
+      if (lr == nullptr)
+        continue;
+      auto markers = extract_landmark_positions(nullptr,lr->retrieveLandmarks(lt, ttfsr.timeSequences()));
+      auto it = markers.begin();
+      while (it != markers.end())
+      {
+        if (!it->second.isValid())
+          it = markers.erase(it);
+        else
+          ++it;
+      }
+      if (markers.size() < 3)
+      {
+        error("Less than 3 valid markers was found for the segment '%s'. Impossible to compute the TCS. Registration aborted.", segment->name().c_str());
+        return false;
+      }
+      auto segpose = segment->pose();
+      const auto& scs = math::to_pose(segpose);
+      if (!scs.isValid())
+      {
+        error("No SCS computed for the segment '%s'. Impossible to compute the TCS. Registration aborted.", segment->name().c_str());
+        return false;
+      }
+      // Prepare data
+      using VecNx3 = Eigen::Matrix<double,Eigen::Dynamic,3>;
+      using Vec1x3 = Eigen::Matrix<double,1,3>;
+      using Mat3x3 = Eigen::Matrix<double,3,3>;
+      VecNx3 pts(markers.size(),3);
+      int inc = 0;
+      for (const auto& marker : markers)
+        pts.row(inc++) = marker.second.values();
+      // Compute the centroid
+      Vec1x3 CoM = pts.colwise().mean();
+      // Express marker' position relative to the CoM
+      pts.rowwise() -= CoM;
+      // Compute the tensor of inertia associated with the cluster of markers
+      Mat3x3 temp = pts.transpose() * pts;
+      Mat3x3 I; I << temp.coeff(1,1) + temp.coeff(2,2), -temp.coeff(0,1),                   -temp.coeff(0,2),
+                    -temp.coeff(0,1),                    temp.coeff(0,0) + temp.coeff(2,2), -temp.coeff(1,2),
+                    -temp.coeff(0,2),                   -temp.coeff(1,2),                    temp.coeff(0,0) + temp.coeff(1,1);
+      // Compute the principal axes
+      Mat3x3 U = I.jacobiSvd(Eigen::ComputeFullU).matrixU();
+      // Express the SCS in the TCS and register the result
+      const double res = 0.;
+      math::Map<const math::Position> c(1,CoM.data(),&res);
+      math::Map<const math::Vector> u(1,U.data(),&res);
+      math::Map<const math::Vector> v(1,U.data()+3,&res);
+      math::Pose tcsi = math::Pose(u,v,u.cross(v),c).inverse();
+      math::Pose T = tcsi.transform(scs);
+      std::string relscslabel = segpose->name();
+      auto relscs = mcr->findChild<ReferenceFrame*>(relscslabel,{},false);
+      if (relscs == nullptr)
+        relscs = new ReferenceFrame(relscslabel,nullptr,mcr);
+      std::copy_n(T.values().data(),12,relscs->data());
+      // Express the markers in the SCS and register the result
+      for (const auto& marker : markers)
+      {
+        math::Position p = tcsi.transform(marker.second);
+        std::string relptlabel = segment->name() + "." + marker.first;
+        auto relpt = mcr->findChild<Point*>(relptlabel,{},false);
+        if (relpt == nullptr)
+          relpt = new Point(relptlabel,nullptr,mcr);
+        std::copy_n(p.values().data(),3,relpt->data());
+      }
+    }
+    // Attach a least square pose estimator
+    new UnitQuaternionPoseEstimator("LeastSquarePoseEstimator",helper);
+    return true;
   };
   
   /**

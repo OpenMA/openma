@@ -145,8 +145,8 @@ namespace body
   
   /**
    * Generate the body segment inertial parameters for each model passed. 
-   * Internally, this method look for direct descendents of @a inout that are Model object.
-   * Then, for each model, all segments stored in ma::body::Model::segments() are extrected.
+   * Internally, this method looks for direct descendents of @a inout that are Model object.
+   * Then, for each model, all segments stored in ma::body::Model::segments() are extracted.
    * For each segment found, the mass, center of mass and tensor of inertia are computed. They are stored in a
    * ma::body::InertialParameters object attached to the segment and named as the segment plus the suffix ".BSIP".
    */

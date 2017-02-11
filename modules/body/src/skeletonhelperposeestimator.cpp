@@ -32,42 +32,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __openma_body_h
-#define __openma_body_h
-
-#include "openma/body_export.h"
-#include "openma/body/descriptor.h"
-#include "openma/body/dynamicdescriptor.h"
-#include "openma/body/enums.h"
-#include "openma/body/eulerdescriptor.h"
-#include "openma/body/lyonwholebodymodel.h"
-#include "openma/body/joint.h"
-#include "openma/body/landmarksregistrar.h"
-#include "openma/body/landmarkstranslator.h"
-#include "openma/body/model.h"
-#include "openma/body/point.h"
-#include "openma/body/poseestimator.h"
-#include "openma/body/plugingait.h"
-#include "openma/body/referenceframe.h"
-#include "openma/body/segment.h"
-#include "openma/body/skeletonhelper.h"
 #include "openma/body/skeletonhelperposeestimator.h"
-#include "openma/body/utils.h"
-#include "openma/body/unitquaternionposeestimator.h"
+
+#include "openma/body/model.h"
+#include "openma/body/skeletonhelper.h"
+#include "openma/base/trial.h"
+#include "openma/base/logger.h"
+
+// -------------------------------------------------------------------------- //
+//                                 PUBLIC API                                 //
+// -------------------------------------------------------------------------- //
+
+OPENMA_INSTANCE_STATIC_TYPEID(ma::body::SkeletonHelperPoseEstimator);
 
 namespace ma
 {
 namespace body
 {
-  OPENMA_BODY_EXPORT bool calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  OPENMA_BODY_EXPORT bool register_marker_cluster(SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT bool reconstruct(Node* root, SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  OPENMA_BODY_EXPORT bool extract_joint_kinematics(Node* output, Node* input, bool sideAdaptation = true);
-  OPENMA_BODY_EXPORT Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  OPENMA_BODY_EXPORT bool extract_joint_kinetics(Node* output, Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
-  OPENMA_BODY_EXPORT Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, RepresentationFrame frame = RepresentationFrame::Distal);
+  /**
+   * @class SkeletonHelperPoseEstimator openma/body/skeletonhelperposeestimator.h
+   * @brief Segments' pose estimator using an implementation proposed in a SkeletonHelper
+   *
+   * @ingroup openma_body
+   */
+  
+  /**
+   * Constructor
+   */
+  SkeletonHelperPoseEstimator::SkeletonHelperPoseEstimator(const std::string& name, Node* parent)
+  : PoseEstimator(name,parent)
+  {};
+  
+  /**
+   * Destructor (default)
+   */
+  SkeletonHelperPoseEstimator::~SkeletonHelperPoseEstimator() _OPENMA_NOEXCEPT = default;
+  
+  /**
+   * Internaly call the method SkeletonHelper::reconstruct().
+   */
+  bool SkeletonHelperPoseEstimator::run(Model* output, SkeletonHelper* helper, Trial* trial)
+  {
+    if (helper == nullptr)
+    {
+      error("You try to use a skeleton helper pose estimator but a null skeleton helper was passed. Reconstruction aborted.");
+      return false;
+    }
+    return helper->reconstructModel(output,trial);
+  }
 };
 };
-
-#endif // __openma_body_h

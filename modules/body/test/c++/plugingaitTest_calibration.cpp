@@ -105,7 +105,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setHeadOffsetEnabled(true);
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -134,7 +134,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(55.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -163,7 +163,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(55.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Full.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -192,7 +192,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration-FlatFoot-Hole.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
@@ -220,7 +220,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(75.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration2-NoOption.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration2-NoOption.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
 
@@ -248,7 +248,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
 
@@ -276,7 +276,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF_N18.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_FF_N18.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
 
@@ -299,7 +299,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     helper.setRightAnkleWidth(70.0); // mm
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_noFF.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration3_noFF.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
 
@@ -317,7 +317,7 @@ CXXTEST_SUITE(PluginGaitCalibrationTest)
     ma::body::PluginGait helper(ma::body::Region::Upper, ma::body::Side::Both);
     
     ma::Node root("root");
-    generate_trial_from_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
+    generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/plugingait/PiG_Calibration4.c3d"));
     TS_ASSERT_EQUALS(root.children().size(),1u);
     helper.calibrate(&root, nullptr);
     
