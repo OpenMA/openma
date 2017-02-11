@@ -3,30 +3,30 @@ classdef TrialTest < matlab.unittest.TestCase
     
         function events(testCase)
             t = ma.Trial('trial');
-            e = t.events();
+            evts = t.events();
             testCase.verifyEqual(t.hasChildren(), true);
-            testCase.verifyEqual(e.hasParents(), true);
+            testCase.verifyEqual(evts.hasParents(), true);
             testCase.verifyEqual(t.name(), 'trial');
-            testCase.verifyEqual(e.name(), 'Events');
+            testCase.verifyEqual(evts.name(), 'Events');
             testCase.verifyEqual(double(t.refcount()), 1);
-            testCase.verifyEqual(double(e.refcount()), 2);
+            testCase.verifyEqual(double(evts.refcount()), 2);
             delete(t);
-            testCase.verifyEqual(e.hasParents(), false);
-            testCase.verifyEqual(double(e.refcount()), 1);
+            testCase.verifyEqual(evts.hasParents(), false);
+            testCase.verifyEqual(double(evts.refcount()), 1);
         end
         
         function timesequences(testCase)
             t = ma.Trial('trial');
-            ts = t.timeSequences();
+            tss = t.timeSequences();
             testCase.verifyEqual(t.hasChildren(), true);
-            testCase.verifyEqual(ts.hasParents(), true);
+            testCase.verifyEqual(tss.hasParents(), true);
             testCase.verifyEqual(t.name(), 'trial');
-            testCase.verifyEqual(ts.name(), 'TimeSequences');
+            testCase.verifyEqual(tss.name(), 'TimeSequences');
             testCase.verifyEqual(double(t.refcount()), 1);
-            testCase.verifyEqual(double(ts.refcount()), 2);
+            testCase.verifyEqual(double(tss.refcount()), 2);
             delete(t);
-            testCase.verifyEqual(ts.hasParents(), false);
-            testCase.verifyEqual(double(ts.refcount()), 1);
+            testCase.verifyEqual(tss.hasParents(), false);
+            testCase.verifyEqual(double(tss.refcount()), 1);
         end
         
         function hardwares(testCase)
