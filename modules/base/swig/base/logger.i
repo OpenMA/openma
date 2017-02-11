@@ -40,4 +40,5 @@ namespace ma
   public:
     static void mute(bool active);
   };
+  %clearnodefaultctor;
 };
