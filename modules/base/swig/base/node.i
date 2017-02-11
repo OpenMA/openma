@@ -102,24 +102,6 @@ namespace ma
 
 %{
 
-SWIGTYPE* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& name = std::string(), std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
-{
-  SWIGTYPE* out = nullptr;
-  id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
-  if (out == nullptr)
-    return SWIG_NewNullObj();
-  return out;
-};
-
-SWIGTYPE* ma_Node_findChildren(const ma::Node* self, const ma::bindings::TemplateHelper* id, const std::string& regexp = ".*", std::unordered_map<std::string,ma::Any>&& properties = std::unordered_map<std::string,ma::Any>(), bool recursiveSearch = true)
-{
-  SWIGTYPE* out = nullptr;
-  id->findChildren(&out, *(id->SwigType), self, regexp, std::move(properties), recursiveSearch);
-  if (out == nullptr)
-    SWIG_SendError(SWIG_RuntimeError, "Internal error during container allocation");
-  return out;
-};
-
 ma::Node* ma_Node_child(const ma::Node* self, unsigned index)
 {
 #if defined(SWIGMATLAB)
@@ -141,7 +123,7 @@ SWIGTYPE* ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHe
   SWIGTYPE* out = nullptr;
   id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
   if (out == nullptr)
-    SWIG_SendError(SWIG_RuntimeError,"No child found");
+    return SWIG_NewNullObj();
   return out;
 };
 
