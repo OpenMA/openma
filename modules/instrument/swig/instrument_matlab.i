@@ -35,6 +35,76 @@
 // Specific code for Matlab (typemaps, etc.)
 
 // Convert std::array<unsigned,2>& to Matlab matrix
+%typemap(out, noblock=1) std::array<int,2> const &
+{
+  $result = mxCreateDoubleMatrix(1,2,mxREAL);
+  if ($result != nullptr)
+  {
+    double* data = mxGetPr($result);
+    data[0] = (*$1)[0];
+    data[1] = (*$1)[1];
+  };
+}; 
+
+// Convert Matlab matrix to std::array<double,3>
+%typemap(in) std::array<int,2> const & (std::array<int,2> temp)
+{
+  mxClassID id = mxGetClassID($input);
+  if ( (mxGetNumberOfElements($input) != 2)
+    && (id != mxDOUBLE_CLASS)
+    && (id != mxINT8_CLASS)
+    && (id != mxUINT8_CLASS)
+    && (id != mxINT16_CLASS)
+    && (id != mxUINT16_CLASS)
+    && (id != mxINT32_CLASS)
+    && (id != mxUINT32_CLASS)
+    && (id != mxINT64_CLASS)
+    && (id != mxUINT64_CLASS)
+    && (id != mxSINGLE_CLASS) )
+    SWIG_exception_fail(SWIG_ValueError, "input must be a list of 2 numbers in 'const std::array<int,2>&' typemap (in)");   
+  void* data = mxGetData($input);
+  for (mwSize i = 0 ; i < 3 ; ++i)
+  {
+    switch(id)
+    {
+    case mxDOUBLE_CLASS:
+      temp[i] = static_cast<int>(static_cast<double*>(data)[i]);
+      break;
+    case mxINT8_CLASS:
+      temp[i] = static_cast<int>(static_cast<int8_t*>(data)[i]);
+      break;
+    case mxUINT8_CLASS:
+      temp[i] = static_cast<int>(static_cast<uint8_t*>(data)[i]);
+      break;
+    case mxINT16_CLASS:
+      temp[i] = static_cast<int>(static_cast<int16_t*>(data)[i]);
+      break;
+    case mxUINT16_CLASS:
+      temp[i] = static_cast<int>(static_cast<uint16_t*>(data)[i]);
+      break;
+    case mxINT32_CLASS:
+      temp[i] = static_cast<int>(static_cast<int32_t*>(data)[i]);
+      break;
+    case mxUINT32_CLASS:
+      temp[i] = static_cast<int>(static_cast<uint32_t*>(data)[i]);
+      break;
+    case mxINT64_CLASS:
+      temp[i] = static_cast<int>(static_cast<int64_t*>(data)[i]);
+      break;
+    case mxUINT64_CLASS:
+      temp[i] = static_cast<int>(static_cast<uint64_t*>(data)[i]);
+      break;
+    case mxSINGLE_CLASS:
+      temp[i] = static_cast<int>(static_cast<float*>(data)[i]);
+      break;
+    default:
+      SWIG_exception_fail(SWIG_RuntimeError, "Unexpected class ID. Please, report this error");
+    }
+  }
+  $1 = &temp;
+};
+
+// Convert std::array<unsigned,2>& to Matlab matrix
 %typemap(out, noblock=1) std::array<unsigned,2> const &
 {
   $result = mxCreateDoubleMatrix(1,2,mxREAL);

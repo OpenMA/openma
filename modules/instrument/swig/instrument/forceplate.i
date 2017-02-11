@@ -81,6 +81,10 @@ namespace instrument
     const std::array<unsigned,2>& calibrationMatrixDimensions() const;
     const std::vector<double>& calibrationMatrixData() const;
     void setCalibrationMatrixData(const std::vector<double>& value);
+    void setSoftResetEnabled(bool value);
+    bool isSoftResetEnabled() const;
+    void setSoftResetSamples(const std::array<int,2>& value);
+    const std::array<int,2>& softResetSamples() const;
     
     TimeSequence* wrench(ma::instrument::Location loc, bool global = true, double threshold = 10.0, double rate = -1.0);
 

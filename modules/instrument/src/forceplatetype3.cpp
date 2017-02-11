@@ -121,19 +121,20 @@ namespace instrument
   /**
    * Compute forces and moments from analog channel data associated with this force plate.
    */
-  bool ForcePlateType3::computeWrenchAtOrigin(TimeSequence* w)
+  bool ForcePlateType3::computeWrenchAtOrigin(TimeSequence* w, const std::vector<TimeSequence*>& cpts)
   {
     auto optr = this->pimpl();
     const auto& offsets = optr->SensorOffsets;
     auto W = math::to_wrench(w);
-    auto Fx12 = math::Map<const math::Array<1>>::Values(this->channel("Fx12")->data(), W.rows(), 1);
-    auto Fx34 = math::Map<const math::Array<1>>::Values(this->channel("Fx34")->data(), W.rows(), 1);
-    auto Fy14 = math::Map<const math::Array<1>>::Values(this->channel("Fy14")->data(), W.rows(), 1);
-    auto Fy23 = math::Map<const math::Array<1>>::Values(this->channel("Fy23")->data(), W.rows(), 1);
-    auto Fz1 =  math::Map<const math::Array<1>>::Values(this->channel("Fz1")->data(),  W.rows(), 1);
-    auto Fz2 =  math::Map<const math::Array<1>>::Values(this->channel("Fz2")->data(),  W.rows(), 1);
-    auto Fz3 =  math::Map<const math::Array<1>>::Values(this->channel("Fz3")->data(),  W.rows(), 1);
-    auto Fz4 =  math::Map<const math::Array<1>>::Values(this->channel("Fz4")->data(),  W.rows(), 1);
+    using MapAnalog = math::Map<const math::Array<1>>::Values;
+    auto Fx12 = MapAnalog(cpts[0]->data(), W.rows(), 1);
+    auto Fx34 = MapAnalog(cpts[1]->data(), W.rows(), 1);
+    auto Fy14 = MapAnalog(cpts[2]->data(), W.rows(), 1);
+    auto Fy23 = MapAnalog(cpts[3]->data(), W.rows(), 1);
+    auto Fz1 =  MapAnalog(cpts[4]->data(), W.rows(), 1);
+    auto Fz2 =  MapAnalog(cpts[5]->data(), W.rows(), 1);
+    auto Fz3 =  MapAnalog(cpts[6]->data(), W.rows(), 1);
+    auto Fz4 =  MapAnalog(cpts[7]->data(), W.rows(), 1);
     W.values().col(0) = Fx12 + Fx34;
     W.values().col(1) = Fy14 + Fy23;
     W.values().col(2) = Fz1 + Fz2 + Fz3 + Fz4;

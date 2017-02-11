@@ -3,7 +3,7 @@ machine:
   timezone:
     America/Montreal
   environment:
-    PATH: "/home/ubuntu/cmake-3.7.1-Linux-x86_64/bin:$PATH"
+    PATH: "/home/ubuntu/cmake-3.7.1-Linux-x86_64/bin:/home/ubuntu/doxygen-1.8.10/bin:$PATH"
 
 ## Customize checkout
 checkout:
@@ -14,6 +14,7 @@ checkout:
 dependencies:
   cache_directories:
     - ~/cmake-3.7.1-Linux-x86_64
+    - ~/doxygen-1.8.10
   pre:
     - >
       if [ ! -d ~/cmake-3.7.1-Linux-x86_64 ]; then
@@ -22,12 +23,24 @@ dependencies:
       else
         echo "Cached CMake found"
       fi
+    - >
+      if [ ! -d ~/doxygen-1.8.10 ]; then
+        echo "No cache - installing Doxygen"
+        cd ~ && wget --quiet http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.10.linux.bin.tar.gz && tar -xvf doxygen-1.8.10.linux.bin.tar.gz
+      else
+        echo "Cached Doxygen found"
+      fi
   override:
-    - mkdir build && cd build
-    - cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data -G "Unix Makefiles" /home/ubuntu/openma
-    - make
-
+    - mkdir build
+    - cd build && cmake -DCMAKE_BUILD_TYPE:CHAR=Release -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_DOCUMENTATION:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=/home/ubuntu/data  -G "Unix Makefiles" ..
+    - cd build && make
+  post:
+    - cd build && make doxygen_cpp
+    - mkdir $CIRCLE_ARTIFACTS/doxygen
+    - mv build/doxy-* $CIRCLE_ARTIFACTS/doxygen
+    - tar -czvf $CIRCLE_ARTIFACTS/doxygen/cpp_xml.tar.gz build/doc/_doxygen
+    
 ## Customize test commands
 test:
   override:
-    - ctest -VV
+    - cd build && ctest -VV

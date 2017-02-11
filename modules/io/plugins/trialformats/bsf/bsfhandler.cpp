@@ -378,7 +378,7 @@ namespace io
     {
       int inc = 0;
       for (auto ts : tss)
-        ts->data()[i] = -1.0f * static_cast<double>(stream.readI16()) * scale[inc++];
+        ts->data()[i] = -1.0 * static_cast<double>(stream.readI16()) * scale[inc++];
     }
   };
 };
