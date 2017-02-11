@@ -639,7 +639,7 @@
   $1 = &temp;
 };
 
-// Convert Python list to std::vector<ma::TimeSequence*>
+// Convert Matlab list to std::vector<ma::TimeSequence*>
 %typemap(in) const std::vector<ma::TimeSequence*>& (std::vector<ma::TimeSequence*> temp)
 {
   if (mxGetClassID($input) != mxCELL_CLASS) {
