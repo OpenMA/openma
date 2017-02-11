@@ -33,12 +33,12 @@
  */
 
 %{
-  SWIGTYPE* SWIG_NewNullObj()
+  SWIGTYPE SWIG_NewNullObj()
   {
 #if defined(SWIGMATLAB)
     return mxCreateDoubleMatrix(0,0,mxREAL);
 #elif defined(SWIGPYTHON)
-    SWIGTYPE* retval = Py_None;
+    SWIGTYPE retval = Py_None;
     Py_INCREF(retval);
     return retval;
 #endif
@@ -51,10 +51,10 @@
 %enddef
   
 #if defined(SWIGMATLAB)
-  SWIG_SetType(mxArray)
+  SWIG_SetType(mxArray*)
   %{ #define SWIG_SendError(code, msg) mexErrMsgIdAndTxt(SWIG_ErrorType(code), msg) %}
 #elif defined(SWIGPYTHON)
-  SWIG_SetType(PyObject)
+  SWIG_SetType(PyObject*)
   %{ #define SWIG_SendError(code, msg) SWIG_Error(code, msg) %}
 #else
   #error Unsupported language
@@ -93,7 +93,7 @@
 
 %define SWIG_EXTEND_CAST_CONSTRUCTOR(nspace, cname, swigtype)
 %extend {
-cname(swigtype* other)
+cname(swigtype other)
 {
   void* argp1 = nullptr;
   int res1 = SWIG_ConvertPtr(other, &argp1, SWIGTYPE_p_ma__Node, 0 |  0 );

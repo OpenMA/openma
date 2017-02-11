@@ -39,7 +39,7 @@ namespace ma
   public:
     Any();
     %extend {
-      Any(const SWIGTYPE* value) {auto ptr = new ma::Any; ma_Any_assign(ptr, value); return ptr;};
+      Any(const SWIGTYPE value) {auto ptr = new ma::Any; ma_Any_assign(ptr, value); return ptr;};
     }
 /*    template <typename U, typename D = void*, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> Any(U&& value, D&& dimensions = D{});
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> Any(std::initializer_list<U> values, std::initializer_list<size_t> dimensions = {});*/
@@ -57,8 +57,8 @@ namespace ma
 */    
 /*    template <typename U, typename> U cast() const;*/
     %extend {
-      SWIGTYPE* cast(const char* type = "") const;
-      void assign(const SWIGTYPE* value);
+      SWIGTYPE cast(const char* type = "") const;
+      void assign(const SWIGTYPE value);
     };
     
     /*

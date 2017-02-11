@@ -37,7 +37,7 @@
   template <typename T>
   void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
   {
-    SWIGTYPE** _out = reinterpret_cast<SWIGTYPE**>(out);
+    SWIGTYPE* _out = reinterpret_cast<SWIGTYPE*>(out);
     T* node = in->findChild<T*>(name, std::move(properties), recursiveSearch);
     if (node == nullptr) return;
     *_out = SWIG_NewPointerObj(SWIG_as_voidptr(node), type, 1 |  0 );
@@ -47,7 +47,7 @@
   template <typename T>
   void find_children_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& regexp, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
   {
-    SWIGTYPE** _out = reinterpret_cast<SWIGTYPE**>(out);
+    SWIGTYPE* _out = reinterpret_cast<SWIGTYPE*>(out);
     const std::vector<T*>& nodes = in->findChildren<T*>(std::regex(regexp), std::move(properties), recursiveSearch);
     *_out = to_list(&nodes, type);
   };

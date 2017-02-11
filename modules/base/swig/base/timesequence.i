@@ -93,8 +93,8 @@ namespace ma
     
     %extend
     {
-      SWIGTYPE* data() const;
-      void setData(const SWIGTYPE* data);
+      SWIGTYPE data() const;
+      void setData(const SWIGTYPE data);
     };
     
     void resize(unsigned samples);
