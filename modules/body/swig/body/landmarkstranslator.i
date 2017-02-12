@@ -43,8 +43,6 @@ namespace body
   class LandmarksTranslator : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, LandmarksTranslator, SWIGTYPE)
-    
     LandmarksTranslator(const std::string& name, const std::unordered_map<std::string,std::string>& converstionTable, Node* parent = nullptr);
     ~LandmarksTranslator();
     

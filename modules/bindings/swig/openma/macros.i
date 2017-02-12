@@ -90,19 +90,3 @@
 };
 
 %enddef
-
-%define SWIG_EXTEND_CAST_CONSTRUCTOR(nspace, cname, swigtype)
-%extend {
-cname(swigtype other)
-{
-  void* argp1 = nullptr;
-  int res1 = SWIG_ConvertPtr(other, &argp1, SWIGTYPE_p_ma__Node, 0 |  0 );
-  if (!SWIG_IsOK(res1))
-  {
-    SWIG_Error(SWIG_ArgError(res1), "in method 'new_" "cname" "', argument 1 of type 'ma::Node *'");
-    return nullptr;
-  }
-  return ma::node_cast<nspace::## cname*>(reinterpret_cast<ma::Node*>(argp1));
-};
-};
-%enddef 

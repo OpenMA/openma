@@ -43,8 +43,6 @@ namespace body
   class PluginGait : public SkeletonHelper
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, PluginGait, SWIGTYPE)
-
     PluginGait(int region, int side, Node* parent = nullptr);
     ~PluginGait();
     

@@ -20,7 +20,7 @@ class ProcessingTest(unittest.TestCase):
         root = ma.Node('root')
         ts = ma.TimeSequence('foo',4,81,100.0,0.0,ma.TimeSequence.Type_Position,'mm',root)
         ts.setData(np.array([data]).T * np.ones([4]))
-        tss = [ts,ma.TimeSequence(ts.clone(root))]
+        tss = [ts,ma.node_cast(ma.T_TimeSequence, ts.clone(root))]
         self.assertEqual(ma.processing.filter_butterworth_zero_lag(tss,ma.processing.Response_LowPass,6.0,4), True)
         out1 = tss[0].data()
         out2 = tss[1].data()

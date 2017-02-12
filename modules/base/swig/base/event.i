@@ -41,8 +41,6 @@ namespace ma
   class Event : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Event, SWIGTYPE)
-  
     Event(const std::string& name, double time = 0.0, const std::string& context = "", const std::string& subject = "", Node* parent = nullptr);
     ~Event();
     double time() const;

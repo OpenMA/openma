@@ -43,8 +43,6 @@ namespace body
   class LyonWholeBodyModel : public SkeletonHelper
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, LyonWholeBodyModel, SWIGTYPE)
-
     LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
     ~LyonWholeBodyModel();
     

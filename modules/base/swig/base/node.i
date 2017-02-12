@@ -41,8 +41,6 @@ namespace ma
   class Node : public Object
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Node, SWIGTYPE)
-  
     Node(const std::string& name, Node* parent = nullptr);
     ~Node();
     const std::string& name() const;

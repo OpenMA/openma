@@ -43,7 +43,6 @@ namespace body
   class SkeletonHelper : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::body, SkeletonHelper, SWIGTYPE)
     ~SkeletonHelper();
     
     bool calibrate(Node* trials, Subject* subject);

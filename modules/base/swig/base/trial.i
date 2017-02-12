@@ -41,8 +41,6 @@ namespace ma
   class Trial : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Trial, SWIGTYPE)
-
     Trial(const std::string& name, Node* parent = nullptr);
     ~Trial();
     Node* timeSequences();

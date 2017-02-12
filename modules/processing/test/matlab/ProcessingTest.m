@@ -20,7 +20,7 @@ classdef ProcessingTest < matlab.unittest.TestCase
             root = ma.Node('root');
             ts = ma.TimeSequence('foo',4,81,100.0,0.0,ma.TimeSequence.Type_Position,'mm',root);
             ts.setData(data' * ones(1,4));
-            tss = {ts,ma.TimeSequence(ts.clone(root))};
+            tss = {ts,ma.node_cast(ma.T_TimeSequence, ts.clone(root))};
             testCase.verifyEqual(ma.processing.filter_butterworth_zero_lag(tss,ma.processing.Response_LowPass,6.0,4), true);
             out1 = tss{1}.data();
             out2 = tss{2}.data();

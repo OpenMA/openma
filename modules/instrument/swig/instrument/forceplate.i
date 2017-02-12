@@ -43,8 +43,6 @@ namespace instrument
   class ForcePlate : public Hardware
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::instrument, ForcePlate, SWIGTYPE)
-    
     %extend {
     enum class Type : int {
       Unknown = ForcePlate::Unknown,

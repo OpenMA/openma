@@ -41,8 +41,6 @@ namespace ma
   class Hardware : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, Hardware, SWIGTYPE)
-  
     Node* channels();
     TimeSequence* channel(const std::string& label) const;
     unsigned channelsNumberRequired() const;

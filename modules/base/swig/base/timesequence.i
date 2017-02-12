@@ -41,8 +41,6 @@ namespace ma
   class TimeSequence : public Node
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma, TimeSequence, SWIGTYPE)
-  
     %extend {
     enum class Type : int {
       Unknown = TimeSequence::Unknown,

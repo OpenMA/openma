@@ -43,8 +43,6 @@ namespace instrument
   class ForcePlateType3 : public ForcePlate
   {
   public:
-    SWIG_EXTEND_CAST_CONSTRUCTOR(ma::instrument, ForcePlateType3, SWIGTYPE)
-    
     ForcePlateType3(const std::string& name, Node* parent = nullptr);
     ~ForcePlateType3();
     
