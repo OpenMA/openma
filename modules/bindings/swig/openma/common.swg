@@ -32,6 +32,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+%typemap(in) const ma::Any& (ma::Any temp)
+{
+  $1 = &temp;
+  // Value (ma::Any)
+  void* value = nullptr;
+  if (SWIG_IsOK(SWIG_ConvertPtr($input, &value, SWIGTYPE_p_ma__Any, 0)))
+  {
+    if (!value) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::Any' in 'ma::Any const &' typemap (in)"); 
+    }
+    *$1 = (ma::Any const &)*reinterpret_cast<ma::Any*>(value);
+  }
+  // Value (other)
+  else
+  {
+    ma_Any_assign($1, $input);
+  }  
+}
+
 %fragment("OpenMA_TemplateHelper", "header", fragment="OpenMA_ToList")
 %{
   template <typename T>
