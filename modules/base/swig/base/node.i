@@ -118,3 +118,20 @@ SWIGTYPE ma_Node_findChildren(const ma::Node* self, const ma::bindings::Template
 };
 
 %}
+
+// ------------------------------------------------------------------------- //
+
+// C++ declaration
+static SWIGTYPE node_cast(const ma::bindings::TemplateHelper* id, ma::Node* in);
+
+// SWIG definition
+%{
+static SWIGTYPE node_cast(const ma::bindings::TemplateHelper* id, ma::Node* in)
+{
+  SWIGTYPE out = nullptr;
+  id->cast(&out, *(id->SwigType), in);
+  if (out == nullptr)
+    out = SWIG_NewNullObj();
+  return out;
+};
+%}

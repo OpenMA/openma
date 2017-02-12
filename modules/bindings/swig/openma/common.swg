@@ -54,6 +54,16 @@
 %fragment("OpenMA_TemplateHelper", "header", fragment="OpenMA_ToList")
 %{
   template <typename T>
+  void cast_helper(void* out, swig_type_info* type, ma::Node* in)
+  {
+    SWIGTYPE* _out = reinterpret_cast<SWIGTYPE*>(out);
+    T* node = ma::node_cast<T*>(in);
+    if (node == nullptr) return;
+    *_out = SWIG_NewPointerObj(SWIG_as_voidptr(node), type, 1 |  0 );
+    _ma_refcount_incr(node);
+  };
+  
+  template <typename T>
   void find_child_helper(void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch)
   {
     SWIGTYPE* _out = reinterpret_cast<SWIGTYPE*>(out);

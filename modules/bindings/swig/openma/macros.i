@@ -62,13 +62,13 @@
 
 #define SWIG_CREATE_TEMPLATE_HELPER_1(ns, cn, st) \
   %{ \
-    static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
+    static const ma::bindings::TemplateHelper T_##ns##_##cn = {&SWIGTYPE_p_##ns##__##cn, &cast_helper<ns::cn>, &find_child_helper<ns::cn>, &find_children_helper<ns::cn>}; \
   %} \
   %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##cn;
   
 #define SWIG_CREATE_TEMPLATE_HELPER_2(ns, nns, cn, st) \
   %{ \
-    static const ma::bindings::TemplateHelper T_##ns##_##nns##_##cn = {&SWIGTYPE_p_##ns##__##nns##__##cn, &find_child_helper<ns::nns::cn>, &find_children_helper<ns::nns::cn>}; \
+    static const ma::bindings::TemplateHelper T_##ns##_##nns##_##cn = {&SWIGTYPE_p_##ns##__##nns##__##cn, &cast_helper<ns::nns::cn>, &find_child_helper<ns::nns::cn>, &find_children_helper<ns::nns::cn>}; \
   %} \
   %constant ma::bindings::TemplateHelper T_##cn = T_##ns##_##nns##_##cn;
 

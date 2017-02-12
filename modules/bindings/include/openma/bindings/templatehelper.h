@@ -41,7 +41,8 @@ namespace ma
 {
 namespace bindings
 {
-  using retriever_func_t = void (*) (void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch);
+  using retriever_cast_t = void (*) (void* out, swig_type_info* type, ma::Node* in);
+  using retriever_find_t = void (*) (void* out, swig_type_info* type, const ma::Node* in, const std::string& name, std::unordered_map<std::string,ma::Any>&& properties, bool recursiveSearch);
   
   struct TemplateHelper
   {
@@ -54,8 +55,9 @@ namespace bindings
     TemplateHelper& operator=(TemplateHelper&& ) _OPENMA_NOEXCEPT = delete;
     
     swig_type_info** SwigType;
-    retriever_func_t findChild;
-    retriever_func_t findChildren;
+    retriever_cast_t cast;
+    retriever_find_t findChild;
+    retriever_find_t findChildren;
   };
 };
 };
