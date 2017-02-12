@@ -104,7 +104,7 @@ SWIGTYPE ma_Node_findChild(const ma::Node* self, const ma::bindings::TemplateHel
   SWIGTYPE out = nullptr;
   id->findChild(&out, *(id->SwigType), self, name, std::move(properties), recursiveSearch);
   if (out == nullptr)
-    return SWIG_NewNullObj();
+    out = SWIG_NewNullObj();
   return out;
 };
 
