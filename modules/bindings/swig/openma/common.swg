@@ -36,13 +36,13 @@
 {
   $1 = &temp;
   // Value (ma::Any)
-  void* value = nullptr;
-  if (SWIG_IsOK(SWIG_ConvertPtr($input, &value, SWIGTYPE_p_ma__Any, 0)))
+  void* _valtmp = nullptr;
+  if (SWIG_IsOK(SWIG_ConvertPtr($input, &_valtmp, SWIGTYPE_p_ma__Any, 0)))
   {
-    if (!value) {
+    if (!_valtmp) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference for 'ma::Any' in 'ma::Any const &' typemap (in)"); 
     }
-    *$1 = (ma::Any const &)*reinterpret_cast<ma::Any*>(value);
+    *$1 = (ma::Any const &)*reinterpret_cast<ma::Any*>(_valtmp);
   }
   // Value (other)
   else
