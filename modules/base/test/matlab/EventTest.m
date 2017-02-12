@@ -40,6 +40,24 @@ classdef EventTest < matlab.unittest.TestCase
             evts = root.findChildren(ma.T_Event,'.*',{{'context','Left'}});
             testCase.verifyEqual(length(evts), 6);
         end
+        
+        function nodeCast(testCase)
+            root = ma.Node('Root');
+            evt01 = ma.Event('Foot Strike', 0.,'Right','Anonymous',root);
+            evt01_ = ma.node_cast(ma.T_Event, root.child(1));
+            testCase.verifyEqual(root.hasChildren(), true);
+            testCase.verifyEqual(double(evt01.refcount()), 3);
+            testCase.verifyEqual(double(evt01_.refcount()), 3);
+            testCase.verifyEqual(evt01.hasParents(), true);
+            testCase.verifyEqual(evt01_.hasParents(), true);
+            testCase.verifyEqual(evt01.name(), evt01_.name());
+            delete(evt01);
+            testCase.verifyEqual(root.hasChildren(), true);
+            testCase.verifyEqual(double(evt01_.refcount()), 2);
+            delete(root);
+            testCase.verifyEqual(evt01_.hasParents(), false);
+            testCase.verifyEqual(double(evt01_.refcount()), 1);
+        end
     
     end
 end

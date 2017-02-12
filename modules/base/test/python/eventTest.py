@@ -39,4 +39,21 @@ class EventTest(unittest.TestCase):
         evts = root.findChildren(ma.T_Event,'Foot Off',[['context','Left']])
         self.assertEqual(len(evts), 3)
         evts = root.findChildren(ma.T_Event,'.*',[['context','Left']])
-        self.assertEqual(len(evts), 6);
+        self.assertEqual(len(evts), 6)
+        
+    def test_node_cast(self):
+        root = ma.Node('Root')
+        evt01 = ma.Event('Foot Strike', 0.,'Right','Anonymous',root)
+        evt01_ = ma.node_cast(ma.T_Event, root.child(0))
+        self.assertEqual(root.hasChildren(), True)
+        self.assertEqual(evt01.refcount(), 3)
+        self.assertEqual(evt01_.refcount(), 3)
+        self.assertEqual(evt01.hasParents(), True)
+        self.assertEqual(evt01_.hasParents(), True)
+        self.assertEqual(evt01.name(), evt01_.name())
+        del evt01
+        self.assertEqual(root.hasChildren(), True)
+        self.assertEqual(evt01_.refcount(), 2)
+        del root
+        self.assertEqual(evt01_.hasParents(), False)
+        self.assertEqual(evt01_.refcount(), 1)
