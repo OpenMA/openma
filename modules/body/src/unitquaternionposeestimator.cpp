@@ -116,7 +116,7 @@ namespace body
     const auto& segments = output->segments()->findChildren<Segment*>({},{},false);
     double startTime = 0.0, sampleRate = 0.0;
     bool ok = false;
-    for (const auto& segment : segments)
+    for (auto segment : segments)
     {
       const auto& lr = segment->findChild<LandmarksRegistrar*>({},{},false);
       if (lr == nullptr)
@@ -227,12 +227,12 @@ namespace body
       // Reconstruction of the SCS
       // Look for Reference frame in the node MarkerClusterRegistration
       auto relframe = mcr->findChild<ReferenceFrame*>(segment->name() + ".SCS", {}, false);
-      math::to_timesequence(tcs, segment->name() + ".TCS", sampleRate, startTime, TimeSequence::Pose, "", segment);
       if (relframe != nullptr)
       {
         relframe->addParent(segment);
         math::to_timesequence(transform_relative_frame(relframe, segment, tcs), segment->name() + ".SCS", sampleRate, startTime, TimeSequence::Pose, "", segment);
       }
+      math::to_timesequence(tcs, segment->name() + ".TCS", sampleRate, startTime, TimeSequence::Pose, "", segment);
     }
     return true;
   }
