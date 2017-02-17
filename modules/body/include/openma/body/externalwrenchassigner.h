@@ -51,7 +51,6 @@ namespace body
     OPENMA_DECLARE_NODEID(ExternalWrenchAssigner, Node)
         
   public:
-    ExternalWrenchAssigner(const std::string& name, Node* parent = nullptr);
     ~ExternalWrenchAssigner() _OPENMA_NOEXCEPT;
     
     ExternalWrenchAssigner(const ExternalWrenchAssigner& ) = delete;
@@ -64,6 +63,7 @@ namespace body
     virtual void copy(const Node* source) _OPENMA_NOEXCEPT override;
     
   protected:
+    ExternalWrenchAssigner(const std::string& name, Node* parent = nullptr);
     ExternalWrenchAssigner(ExternalWrenchAssignerPrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT;
   };
 };
