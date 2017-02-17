@@ -308,6 +308,7 @@ namespace body
     };
     for (auto& model: models)
     {
+      auto analysis = new Node(model->name() + "_JointKinetics", output);
       if (massNormalization)
       {
         auto massProp = model->property("mass");
@@ -317,7 +318,6 @@ namespace body
         else
           warning("The model '%s' has no property 'mass' or is set to a non positive value or a not a number (NaN). It is not possible to normalize the data.", model->name().c_str());
       }
-      auto analysis = new Node(model->name() + "_JointKinetics", output);
       auto joints = model->joints()->findChildren<Joint*>({},{},false);
       for (auto& joint: joints)
       {
