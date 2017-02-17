@@ -79,6 +79,54 @@ void set_isb_custom_landmarks_translator2(ma::body::LyonWholeBodyModel* helper)
   }, helper);
 };
 
+void set_isb_custom_landmarks_translator3(ma::body::LyonWholeBodyModel* helper)
+{
+  new ma::body::LandmarksTranslator("LandmarksTranslator",{
+    {"CV7"  , "C7"},
+    {"TV8"  , "T8"},
+    {"SJN"  , "SS"},
+    {"SXS"  , "XP"},
+    {"L_SAE", "L.AC"},
+    {"L_GH" , "L.GH"},
+    {"L_HLE", "L.LHE"},
+    {"L_HME", "L.MHE"},
+    {"L_USP", "L.US"},
+    {"L_RSP", "L.RS"},
+    {"L_HM5", "L.MH5"},
+    {"L_HM2", "L.MH2"},
+    {"R_SAE", "R.AC"},
+    {"R_GH" , "R.GH"},
+    {"R_HLE", "R.LHE"},
+    {"R_HME", "R.MHE"},
+    {"R_USP", "R.US"},
+    {"R_RSP", "R.RS"},
+    {"R_HM5", "R.MH5"},
+    {"R_HM2", "R.MH2"},
+    {"R_IAS", "R.ASIS"},
+    {"L_IAS", "L.ASIS"},
+    {"R_IPS", "R.PSIS"},
+    {"L_IPS", "L.PSIS"},
+    {"L_FTC", "L.GT"},
+    {"L_FLE", "L.LFE"},
+    {"L_FME", "L.MFE"},
+    {"L_FAX", "L.FH"},
+    {"L_FAL", "L.LTM"},
+    {"L_TAM", "L.MTM"},
+    {"L_FCC", "L.HEE"},
+    {"L_FM5", "L.MTH5"},
+    {"L_FM1", "L.MTH1"},
+    {"R_FTC", "R.GT"},
+    {"R_FLE", "R.LFE"},
+    {"R_FME", "R.MFE"},
+    {"R_FAX", "R.FH"},
+    {"R_FAL", "R.LTM"},
+    {"R_TAM", "R.MTM"},
+    {"R_FCC", "R.HEE"},
+    {"R_FM5", "R.MTH5"},
+    {"R_FM1", "R.MTH1"},
+  }, helper);
+};
+
 void compare_segment_relscs(ma::body::SkeletonHelper* helper, const std::string& frame, const double* refdata)
 {
   auto segment_relscs_node = helper->findChild<const ma::body::ReferenceFrame*>(frame);
