@@ -55,9 +55,6 @@ namespace body
   public:
     LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
     
-    Sex sex() const _OPENMA_NOEXCEPT;
-    void setSex(Sex value) _OPENMA_NOEXCEPT;
-    
     virtual bool calibrate(Node* trials, Subject* subject) override;
     virtual LandmarksTranslator* defaultLandmarksTranslator() override;
     virtual PoseEstimator* defaultPoseEstimator() override;

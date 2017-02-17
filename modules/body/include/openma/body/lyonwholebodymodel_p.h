@@ -49,10 +49,6 @@ namespace body
   {
     OPENMA_DECLARE_PINT_ACCESSOR(LyonWholeBodyModel)
     
-    OPENMA_DECLARE_STATIC_PROPERTIES_DERIVED(LyonWholeBodyModel, SkeletonHelper,
-      Property<LyonWholeBodyModel, Sex, &LyonWholeBodyModel::sex, &LyonWholeBodyModel::setSex>{"sex"}
-    )
-    
   public:
     LyonWholeBodyModelPrivate(LyonWholeBodyModel* pint, const std::string& name, int region, int side);
     ~LyonWholeBodyModelPrivate() _OPENMA_NOEXCEPT;
@@ -62,8 +58,6 @@ namespace body
     
     bool reconstructUpperLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
     bool reconstructLowerLimb(Model* model, Trial* trial, int side, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT;
-    
-    Sex Sex_;
   };
 };
 };

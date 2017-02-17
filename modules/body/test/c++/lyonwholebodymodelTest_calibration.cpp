@@ -12,7 +12,7 @@ CXXTEST_SUITE(LyonWholeBodyModelCalibrationTest)
     ma::Node root("root");
     generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/UpperLimbStatic.c3d"));
     ma::body::LyonWholeBodyModel helper(ma::body::Region::Upper, ma::body::Side::Both);
-    helper.setSex(ma::Sex::Male);
+    helper.setProperty("sex",ma::Sex::Male);
     set_isb_custom_landmarks_translator(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&root, nullptr), true);
     const double reftorsorelscs[12] = {0.9980485036,-0.0624434499,0.0,0.0624434499,0.9980485036,0.0,0.0,0.0,1.0,86.2581302099,-21.0216470741,0.0};
@@ -24,7 +24,7 @@ CXXTEST_SUITE(LyonWholeBodyModelCalibrationTest)
     ma::Node root("root");
     generate_trial_from_c3d_file(&root, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintCalib.c3d"));
     ma::body::LyonWholeBodyModel helper(ma::body::Region::Full, ma::body::Side::Both);
-    helper.setSex(ma::Sex::Male);
+    helper.setProperty("sex",ma::Sex::Male);
     set_isb_custom_landmarks_translator2(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&root, nullptr), true);
     // Note: The original model doesn't use the same definitions (TF/SF) than in OpenMA for the torso

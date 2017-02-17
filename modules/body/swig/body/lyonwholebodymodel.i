@@ -45,9 +45,6 @@ namespace body
   public:
     LyonWholeBodyModel(int region, int side, Node* parent = nullptr);
     ~LyonWholeBodyModel();
-    
-    Sex sex() const;
-    void setSex(Sex value);
   };
   %clearnodefaultctor;
 };

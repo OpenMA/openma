@@ -12,7 +12,7 @@ CXXTEST_SUITE(LyonWholeBodyModelReconstructionTest)
     ma::Node rootTrials("rootTrials"), rootModels("rootModels");
     generate_trial_from_c3d_file(&rootTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/UpperLimbStatic.c3d"));
     ma::body::LyonWholeBodyModel helper(ma::body::Region::Upper, ma::body::Side::Both);
-    helper.setSex(ma::Sex::Male);
+    helper.setProperty("sex",ma::Sex::Male);
     set_isb_custom_landmarks_translator(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&rootTrials, nullptr), true);
     TS_ASSERT_EQUALS(helper.reconstruct(&rootModels, &rootTrials), true);
@@ -35,7 +35,7 @@ CXXTEST_SUITE(LyonWholeBodyModelReconstructionTest)
     ma::Node rootStaticTrials("rootStaticTrials"), rootDynamicTrials("rootDynamicTrials"), rootModels("rootModels");
     generate_trial_from_c3d_file(&rootStaticTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintCalib.c3d"));
     ma::body::LyonWholeBodyModel helper(ma::body::Region::Lower, ma::body::Side::Both);
-    helper.setSex(ma::Sex::Male);
+    helper.setProperty("sex",ma::Sex::Male);
     set_isb_custom_landmarks_translator2(&helper);
     TS_ASSERT_EQUALS(helper.calibrate(&rootStaticTrials, nullptr), true);
     generate_trial_from_c3d_file(&rootDynamicTrials, OPENMA_TDD_PATH_IN("c3d/lyonwholebodymodel/SprintMotion.c3d"));

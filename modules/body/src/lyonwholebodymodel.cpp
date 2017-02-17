@@ -67,9 +67,7 @@ namespace ma
 namespace body
 {
   LyonWholeBodyModelPrivate::LyonWholeBodyModelPrivate(LyonWholeBodyModel* pint, const std::string& name, int region, int side)
-  : SkeletonHelperPrivate(pint,name,region,side),
-    // All the options are null by default
-    Sex_(Sex::Unknown)
+  : SkeletonHelperPrivate(pint,name,region,side)
   {};
   
   LyonWholeBodyModelPrivate::~LyonWholeBodyModelPrivate() _OPENMA_NOEXCEPT = default;
@@ -106,7 +104,7 @@ namespace body
     }
     math::Position SJC(1); ; SJC.residuals().setZero();
     double r = 0., percent = 0.;
-    if (this->Sex_ == Sex::Female)
+    if (this->pint()->property("sex").cast<Sex>() == Sex::Female)
     {
       r = -5.0 * M_PI / 180.0; 
       percent = 0.53;
@@ -469,18 +467,6 @@ namespace body
    *
    * @ingroup openma_body
   */
-  
-#ifdef DOXYGEN_SHOULD_TAKE_THIS
-  /** * @brief Fake structure to create node's properties */
-  struct LyonWholeBodyModel::__Doxygen_Properties
-  {
-  /**
-   * [Required] This property holds the subject's sex used in the computation of default hip joint centre and shoulder joint centre. By default, this property contains the value Sex::Unknown.
-   * @sa sex() setSex()
-   */
-  Sex sex;
-  };
-#endif
  
   /**
    * Constructor. The name is set to "LyonWholeBodyModel".
@@ -505,7 +491,8 @@ namespace body
       error("Impossible to have a 'centre' side for the LyonWholeBodyModel helper. Only the enumerators Side::Right, Side::Left, and Side::Both are available for this helper. Setup aborted.");
       return false;
     }
-    if (optr->Sex_ == Sex::Unknown)
+    auto sexProp = this->property("sex");
+    if (!sexProp.isValid() || (sexProp.cast<Sex>() == ma::Sex::Unknown))
     {
       error("Unknown sex. Setup aborted.");
       return false;
@@ -1008,27 +995,6 @@ namespace body
     return true;
   };
   
-  /**
-   * Returns the internal parameter LeftStaticPlantarFlexionOffset.
-   */
-  Sex LyonWholeBodyModel::sex() const _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    return optr->Sex_;
-  };
-  
-  /**
-   * Returns the internal parameter LeftStaticRotationOffset.
-   */
-  void LyonWholeBodyModel::setSex(Sex value) _OPENMA_NOEXCEPT
-  {
-    auto optr = this->pimpl();
-    if (optr->Sex_ == value)
-      return;
-    optr->Sex_ = value;
-    this->modified();
-  };
-  
   // ----------------------------------------------------------------------- //
   
   /*
@@ -1197,7 +1163,6 @@ namespace body
     auto optr = this->pimpl();
     auto optr_src = src->pimpl();
     this->SkeletonHelper::copy(src);
-    optr->Sex_ = optr_src->Sex_;
   };
 };
 };
