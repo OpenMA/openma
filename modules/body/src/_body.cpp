@@ -309,6 +309,10 @@ namespace body
     for (auto& model: models)
     {
       auto analysis = new Node(model->name() + "_JointKinetics", output);
+      if ( std::fabs(model->gravity()[0]) <= std::numeric_limits<double>::epsilon()
+        && std::fabs(model->gravity()[1]) <= std::numeric_limits<double>::epsilon()
+        && std::fabs(model->gravity()[2]) <= std::numeric_limits<double>::epsilon() )
+        continue;
       if (massNormalization)
       {
         auto massProp = model->property("mass");
