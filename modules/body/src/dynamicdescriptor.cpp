@@ -267,7 +267,7 @@ namespace body
         {
           if (optr->Order[i] > 2u)
           {
-            error("At least one column index used in data rearrangment is not in the range [0,2]. Impossible to describe the dynamic of the joint %s", joint->name().c_str());
+            error("At least one column index used in data rearrangement is not in the range [0,2]. Impossible to describe the dynamic of the joint %s", joint->name().c_str());
             return false;
           }
         }
