@@ -89,7 +89,9 @@ namespace body
     // Average markers along the time
     for (const auto& m : markers)
       average_marker(m, ttfsr.timeSequences());
-    // TODO DISABLE INVERSE DYNAMICS COMPUTATION
+    // Disable the computation of the inverse dynamics
+    auto gravity = helper->property("gravity");
+    helper->setProperty("gravity", Any());
     // Delete the existing pose estimators (if any) to use the default one
     auto estimators = helper->findChildren<PoseEstimator*>({},{},false);
     for (auto e : estimators)
@@ -189,6 +191,9 @@ namespace body
     }
     // Attach a least square pose estimator
     new UnitQuaternionPoseEstimator("LeastSquarePoseEstimator",helper);
+    // Enable the inverse dynamic computation
+    helper->setProperty("gravity", gravity);
+    // Done!
     return true;
   };
   
