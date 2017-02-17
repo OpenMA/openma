@@ -792,6 +792,10 @@ namespace body
     // --------------------------------------------------
     if ((optr->Region & Region::Upper) == Region::Upper)
     {
+#if !defined(_MSC_VER)
+#warning LENGTH OF HEAD SEGMENT IS NULL
+#endif
+      this->setProperty("Head.length", 0);
       // -----------------------------------------
       // Torso
       // -----------------------------------------
