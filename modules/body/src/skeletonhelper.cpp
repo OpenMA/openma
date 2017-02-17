@@ -40,6 +40,7 @@
 #include "openma/body/landmarkstranslator.h"
 #include "openma/body/model.h"
 #include "openma/body/poseestimator.h"
+#include "openma/body/referenceframe.h"
 #include "openma/base/trial.h"
 
 // -------------------------------------------------------------------------- //
@@ -217,6 +218,14 @@ namespace body
         error("SkeletonHelper - Error in the model reconstruction. Movement reconstruction skipped for the trial #%i", inc);
         delete model;
         continue;
+      }
+      auto segments = model->segments()->children();
+      for (auto seg : segments)
+      {
+        seg->setProperty("length", this->property(seg->name()+".length"));
+        ReferenceFrame* bcs = nullptr;
+        if ((bcs = this->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr)
+          bcs->addParent(seg);
       }
       // Attach the model to the output
       model->addParent(output);

@@ -288,7 +288,6 @@ namespace body
     // Temporary variable use to construct segments' motion
     Segment* seg;
     math::Vector u, v;
-    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Arm
     // -----------------------------------------
@@ -313,8 +312,6 @@ namespace body
     v = (GH - EJC).normalized();
     u = v.cross(s * (LHE - MHE)).normalized();
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),GH)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -331,8 +328,6 @@ namespace body
     v = (EJC - WJC).normalized();
     u = v.cross(s * (RS - US)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),EJC), prefix+"Forearm.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -348,8 +343,6 @@ namespace body
     v = (WJC - (MH2 + MH5) / 2.0).normalized();
     u = v.cross(s * (MH2 - MH5)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),WJC), prefix+"Hand.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
   
@@ -372,7 +365,6 @@ namespace body
     // Temporary variable use to construct segments' motion
     Segment* seg;
     math::Vector u, v;
-    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -396,8 +388,6 @@ namespace body
     v = (GT - LFE).normalized();
     u = v.cross(s * (LFE - MFE)).normalized();
     math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(u,v,u.cross(v),LFE)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -416,8 +406,6 @@ namespace body
     v = (KJC - AJC).normalized();
     u = v.cross(s * (FH - AJC)).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),KJC), prefix+"Shank.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -434,8 +422,6 @@ namespace body
     u = ((MTH1 + MTH5) / 2.0 - HEE).normalized();
     v = s * (MTH5 - HEE).cross(MTH1 - HEE).normalized();
     math::to_timesequence(math::Pose(u,v,u.cross(v),AJC), prefix+"Foot.SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
 };
@@ -901,7 +887,6 @@ namespace body
     }
     auto optr = this->pimpl();
     Segment* seg = nullptr;
-    ReferenceFrame* bcs = nullptr;
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
@@ -932,8 +917,6 @@ namespace body
       const math::Vector v = ((C7 + SS) / 2.0 - (XP + T8) / 2.0).normalized();
       const math::Vector w = (SS - C7).cross(v).normalized();
       math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,C7)), relframe->name(), sampleRate, startTime, TimeSequence::Pose, "", seg);
-      seg->setProperty("length", this->property(seg->name()+".length"));
-      if ((bcs = this->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -980,8 +963,6 @@ namespace body
       const math::Vector v = w.cross((R_ASIS + L_ASIS) / 2.0 - SC).normalized();
       const math::Pose pelvis(v.cross(w), v, w, SC);
       math::to_timesequence(transform_relative_frame(relframe, seg, math::Pose(v.cross(w),v,w,SC)), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
-      seg->setProperty("length", this->property(seg->name()+".length"));
-      if ((bcs = this->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
       // -----------------------------------------
       // Thigh, shank, foot
       // -----------------------------------------

@@ -231,7 +231,6 @@ namespace body
   
   bool PluginGaitPrivate::reconstructUpperLimb(Model* model, Trial* trial, int side, const math::Vector* u_torso, const math::Vector* o_torso, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
-    auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, shoulderOffset = 0.0, elbowWidth = 0.0, wristWidth = 0.0, handThickness = 0.0;
     if (side == Side::Left)
@@ -294,7 +293,6 @@ namespace body
     v = (WJC - EJC).cross(w).normalized();
     u = v.cross(w);
     math::to_timesequence(u, v, w, EJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Forearm
     // -----------------------------------------
@@ -302,7 +300,6 @@ namespace body
     w = (EJC - WJC).normalized();
     u = v.cross(w); // The 'v' axis is the same than the one defined for the arm
     math::to_timesequence(u, v, w, WJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
     // -----------------------------------------
     // Hand
     // -----------------------------------------
@@ -321,13 +318,11 @@ namespace body
     u = s * w.cross(US - RS).normalized();
     v = w.cross(u);
     math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
     return true;
   };
   
   bool PluginGaitPrivate::reconstructLowerLimb(Model* model, Trial* trial, int side, const math::Position* HJC, TaggedMappedPositions* landmarks, double sampleRate, double startTime) const _OPENMA_NOEXCEPT
   {
-    auto pptr = this->pint();
     std::string prefix;
     double s = 0.0, ankleWidth = 0.0, kneeWidth = 0.0,
            staticPlantarFlexionOffset = 0.0, staticRotationOffset = 0.0;
@@ -357,7 +352,6 @@ namespace body
     // Temporary variables used to construct segments' motion
     Segment* seg = nullptr;
     math::Vector u,v,w,o;
-    ReferenceFrame* bcs = nullptr;
     // -----------------------------------------
     // Thigh
     // -----------------------------------------
@@ -375,8 +369,6 @@ namespace body
     w = (*HJC - KJC).normalized();
     v = w.cross(u);
     math::to_timesequence(u, v, w, KJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Shank
     // -----------------------------------------
@@ -395,8 +387,6 @@ namespace body
     u = s * w.cross(LS - AJC).normalized();
     math::Vector v_shank = w.cross(u);
     math::to_timesequence(u, v_shank, w, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     // -----------------------------------------
     // Foot
     // -----------------------------------------
@@ -418,8 +408,6 @@ namespace body
     const math::Vector wr = u * cx*sy - v * sx + w * cx*cy;
     // FIXME: This is not the good origin. None anatomical meaning was discovered to explain this position...
     math::to_timesequence(ur, vr, wr, AJC, seg->name()+".SCS", sampleRate, startTime, seg);
-    seg->setProperty("length", pptr->property(seg->name()+".length"));
-    if ((bcs = pptr->findChild<ReferenceFrame*>(seg->name()+".BCS")) != nullptr) bcs->addParent(seg);
     return true;
   };
   
@@ -1218,7 +1206,6 @@ namespace body
       const math::Vector u = v.cross(w);
       const math::Vector o = SS - (optr->MarkerDiameter / 2.0 * u);
       torsoSCS = math::to_timesequence(u, v, w, o, seg->name()+".SCS", sampleRate, startTime, seg);
-      seg->setProperty("length", this->property(seg->name()+".length"));
       // -----------------------------------------
       // Other upper limbs (dependant of the torso)
       // -----------------------------------------
@@ -1280,7 +1267,6 @@ namespace body
       const math::Vector v = (L_ASIS - R_ASIS).normalized();
       const math::Vector w = ((R_ASIS - SC).cross(L_ASIS - SC)).normalized();
       const math::Pose pelvis(v.cross(w), v, w, (L_ASIS + R_ASIS) / 2.0);
-      seg->setProperty("length", this->property(seg->name()+".length"));
       pelvisSCS = math::to_timesequence(transform_relative_frame(relframe, seg, pelvis), seg->name()+".SCS", sampleRate, startTime, TimeSequence::Pose, "", seg);
       // -----------------------------------------
       // Thigh, shank, foot
@@ -1418,7 +1404,6 @@ namespace body
       const math::Vector ur = u * cy - w * sy;
       const math::Vector wr = u * sy + w * cy;
       math::to_timesequence(ur, v, wr, o, seg->name()+".SCS", sampleRate, startTime, seg);
-      seg->setProperty("length", this->property(seg->name()+".length"));
     }
     return true;
   };
