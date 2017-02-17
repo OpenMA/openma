@@ -3,7 +3,9 @@ SET(SWIG_MODULE_body_EXTRA_SRCS
   "body/lyonwholebodymodel.i"
   "body/landmarkstranslator.i"
   "body/plugingait.i"
-  "body/skeletonhelper.i")
+  "body/skeletonhelper.i"
+  "body/externalwrenchassigner.i"
+  "body/simplegaitforceplatetofeetassigner.i")
 SET(SWIG_MODULE_body_EXTRA_FLAGS
   # "-debug-tmsearch"
   "-I${PROJECT_SOURCE_DIR}/modules/base/swig"

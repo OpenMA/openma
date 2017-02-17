@@ -32,48 +32,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-%module(package="ma.body") body
-
-%begin %{
-#include "openma/matlab/fixwinchar16.h"
-%}
-
-%{
-#include "openma/base.h"
-#include "openma/bindings.h"
-#include "openma/body.h"
-%}
-
-%include "openma/macros.i"
-
-%import "ma.i"
-
-// ========================================================================= //
-//                                INTERFACE
-// ========================================================================= //
-
-#if defined(SWIGMATLAB)
-%include "body_matlab.i"
-#elif defined(SWIGPYTHON)
-%include "body_python.i"
-#endif
-
-%include "body/enums.i"
-%include "body/landmarkstranslator.i"
-%include "body/skeletonhelper.i"
-%include "body/plugingait.i"
-%include "body/lyonwholebodymodel.i"
-%include "body/externalwrenchassigner.i"
-%include "body/simplegaitforceplatetofeetassigner.i"
-
 namespace ma
 {
 namespace body
-{
-  void calibrate(SkeletonHelper* helper, Node* trials, Subject* subject = nullptr);
-  bool register_marker_cluster(SkeletonHelper* helper, Node* trials);
-  Node* reconstruct(SkeletonHelper* helper, Node* trials);
-  Node* extract_joint_kinematics(Node* input, bool sideAdaptation = true);
-  Node* extract_joint_kinetics(Node* input, bool sideAdaptation = true, bool massNormalization = true, ma::body::RepresentationFrame frame = ma::body::RepresentationFrame::Distal);
+{ 
+  SWIG_TYPEMAP_NODE_OUT(ma::body, ExternalWrenchAssigner)
+  SWIG_CREATE_TEMPLATE_HELPER_2(ma, body, ExternalWrenchAssigner, SWIGTYPE)
+  
+  %nodefaultctor;
+  class ExternalWrenchAssigner : public Node
+  {
+  public:
+    ~ExternalWrenchAssigner();
+    
+    bool run(Node* inout);
+  };
+  %clearnodefaultctor;
 };
 };
