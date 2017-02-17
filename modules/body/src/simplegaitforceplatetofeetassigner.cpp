@@ -128,34 +128,46 @@ namespace body
         error("Missing the left or right foot segment for the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
         continue;
       }
-      std::vector<std::string> markerLabels = {{"L.HEE","L.MTH2","R.HEE","R.MTH2"}};
+      std::vector<std::string> markerLabels = {{"L.HEE","L.MTH1","L.MTH2","R.HEE","R.MTH1","R.MTH2"}};
       auto lt = model->findChild<const LandmarksTranslator*>({},{},false);
       if (lt != nullptr)
       {
-        for (size_t j = 0 ; j < 4 ; ++j)
+        for (size_t j = 0 ; j < markerLabels.size() ; ++j)
         {
           std::string temp = markerLabels[j];
           markerLabels[j] = lt->convertReverse(markerLabels[j]);
         }
       }
-      std::vector<TimeSequence*> tss(4);
-      std::vector<math::Map<math::Position>> markers; markers.reserve(4);
-      bool missingMarker = false;
-      for (size_t j = 0 ; j < 4 ; ++j)
+      auto L_HEE  = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[0],{},false);
+      auto L_MTH1 = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[1],{},false);
+      auto L_MTH2 = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[2],{},false);
+      auto R_HEE  = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[3],{},false);
+      auto R_MTH1 = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[4],{},false);
+      auto R_MTH2 = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[5],{},false);
+      if (L_HEE == nullptr)
       {
-        tss[j] = trial->timeSequences()->findChild<TimeSequence*>(markerLabels[j],{},false);
-        markers.push_back(math::to_position(tss[j]));
-        if (!markers[j].isValid())
-        {
-          missingMarker = true;
-          break;
-        }
-      }
-      if (missingMarker)
-      {
-        error("At least one marker associated with the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
+        error("No left heel marker found for the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
         continue;
       }
+      if (R_HEE == nullptr)
+      {
+        error("No left heel marker found for the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
+        continue;
+      }
+      if ((L_MTH1 == nullptr) && ((L_MTH1 = L_MTH2) == nullptr))
+      {
+        error("No left metatarsus head marker found for the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
+        continue;
+      }
+      if ((R_MTH1 == nullptr) && ((R_MTH1 = R_MTH2) == nullptr))
+      {
+        error("No right metatarsus head marker found for the model '%s'. Automatic force plates to feet assignment (simple gait) aborted for this model.", model->name().c_str());
+        continue;
+      }
+      std::vector<TimeSequence*> tss{L_HEE, L_MTH1, R_HEE, R_MTH1};
+      std::vector<math::Map<math::Position>> markers; markers.reserve(4);
+      for (size_t j = 0 ; j < tss.size() ; ++j)
+        markers.push_back(math::to_position(tss[j]));
       double sampleRate = 0.0; double startTime = 0.0; unsigned samples = 0;
       if (!compare_timesequences_properties(tss, sampleRate, startTime, samples))
       {
