@@ -901,7 +901,7 @@ namespace body
     // --------------------------------------------------
     // UPPER LIMB
     // --------------------------------------------------
-    if (optr->Region & Region::Upper)
+    if ((optr->Region & Region::Upper) == Region::Upper)
     {
       // -----------------------------------------
       // Torso
@@ -941,7 +941,7 @@ namespace body
     // --------------------------------------------------
     // LOWER LIMB
     // --------------------------------------------------
-    if (optr->Region & Region::Lower)
+    if ((optr->Region & Region::Lower) == Region::Lower)
     {
       // -----------------------------------------
       // Pelvis
