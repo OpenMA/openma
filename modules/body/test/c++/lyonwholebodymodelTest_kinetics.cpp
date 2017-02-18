@@ -72,6 +72,22 @@ CXXTEST_SUITE(LyonWholeBodyModelKineticsTest)
     TS_ASSERT_EQUALS(ma::body::extract_joint_kinetics(&kineticsanalyses2, &models2), true);
     TS_ASSERT_EQUALS(kineticsanalyses2.children().size(), 1u);
     TS_ASSERT_EQUALS(kineticsanalyses2.findChildren<ma::TimeSequence*>().size(), 18u);
+    
+    auto trial = dynamictrials.child<ma::Trial*>(0);
+    auto kinetic = kineticsanalyses2.child(0);
+    
+    for (const auto& c : kinetic->findChildren<ma::TimeSequence*>())
+    {
+      // Specific to the C3D file format that accepts only one unit by type
+      c->addParent(trial->timeSequences());
+      if (c->type() == ma::TimeSequence::Force)
+        c->setUnit("N");
+      else if (c->type() == ma::TimeSequence::Moment)
+        c->setUnit("Nmm");
+      else if (c->type() == ma::TimeSequence::Power)
+        c->setUnit("W");
+    }
+    ma::io::write(&dynamictrials, "test3.c3d");
   };
 };
 
