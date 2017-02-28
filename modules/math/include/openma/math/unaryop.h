@@ -476,7 +476,7 @@ namespace math
     /**
      * Returns a template expression corresponding to the calculation of this operation.
      */
-    auto values() const _OPENMA_NOEXCEPT -> decltype(Eigen::internal::TransposeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()))
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::TransposeOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
     {
       using V = decltype(this->m_Xpr.values());
       return Eigen::internal::TransposeOpValues<V>(this->m_Xpr.values());
@@ -541,7 +541,7 @@ namespace math
     /**
      * Returns a template expression corresponding to the calculation of this operation.
      */
-    auto values() const _OPENMA_NOEXCEPT -> decltype(Eigen::internal::InverseOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()))
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::InverseOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values())>
     {
       using V = decltype(this->m_Xpr.values());
       return Eigen::internal::InverseOpValues<V>(this->m_Xpr.values());
