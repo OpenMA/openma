@@ -658,6 +658,11 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
     EIGEN_DEVICE_FUNC
     const HNormalizedReturnType hnormalized() const;
 
+// allow to extend VectorOp outside Eigen
+#ifdef EIGEN_VECTOROP_PLUGIN
+#include EIGEN_VECTOROP_PLUGIN
+#endif
+
   protected:
     ExpressionTypeNested m_matrix;
 };
