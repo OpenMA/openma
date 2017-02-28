@@ -44,7 +44,7 @@
 namespace Eigen
 {
 namespace internal
-{ 
+{
   // ----------------------------------------------------------------------- //
   //                            CrossOp return value
   // ----------------------------------------------------------------------- //
@@ -285,6 +285,37 @@ namespace internal
     Index cols() const {return this->m_V2.cols();};
   };
   
+  // ----------------------------------------------------------------------- //
+  //                         MeanOp return value
+  // ----------------------------------------------------------------------- //
+  
+  template<typename V, typename R> struct MeanOpValues;
+
+  template<typename V, typename R>
+  struct traits<MeanOpValues<V,R>>
+  {
+    using ReturnType = Eigen::Array<double,1,std::decay<V>::type::ColsAtCompileTime>;
+  };
+  
+  template<typename V, typename R>
+  struct MeanOpValues : public Eigen::ReturnByValue<MeanOpValues<V,R>>
+  {
+    using InputType = typename std::decay<V>::type;
+    using Index = typename InputType::Index;
+    using Nested = typename traits<MeanOpValues<V,R>>::ReturnType;
+    typename InputType::Nested m_V;
+    const R m_R;
+  public:
+    MeanOpValues(const V& v, const R& r) : m_V(v), m_R(r) {};
+    template <typename Result> inline void evalTo(Result& result) const
+    {
+      auto cond = (this->m_R >= 0.0).eval();
+      result = cond.template replicate<1,InputType::ColsAtCompileTime>().select(this->m_V, 0.0).colwise().sum() / (cond.any() ? static_cast<double>(cond.count()) : 1.0);
+    };
+    Index rows() const {return 1;};
+    Index cols() const {return this->m_V.cols();};
+  };
+    
   // ----------------------------------------------------------------------- //
   //                         TransposeOp return value
   // ----------------------------------------------------------------------- //

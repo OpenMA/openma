@@ -264,6 +264,33 @@ CXXTEST_SUITE(PoseTest)
     TS_ASSERT_DELTA(tt.values().coeff(2, 2), 0.0, 1e-15);
   };
   
+  CXXTEST_TEST(transformPositionTer)
+  {
+    ma::math::Pose motion(3);
+    motion.values() << 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 10.0, -43.2, 100.19,
+                       0.299252, 0.947355, 0.113874, -0.361734, 0.002203, 0.932279, 0.882948, -0.320179, 0.343350, 10.0, -43.2, 100.19,
+                       1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+    motion.residuals() << 0.0, 0.0, -1.0;
+    
+    ma::math::Position traj(3);
+    traj.values() << 33.1,-13.56, 1034.12,
+                     0.23, 34.12, -98.0,
+                     66.0, 333.869, 4598.234;
+    traj.residuals() << 0.0, 0.0, 0.0;
+    
+    ma::math::Position foo = motion.transform(traj);
+    const auto& ref = foo.values();
+    ma::math::Position result = foo.mean();
+
+      
+    TS_ASSERT_EQUALS(result.rows(),1);
+    TS_ASSERT_EQUALS(result.cols(),3);
+    TS_ASSERT_DELTA(result.values().coeff(0),(ref.coeff(0,0) + ref.coeff(1,0)) / 2.0, 1e-15);
+    TS_ASSERT_DELTA(result.values().coeff(1),(ref.coeff(0,1) + ref.coeff(1,1)) / 2.0, 1e-15);
+    TS_ASSERT_DELTA(result.values().coeff(2),(ref.coeff(0,2) + ref.coeff(1,2)) / 2.0, 1e-15);
+    TS_ASSERT_EQUALS(result.residuals().coeff(0),0.0);
+  }
+  
   CXXTEST_TEST(eulerAngles)
   {
     ma::math::Pose motion(3);
@@ -305,4 +332,5 @@ CXXTEST_TEST_REGISTRATION(PoseTest, inverse)
 CXXTEST_TEST_REGISTRATION(PoseTest, transformPose)
 CXXTEST_TEST_REGISTRATION(PoseTest, transformPosition)
 CXXTEST_TEST_REGISTRATION(PoseTest, transformPositionBis)
+CXXTEST_TEST_REGISTRATION(PoseTest, transformPositionTer)
 CXXTEST_TEST_REGISTRATION(PoseTest, eulerAngles)

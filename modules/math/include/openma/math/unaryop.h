@@ -226,14 +226,11 @@ namespace math
     /**
      * Returns a template expression corresponding to the calculation of this operation.
      */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS // Doxygen does not like the use of '.template'
-    auto values() const _OPENMA_NOEXCEPT -> decltype((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).template replicate<1,Xpr::ColsAtCompileTime>().select(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values(), 0.0).colwise().sum() / ((OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).any() ? (OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals() >= 0.0).count() : 1.0))
-#else
-    auto values() const _OPENMA_NOEXCEPT
-#endif
+    auto values() const _OPENMA_NOEXCEPT -> Eigen::internal::MeanOpValues<decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).values()), decltype(OPENMA_MATHS_DECLVAL_NESTED(Xpr).residuals())>
     {
-      const auto& cond = (this->m_Xpr.residuals() >= 0.0);
-      return cond.template replicate<1,Xpr::ColsAtCompileTime>().select(this->m_Xpr.values(), 0.0).colwise().sum() / (cond.any() ? cond.count() : 1.0);
+      using V = decltype(this->m_Xpr.values());
+      using R = decltype(this->m_Xpr.residuals());
+      return Eigen::internal::MeanOpValues<V,R>(this->m_Xpr.values(), this->m_Xpr.residuals());
     };
 
     /**
