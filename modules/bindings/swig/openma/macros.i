@@ -52,7 +52,7 @@
   
 #if defined(SWIGMATLAB)
   SWIG_SetType(mxArray*)
-  %{ #define SWIG_SendError(code, msg) mexErrMsgIdAndTxt(SWIG_ErrorType(code), msg) %}
+  %{ #define SWIG_SendError(code, msg) SWIG_Error(code, msg) %}
 #elif defined(SWIGPYTHON)
   SWIG_SetType(PyObject*)
   %{ #define SWIG_SendError(code, msg) SWIG_Error(code, msg) %}
