@@ -138,7 +138,7 @@ namespace body
           it = globalMarkers.erase(it);
         else
         {
-          mappedMarkers.push_back({localMarker->data(),it->second});
+          mappedMarkers.push_back({Eigen::Map<Eigen::Matrix<double,3,1>>{localMarker->data()},it->second});
           ++it;
         }
       }
