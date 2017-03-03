@@ -36,6 +36,10 @@ ELSEIF((CMAKE_SYSTEM_NAME STREQUAL "Windows") AND MSVC)
   #  - EHsc: enable exception handling for C++ object
   #  - D_SCL_SECURE_NO_WARNINGS: disable function call with unsafe parameters warning
   SET(CMAKE_CXX_FLAGS "/EHsc -D_SCL_SECURE_NO_WARNINGS")
+ELSEIF((CMAKE_SYSTEM_NAME STREQUAL "Windows") AND MINGW)
+  # CXX Flag details:
+  #  - -ffloat-store: get the same floating point results with different optimization levels
+  SET(CMAKE_CXX_FLAGS "-ffloat-store")
 ENDIF()
 
 # ------------------------------------------------------------------------
