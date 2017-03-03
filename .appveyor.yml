@@ -9,18 +9,28 @@ environment:
   matrix:
   - CMAKE_GENERATOR: "NMake Makefiles"
     ARCH: "amd64_x86"
+    BITS: 32
   - CMAKE_GENERATOR: "NMake Makefiles"
     ARCH: "amd64"
+    BITS: 64
+  - CMAKE_GENERATOR: "MinGW Makefiles"
+    ARCH: "i686"
+    BITS: 32
+  - CMAKE_GENERATOR: "MinGW Makefiles"
+    ARCH: "x86_64"
+    BITS: 64
 install:
-  - SET PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC;%PATH%
   - git clone --quiet https://github.com/OpenMA/openma-data.git data
 before_build:
+  - SET PATH=%PATH:C:\Program Files\Git\usr\bin;=% # We cannot have sh.exe in the PATH (MinGW)
+  - SET PATH=C:\msys64\mingw%BITS%\bin;C:\Windows\System32;C:\Windows;%PATH%
+  - SET PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC;%PATH%
   - vcvarsall %ARCH%
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE:CHAR=%CONFIGURATION% -DBUILD_SHARED_LIBS:BOOL=1 -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=C:\projects\openma\data -G "%CMAKE_GENERATOR%" ..
 build_script:
-  - echo BUILD INFO - %CMAKE_GENERATOR% / %ARCH% / %CONFIGURATION%
-  - nmake
+  - echo BUILD INFO - %CMAKE_GENERATOR% / %ARCH% (%BITS%-bit) / %CONFIGURATION%
+  - cmake --build .
 test_script:
   - ctest -VV
