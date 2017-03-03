@@ -79,10 +79,10 @@ namespace ma
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> bool isEqual(U&& value) const _OPENMA_NOEXCEPT;
     template <typename U, typename D = void*, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(U&& value, D&& dimensions = D{}) _OPENMA_NOEXCEPT;
     template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> void assign(std::initializer_list<U> values, std::initializer_list<unsigned> dimensions = {}) _OPENMA_NOEXCEPT;
-    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast() const _OPENMA_NOEXCEPT;
-    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast(size_t idx) const _OPENMA_NOEXCEPT;
+    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast() const;
+    template <typename U, typename = typename std::enable_if<!std::is_same<Any, typename std::decay<U>::type>::value>::type> U cast(size_t idx) const;
     
-    template<class U> operator U() const _OPENMA_NOEXCEPT;
+    template<class U> operator U() const;
     
     Any& operator=(const Any& other);
     Any& operator=(Any&& other) _OPENMA_NOEXCEPT;

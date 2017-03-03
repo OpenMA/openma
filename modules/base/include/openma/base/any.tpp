@@ -62,12 +62,12 @@ namespace ma
     virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT = 0;
     virtual size_t size() const _OPENMA_NOEXCEPT = 0;
     virtual Storage* clone() const = 0;
-    virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT = 0;
+    virtual bool compare(Storage* other) const = 0;
     virtual void* element(size_t idx) const _OPENMA_NOEXCEPT = 0;
     
     // Both methods below are defined after the declaration of the Converter private API
-    template <typename U> void cast(U* value) const _OPENMA_NOEXCEPT;
-    template <typename U> void cast(U* value, size_t index) const _OPENMA_NOEXCEPT;
+    template <typename U> void cast(U* value) const;
+    template <typename U> void cast(U* value, size_t index) const;
     
     void* Data;
   };
@@ -181,14 +181,14 @@ namespace ma
     
     // Compare a Any object with a value which has another type
     template <typename U>
-    inline typename std::enable_if<!std::is_same<typename std::decay<U>::type, const char*>::value, bool>::type _any_is_equal(const Any* lhs, U&& rhs) _OPENMA_NOEXCEPT
+    inline typename std::enable_if<!std::is_same<typename std::decay<U>::type, const char*>::value, bool>::type _any_is_equal(const Any* lhs, U&& rhs)
     {
       return (lhs->cast<typename std::decay<U>::type>() == rhs);
     };
 
     // Compare a Any object with a const char* value
     template <typename U>
-    inline typename std::enable_if<std::is_same<typename std::decay<U>::type, const char*>::value, bool>::type _any_is_equal(const Any* lhs, U&& rhs) _OPENMA_NOEXCEPT
+    inline typename std::enable_if<std::is_same<typename std::decay<U>::type, const char*>::value, bool>::type _any_is_equal(const Any* lhs, U&& rhs)
     {
       const char* str = lhs->cast<const char*>();
       return ((str != nullptr) && (rhs != nullptr) && (strcmp(str, rhs) == 0));
@@ -221,7 +221,7 @@ namespace ma
       virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT final;
       virtual size_t size() const _OPENMA_NOEXCEPT final;
       virtual Storage* clone() const final;
-      virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT final;
+      virtual bool compare(Storage* other) const final;
       virtual void* element(size_t idx) const _OPENMA_NOEXCEPT final;
     };
   
@@ -238,7 +238,7 @@ namespace ma
       virtual std::vector<unsigned> dimensions() const _OPENMA_NOEXCEPT final;
       virtual size_t size() const _OPENMA_NOEXCEPT final;
       virtual Storage* clone() const final;
-      virtual bool compare(Storage* other) const _OPENMA_NOEXCEPT final;
+      virtual bool compare(Storage* other) const final;
       virtual void* element(size_t idx) const _OPENMA_NOEXCEPT final;
       size_t NumValues;
       const unsigned* Dimensions;
@@ -483,7 +483,7 @@ namespace ma
     };
 
     template <typename T> 
-    inline bool _Any_storage_single<T>::compare(Storage* other) const _OPENMA_NOEXCEPT
+    inline bool _Any_storage_single<T>::compare(Storage* other) const
     {
       if ((this->Data == nullptr) || (other->Data == nullptr))
         return false;
@@ -552,7 +552,7 @@ namespace ma
     };
 
     template <typename T> 
-    inline bool _Any_storage_array<T>::compare(Storage* other) const _OPENMA_NOEXCEPT
+    inline bool _Any_storage_array<T>::compare(Storage* other) const
     {
       if ((this->Data == nullptr) || (other->Data == nullptr))
         return false;
@@ -655,7 +655,7 @@ namespace ma
     
     // Arithmetic conversion
     template <typename U>
-    typename std::enable_if<std::is_arithmetic<typename std::decay<U>::type>::value, bool>::type _any_cast(U* value, const Any::Storage* storage, size_t idx = 0) _OPENMA_NOEXCEPT
+    typename std::enable_if<std::is_arithmetic<typename std::decay<U>::type>::value, bool>::type _any_cast(U* value, const Any::Storage* storage, size_t idx = 0)
     {
       const typeid_t id = storage->id();
       if (storage->is_arithmetic())
@@ -730,7 +730,7 @@ namespace ma
     
     // String conversion
     template <typename U>
-    typename std::enable_if<std::is_same<std::string, typename std::decay<U>::type>::value, bool>::type _any_cast(U* value, const Any::Storage* storage, size_t idx = 0) _OPENMA_NOEXCEPT
+    typename std::enable_if<std::is_same<std::string, typename std::decay<U>::type>::value, bool>::type _any_cast(U* value, const Any::Storage* storage, size_t idx = 0)
     {
       const typeid_t id = storage->id();
       if (id == static_typeid<std::string>())
@@ -875,7 +875,7 @@ namespace ma
   // --------------------------------------------------------------------- //
 
   template <typename U>
-  inline void Any::Storage::cast(U* value) const _OPENMA_NOEXCEPT
+  inline void Any::Storage::cast(U* value) const
   {
     if (this->id() == static_typeid<U>())
       *value = *static_cast<U*>(this->Data);
@@ -884,7 +884,7 @@ namespace ma
   };
 
   template <typename U>
-  inline void Any::Storage::cast(U* value, size_t idx) const _OPENMA_NOEXCEPT
+  inline void Any::Storage::cast(U* value, size_t idx) const
   {
     if (this->id() == static_typeid<U>())
       *value = static_cast<U*>(this->Data)[idx];
@@ -974,7 +974,7 @@ namespace ma
   };
 
   template <typename U, typename >
-  inline U Any::cast() const _OPENMA_NOEXCEPT
+  inline U Any::cast() const
   {
     static_assert(std::is_default_constructible<U>::value,"It is not possible to cast an Any object to a type which does not a default constructor.");
     U value = U();
@@ -984,7 +984,7 @@ namespace ma
   };
   
   template <typename U, typename >
-  inline U Any::cast(size_t idx) const _OPENMA_NOEXCEPT
+  inline U Any::cast(size_t idx) const
   {
     static_assert(std::is_default_constructible<U>::value,"It is not possible to cast an Any object to a type which does not a default constructor.");
     static_assert(!is_stl_vector<typename std::decay<U>::type>::value,"The _any_cast(idx) method does not accept std::vector as casted type.");
@@ -995,7 +995,7 @@ namespace ma
   };
   
   template <class U>
-  inline Any::operator U() const _OPENMA_NOEXCEPT
+  inline Any::operator U() const
   {
     return this->cast<U>();
   };
