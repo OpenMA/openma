@@ -376,7 +376,7 @@ namespace io
     if (pageSize <= 0)
       return 0;
     size_t newBufferSize = this->m_DataSize + pageSize;
-#if defined(_MSC_VER)
+#if !defined(HAVE_SYS_MMAP)
     if ((::UnmapViewOfFile(this->mp_Data) == 0) || (::CloseHandle(this->m_Map) == 0))
       return 0;
     this->m_Map = NULL;
@@ -400,7 +400,7 @@ namespace io
    */
   int MemoryMappedBuffer::granularity() _OPENMA_NOEXCEPT
   {
-#if defined(_MSC_VER)
+#if !defined(HAVE_SYS_MMAP)
     SYSTEM_INFO info;
     ::GetSystemInfo(&info);
     return static_cast<int>(info.dwAllocationGranularity);

@@ -44,11 +44,11 @@
 #include "openma/config.h" // HAVE_SYS_MMAP
 #include "openma/base/macros.h" // _OPENMA_NOEXCEPT
 
-#if !defined(HAVE_SYS_MMAP) && !defined(_MSC_VER)
+#if !defined(HAVE_SYS_MMAP) && !defined(_WIN32)// _WIN32 is detected by MSVC and MinGW
   #error Missing header to build the File class (memory mapping not found).
 #endif
 
-#if defined(_MSC_VER) // Windows
+#if !defined(HAVE_SYS_MMAP) // Windows
   #define WIN32_LEAN_AND_MEAN
   #define VC_EXTRALEAN
   // Defining NOMINMAX to prevent compiler error with std::min/std::max when including windows.h
