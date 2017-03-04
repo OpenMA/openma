@@ -112,7 +112,7 @@ namespace ma
    * 
    * For ADC data, some members were added to give supplementary information that could be used useful when exporting the TimeSequence into a file.
    * You can pass to the constructor 3 ADC parameters: @a scale, @a offset, and @a range. By default, the ADC resolution is not stored as it is assumed that all TimeSequence objects use the same converter. However, you could add a dynamic property (e.g. @a resolution) using setProperty() to store this information.
-   * In general the file formats proposed in OpenMAto to read/write ADC data use only the three stored ADC parameter (scale, offset, range). You should read their dedicated documentation for more details.
+   * In general the file formats proposed in OpenMA to to read/write ADC data use only the three stored ADC parameter (scale, offset, range). You should read their dedicated documentation for more details.
    * @code{.unparsed}
    * // The last three arguments are for:
    * //  - The ADC scale: 1.0
@@ -138,7 +138,7 @@ namespace ma
    */
   /**
    * @var TimeSequence::Type TimeSequence::Reconstructed
-   * Internal flag to indicated if these data are reconstructed data. The usage of this flag shall mean that some components are resevred for reconstruction residuals. For example if a TimeSequence is set to the Type Marker (predefined value included the Reconstructed flag), the given dimension should be set to 4. Three of them are for the coordinates and the later is for the reconstruction residuals.
+   * Internal flag to indicate if these data are reconstructed data. The usage of this flag shall mean that some components are reserved for reconstruction residuals. For example if a TimeSequence is set to the Type Marker (predefined value included the Reconstructed flag), the given dimension should be set to 4. Three of them are for the coordinates and the later is for the reconstruction residuals.
    */
   /**
    * @var TimeSequence::Type TimeSequence::Position
@@ -174,7 +174,7 @@ namespace ma
    */
   /**
    * @var TimeSequence::Type TimeSequence::Other
-   * To be used to extend predefined type. This could be usefull to extract all the node with a specific type.
+   * To be used to extend predefined type. This could be useful to extract all the node with a specific type.
    */
   
 #ifdef DOXYGEN_SHOULD_TAKE_THIS
@@ -182,45 +182,45 @@ namespace ma
   struct TimeSequence::__Doxygen_Properties
   {
   /**
-   * This property holds the number of samples of a Timesequnce. By default, this property is set to 0.
+   * This property holds the number of samples of a TimeSequence. By default, this property is set to 0.
    * @sa samples() setSamples()
    */
   unsigned samples;
   /**
-   * This property holds the sample rate of a Timesequnce. By default, this property is set to 0.
+   * This property holds the sample rate of a TimeSequence. By default, this property is set to 0.
    * @sa sampleRate() setSampleRate()
    */
   double sampleRate;
   /**
-   * This property holds the start time of a Timesequnce. By default, this property is set to 0.0.
+   * This property holds the start time of a TimeSequence. By default, this property is set to 0.0.
    * @sa startTime() setStartTime()
    */
   double startTime;
   /**
-   * This property holds the type of a Timesequnce. By default, this property is set to TimeSequence::Unknown.
+   * This property holds the type of a TimeSequence. By default, this property is set to TimeSequence::Unknown.
    * @sa type() setType()
    */
   int type;
   /**
-   * This property holds the unit of a Timesequnce. By default, this property contains an empty string.
+   * This property holds the unit of a TimeSequence. By default, this property contains an empty string.
    * @note The modification of this property does not influence the data. This is only for information purpose
    * @sa unit() setUnit()
    */
   std::string unit;
   /**
-   * This property holds the scale of a Timesequnce. By default, this property is set to 1.0.
+   * This property holds the scale of a TimeSequence. By default, this property is set to 1.0.
    * @note The modification of this property does not influence the data. This is only for information purpose
    * @sa scale() setScale()
    */
   double scale;
   /**
-   * This property holds the offset of a Timesequnce. By default, this property is set to 0.
+   * This property holds the offset of a TimeSequence. By default, this property is set to 0.
    * @note The modification of this property does not influence the data. This is only for information purpose
    * @sa offset() setOffset()
    */
   double offset;
   /**
-   * This property holds the range of a Timesequnce. By default, this property is set to [-infinity, +infinity].
+   * This property holds the range of a TimeSequence. By default, this property is set to [-infinity, +infinity].
    * @note The modification of this property does not influence the data. This is only for information purpose
    * @sa range() setRange()
    */
@@ -239,7 +239,7 @@ namespace ma
 #endif
   
   /**
-   *  Complete constructor for time series signal with 1D data sample. This constructor can be usefull for Analog signal recorded by a digital-to-analog converter (DAC).
+   *  Complete constructor for time series signal with 1D data sample. This constructor can be useful for Analog signals recorded by a digital-to-analog converter (DAC).
    * @note The given @a type should be based on the enum Type.
    */
   TimeSequence::TimeSequence(const std::string& name, unsigned components, unsigned samples, double rate, double start, int type, const std::string& unit, double scale, double offset, const std::array<double,2>& range, Node* parent)
@@ -247,7 +247,7 @@ namespace ma
   {};
 
   /**
-   *  Simplified constructor for time series signal with 1D data sample. Lots of predefined type (Marker, Angle, Force, Moment, etc.) should use this constructor.
+   *  Simplified constructor for time series signal with 1D data sample. Lots of predefined types (Marker, Angle, Force, Moment, etc.) should use this constructor.
    * @note The given @a type should be based on the enum Type.
    */
   TimeSequence::TimeSequence(const std::string& name, unsigned components, unsigned samples, double rate, double start, int type, const std::string& unit, Node* parent)
@@ -255,7 +255,7 @@ namespace ma
   {};
 
   /**
-   * Complete constructor for time series signal with xD data sample. The number of data sample dimensions is determined by the number of @a components given. This constructor can be usefull for pressure matrix or any measuring system with 2D (or more) data sample dimension.
+   * Complete constructor for time series signal with xD data sample. The number of data sample dimensions is determined by the number of @a components given. This constructor can be useful for pressure matrix or any measuring system with 2D (or more) data sample dimension.
    * @note The given @a type should be based on the enum Type.
    */
   TimeSequence::TimeSequence(const std::string& name, const std::vector<unsigned>& components, unsigned samples, double rate, double start, int type, const std::string& unit, double scale, double offset, const std::array<double,2>& range, Node* parent)
@@ -263,7 +263,7 @@ namespace ma
   {};
   
   /**
-   * Simplified constructor for time series signal with xD data sample. The number of data sample dimensions is determined by the number of @a components given. This constructor can be usefull for pressure matrix or any measuring system with 2D (or more) data sample dimension.
+   * Simplified constructor for time series signal with xD data sample. The number of data sample dimensions is determined by the number of @a components given. This constructor can be useful for pressure matrix or any measuring system with 2D (or more) data sample dimension.
    * @note The given @a type should be based on the enum Type.
    */
   TimeSequence::TimeSequence(const std::string& name, const std::vector<unsigned>& components, unsigned samples, double rate, double start, int type, const std::string& unit, Node* parent)
@@ -322,8 +322,8 @@ namespace ma
 
   /**
    * Returns the total number of components for one data sample.
-   * This method multiplies each dimensions together to compute the total number of component.
-   * It can be usefull to convert a xD signal into a 1D signal.
+   * This method multiplies each dimension together to compute the total number of components.
+   * It can be useful to convert a xD signal into a 1D signal.
    */
   unsigned TimeSequence::components() const _OPENMA_NOEXCEPT
   {
@@ -351,7 +351,7 @@ namespace ma
   };
 
   /**
-   * Returns the type assocaited with the time sequence.
+   * Returns the type associated with the time sequence.
    */
   int TimeSequence::type() const _OPENMA_NOEXCEPT
   {
@@ -501,12 +501,12 @@ namespace ma
  
   /**
    * @fn template <typename... Is> double TimeSequence::data(unsigned sample, Is... indices) const _OPENMA_NOEXCEPT
-   * Extract a read-only element of the time sequence for the given @a sample index and dimensions @a indices. In case the the number of @a indices is not consistent with the number of dimension, ths missing ones are set to 0.
+   * Extract a read-only element of the time sequence for the given @a sample index and dimensions @a indices. In case the number of @a indices is not consistent with the number of dimensions, ths missing ones are set to 0.
    */
   
   /**
    * @fn template <typename... Is> double& TimeSequence::data(unsigned sample, Is... indices) _OPENMA_NOEXCEPT
-   * Extract a reference to a read-only element of the time sequence for the given @a sample index and dimensions @a indices. In case the the number of @a indices is not consistent with the number of dimension, ths missing ones are set to 0. If the data are modified by this method, it is adviced to call modified() manually
+   * Extract a reference to a read-only element of the time sequence for the given @a sample index and dimensions @a indices. In case the number of @a indices is not consistent with the number of dimensions, ths missing ones are set to 0. If the data are modified by this method, it is adviced to call modified() manually
    */
   
   /**
