@@ -65,7 +65,7 @@ namespace ma
    * @brief Base for all objects which need to keep track of modified time.
    *
    * This class uses the private implementation (pimpl) idiom to keep an ABI compatibility
-   * between the different release of the project.
+   * between the different releases of the project.
    *
    * Two macros are provided to simplify the implementation of the pimpl idiom.
    * Both of them are defined in the file "openma/base/opaque.h".
@@ -74,9 +74,9 @@ namespace ma
    *
    * For example, the following header file create a new class which contains an accessor and mutator for a member 'Version' in the (opaque) private implementation.
    * The macro OPENMA_DECLARE_PIMPL_ACCESSOR() declares private pimpl() methods used to access to the mp_Pimpl member.
-   * The methods are able to downcast to the given classname. This is usefull when the implemented class inherits from a class which uses already the pimpl idiom.
+   * The methods are able to downcast to the given classname. This is useful when the implemented class inherits from a class that already uses the pimpl idiom.
    *
-   * To use the macros for custom development you can follow the next examples. The first and second introduce the macros while the third introduce their use to inherit from the class openma::Object
+   * To use the macros for custom development you can follow the next examples. The first and second introduce the macros while the third introduces their use to inherit from the class openma::Object
    *
    * First the public interface is defined in a header file.
    *
@@ -176,8 +176,8 @@ namespace ma
    * };
    * @endcode
    *
-   * Finally, to extand OpenMA with a new class, you can inherit from the class openma::Object (or other inherited classes). Thus it is even simpler to use the pimpl idiom. Indeed, the member mp_Pimpl is already declared in the class openma::Object.
-   * You only need to inherit from the public and private part. Note, to inherit from the private part, this one is defined in its own private header file (with the suffix _p) to not have it visible and possible break the ABI compatibilty.
+   * Finally, to extend OpenMA with a new class, you can inherit from the class openma::Object (or other inherited classes). Thus it is even simpler to use the pimpl idiom. Indeed, the member mp_Pimpl is already declared in the class openma::Object.
+   * You only need to inherit from the public and private part. Note that, to inherit from the private part, this one is defined in its own private header file (with the suffix _p) to not have it visible and possible break the ABI compatibilty.
    *
    * @code{.unparsed}
    * class MyObjectPrivate; // Defined outside in case it can be reused
