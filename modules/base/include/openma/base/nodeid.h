@@ -40,7 +40,7 @@
 
 /**
  * Define the public method isCastable() used to determine if the object can be cast to the given type.
- * @note This macro must be included by every inheriting Node classes to be correctly recognised as suche. For example, the function node_cast() needs the use of this macro to correctly work.
+ * @note This macro must be included by every inheriting Node classes to be correctly recognised as such. For example, the function node_cast() needs to use this macro to correctly work.
  * @relates ma::Node
  * @ingroup openma_base
  */

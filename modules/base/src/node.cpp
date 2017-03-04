@@ -179,12 +179,12 @@ namespace ma
    * @class Node openma/base/node.h
    * @brief Base class for the data structure
    *
-   * The data struture in OpenMA is mostly a tree-like structure (more exactly it is a graph as a node can have several parents).
+   * The data struture in OpenMA is mostly a tree-like structure (more exactly it is a graph, as a node can have several parents).
    * The general idea is to store data in a dynamic structure without the need to modify the internal storage each time a new category of data is added (e.g. pressure, GPS, etc.).
    * Thus, it would be simpler to integrate new kind of file formats as well as new models.
    *
    * Children nodes are owned by their parents. Thus only the first parent(s) (e.g. the root' tree) has to be deleted. 
-   * This one can be stored in a smart pointer (shared, unique pointer) to not manage its deletion.
+   * This one can be stored in a smart pointer (shared, unique pointer) to avoid managing its deletion.
    * For example:
    *
    * @code{.unparsed}
@@ -218,10 +218,10 @@ namespace ma
    * ma::Node leafB("leafB",&root); // Owned by the root
    * leafA.addParent(&root); // Owned by the root
    * // ...
-   * // End of the program/function, leafB is destroyed, then root which destroys also its children. What about leafA?
+   * // End of the program/function, leafB is destroyed, then root, which also destroys its children. What about leafA?
    * @endcode
    *
-   * In the previous example, the remaining child of root (pointer to leafA) is a local variable and calling its destructor is incorrect. Thus, when the variable leafA goes out of scope, its destructor is called again. The same memory is freed two times that should crash the program.
+   * In the previous example, the remaining child of root (pointer to leafA) is a local variable and calling its destructor is incorrect. Thus, when the variable leafA goes out of scope, its destructor is called again. The same memory is freed twice, which should crash the program.
    *
    * Finally, to declare a custom node type (i.e. a new inheriting class), several macros must be used:
    * - OPENMA_EXPORT_STATIC_TYPEID() and OPENMA_INSTANCE_STATIC_TYPEID()
@@ -309,8 +309,8 @@ namespace ma
   
   /**
    * Destructor.
-   * Detach this object of these children. In case a child has no more parent, it is deleted.
-   * Detach also this object of these parents
+   * Detach this object of its children. In case a child has no more parent, it is deleted.
+   * Detach also this object of its parents
    */
   Node::~Node() _OPENMA_NOEXCEPT
   {
@@ -319,7 +319,7 @@ namespace ma
 
   /**
    * Returns the name of the node.
-   * You can also access to this information using the property 'name'.
+   * You can also access this information using the property 'name'.
    */
   const std::string& Node::name() const _OPENMA_NOEXCEPT
   {
@@ -343,7 +343,7 @@ namespace ma
   
   /**
    * Returns the description of the node. By default the description is empty.
-   * You can also access to this information using the property 'description'.
+   * You can also access this information using the property 'description'.
    */
   const std::string& Node::description() const _OPENMA_NOEXCEPT
   {
@@ -363,8 +363,8 @@ namespace ma
   };
   
   /**
-   * Returns the value's property associated to the given @a key.
-   * The value is a Any object and can be converted to several types implicity.
+   * Returns the value of the property associated to the given @a key.
+   * The value is a Any object and can be converted to several types implicitly.
    * For example, the following code shows two ways to extract property's value.
    *
    * @code{.unparsed}
@@ -392,7 +392,7 @@ namespace ma
   };
   
   /**
-   * Sets the property @a key with the given @a value.
+   * Sets the value of property @a to the given @a value.
    * The @a value can be an Any object or a type supported by it (e.g. int, double, std::string,).
    * In case the property does not exist, or its value is different, or it is removed, the state of the node is set to modified.
    */
@@ -455,7 +455,7 @@ namespace ma
    */
   
   /**
-   * Returns the vector of children attached with this node.
+   * Returns the vector of children attached to this node.
    */ 
   const std::vector<Node*>& Node::children() const _OPENMA_NOEXCEPT
   {
@@ -473,7 +473,7 @@ namespace ma
   };
   
   /**
-   * Returns the vector of parents attached with this node.
+   * Returns the vector of parents attached to this node.
    */ 
   const std::vector<Node*>& Node::parents() const _OPENMA_NOEXCEPT
   {
@@ -491,7 +491,7 @@ namespace ma
   };
   
   /**
-   * Appends a node if this one is not already a parent.
+   * Appends a node provided it is not a parent already.
    * In case this node is added, @a node is attached as parent and its state is set to modified.
    */
   void Node::addParent(Node* node) _OPENMA_NOEXCEPT
@@ -505,7 +505,7 @@ namespace ma
   
   /**
    * Remove @a node from associated parents.
-   * @note It is the responsability to the developer to delete this node if this one has no more parent.
+   * @note Note: It is developer's responsability to delete this node if it has no parent.
    */
   void Node::removeParent(Node* node) _OPENMA_NOEXCEPT
   {
@@ -517,7 +517,7 @@ namespace ma
   };
   
   /**
-   * Overload method which modify this object as well as all these parents.
+   * Overload method which modifies this object as well as all its parents.
    */
   void Node::modified() _OPENMA_NOEXCEPT
   {
@@ -528,8 +528,8 @@ namespace ma
   };
   
   /**
-   * Removes all parents, children and properties
-   * If a child has no more parent, this one is deleted.
+   * Removes all parents, children and properties.
+  * If a child has no more parent, it is deleted
    */
   void Node::clear() _OPENMA_NOEXCEPT
   {
@@ -586,7 +586,7 @@ namespace ma
   };
   
   /**
-   * Constructor to be used by inherited object which want to add informations (static properties, members, etc) to the private implementation.
+   * Constructor to be used by an inherited object that wants to add information (static properties, members, etc) to the private implementation.
    */
   Node::Node(NodePrivate& pimpl, Node* parent) _OPENMA_NOEXCEPT
   : Object(pimpl)
@@ -615,8 +615,8 @@ namespace ma
    * ma::Node* bar = root.findChild("bar"); // A node with the name "bar"
    * @endcode
    *
-   * In addition, you can add properties to refine the research. Sometimes this could be usefull to distinguish events with the same name but different properties.
-   * As presented in the following examples, it is adviced to give matching properties in an initializer vector using curly brackets due to the use of the move semantics in the method. Inside, each matching property is given as a pair {key, value} given also by an initializer vector. So, for a single matching property, two pairs of curly brackets are used but this is correct.
+   * In addition, you can add properties to refine the search. Sometimes this can be useful to distinguish events with the same name but different properties.
+   * As presented in the following examples, it is adviced to give matching properties in an initializer list using curly brackets due to the use of the move semantics in the method. Inside, each matching property is given as a pair {key, value}, given also by an initializer list. So, for a single matching property, two pairs of curly brackets are used but this is correct.
    * @code{.unparsed}
    * ma::Node events("Events");
    * ma::Event evtA("Foo",0.0,"Right","JDoe",&events);
@@ -673,8 +673,8 @@ namespace ma
   
   /**
    * Retrieves the first path existing between the current node and the given @a node.
-   * If no path exists between both, then an empty vector is returned, 
-   * The first node in the retrieved path is the current one, while the last is the node to search.
+   * If no path exists between both, then an empty list is returned.
+   * The first node in the retrieved path is the current one and the last one is the node searched.
    */
   std::vector<const Node*> Node::retrievePath(const Node* node) const _OPENMA_NOEXCEPT
   {

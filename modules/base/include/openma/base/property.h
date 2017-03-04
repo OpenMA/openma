@@ -43,7 +43,7 @@
 
 /**
  * Add a private StaticProperties structure and the methods staticProperty() and setStaticProperty().
- * The classes that can use this macro may need to derive of the class ma::Node (or any inheriting class) but its private implementation must be a based one.
+ * For a class to use this macro it may need to derive from the class ma::Node (or any inheriting class) but its private implementation must be a based one.
  * @sa Property
  * @relates ma::Node
  * @ingroup openma_base
