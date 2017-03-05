@@ -29,3 +29,6 @@
 
 # Python module files
 *.pyc
+
+# Jetbrains tools
+.idea
