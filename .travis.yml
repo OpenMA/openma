@@ -1,7 +1,14 @@
-# The main language used in the project is the C++ language.
-# The setting of the language to 'objective-c' is only for travis to know that we want to use
-# a MacOS X building environment
-language: objective-c
+# C++ project
+language: cpp
+
+# Built on the following OS
+os:
+  - osx
+
+# With the following compilers
+compiler:
+  - clang
+  - gcc
 
 # To prepare the system to install prerequisites or dependencies
 before_install:
@@ -17,7 +24,6 @@ script:
   - rm -rf build
   - mkdir build
   - cd build
-  - if [ "$SELECTED_COMPILER" = "GCC" ]; then export CC=gcc-4.9 && export CXX=g++-4.9; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then cmake -DCMAKE_BUILD_TYPE:CHAR=$WITH_BUILD_TYPE -DBUILD_SHARED_LIBS:BOOL=$WITH_SHARED_LIBS -DWITH_COVERALLS_ENABLED:BOOL=$WITH_COVERALLS_ENABLED -DBUILD_UNIT_TESTS:BOOL=1 -DOPENMA_TESTING_DATA_PATH:CHAR=$ROOT/data -G "Unix Makefiles" ..; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then make; fi
   - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then ctest -VV; fi
@@ -27,16 +33,20 @@ after_success:
 
 # Building matrix used by the 'script' section
 env:
+  matrix:
+    - WITH_BUILD_TYPE=Debug   WITH_SHARED_LIBS=0 WITH_COVERALLS_ENABLED=1 WITH_COVERITY_ENABLED=0
+    - WITH_BUILD_TYPE=Debug   WITH_SHARED_LIBS=1 WITH_COVERALLS_ENABLED=0 WITH_COVERITY_ENABLED=0
+    - WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=0 WITH_COVERALLS_ENABLED=0 WITH_COVERITY_ENABLED=1
+    - WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERALLS_ENABLED=0 WITH_COVERITY_ENABLED=0
   global:
     - secure: "APbR5MQdBH4haJuend5q07w+gAafhjtT8z7T2JS0ZIepQc+qwWucd6BRvkcD7fMpogEJ6+d55frtSW51Fw9o5h0ioXxx5pXJ/ZMnkDKy0V6oDpghPm2JSO+1wF1S+Xmsbw3fxuSIQAWSJHkkuJZyJAC8Rerg4Pz0XMi4XU0WOtsRhdPk6mJUbmeKu055qbyJRW4EuhamroZLjLwvFkRjbyJ79mfGd4mm7GTrXaG/ImQeq3LW+5qhD8q5ypb7gXIMkal58EAsTi6wEVJIWIGOHS3U2dZ8ZM9doV+hdZJd2zAO8ZHGpFMw9zpdghUsWyXGPuoYJBE71FxZ910vpRtbZ6hba8LkEoLj4SpeT+rpQoXozXtdklMmZQrJp9deQaena8i195PJ8pxXrUpMcOIEIp2IwbTVT2+gbrw5nuFwUjeXkwb61Ng598WQMAMPPJ4suPuWzk+vL1a/ZADntFdPgQ9FxofNz8T21wC3UTk1t4VQsrZsXYedpuP5d32EHMrXGOcDwkW0QTnl/cWnuAnTnUHvhCeV5MmeC1aLXC9yculd/jCnlpTDr2N4T1Ev2DB1AVoN0LRYFU57qwWcb7lDLUT0fEY9quyUxpwLsv4LO0vRaKBNuOkqmvphvmkQLNFwZ1ML9LIy5Eno19DCAAODce668gaJ4ZtaPzbPOqn6B04="
   
-  matrix:
-    - SELECTED_COMPILER=Clang WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=0
-    # - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=1 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=0
-    # - SELECTED_COMPILER=GCC   WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=0 WITH_COVERITY_ENABLED=1 WITH_COVERALLS_ENABLED=0
-    - SELECTED_COMPILER=Clang WITH_BUILD_TYPE=Debug   WITH_SHARED_LIBS=0 WITH_COVERITY_ENABLED=0 WITH_COVERALLS_ENABLED=1
-      
 matrix:
+  exclude:
+    - compiler: gcc
+      env: WITH_COVERALLS_ENABLED=1
+    - compiler: clang
+      env: WITH_COVERITY_ENABLED=1
   # Allow failure for Coverity as this is not a standard compiler (COVERITY_SCAN_BRANCH is defined by the coverity_scan addon)
   allow_failures:
     - env: COVERITY_SCAN_BRANCH=1
