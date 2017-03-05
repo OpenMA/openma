@@ -44,9 +44,9 @@ env:
 matrix:
   exclude:
     - compiler: gcc
-      env: WITH_COVERALLS_ENABLED=1
+      env: WITH_BUILD_TYPE=Debug   WITH_SHARED_LIBS=0 WITH_COVERALLS_ENABLED=1 WITH_COVERITY_ENABLED=0
     - compiler: clang
-      env: WITH_COVERITY_ENABLED=1
+      env: WITH_BUILD_TYPE=Release WITH_SHARED_LIBS=0 WITH_COVERALLS_ENABLED=0 WITH_COVERITY_ENABLED=1
   # Allow failure for Coverity as this is not a standard compiler (COVERITY_SCAN_BRANCH is defined by the coverity_scan addon)
   allow_failures:
     - env: COVERITY_SCAN_BRANCH=1
