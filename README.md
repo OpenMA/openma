@@ -48,7 +48,7 @@ This part compiles the code on different operating systems in release mode and v
   - Libraries build mode(s): Shared
 
  - **Microsoft Windows [![Build status](https://ci.appveyor.com/api/projects/status/1w7h67al1irf79lu?svg=true)](https://ci.appveyor.com/project/Alzathar/openma)**
-  - Compiler(s): MSVC 2013
+  - Compiler(s): MSVC 2013 / GCC >= 4.8 (MinGW)
   - Processor architecture(s): x86 / x86_64
   - Libraries build mode(s): Shared
 
