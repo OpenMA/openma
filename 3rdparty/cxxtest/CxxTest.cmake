@@ -16,7 +16,7 @@ SET(CXXTEST_INCLUDES
 
 SET(CXXTEST_TEST_MAIN_SRC "${CXXTEST_ROOT}/additional/driver/main.cpp")
 
-FUNCTION(ADD_CXXTEST_TESTDRIVER)
+FUNCTION(ADD_CXX_CXXTEST_DRIVER)
   # Parse the arguments
   SET(options )
   SET(oneValueArgs NAME)

@@ -1,1 +1,1 @@
-ADD_CXXTEST_TESTDRIVER(openma_processing_butterzerolaglowpass butterzerolaglowpassTest.cpp processing)
+ADD_CXX_CXXTEST_DRIVER(openma_processing_butterzerolaglowpass butterzerolaglowpassTest.cpp processing)
