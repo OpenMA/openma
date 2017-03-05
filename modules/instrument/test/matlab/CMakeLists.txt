@@ -2,5 +2,5 @@ SET(TOOLBOX_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/swig/matlab/openma")
 SET(TESTS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(MTD_DIRS ${TOOLBOX_DIRECTORY} ${TESTS_DIRECTORY})
 
-ADD_MATLAB_TESTDRIVER(matlab_instrument_forceplatetype5 ForcePlateType5Test.m INCLUDES ${MTD_DIRS})
-ADD_MATLAB_TESTDRIVER(matlab_instrument_forceplatetype3 ForcePlateType3Test.m INCLUDES ${MTD_DIRS})
+ADD_MATLAB_UNITTEST_DRIVER(matlab_instrument_forceplatetype5 ForcePlateType5Test.m INCLUDES ${MTD_DIRS})
+ADD_MATLAB_UNITTEST_DRIVER(matlab_instrument_forceplatetype3 ForcePlateType3Test.m INCLUDES ${MTD_DIRS})
