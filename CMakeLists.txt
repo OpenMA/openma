@@ -130,6 +130,8 @@ OPTION(BUILD_UNIT_TESTS "Build OpenMA unit and regression tests." OFF)
 IF(BUILD_UNIT_TESTS)
   # The CxxTest library included with OpenMA is modified.
   INCLUDE(${OPENMA_SOURCE_DIR}/3rdparty/cxxtest/CxxTest.cmake)
+  # Single header unit-tests library
+  INCLUDE(${OPENMA_SOURCE_DIR}/3rdparty/catch/Catch.cmake)
   ENABLE_TESTING()
 ENDIF()
 
