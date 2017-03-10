@@ -33,7 +33,7 @@ class NodeTest(unittest.TestCase):
         
     def test_copy_variable_in_cell(self):
         nodes = [];
-        for i in xrange(0,3):
+        for i in range(0,3):
             node = ma.Node('Node'+str(i+1));
             nodes.append(node);
         self.assertEqual(nodes[0].name(), 'Node1');

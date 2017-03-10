@@ -10,7 +10,7 @@ class ProcessingTest(unittest.TestCase):
         ts.setData(np.array([data]).T)
         self.assertEqual(ma.processing.filter_butterworth_zero_lag([ts],ma.processing.Response_LowPass,20.0,2), True)
         out = ts.data()
-        for i in xrange(0,81):
+        for i in range(0,81):
             self.assertAlmostEqual(out[i], ref[i], 7)
         
     def test_butterworth_zero_lag_low_pass_reconstructed(self):
@@ -24,7 +24,7 @@ class ProcessingTest(unittest.TestCase):
         self.assertEqual(ma.processing.filter_butterworth_zero_lag(tss,ma.processing.Response_LowPass,6.0,4), True)
         out1 = tss[0].data()
         out2 = tss[1].data()
-        for i in xrange(0,81):
+        for i in range(0,81):
             self.assertAlmostEqual(out1[i][0], ref[0][i], 7)
             self.assertAlmostEqual(out1[i][1], ref[0][i], 7)
             self.assertAlmostEqual(out1[i][2], ref[0][i], 7)
