@@ -12,7 +12,7 @@ class IOTest(unittest.TestCase):
         root = ma.io.read(openma_tdd_path_in('c3d/standard/sample01/Eb015vi.c3d'))
         forceplates = root.findChildren(ma.instrument.T_ForcePlate)
         self.assertEqual(len(forceplates),2)
-        for i in xrange(0,2):
+        for i in range(0,2):
             fp = forceplates[i]
             self.assertEqual(fp.type(), 2)
             self.assertEqual(fp.type(), ma.instrument.ForcePlate.Type_Type2)

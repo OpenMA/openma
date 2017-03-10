@@ -80,7 +80,7 @@ class ForcePlateType5Test(unittest.TestCase):
         self.assertEqual(cmdim[0], 6)
         self.assertEqual(cmdim[1], 8)
         cmdata = fp5.calibrationMatrixData()
-        for i in xrange(0,48):
+        for i in range(0,48):
             self.assertAlmostEqual(cmdata[i], fp5_calib6x8[i], 5)
     
     def test_wrenches(self):
@@ -130,7 +130,7 @@ class ForcePlateType5Test(unittest.TestCase):
         
         # NOTE: Tolerance are higher than in the C++ due to the difference in the method to compare real numbers.
         wlo = fp5.wrench(ma.instrument.Location_Origin, False).data()
-        for i in xrange(0,samples):
+        for i in range(0,samples):
             self.assertAlmostEqual(wlo[i,0], -fp5_dataout[i+0*samples], 3)
             self.assertAlmostEqual(wlo[i,1], -fp5_dataout[i+1*samples], 3)
             self.assertAlmostEqual(wlo[i,2], -fp5_dataout[i+2*samples], 3) 
@@ -138,7 +138,7 @@ class ForcePlateType5Test(unittest.TestCase):
             self.assertAlmostEqual(wlo[i,4]/1000., -fp5_dataout[i+4*samples], 3)
             self.assertAlmostEqual(wlo[i,5]/1000., -fp5_dataout[i+5*samples], 3)
         wlc = fp5.wrench(ma.instrument.Location_CentreOfPressure, False).data()
-        for i in xrange(0,samples):
+        for i in range(0,samples):
             self.assertAlmostEqual(wlc[i,6], fp5_dataout[i+6*samples], 2)
             self.assertAlmostEqual(wlc[i,7], fp5_dataout[i+7*samples], 2)
             self.assertAlmostEqual(wlc[i,8], fp5_dataout[i+8*samples]-16.33887, 2)
