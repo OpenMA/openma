@@ -137,7 +137,7 @@ CXXTEST_SUITE(C3DWriterTest)
   {
     ma::Node rootIn("rootIn"), rootOut("rootOut");
     ma::Trial foo("foo", &rootIn);
-    ma::TimeSequence bar("bar", 1, 100, 1000.0, 10.0, ma::TimeSequence::Analog, "V", 1.0, 0.0, std::array<double,2>{{-1.0, 1.0}}, foo.timeSequences());
+    ma::TimeSequence bar("bar", 1, 100, 1000.0, 10.0, ma::TimeSequence::Analog, "V", 1.0, 0.0, std::array<double,2>{{-10.0, 10.0}}, foo.timeSequences());
     if (!c3dhandlertest_write("", OPENMA_TDD_PATH_OUT("c3d/analog_only.c3d"), &rootIn)) return;
     if (!c3dhandlertest_read("", OPENMA_TDD_PATH_OUT("c3d/analog_only.c3d"), &rootOut)) return;
 
@@ -145,11 +145,11 @@ CXXTEST_SUITE(C3DWriterTest)
     auto tss = rootOut.findChildren<ma::TimeSequence*>();
     TS_ASSERT_EQUALS( tss.size(), 1u );
 
-    const auto range = std::array<double,2>{{-1., 1.}};
-    TS_ASSERT_EQUALS( tss[0]->samples() == 100 );
-    TS_ASSERT_EQUALS( tss[0]->sampleRate() == 1000.0 );
-    TS_ASSERT_EQUALS( tss[0]->range()[0] == range[0] );
-    TS_ASSERT_EQUALS( tss[0]->range()[1] == range[1] );
+    const auto range = std::array<double,2>{{-10., 10.}};
+    TS_ASSERT_EQUALS( tss[0]->samples(), 100u );
+    TS_ASSERT_EQUALS( tss[0]->sampleRate(), 1000.0 );
+    TS_ASSERT_EQUALS( tss[0]->range()[0], range[0] );
+    TS_ASSERT_EQUALS( tss[0]->range()[1], range[1] );
   }
 };
 
