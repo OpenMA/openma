@@ -249,7 +249,7 @@ void hpfhandlertest_read_Set1_Rep2__v3(ma::Node* root)
   CHECK( tss[7]->data()[59999] == AROUND(4.3945e-5, 1e-9) );
 };
 
-void hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(ma::Node* root)
+void hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(ma::Node* root, bool check_range = true)
 {
   REQUIRE( root->children().size() == 1u );
   auto tss = root->findChildren<ma::TimeSequence*>();
@@ -260,8 +260,11 @@ void hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(ma::Node* root)
   {
     REQUIRE( ts->samples() == 21000 );
     CHECK( ts->sampleRate() == 2000.0 );
-    CHECK( ts->range()[0] == range[0] );
-    CHECK( ts->range()[1] == range[1] );
+    if (check_range)
+    {
+      CHECK( ts->range()[0] == range[0] );
+      CHECK( ts->range()[1] == range[1] );
+    }
   }
 
   CHECK( tss[ 0]->name() == "R RECTUS FEMORIS: EMG 1" );
@@ -368,7 +371,7 @@ void hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(ma::Node* root)
   CHECK( tss[ 2]->data()[10809] == AROUND(0            , 1e-5) );
   CHECK( tss[ 3]->data()[10809] == AROUND(0            , 1e-5) );
   CHECK( tss[ 4]->data()[10809] == AROUND(4.51514E-05  , 1e-5) );
-  CHECK( tss[ 5]Q->data()[10809] == AROUND(0            , 1e-5) );
+  CHECK( tss[ 5]->data()[10809] == AROUND(0            , 1e-5) );
   CHECK( tss[ 6]->data()[10809] == AROUND(0            , 1e-5) );
   CHECK( tss[ 7]->data()[10809] == AROUND(0            , 1e-5) );
   CHECK( tss[ 8]->data()[10809] == AROUND(-0.000280644 , 1e-5) );

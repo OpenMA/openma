@@ -4,7 +4,7 @@
 
 #include "test_file_path.h"
 
-TEST_CASE("Delsys HPF format - reader capability", "[openma][io][format][delsys.hpf]")
+TEST_CASE("Delsys HPF format - reader", "[openma][io][format][delsys.hpf]")
 {
 
   SECTION("capability")
@@ -126,6 +126,21 @@ TEST_CASE("Delsys HPF format - file content", "[openma][io][format][delsys.hpf]"
     file.open(OPENMA_TDD_PATH_IN("hpf/Run_number_53_Plot_and_Store_Rep_1.1.hpf"), ma::io::Mode::In);
     CHECK( reader.read(&root) );
     hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(&root);
+  }
+
+}
+
+TEST_CASE("Delsys HPF format - conversion", "[openma][io][format][delsys.hpf]")
+{
+  ma::Node original("original"), converted("converted");
+
+  SECTION("HPF -> C3D")
+  {
+    REQUIRE( ma::io::read(&original, OPENMA_TDD_PATH_IN("hpf/Run_number_53_Plot_and_Store_Rep_1.1.hpf")) );
+    REQUIRE( ma::io::write(&original, OPENMA_TDD_PATH_OUT("c3d/HPF_Run_number_53_Plot_and_Store_Rep_1.1.c3d")) );
+    REQUIRE( ma::io::read(&converted, OPENMA_TDD_PATH_OUT("c3d/HPF_Run_number_53_Plot_and_Store_Rep_1.1.c3d")) );
+    hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(&original);
+    hpfhandlertest_read_Run_number_53_Plot_and_Store_Rep_1_1(&converted, false);
   }
 
 }
