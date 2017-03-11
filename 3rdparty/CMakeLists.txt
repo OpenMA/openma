@@ -1,1 +1,3 @@
 ADD_SUBDIRECTORY(eigen3)
+
+ADD_SUBDIRECTORY(pugixml)
