@@ -1149,7 +1149,7 @@ namespace io
           analogGains[inc] = 0;
         else
         {
-          warning("The TimeSequence '%s' marked as 'Analog' with 1 component does not have a predefined gain The C3D writer will write the gain as unknown.", analog->name().c_str());
+          warning("The TimeSequence '%s' marked as 'Analog' with 1 component does not have a predefined gain. The C3D writer will write the gain as unknown.", analog->name().c_str());
           analogGains[inc] = 0;
         }
         analogLabels[inc] = analog->name();
