@@ -26,14 +26,14 @@ CXXTEST_SUITE(C3DWriterTest)
     auto formats = writer.availableFormats();
     TS_ASSERT_EQUALS(std::find(formats.cbegin(), formats.cend(), "org.c3d") != formats.cend(), true);
   };
-  
+
   CXXTEST_TEST(detectNoDevice)
   {
     ma::io::HandlerWriter writer;
     TS_ASSERT_EQUALS(writer.canWrite(), false);
     TS_ASSERT_EQUALS(writer.errorCode(), ma::io::Error::Device);
   };
-  
+
   CXXTEST_TEST(detectDeviceNotOpen)
   {
     ma::io::File file;
@@ -59,7 +59,7 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(writer.canWrite(), true);
     TS_ASSERT_EQUALS(writer.errorCode(), ma::io::Error::None);
   };
-  
+
   CXXTEST_TEST(queryOkOne)
   {
     ma::io::File file;
@@ -68,7 +68,7 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(writer.canWrite(), true);
     TS_ASSERT_EQUALS(writer.errorCode(), ma::io::Error::None);
   };
-  
+
   CXXTEST_TEST(queryOkTwo)
   {
     ma::io::File file;
@@ -78,7 +78,7 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(writer.canWrite(), true);
     TS_ASSERT_EQUALS(writer.errorCode(), ma::io::Error::None);
   };
-  
+
   CXXTEST_TEST(queryOkThree)
   {
     ma::io::File file;
@@ -89,12 +89,12 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(writer.canWrite(), true);
     TS_ASSERT_EQUALS(writer.errorCode(), ma::io::Error::None);
   };
-  
+
   CXXTEST_TEST(sample01Rewrited)
   {
     c3dhandlertest_rewrite_sample01("PI", "sample01_Eb015pi.c3d", OPENMA_TDD_PATH_OUT("c3d/sample01_Eb015pi.c3d"), OPENMA_TDD_PATH_IN("c3d/standard/sample01/Eb015pi.c3d"));
   }
-  
+
   CXXTEST_TEST(sample09Rewrited)
   {
     ma::Node rootIn("rootIn"), rootOut("rootOut");
@@ -119,11 +119,11 @@ CXXTEST_SUITE(C3DWriterTest)
     TS_ASSERT_EQUALS(rootIn.child(0)->property("SUBJECTS:NAMES").dimensions().size(), 1u);
     TS_ASSERT_EQUALS(rootOut.child(0)->property("SUBJECTS:NAMES").dimensions().size(), 1u);
   }
-  
+
   CXXTEST_TEST(writePoint256)
   {
     // Verify that mutiple groups are create when the number of items is greater that 255.
-    
+
     // Generate a new trial with more than 256 time sequences
     // Export the trial to a C3D file
     // Load the C3D file
@@ -131,7 +131,26 @@ CXXTEST_SUITE(C3DWriterTest)
     // The number must be equal to 256
     // Check the label of each time sequence
     TS_WARN("TODO");
-  }  
+  }
+
+  CXXTEST_TEST(writeAnalogOnly)
+  {
+    ma::Node rootIn("rootIn"), rootOut("rootOut");
+    ma::Trial foo("foo", &rootIn);
+    ma::TimeSequence bar("bar", 1, 100, 1000.0, 10.0, ma::TimeSequence::Analog, "V", 1.0, 0.0, std::array<double,2>{{-1.0, 1.0}}, foo.timeSequences());
+    if (!c3dhandlertest_write("", OPENMA_TDD_PATH_OUT("c3d/analog_only.c3d"), &rootIn)) return;
+    if (!c3dhandlertest_read("", OPENMA_TDD_PATH_OUT("c3d/analog_only.c3d"), &rootOut)) return;
+
+    TS_ASSERT_EQUALS( rootOut.children().size(), 1u );
+    auto tss = rootOut.findChildren<ma::TimeSequence*>();
+    TS_ASSERT_EQUALS( tss.size(), 1u );
+
+    const auto range = std::array<double,2>{{-1., 1.}};
+    TS_ASSERT_EQUALS( tss[0]->samples() == 100 );
+    TS_ASSERT_EQUALS( tss[0]->sampleRate() == 1000.0 );
+    TS_ASSERT_EQUALS( tss[0]->range()[0] == range[0] );
+    TS_ASSERT_EQUALS( tss[0]->range()[1] == range[1] );
+  }
 };
 
 CXXTEST_SUITE_REGISTRATION(C3DWriterTest)
@@ -147,3 +166,4 @@ CXXTEST_TEST_REGISTRATION(C3DWriterTest, queryOkThree)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample01Rewrited)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, sample09Rewrited)
 CXXTEST_TEST_REGISTRATION(C3DWriterTest, writePoint256)
+CXXTEST_TEST_REGISTRATION(C3DWriterTest, writeAnalogOnly)
