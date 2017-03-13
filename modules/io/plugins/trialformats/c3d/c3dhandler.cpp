@@ -1528,7 +1528,7 @@ namespace io
         throw(FormatError("ORG.C3D - The number of dimensions exceeds the maximum of 7 dimensions."));
       for (const auto& dim : dimensions)
         if (dim > 255) throw(FormatError("ORG.C3D - One of the dimension exceeds the maximum of 255 elements."));
-      size_t size = std::accumulate(dimensions.begin(), dimensions.end(), std::abs(format), std::multiplies<size_t>());;
+      size_t size = std::accumulate(dimensions.begin(), dimensions.end(), std::abs(format), std::multiplies<unsigned>());;
       size_t offset = 5 + dimensions.size() + size;
       if (offset > 65535)
         throw(FormatError("ORG.C3D - Elements' size exceeds the maximum of 65535 bytes."));
