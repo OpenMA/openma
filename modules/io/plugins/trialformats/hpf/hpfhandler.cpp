@@ -52,7 +52,7 @@
 #include <cmath>
 
 
-#include <pugixml/pugixml.h>
+#include <pugixml.hpp>
 
 // -------------------------------------------------------------------------- //
 //                                 PRIVATE API                                //
