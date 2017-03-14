@@ -1093,6 +1093,8 @@ namespace io
         else if (point->type() == TimeSequence::Scalar)
           scalarLabels.push_back(point->name());
       }
+      if (!points.empty() && (frames == 0))
+        throw(FormatError("Points data has no samples!"));
       if (pointScaleFactor == 0)
         throw(FormatError("Null 3D scale factor found! The current implementation does not regenerate this factor. Please, contact the developers."));
       // And then the analog channels
@@ -1106,6 +1108,12 @@ namespace io
       analogScales.resize(numAnalogs);
       optr->AnalogChannelScale.resize(numAnalogs);
       optr->AnalogZeroOffset.resize(numAnalogs);
+      if (points.empty() && !analogs.empty())
+      {
+        frames = analogs[0]->samples();
+        sampleRate = analogs[0]->sampleRate();
+        startTime = analogs[0]->startTime();
+      }
       first = true;
       size_t inc = 0;
       for (const auto& analog: analogs)
@@ -1122,6 +1130,8 @@ namespace io
         // double intpart = 0.0;
         // if (fabs(std::modf(analog->offset(), &intpart)) > 1e-5)
         //   throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have an integer offset but a real one. This is not supported by the C3D file format."));
+        if (fabs(analog->startTime() - startTime) > std::numeric_limits<float>::epsilon())
+          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have the same start time than the others."));
         if (analog->range()[0] != -analog->range()[1])
           throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have a symmetrical gain This is not supported by the C3D file format."));
         double posgain = analog->range()[1];
@@ -1138,7 +1148,10 @@ namespace io
         else if (posgain == std::numeric_limits<double>::infinity())
           analogGains[inc] = 0;
         else
-          throw(FormatError("ORG.C3D - The TimeSequence '" + analog->name() + "' marked as 'Analog' with 1 component does not have a predefined gain This writer does not yet support the writing of custom gain."));
+        {
+          warning("The TimeSequence '%s' marked as 'Analog' with 1 component does not have a predefined gain. The C3D writer will write the gain as unknown.", analog->name().c_str());
+          analogGains[inc] = 0;
+        }
         analogLabels[inc] = analog->name();
         analogDescs[inc] = analog->description();
         analogUnits[inc] = analog->unit();
@@ -1515,7 +1528,7 @@ namespace io
         throw(FormatError("ORG.C3D - The number of dimensions exceeds the maximum of 7 dimensions."));
       for (const auto& dim : dimensions)
         if (dim > 255) throw(FormatError("ORG.C3D - One of the dimension exceeds the maximum of 255 elements."));
-      size_t size = std::accumulate(dimensions.begin(), dimensions.end(), std::abs(format), std::multiplies<size_t>());;
+      size_t size = std::accumulate(dimensions.begin(), dimensions.end(), std::abs(format), std::multiplies<unsigned>());;
       size_t offset = 5 + dimensions.size() + size;
       if (offset > 65535)
         throw(FormatError("ORG.C3D - Elements' size exceeds the maximum of 65535 bytes."));

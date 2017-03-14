@@ -12,7 +12,12 @@
      
 #define OPENMA_TDD_PATH_OUT(relpath) \
   "${OPENMA_BINARY_DIR}/test/data/output/" relpath
-  
+
+// TODO The following lines must be removed when all the unit test will use Catch (see openma/#78)
+#ifndef TS_ASSERT_EQUALS
+  #define TS_ASSERT_EQUALS(a,b)
+#endif
+
 void generate_trial_from_c3d_file(ma::Node* root, const char* filename)
 {
   ma::io::File file;

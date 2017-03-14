@@ -1,0 +1,3 @@
+In case the library pugixml is updated, it is important to patch the file src/pugiconfig.hpp around the line 17 with the following code:
+
+#include "pugixml_export.h"
