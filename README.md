@@ -1,14 +1,14 @@
-#OpenMA#
+# OpenMA
 
-##Introduction##
+## Introduction
 
 OpenMA is an open-source and cross-platform library for movement analysis and required data processing. The goal of OpenMA is to provide tools for scientists to perform computations and analysis based on published and existing algorithms without the need to modify their workflow. For example, most of the motion capture (mocap) system provides their own biomechanical model with an associated marker set. However, it would be beneficial to be independent of a mocap system to choose a particular model (because this one is known as better than the provided one, in terms of reliability for a specific population, etc.). The project OpenMA wants to provide such possibilities.
 
-##Documentation##
+## Documentation
 
 The user documentation is centralized and accessible over our website [openma.org](http://openma.org). The developer documentation is available on the Github [wiki](https://github.com/OpenMA/openma/wiki).
 
-##Programming languages##
+## Programming languages
 
 Most of the code is written in C++. If this language is mostly used in the industry, this is not the case in research laboratories. To tackle this problem, the C++ code was wrapped to different scientific programming languages.
 
@@ -17,7 +17,7 @@ Most of the code is written in C++. If this language is mostly used in the indus
 
 The API for binding languages is as close as possible to the C++ API. But when possible it uses native types (e.g. matrices, cells, etc.).
 
-##Technologies##
+## Technologies
 
 This project uses lots of features introduced in the **C++11 standard** (variadic template, smart pointer, unordered map, auto keyword, etc.). For this reason, a compiler supporting the C++11 standard must be used (e.g MSVC 2013, GCC 4.8, or clang 3.3). The application [CMake](http://www.cmake.org) used for the build system must be at least the release version 3.1.
 
@@ -29,11 +29,11 @@ The internal data structure relies on a **dynamic hierarchical tree structure** 
 
 The operations on files are realized using the **memory-mapped** mechanism to increase input/output performance. Thus, the data loading is faster for files physically present on-disk (or present on the network and temporary downloaded on your computer).
 
-##Development testing##
+## Development testing
 
 In order to ensure the development and its quality over supported operating systems and processors, automated processes are executed each time modification in the code is done on the server. Hence, it strengthens the development, but also reduce undetected errors (bugs, missing documentation, etc.) when a new version is released.
 
-###Continuous integration###
+### Continuous integration
 
 This part compiles the code on different operating systems in release mode and verify that all units tests passed. The unit tests are implemented using a modified version of [CxxTest](http://cxxtest.com) embedded into the source of OpenMA.
 
@@ -52,18 +52,18 @@ This part compiles the code on different operating systems in release mode and v
   - Processor architecture(s): x86 / x86_64
   - Libraries build mode(s): Shared
 
-###Static code analysis [![Coverity Scan Build Status](https://scan.coverity.com/projects/8584/badge.svg)](https://scan.coverity.com/projects/8584)###
+### Static code analysis [![Coverity Scan Build Status](https://scan.coverity.com/projects/8584/badge.svg)](https://scan.coverity.com/projects/8584)
 
 This part verifies the quality of the implementation (i.e. no lexical, syntactic, and semantic mistakes which could crash the software or create vulnerabilities) as well as its maintenance.
 
-###Test coverage [![Coveralls Coverage Status](https://coveralls.io/repos/github/OpenMA/openma/badge.svg?branch=master)](https://coveralls.io/github/OpenMA/openma?branch=master)###
+### Test coverage [![Coveralls Coverage Status](https://coveralls.io/repos/github/OpenMA/openma/badge.svg?branch=master)](https://coveralls.io/github/OpenMA/openma?branch=master)
 
 To be sure that unit tests executed in the *continuous integration* part covers all the classes/functions proposed in OpenMA, a coverage analysis is realized. It gives a metrics regarding the number of calls used in the unit tests for each methods/functions.
 
-###API documentation [![Doxygen Coverage Status](https://circleci.com/api/v1/project/OpenMA/openma/latest/artifacts/0/%24CIRCLE_ARTIFACTS/doxygen/doxy-coverage.svg)](https://circleci.com/api/v1/project/openma/openma/latest/artifacts/0/$CIRCLE_ARTIFACTS/doxygen/doxy-coverage.resume.txt)###
+### API documentation [![Doxygen Coverage Status](https://circleci.com/api/v1/project/OpenMA/openma/latest/artifacts/0/%24CIRCLE_ARTIFACTS/doxygen/doxy-coverage.svg)](https://circleci.com/api/v1/project/openma/openma/latest/artifacts/0/$CIRCLE_ARTIFACTS/doxygen/doxy-coverage.resume.txt)
 The documentation of the API is built each time a commit is sent on the server. Internally, [Doxygen](http://www.doxygen.org) is used to verify and generate documentation of the C++ code (classes, methods, etc.). Then, a custom engine is used to generate the online documentation available on [openma.org](http://openma.org).
 
-##License##
+## License
 
 OpenMA use the generous open-source New BSD license. Yes, you can use OpenMA in commercial products. The complete text of the copyright is presented below:
 
